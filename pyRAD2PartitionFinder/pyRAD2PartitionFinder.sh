@@ -34,10 +34,10 @@ for i in $MY_PYRAD_PARTITION                ## Look in the current directory for
 				for k in *.partitions_1.tmp.PFparts.txt
 					do
 					mv $k ${k/.partitions_1.tmp.PFparts.txt/.newPartitions.txt}
-				done						## Line above renames the output.
+				done			## Line above renames the output.
 done
 #
-rm *_1.tmp									## Remove unnecessary files.
+rm *_1.tmp						## Remove unnecessary files.
 #
 #
 #
@@ -70,7 +70,7 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 #
 cat ./PF_top.tmp ./*.newPartitions.txt \
 ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
-rm ./PF_top.tmp ./PF_bottom.tmp;  			## Remove unnecessary files.
+rm ./PF_top.tmp ./PF_bottom.tmp;  		## Remove unnecessary files.
 #
 #
 #
@@ -80,7 +80,7 @@ MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | \
 	grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
 	sed -n 's/.://p')"
 python $MY_PATH_TO_PARTITIONFINDER .		## __PATH NEEDED__: Change the path to PartitionFinder.py listed after "python" at the start of this line to the appropriate path on your computer, if necessary.
-#											## Previously, for my machine, the previous line was: python /Applications/PartitionFinderV1.1.1_Mac/PartitionFinder.py .     # __PATH NEEDED__: Change the path to PartitionFinder.py listed after "python" at the start of this line to the appropriate path on your computer, if necessary.
+#						## Previously, for my machine, the previous line was: python /Applications/PartitionFinderV1.1.1_Mac/PartitionFinder.py .     # __PATH NEEDED__: Change the path to PartitionFinder.py listed after "python" at the start of this line to the appropriate path on your computer, if necessary.
 #
 #
 #
