@@ -29,14 +29,14 @@ echo "
 #
 #
 ##---------------- STEP #1: MODIFY pyRAD DATAFILE FOR PartitionFinder ------------------##
-MY_PYRAD_PARTITION=./*.partitions           ## Assign "partition" files in current directory to variable.
-MY_PHYLIP_FILE=./*.phy                      ## Assign PHYLIP SNP datafiles in current directory to variable.
+MY_PYRAD_PARTITION=./*.partitions       	 ## Assign "partition" files in current directory to variable.
+MY_PHYLIP_FILE=./*.phy                  	 ## Assign PHYLIP SNP datafiles in current directory to variable.
 #
 ##--FORMAT pyRAD PARTITION FILE FOR PartitionFinder: 
-for i in $MY_PYRAD_PARTITION                ## Look in the current directory for partition scheme files output by pyRAD.
+for i in $MY_PYRAD_PARTITION            	 ## Look in the current directory for partition scheme files output by pyRAD.
 	do 
 	echo $i
-	sed 's/^DNA..//g' ${i} > ${i}_1.tmp		## Reformatting using nested for loops.
+	sed 's/^DNA..//g' ${i} > ${i}_1.tmp	## Reformatting using nested for loops.
 			for j in ${i}_1.tmp
 				do 
 				echo $j
@@ -45,10 +45,10 @@ for i in $MY_PYRAD_PARTITION                ## Look in the current directory for
 				for k in *.partitions_1.tmp.PFparts.txt
 					do
 					mv $k ${k/.partitions_1.tmp.PFparts.txt/.newPartitions.txt}
-				done						## Line above renames the output.
+				done	## Line above renames the output.
 done
 #
-rm *_1.tmp									## Remove unnecessary files.
+rm *_1.tmp					## Remove unnecessary files.
 #
 #
 #
@@ -87,8 +87,8 @@ rm ./PF_top.tmp ./PF_bottom.tmp;  		## Remove unnecessary files.
 ##----------- STEP #3: RUN PartitionFinder ON THE DATA IN WORKING DIRECTORY ------------##
 #
 ##--Setup modules on supercomputer:
-module purge							## Clear any previously loaded modules.
-module load python/2/7					## Load Python 2.7, which is compatible with most recent version of PartitionFinder.
+module purge					## Clear any previously loaded modules.
+module load python/2/7				## Load Python 2.7, which is compatible with most recent version of PartitionFinder.
 #
 ##--For Linux supercomputer clusters, use the following code to assign PartitionFinder path to variable and run:
 ##--a (not preferred): MY_PATH_TO_PARTITIONFINDER_ON_LINUX="$(which PartitionFinder.py)"
