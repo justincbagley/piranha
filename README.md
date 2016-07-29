@@ -1,4 +1,4 @@
-#  PIrANHA (*P*hylogenet*I*cs ANd pHylogeogrAphy)
+#  PIrANHA (*P*hylogenet*I*cs *AN*d p*H*ylogeogr*A*phy)
 Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 INTRODUCTION
