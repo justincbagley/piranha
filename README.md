@@ -11,7 +11,7 @@ Whereas some PIrANHA scripts are written for use on the user's local machine (e.
 CURRENT PIPELINE/CONTENTS
 -------
 
-**Outside PIrANHA**         **Within PIrANHA**
+``**Outside PIrANHA**         **Within PIrANHA**
 -------------------------------------------------------------------------------
 **pyRAD**             ->        
 ".partitions" file(s)\
@@ -23,7 +23,7 @@ CURRENT PIPELINE/CONTENTS
 ".species.trees" file(s)\
                          ------->BEASTPostProc----->LogAnalyser-->output
 ".mle.log" file(s)------/              \----------->TreeAnnotator-->output   
-".out" file(s)---------/
+".out" file(s)---------/``
 
 ExaBayesPostProc
 MLEResultsProc
