@@ -8,6 +8,26 @@ PIrANHA is a repository for shell scripts and code (e.g. R, python) I am develop
 
 Whereas some PIrANHA scripts are written for use on the user's local machine (e.g. pyRAD2PartitionFinder.sh), others are written with sections allowing the script to be submitted to run on a supercomputing cluster using SBATCH or PBS resource management code (e.g. Super-pyRAD2PartitionFinder.sh; and hence the "Super" in the filename). One of my goals for PIrANHA is to compile a database of shell scripts I use for all software programs that I run on a supercomputing cluster. Another distinction between PIrANHA scripts is that some them are written to be interactive, prompting the user for paths, filenames, or other information that will be fed into file processing or software runs; these scripts do everything within an open command line interface, and often print status updates to screen. However, additional versions of scripts are available that manipulate files or run software programs in non-interactive mode, i.e. "in the background"; for example, the regular fastSTRUCTURE.sh script is interactive, whereas the fastSTRUCTUREnonint.sh script is not.
 
+CURRENT PIPELINE/CONTENTS
+-------
+
+**Outside PIrANHA**         **Within PIrANHA**
+**pyRAD**             ->        
+".partitions" file(s)\
+                     ---->pyRAD2PartitionFinder-->PartitionFinder-->output  
+".phy" file(s)-------/
+
+**BEAST**            ->         BEASTPostProc-->LogAnalyser-->output
+".trees" file(s)                 \-------->TreeAnnotator-->output
+".species.trees" file(s)
+".mle.log" file(s)
+".out" file(s)
+
+ExaBayesPostProc
+MLEResultsProc
+fastSTRUCTURE
+pyRAD2PartitionFinder
+
 DOCUMENTATION
 -------
 
