@@ -10,7 +10,7 @@ Whereas some PIrANHA scripts are written for use on the user's local machine (e.
 
 CURRENT PIPELINE/CONTENTS
 -------
-Here are some text schetches of the current pipelines with **software** and "file-types" used/generated outside PIrANHA in the left column, and the way these are generally processed within/using PIrANHA at right. PIrANHA scripts are marked by pairs of underscores on either side. [Work this up as a figure.]
+Here are some text schetches of the current pipelines with **software** and "file-types" used/generated outside PIrANHA in the left column, and the way these are generally processed within/using PIrANHA at right. PIrANHA scripts are marked by pairs of __underscores__ on either side. [Work this up as a figure.]
 
 ````
 OUTSIDE PIrANHA              WITHIN/USING PIrANHA
