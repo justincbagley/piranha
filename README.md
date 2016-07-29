@@ -10,31 +10,32 @@ Whereas some PIrANHA scripts are written for use on the user's local machine (e.
 
 CURRENT PIPELINE/CONTENTS
 -------
+Here are some text schetches of the current pipelines with **software** and "file-types" used/generated outside PIrANHA in the left column, and the way these are generally processed within/using PIrANHA at right. PIrANHA scripts are marked by pairs of underscores on either side. [Work this up as a figure.]
 
 ````
-**OUTSIDE PIrANHA**           **WITHIN/USING PIrANHA**
+OUTSIDE PIrANHA              WITHIN/USING PIrANHA
 ---------------------------------------------------------------------------------------
 **pyRAD**                   
 ".partitions" file(s)\
-                      ------>__pyRAD2PartitionFinder.sh__-->PartitionFinder-->output 
+                      ------>__pyRAD2PartitionFinder.sh__-->**PartitionFinder**-->output 
 ".phy" file(s)-------/
 
 
 **pyRAD**                   
-".str" file(s)------>__fastSTRUCTURE.sh__-->fastSTRUCTURE-->output 
+".str" file(s)------>__fastSTRUCTURE.sh__-->**fastSTRUCTURE**-->output 
                 (or __fastSTRUCTUREnonint.sh__)
 
 **BEAST**             
 ".trees" file(s)-------\
 ".species.trees" file(s)\
-                         ------->__BEASTPostProc.sh__----->LogAnalyser-->output
-".mle.log" file(s)------/                \----------->TreeAnnotator-->output
+                         ------->__BEASTPostProc.sh__----->**LogAnalyser**-->output
+".mle.log" file(s)------/                \----------->**TreeAnnotator**-->output
 ".out" file(s)---------/-------->__MLEResultsProc__
                                          \-->output----->__2log10BF.r__----->R-->output
 
 **ExaBayes**
 "ExaBayes_topologies.*" file(s)\
-                                ------->__ExaBayesPostProc.sh__----->MrBayes-->output
+                                ------->__ExaBayesPostProc.sh__----->**MrBayes**-->output
 "ExaBayes_parameters.*" file(s)/
 ````
 
