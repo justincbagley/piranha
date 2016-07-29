@@ -12,16 +12,18 @@ CURRENT PIPELINE/CONTENTS
 -------
 
 **Outside PIrANHA**         **Within PIrANHA**
+-------------------------------------------------------------------------------
 **pyRAD**             ->        
 ".partitions" file(s)\
-                     ---->pyRAD2PartitionFinder-->PartitionFinder-->output  
+                      ------>pyRAD2PartitionFinder-->PartitionFinder-->output  
 ".phy" file(s)-------/
 
-**BEAST**            ->         BEASTPostProc-->LogAnalyser-->output
-".trees" file(s)                 \-------->TreeAnnotator-->output
-".species.trees" file(s)
-".mle.log" file(s)
-".out" file(s)
+**BEAST**             ->
+".trees" file(s)-------\
+".species.trees" file(s)\
+                         ------->BEASTPostProc----->LogAnalyser-->output
+".mle.log" file(s)------/              \----------->TreeAnnotator-->output   
+".out" file(s)---------/
 
 ExaBayesPostProc
 MLEResultsProc
