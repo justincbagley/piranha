@@ -13,23 +13,26 @@ CURRENT PIPELINE/CONTENTS
 
 ````
 **Outside PIrANHA**         **Within PIrANHA**
--------------------------------------------------------------------------------
-**pyRAD**             ->      
-".partitions" file(s)\``
-                      ------>pyRAD2PartitionFinder-->PartitionFinder-->output 
+---------------------------------------------------------------------------------------
+**pyRAD**                   
+".partitions" file(s)\
+                      ------>__pyRAD2PartitionFinder.sh__-->PartitionFinder-->output 
 ".phy" file(s)-------/
 
-**BEAST**             ->
+**pyRAD**                   
+".str" file(s)------>__fastSTRUCTURE.sh__-->fastSTRUCTURE-->output 
+                (or __fastSTRUCTUREnonint.sh__)
+**BEAST**             
 ".trees" file(s)-------\
 ".species.trees" file(s)\
-                         ------->BEASTPostProc----->LogAnalyser-->output
-".mle.log" file(s)------/              \----------->TreeAnnotator-->output
-".out" file(s)---------/``
-
-ExaBayesPostProc
-MLEResultsProc
-fastSTRUCTURE
-pyRAD2PartitionFinder
+                         ------->__BEASTPostProc.sh__----->LogAnalyser-->output
+".mle.log" file(s)------/                \----------->TreeAnnotator-->output
+".out" file(s)---------/-------->__MLEResultsProc__
+                                         \-->output----->__2log10BF.r__----->R-->output
+**ExaBayes**
+"ExaBayes_topologies.*" file(s)\
+                                ------->__ExaBayesPostProc.sh__----->MrBayes-->output
+"ExaBayes_parameters.*" file(s)/
 ````
 
 DOCUMENTATION
