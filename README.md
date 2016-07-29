@@ -11,7 +11,7 @@ Whereas some PIrANHA scripts are written for use on the user's local machine (e.
 CURRENT PIPELINE/CONTENTS
 -------
 
-``**Outside PIrANHA**         **Within PIrANHA**
+``**Outside PIrANHA**         **Within PIrANHA**``
 -------------------------------------------------------------------------------
 **pyRAD**             ->        
 ".partitions" file(s)\
