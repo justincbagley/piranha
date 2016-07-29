@@ -1,5 +1,5 @@
 #  PIrANHA (PhylogenetIcs ANd pHylogeogrAphy)
-Shell scripts for file processing and analysis in phylogenomics &amp; phylogeography
+Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 INTRODUCTION
 -------
