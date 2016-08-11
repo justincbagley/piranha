@@ -63,6 +63,7 @@ CITATION
 -------
 
 If you use scripts from this repository for your own research, please cite the repository as follows (I will put everything in Zenodo and get doi's in the near future): 
+  
   Bagley, J.C. 2016. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, please provide the link to this software repository in your manuscript:
