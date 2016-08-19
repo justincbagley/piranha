@@ -1,9 +1,11 @@
 #!/bin/sh
 
 ##########################################################################################
-# <><PIrANHA              ExaBayesPostProc v1.0, July 2016                               #
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                         ExaBayesPostProc v1.0, July 2016                               #
 #   SHELL SCRIPT FOR POST-PROCESSING OF ExaBayes OUTPUT FILES                            #
-#   SUPERCOMPUTING CLUSTER                                                               #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
 #   further information. Last update: July 15, 2016. For questions, please email         #
