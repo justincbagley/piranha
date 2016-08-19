@@ -1,7 +1,10 @@
 #!/bin/sh
 
 ##########################################################################################
-# <><PIrANHA                 MLEResultsProc v1.0, July 2016                              #
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                            MLEResultsProc v1.0, July 2016                              #
 #   SHELL SCRIPT FOR POST-PROCESSING OF MARGINAL LIKELIHOOD ESTIMATION RESULTS FROM      #
 #   CONDUCTING PATH SAMPLING OR STEPPING-STONE SAMPLING IN BEAST                         #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
@@ -55,9 +58,9 @@ rm data.tmp
 
 
 ############ STEP #3: LOAD MLE RESULTS INTO R AND COMPUTE BAYES FACTOR TABLES
-##--We do this in an R script that I wrote named "2log10BF.R" that we simply call here. 
+##--We do this in an R script that I wrote named "2logeB10.R" that we simply call here. 
 ##--Note this script needs to be either in the working directory or the user's path.
-R CMD BATCH 2log10BF.R
+R CMD BATCH 2logeB10.R
 #
 #
 #
