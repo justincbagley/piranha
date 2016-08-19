@@ -3,7 +3,7 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 ## License
 
-All code within the PIrANHA repository is available "AS IS" under a generous GNU license. See the [LICENSE.txt](LICENSE.txt) file for more information.
+All code within the PIrANHA repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## Citation
 
