@@ -49,7 +49,7 @@ PIrANHA, and especially the MAGNET package within PIrANHA, relies on several sof
 - RAxML, installed and running on remote supercomputer (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
 - Perl (available at: https://www.perl.org/get.html).
 - *Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
-- Python (available at: ).
+- Python (available at: https://www.python.org/downloads/).
 - bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
 
 Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their local machine. For more details, see the MAGNET README.
@@ -66,7 +66,7 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
+* Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA.
 
 ## References
 
