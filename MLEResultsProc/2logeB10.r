@@ -7,8 +7,13 @@
 #   further information.                                                                 #
 ##########################################################################################
 
-##--Load needed library, R code, or package stuff.
+##--Load needed library, R code, or package stuff. Install package if not present.
 #source("2logeB10.R", chdir = TRUE)
+packages <- c("psych")
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+    install.packages(setdiff(packages, rownames(installed.packages())))
+}
+
 library(psych)
 
 ##--Read in the data, output from STEP #1 of MLEResultsProc.sh script.
@@ -23,11 +28,11 @@ PS.vec
 SS.vec <- data[,3]
 SS.vec
 
-##--Matrix of 2loge BFs calculated PS log-marginal likelihood estimates:
+##--Matrix of 2loge BFs calculated from PS log-marginal likelihood estimates:
 PS.2logeB10 = 2*(outer(PS.vec, PS.vec, `-`))
 PS.2logeB10
 
-##--Matrix of 2loge BFs calculated PS log-marginal likelihood estimates:
+##--Matrix of 2loge BFs calculated from SS log-marginal likelihood estimates:
 SS.2logeB10 = 2*(outer(SS.vec, SS.vec, `-`))
 SS.2logeB10
 
