@@ -16,8 +16,7 @@
 echo "
 ##########################################################################################
 #                         MLEResultsProc v1.1, September 2016                            #
-##########################################################################################
-"
+##########################################################################################"
 
 echo "INFO      | $(date) | STEP #1: EXTRACT MLE RESULTS FROM BEAST OUTPUT FILE. "
 	MY_BEAST_OUTPUT_FILES=*.out
@@ -62,6 +61,8 @@ echo "INFO      | $(date) | STEP #3: LOAD MLE RESULTS INTO R AND COMPUTE BAYES F
 
 	R CMD BATCH 2logeB10.R
 
+echo "Bye.
+"
 #
 #
 #
