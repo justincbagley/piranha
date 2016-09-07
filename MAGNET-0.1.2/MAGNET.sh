@@ -87,28 +87,28 @@ echo "
 ##########################################################################################
 "
 
-echo "######################################## START ###########################################"
-echo "Starting MAGNET pipeline... "
-echo "STEP #1: SETUP. "
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting MAGNET pipeline... "
+echo "INFO      | $(date) | STEP #1: SETUP. "
 ###### Set paths and filetypes as different variables:
 	MY_WORKING_DIR="$(pwd)"
-	echo "         Setting working directory to: $MY_WORKING_DIR "
+	echo "INFO      | $(date) |          Setting working directory to: $MY_WORKING_DIR "
 	CR=$(printf '\r')
 	calc () {
 	   	bc -l <<< "$@"
 	}
 
 
-echo "STEP #2: INPUT FILE. "
-echo "         If '.gphocs' input file present, continue; else convert NEXUS file to \
+echo "INFO      | $(date) | STEP #2: INPUT FILE. "
+echo "INFO      | $(date) |          If '.gphocs' input file present, continue; else convert NEXUS file to \
 G-PhoCS format using NEXUS2gphocs code... "
 shopt -s nullglob
 if [[ -n $(echo *.gphocs) ]]; then
-	echo "         Found '.gphocs' input file... "
+	echo "INFO      | $(date) |          Found '.gphocs' input file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs		## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
-    echo "         WARNING: No '.gphocs' input file in current working directory... "
-    echo "         Attempting to convert NEXUS file, if present, to GPho-CS format... "
+    echo "WARNING!  | $(date) |          No '.gphocs' input file in current working directory... "
+    echo "INFO      | $(date) |          Attempting to convert NEXUS file, if present, to GPho-CS format... "
 fi
 
 
@@ -223,19 +223,19 @@ NEXUS2gphocs_function
 #echo -ne '\n'
 
 else
-	echo "         No NEXUS files in current working directory. Continuing... "
-#    echo "         ERROR: Found no suitable input files in current working directory... "
-#    echo "         Quitting."
+	echo "INFO      | $(date) |          No NEXUS files in current working directory. Continuing... "
+#    echo "WARNING!  | $(date) |          Found no suitable input files in current working directory... "
+#    echo "INFO      | $(date) |          Quitting."
 #	exit
 fi
 
 shopt -s nullglob
 if [[ -n $(echo *.gphocs) ]]; then
-	echo "         MAGNET successfully created a '.gphocs' input file from the existing NEXUS file... "
+	echo "INFO      | $(date) |          MAGNET successfully created a '.gphocs' input file from the existing NEXUS file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs		## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
-    echo "         ERROR: Failed to convert NEXUS file into G-PhoCS format... "
-    echo "         Quitting."
+    echo "WARNING!  | $(date) |          Failed to convert NEXUS file into G-PhoCS format... "
+    echo "INFO      | $(date) |          Quitting."
     exit
 fi
 
@@ -244,8 +244,8 @@ fi
 
 MY_NLOCI="$(head -n1 $MY_GPHOCS_DATA_FILE)"
 
-echo "STEP #3: MAKE ALIGNMENTS FOR EACH LOCUS. "
-echo "         In a single loop, use info from '.gphocs' file to split each locus block \
+echo "INFO      | $(date) | STEP #3: MAKE ALIGNMENTS FOR EACH LOCUS. "
+echo "INFO      | $(date) |          In a single loop, using info from '.gphocs' file to split each locus block \
 into a separate phylip-formatted alignment file using gphocs2multiPhylip code... "
 (
 	for (( i=0; i<=$(calc $MY_NLOCI-1); i++ ))
@@ -280,7 +280,7 @@ fi
 
 ################################# MultiRAxMLPrepper.sh ##################################
 
-echo "STEP #4: MAKE RUN FOLDERS. "
+echo "INFO      | $(date) | STEP #4: MAKE RUN FOLDERS. "
 ##--Loop through the input .phy files and do the following for each file: (A) generate one 
 ##--folder per .phy file with the same name as the file, only minus the extension, then 
 ##--(B) move input .phy file into corresponding folder.
@@ -298,13 +298,13 @@ MY_FILECOUNT="$(find . -type f | wc -l)"
 MY_DIRCOUNT="$(find . -type d | wc -l)"
 
 MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
-echo "         Number of run folders created: $MY_NUM_RUN_FOLDERS "
+echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
 
 
 ################################### RAxMLRunner.sh #######################################
 
-echo "STEP #5: ESTIMATE GENE TREES. "
-echo "         Loop through and analyze contents of each run folder in RAxML... "
+echo "INFO      | $(date) | STEP #5: ESTIMATE GENE TREES. "
+echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
 ##--Each folder is set with the locus name corresponding to the locus' position in the
 ##--original .gphocs alignment (which, if output by pyRAD, is simply in the order in which
 ##--the loci were logged to file by pyRAD, no special order). Also, each folder contains
@@ -341,10 +341,10 @@ mkdir ./phylip_files
 
 ################################## getGeneTrees.sh #######################################
 
-echo "STEP #6: RAxML POST-PROCESSING. "
-echo "         Organize gene trees and making final output file containing all trees... "
+echo "INFO      | $(date) | STEP #6: RAxML POST-PROCESSING. "
+echo "INFO      | $(date) |          Organizing gene trees and making final output file containing all trees... "
 ############ STEP #2: MAKE LIST OF RAxML GENE TREES IN WORKING DIRECTORY
-echo "         Make list of ML gene trees generated by RAxML... "
+echo "INFO      | $(date) |          Making list of ML gene trees generated by RAxML... "
 
 ls **/RAxML_bestTree.raxml_out > geneTrees.list
 
@@ -361,7 +361,7 @@ MY_RUN_FOLDERS="$(echo $MY_GENE_TREE_LIST | sed 's/\/[A-Za-z.\_\-]*//g')"
 ##--folder, i.e. locus. We can rename each file right after downloading it.
 mkdir ./gene_trees
 
-echo "         Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
+echo "INFO      | $(date) |          Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
 (
 	for j in ${MY_GENE_TREE_LIST}
 		do
@@ -373,7 +373,7 @@ echo "         Copying *ALL* ML gene trees to 'gene_trees' folder in current dir
 	done
 )
 
-echo "         Making final output file containing best ML trees from all runs/loci..."
+echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
 (
 	for k in ./gene_trees/*
 	    do
@@ -382,11 +382,12 @@ echo "         Making final output file containing best ML trees from all runs/l
 	done
 )
 
-echo "Done estimating gene trees for many loci in RAxML using MAGNET."
-echo "Bye."
+echo "INFO      | $(date) | Done estimating gene trees for many loci in RAxML using MAGNET."
+echo "INFO      | $(date) | Bye.
+"
 #
 #
 #
-echo "######################################### END ############################################"
+######################################### END ############################################
 
 exit 0
