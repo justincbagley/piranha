@@ -17,7 +17,7 @@ echo "
 ##########################################################################################
 "
 
-############ STEP #1: SETUP VARIABLES & SUMMARIZE RUN LOG FILE
+echo "INFO      | $(date) | STEP #1: SETUP VARIABLES & SUMMARIZE RUN LOG FILE. "
 ###### Set filetypes as different variables:
 MY_STARBEAST_SPECIESTREE_FILE=./*.species.trees		## Assign *BEAST species tree file in run directory to variable.
 
@@ -57,31 +57,30 @@ MY_MARGLIKE_LOGFILE=./*.mle.log					## Assign MLE log file in run directory to v
 ##--normally take values between 6250 and 12500.
 
 if [[ $MY_STARBEAST_LOGFILE ]]; then
-	echo "##########  BEAST log file present. Analyzing log file in LogAnalyser..."
+	echo "INFO      | $(date) |         BEAST log file present. Analyzing log file in LogAnalyser..."
 	/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/loganalyser -burnin 12500 $MY_STARBEAST_LOGFILE LogAnalyzer.out.txt
 	## __PATH NEEDED__: If necessary, change start of the line above to include the absolute path to the "loganalyser" executable on your machine, or to just specify the executable name if it is already in your path. 
 else
-	echo "##########  Something went wrong. Found no BEAST log files. "
+	echo "WARNING!  | $(date) |         Something went wrong. Found no BEAST log files. "
 fi
 
 
 ###### Also summarize parameters from ".mle.log" (marginal likelihood estimation) log file, if present, in LogAnalyser (from BEAST v1.8.3):
 if [[ $MY_MARGLIKE_LOGFILE ]]; then
-	echo "##########  Marginal likelihood estimation analysis log file present. Analyzing mle log file in LogAnalyser..."
+	echo "INFO      | $(date) |         Marginal likelihood estimation analysis log file present. Analyzing mle log file in LogAnalyser..."
 	/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/loganalyser -burnin 10000 $MY_MARGLIKE_LOGFILE MLE.LogAnalyzer.out.txt
 else
-	echo "##########  Found no marginal likelihood estimation analysis log files. Moving on... "
+	echo "WARNING!  | $(date) |         Found no marginal likelihood estimation analysis log files. Moving on... "
 fi
 
 
-############ STEP #2: SPECIES TREE ANALYSIS:
+echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 ###### First step is to get 5000 random post-burnin species trees from the posterior distribution of trees:
 if [[ $MY_STARBEAST_SPECIESTREE_FILE ]]; then
-	echo "##########  BEAST species trees present. Analyzing species trees in TreeAnnotator..."
+	echo "INFO      | $(date) |         BEAST species trees present. Analyzing species trees in TreeAnnotator..."
 
 (
-for i in $MY_STARBEAST_SPECIESTREE_FILE
-	do 
+for i in $MY_STARBEAST_SPECIESTREE_FILE; do 
 	echo $i
 	tail -n 5000 ${i} > ${i}_5k_postburn.trees		## OPTION #1 (preferred)
 								## OPTION #2 - use AWK (This is for getting lines of the .species.trees file corresponding to a specific range of trees starting at MCMC generation ~55 million and going for the next 5000 logged trees, assuming trees were logged every 4000):
@@ -141,7 +140,7 @@ done
 	shopt -s nullglob
 	files=(./*_final_5k.trees)
 	if [[ "${#files[@]}" -gt 0 ]] ; then
-		echo "##########  Renaming final 5k post-burnin species tree files."
+		echo "INFO      | $(date) |         Renaming final 5k post-burnin species tree files."
 #+
         for j in ./*.species.trees_final_5k.trees
             do
@@ -149,7 +148,7 @@ done
         done
 #+
     else
-        echo "##########  Failed to rename final 5k post-burnin species tree files."
+        echo "WARNING!  | $(date) |         Failed to rename final 5k post-burnin species tree files."
     fi
 )
 
@@ -158,7 +157,7 @@ done
 	shopt -s nullglob
 	folders=(./*.treeannotator)
 	if [[ "${#folders[@]}" -gt 0 ]] ; then
-		echo "##########  Step #3 succeeded. Renaming folders with TreeAnnotator species tree results."
+		echo "INFO      | $(date) |         Step #3 succeeded. Renaming folders with TreeAnnotator species tree results."
 #+
 		for k in ./*.species.trees.treeannotator
 			do
@@ -166,7 +165,7 @@ done
 		done
 #+
 	else
-		echo "##########  Step #3 failed. Found no folders with TreeAnnotator species tree results."
+		echo "WARNING!  | $(date) |         Step #3 failed. Found no folders with TreeAnnotator species tree results."
 	fi
 )
 
@@ -181,7 +180,7 @@ done
 
 
 else
-	echo "##########  Found no BEAST species trees. Skipping species tree analysis... "
+	echo "INFO      | $(date) |         Found no BEAST species trees. Skipping species tree analysis... "
 fi
 
 
@@ -193,10 +192,10 @@ fi
 
 
 
-############ STEP #3: GENE TREE ANALYSIS:
+echo "INFO      | $(date) |  STEP #3: GENE TREE ANALYSIS. "
 ###### First step is to get 5000 random post-burnin gene trees from the posterior distribution of trees:
 if [[ $MY_BEAST_GENETREE_FILES ]]; then
-	echo "##########  BEAST gene trees present for one or multiple partitions. Analyzing gene trees in TreeAnnotator..."
+	echo "INFO      | $(date) |         BEAST gene trees present for one or multiple partitions. Analyzing gene trees in TreeAnnotator..."
 
 (
 for m in ${MY_BEAST_GENETREE_FILES}
@@ -246,12 +245,14 @@ done
 )
 
 else
-	echo "##########  Found no BEAST gene trees. Skipping gene tree analysis... "
+	echo "INFO      | $(date) |         Found no BEAST gene trees. Skipping gene tree analysis... "
 fi
 
 
 
-echo "##########  Done processing BEAST results. Bye."
+echo "INFO      | $(date) | Done processing BEAST results. "
+echo "Bye.
+"
 #
 #
 #
