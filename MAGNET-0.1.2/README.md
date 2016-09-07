@@ -13,7 +13,7 @@ If you use scripts from this repository as part of your published research, then
 
   Bagley, J.C. 2016. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
   
-  Bagley, J.C. 2016. MAGNET. GitHub package, Available at: http://github.com/justincbagley/MAGNET.
+  Bagley, J.C. 2016. MAGNET, version 0.1.2. GitHub package, Available at: http://github.com/justincbagley/MAGNET.
 
 Alternatively, please provide the following link to this software program in your manuscript:
 
