@@ -9,21 +9,20 @@
 #   SUBSETS                                                                              #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: September 6, 2016. For questions, please email     #
+#   further information. Last update: September 7, 2016. For questions, please email     #
 #   jcbagley@unb.br.                                                                     #
 ##########################################################################################
 
 echo "
 ##########################################################################################
 #                           PFSubsetSum v1.0, September 2016                             #
-##########################################################################################
-"
+##########################################################################################"
 
-echo "######################################## START ###########################################"
-echo "STEP #1: SETUP. "
+######################################## START ###########################################
+echo "INFO      | $(date) | STEP #1: SETUP. "
 ###### Set paths and filetypes as different variables:
 	MY_WORKING_DIR="$(pwd)"
-	echo "         Setting working directory to: $MY_WORKING_DIR "
+	echo "INFO      | $(date) |          Setting working directory to: $MY_WORKING_DIR "
 	CR=$(printf '\r')
 	calc () {
 	   	bc -l <<< "$@"
@@ -31,50 +30,74 @@ echo "STEP #1: SETUP. "
 
 
 ###### Detect and read in PartitionFinder best scheme file from current working directory:
-echo "STEP #2: DETECT AND READ PartitionFinder INPUT FILE. "
+echo "INFO      | $(date) | STEP #2: DETECT AND READ PartitionFinder INPUT FILE. "
 shopt -s nullglob
 if [[ -n $(echo ./best_scheme.txt) ]]; then
-	echo "         Found PartitionFinder 'best_scheme.txt' input file... "
+	echo "INFO      | $(date) |          Found PartitionFinder 'best_scheme.txt' input file... "
     MY_BEST_SCHEME_FILE=./best_scheme.txt
 else
-    echo "         WARNING: No PartitionFinder 'best_scheme.txt' input file in current working directory. Quitting... "
+    echo "WARNING!  | $(date) | No PartitionFinder 'best_scheme.txt' input file in current working directory. Quitting... "
 	exit
 fi
 
 
 ###### Extract charsets and calculate summary statistics for each PF subset in the best
 ###### scheme:
-echo "STEP #3: COMPUTE SUMMARY STATISTICS FOR EACH SUBSET. "
-	
+echo "INFO      | $(date) | STEP #3: COMPUTE SUMMARY STATISTICS FOR EACH SUBSET. "
+echo "INFO      | $(date) |          Extracting and organizing subsets...  "
+
 	##--Extract subsets from PartitionFinder output file:
 	MY_NUM_SUBSETS=$(grep -n "DNA," $MY_BEST_SCHEME_FILE | wc -l)
 	tail -n $MY_NUM_SUBSETS $MY_BEST_SCHEME_FILE > ./subsets.txt
 	MY_SUBSETS_FILE=./subsets.txt
+echo "INFO      | $(date) |          The best scheme from PartitionFinder contains "$MY_NUM_SUBSETS" subsets.  "
 
 	##--Move each subset to its own file, with the same subset's name... The subsets
 	##--(a.k.a. "partitions", though this is not technically correct) are always named
-	##--px where x is a number from 1 to the total number of subsets in the best
-	##--scheme identified by PartitionFinder. So, we an do this with a simple for loop
+	##--"px" where x is a number from 1 to the total number of subsets in the best
+	##--scheme identified by PartitionFinder. So, we can do this with a simple for loop
 	##--across different p's:
 (
 	for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
 		subsetname=$(echo p$i)
 		sed -n "$i"p $MY_SUBSETS_FILE | sed 's/DNA\,//g; s/p[0-9]*//g; s/^[\ =]*//g' > $subsetname.txt		##--This cleans up the subset data by removing everything except the charsets (e.g. deleting "DNA, "...
+
+		echo $subsetname >> ./subset_names.txt
+
 	done			
 )	
-	
+
+    ##--Prep work: make file list as variable...
+    MY_SUBSET_FILE_LIST=$(echo ./p*.txt)
+
+echo "INFO      | $(date) |          1. Calculating numCharsets (number of character sets) within each subset in the scheme...  "
+	##--Prep work: make output directory...
+	mkdir "$MY_WORKING_DIR"/numCharsets/
+
+(
+    for i in $MY_SUBSET_FILE_LIST; do
+        subsetname=$(echo $i | sed 's/\.\///g; s/\.txt//g')
+        number_of_occurrences=$(grep -o "\-" <<< cat $i | wc -l)
+        echo $number_of_occurrences > "$subsetname"_numCharsets.out
+		
+		cat ./"$subsetname"_numCharsets.out >> ./numCharsets/ALL_numCharsets.txt
+
+    done
+)
+mv ./*_numCharsets.out ./numCharsets/
+
+
+echo "INFO      | $(date) |          2. Calculating subsetLengths (alignment lengths in bp) for each subset in the scheme...  "
 	##--Now, we need a loop that will go into each subset file output from the preceding
-	##--loops ("p1.txt", "p2.txt", etc.) and split the charsets in each subset (file)
-	##--onto separate lines, and calculate the length of each charset (=locus), then
-	##--sum all the charset lengths (locus bp) to get the total length in bp for the
-	##--whole subset.
+	##--loops ("p1.txt", "p2.txt", etc.), split the charsets in each subset (file)
+	##--onto separate lines, calculate the length of each charset (=locus), then sum
+	##--all the charset lengths (locus bp) to get the total length in bp for the whole
+	##--subset.
 
 	##--One solution is to do the above easily by making and calling on an R script:
 	
-	##--Prep work: make file list, make output directory...
-	MY_SUBSET_FILE_LIST=$(echo ./p*.txt)
-	echo $MY_SUBSET_FILE_LIST | sed 's/\ /'$CR'/g'> ./subset_list.txt
-	mkdir "$MY_WORKING_DIR"/Routput/
+	##--Prep work: make output directory...
+	mkdir "$MY_WORKING_DIR"/subsetLengths/
 
 (
 	for i in $MY_SUBSET_FILE_LIST; do
@@ -88,7 +111,7 @@ echo "#!/usr/bin/env Rscript
 charsets_as_numbers <- c("$CHARSET_DUMP")
 out <- sum(abs(charsets_as_numbers)) + length(charsets_as_numbers)
 
-write.table(out, '"$MY_WORKING_DIR"/Routput/"$subsetname"_subsetLength.out', sep='\t', quote=F, row.names=F, col.names=F)
+write.table(out, '"$MY_WORKING_DIR"/subsetLengths/"$subsetname"_subsetLength.out', sep='\t', quote=F, row.names=F, col.names=F)
 
 " > ./GetSubsetLength.r
 
@@ -97,16 +120,38 @@ write.table(out, '"$MY_WORKING_DIR"/Routput/"$subsetname"_subsetLength.out', sep
 		chmod u+x ./GetSubsetLength.r
 		R CMD BATCH GetSubsetLength.R
 
-	rm ./Rinput.txt ./GetSubsetLength.r
+        rm ./Rinput.txt ./GetSubsetLength.r
+
+		cat ./subsetLengths/"$subsetname"_subsetLength.out >> ./subsetLengths/ALL_subsetLengths.txt
 
 	done
 )
 
-echo "Done calculating bp lengths of all subsets in your best PartitionFinder scheme. "
-echo "Bye."
+rm subsets.txt ./p*.txt   ##--Remove subset lists and individual subset files
+mv ./*.Rout ./subsetLengths/
+
+
+echo "INFO      | $(date) |          3. Extracting subsetModels (selected models of DNA sequence evolution) for each subset in the scheme...  "
+	grep -n "^[0-9]" ./best_scheme.txt > ./subset_mods_prep.txt
+	MY_SUBSET_MODELS_PREPPER=./subset_mods_prep.txt
+	sed 's/^[0-9:\ |]*//g; s/\ \ \ \ |\ p.*$//g' $MY_SUBSET_MODELS_PREPPER > ./subsetModels.txt
+	rm ./subset_mods_prep.txt
+
+
+echo "INFO      | $(date) |          4. Making file 'sumstats.txt' with subset summary statistics table...  "
+echo "###################### PartitionFinder Subsets Summary Statistics ########################
+Subset	numCharsets	subsetLength	subsetModel" > table_header.txt
+paste ./subset_names.txt **/ALL_numCharsets.txt **/ALL_subsetLengths.txt ./subsetModels.txt | column -s $'\t' -t > ./table.txt
+cat ./table_header.txt ./table.txt > ./sumstats.txt
+rm ./table_header.txt ./table.txt ./subset_names.txt ./subsetModels.txt
+
+
+echo "INFO      | $(date) | Done calculating summary statistics for subsets in your best PartitionFinder scheme. "
+echo "INFO      | $(date) | Bye. 
+"
 #
 #
 #
-echo "######################################### END ############################################"
+######################################### END ############################################
 
 exit 0
