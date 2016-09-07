@@ -27,34 +27,3 @@
 ##--Drummond et al. 2006, 2012.
 ##--Heled and Drummond 2010.
 ##--------------------------------------------------------------------------------------##
-#
-#
-#
-
-
-
-
-
-
-##--------------------------------------- README ---------------------------------------##
-##--THIS SCRIPT aids post-processing of *BEAST (Heled & Drummond 2010) output files by
-##--1) summarizing run and posterior distributions of parameters in LogAnalyser, then 2) 
-##--obtaining 5000 random post-burnin species trees and using them to create a maximum 
-##--clade credibility (MCC) tree annotated with posterior probabilities and divergence
-##--time estimates in TreeAnnotator. Thus, this code automates several common procedures
-##--and takes advantage of available utilities for post-processing that come with the
-##--BEAST (v1.8.3) distribution.
-#
-##--Of course, it is assumed the BEAST v1.8.3 (and probably other versions) is installed
-##--locally and that you have already placed the bin folder containing "loganalyser" and
-##--"treeannotator" executables in your path, or know the absolute path to these programs.
-#
-##--For interpreting files output by this script, please refer to the BEAST websites
-##--(.uk and http://beast2.org), published papers on the software (e.g. Drummond et al., 
-##--2012), manuals and other docs included in the BEAST distributions, and also tutorials 
-##--and comments on using BEAST on my website (http://www.justinbagley.org).
-#
-##--References:
-##--Heled and Drummond 2010.
-##--Drummond et al. 2012.
-##--------------------------------------------------------------------------------------##
