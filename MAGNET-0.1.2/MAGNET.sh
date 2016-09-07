@@ -4,12 +4,12 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                        MAGNET ~ MAny GeNE Trees v1.0, August 2016                      #
+#                     MAGNET ~ MAny GeNE Trees v0.1.2, September 2016                    #
 #   SHELL SCRIPT RUNNING THE MAGNET PIPELINE, WHICH AUTOMATES ESTIMATING ONE MAXIMUM-    #
 #   LIKELIHOOD (ML) GENE TREE IN RAxML FOR EACH OF MANY SNP LOCI (OR MULTILOCUS DATA)    #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: August 17, 2016. For questions, please email       #
+#   further information. Last update: September 7, 2016. For questions, please email     #
 #   jcbagley@unb.br.                                                                     #
 ##########################################################################################
 
@@ -83,7 +83,7 @@ MY_NEXUS="$1"
 
 echo "
 ##########################################################################################
-#                        MAGNET ~ MAny GeNE Trees v1.0, August 2016                      #
+#                     MAGNET ~ MAny GeNE Trees v0.1.2, September 2016                    #
 ##########################################################################################
 "
 
