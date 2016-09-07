@@ -5,7 +5,7 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                           PFSubsetSum v1.0, September 2016                             #
-#   SHELL SCRIPT FOR EXTRACTING SUMMARY STATISTICS FROM BEST PartitionFinder SCHEME      #
+#   SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FROM BEST PartitionFinder SCHEME     #
 #   SUBSETS                                                                              #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
