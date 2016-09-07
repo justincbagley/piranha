@@ -1,10 +1,10 @@
-# MAGNET (MAny GeNE Trees) :deciduous_tree::deciduous_tree::deciduous_tree:
+# MAGNET (MAny GeNE Trees) v0.1.2 :deciduous_tree::deciduous_tree::deciduous_tree:
 Shell script pipeline for inferring ML gene trees for many loci (e.g. genomic SNP data)
 
 LICENSE
 -------
 
-All code within the PIrANHA repository, including MAGNET pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA repository, including MAGNET v0.1.2 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 CITATION
 -------
@@ -45,7 +45,7 @@ HARDWARE AND SETUP
 SOFTWARE DEPENDENCIES
 -------
 
-MAGNET is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisk marks preceding those already included in the MAGNET distribution:
+MAGNET v0.1.2 is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisk marks preceding those already included in the MAGNET distribution:
 
 - Perl (available at: https://www.perl.org/get.html).
 - *Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
