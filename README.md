@@ -57,7 +57,7 @@ PIrANHA, and especially the MAGNET package within PIrANHA, relies on several sof
 - Python (available at: https://www.python.org/downloads/).
 - bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
 
-Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their local machine. For more details, see the MAGNET README.
+Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their local machine. For more details, see the [MAGNET README](https://github.com/justincbagley/MAGNET).
 
 ### Installation
 
