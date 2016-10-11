@@ -66,6 +66,19 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 ### Input and Output File Formats
 [under development.]
 
+- .partitions
+- .phy
+- .str
+- .gphocs
+- .nex
+- .trees
+- .species.trees
+- .log
+- .mle.log
+- Exabayes_topologies.\*
+- Exabayes_parameters.\*
+
+
 ### Phylogenetic Partitioning Scheme/Model Selection: pyRAD2PartitionFinder
 [under development.]
 
