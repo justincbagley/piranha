@@ -19,7 +19,9 @@ Alternatively, please provide the following link to this software repository in 
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-PIrANHA is a repository of shell scripts and code (e.g. R, Perl, and Python) designed to help automate (hence speed up) processing and analysis of multilocus or genome-scale DNA sequence data in phylogenetics and phylogeography projects. PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing different tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD, PartitionFinder, BEAST, *BEAST, ExaBayes, and fastSTRUCTURE. The current code also has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries, and 2) automating running these software programs on a remote supercomputer machine and retrieving and processing the results. Thus, whereas some PIrANHA scripts are written for use on the user's local machine (e.g. pyRAD2PartitionFinder.sh), others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE resource management systems (e.g. Super-pyRAD2PartitionFinder.sh; and hence the "Super" in the filename). 
+PIrANHA is a repository of shell scripts and code (e.g. R, Perl, and Python) designed to help automate processing and analysis of multilocus or genome-scale DNA sequence data in phylogenetics and phylogeography projects. PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD, PartitionFinder, BEAST, starBEAST, ExaBayes, and fastSTRUCTURE. I recently also added a draft script for processing PhyloMapper logfiles to extract information on the inferred ancestral geographic location. 
+
+The current code in PIrANH has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries, and 2) automating running these software programs on a remote supercomputer machine and retrieving and processing the results. Thus, whereas some PIrANHA scripts are written for use on the user's local machine (e.g. pyRAD2PartitionFinder.sh), others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE resource management systems (e.g. Super-pyRAD2PartitionFinder.sh; and hence the "Super" in the filename). 
 
 ### Distribution Structure and Pipelines
 
@@ -32,9 +34,12 @@ PIrANHA is a mixture of shell scripts and R scripts written by the author, as we
 
 PIrANHA facilitates analysis pipelines that could be of interest to nearly anyone conducting evolutionary analyses of DNA sequence data using recent maximum-likelihood and Bayesian methods. The figures below demonstrate flow and interactions of the current pipelines with **software** and **"file-types"** used to generate input for PIrANHA in the left column, and the way these are processed within/using PIrANHA illustrated in the right column. External software programs are shown in balloons with names in black italic font, while PIrANHA scripts are given in blue. Arrows show the flow of files through different pipelines, which terminate in results (shown right of final arrows at far right of each diagram).
 
-[ADD FIGURES HERE.]
+![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273172/e92c125a-8fa1-11e6-9985-89739f33d932.png)
+**Figure 1**
 
-*Figures 1 and 2.*
+![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273268/419f0b0e-8fa2-11e6-9bfe-9f71670d16bb.png)
+**Figure 2**
+
 
 ## Getting Started
 
@@ -73,5 +78,5 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 [add.]
 
 
-August 17, 2016
+October 11, 2016
 Justin C. Bagley, Brasília, DF, Brazil
