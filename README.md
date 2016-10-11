@@ -74,7 +74,7 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 
 ## Acknowledgments
 
-\* Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA.
+\*Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA.
 
 ## References
 
