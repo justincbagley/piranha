@@ -80,10 +80,10 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 
 
 ### Phylogenetic Partitioning Scheme/Model Selection: pyRAD2PartitionFinder
-[under development.]
+Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (in code; a README is coming soon). [This description is under development.]
 
 ### Estimating Gene Trees for Species Tree Inference: MAGNET (MAny GeNE Trees) Package
-[under development.]
+Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package/Repository. [This description is under development.]
 
 ## Acknowledgments
 
