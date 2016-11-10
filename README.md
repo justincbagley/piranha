@@ -1,13 +1,13 @@
-#  PIrANHA (*P*hylogenet*I*cs *AN*d p*H*ylogeogr*A*phy)
+#  PIrANHA (*P*hylogenet*I*cs *AN*d p*H*ylogeogr*A*phy) v0.1.3
 Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 ## License
 
-All code within the PIrANHA repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA v0.1.3 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## Citation
 
-If you use scripts from this repository as part of your published research, I require that you cite the repository as follows (I will put everything in Zenodo and get doi's in the near future): 
+If you use scripts from this repository as part of your published research, I require that you cite the repository as follows (also see DOI information below): 
   
 - Bagley, J.C. 2016. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
@@ -15,11 +15,19 @@ Alternatively, please provide the following link to this software repository in 
 
 - https://github.com/justincbagley/PIrANHA
 
+## DOI
+
+The DOI for PIrANHA, via Zenodo, is as follows:  XXXXXXX. Here are some examples of citing PIrANHA using the DOI: 
+  
+  Bagley, J.C. 2016. PIrANHA. GitHub package, Available at: http://doi.org/10.5281/zenodo.166024.
+
+  Bagley, J.C. 2016. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.166024.  
+
 ## Introduction
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-PIrANHA is a repository of shell scripts and code (e.g. R, Perl, and Python) designed to help automate processing and analysis of multilocus or genome-scale DNA sequence data in phylogenetics and phylogeography projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2006, 2012), starBEAST (Heled & Drummond 2010), ExaBayes, and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper logfiles to extract information on the inferred ancestral geographic location. 
+PIrANHA v0.1.3 is a repository of shell scripts and code (e.g. R, Perl, and Python) designed to help automate processing and analysis of multilocus or genome-scale DNA sequence data in phylogenetics and phylogeography projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2006, 2012), starBEAST (Heled & Drummond 2010), ExaBayes, and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper logfiles to extract information on the inferred ancestral geographic location. 
 
 The current code in PIrANH has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on a remote supercomputer machine and retrieving and processing the results. Thus, whereas some PIrANHA scripts are written for use on the user's local machine (e.g. pyRAD2PartitionFinder.sh), others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE resource management systems (e.g. Super-pyRAD2PartitionFinder.sh; and hence the "Super" in the filename). 
 
@@ -27,8 +35,11 @@ The current code in PIrANH has been written largely with a focus on 1) analyses 
 
 *What is in PIrANHA?*
 
-PIrANHA is a mixture of shell scripts and R scripts written by the author, as well as Perl or Python code from other workers. Here is a slide showing the main files in the repository to-date:
-[ADD FIGURE HERE.]
+PIrANHA is a mixture of shell scripts and R scripts written by the author, as well as Perl or Python code from other workers. This repository lists the files and folders within PIrANHA above. 
+
+**What's new in this release?** 
+
+The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner' shell script for automating the uploading and submission (hence running) of multiple BEAST XML input files to BEAST1 or BEAST2 on a supercomputing cluster using SLURM resource management.
 
 *What is possible with PIrANHA?* *Who cares?*
 
@@ -99,5 +110,5 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
 
-October 11, 2016
-Justin C. Bagley, Brasília, DF, Brazil
+November 10, 2016
+Justin C. Bagley, Tuscaloosa, AL, USA
