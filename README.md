@@ -43,6 +43,8 @@ The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner' shell script f
 
 *What is possible with PIrANHA?* *Who cares?*
 
+**How PIrANHA scripts work together**
+
 PIrANHA facilitates analysis pipelines that could be of interest to nearly anyone conducting evolutionary analyses of DNA sequence data using recent maximum-likelihood and Bayesian methods. **Figure 1** and **Figure 2** below demonstrate flow and interactions of the current pipelines with **software** and **"file-types"** used to generate input for PIrANHA in the left column, and the way these are processed within/using PIrANHA illustrated in the right column. External software programs are shown in balloons with names in black italic font, while PIrANHA scripts are given in blue. Arrows show the flow of files through different pipelines, which terminate in results (shown right of final arrows at far right of each diagram).
 
 ![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273172/e92c125a-8fa1-11e6-9985-89739f33d932.png)
