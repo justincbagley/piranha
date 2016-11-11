@@ -93,7 +93,7 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 | Exabayes_topologies.\* | ExaBayes                          |
 | Exabayes_parameters.\* | ExaBayes                          |
 
-Output file types: various text, PDF, and other graphical output from software that are linked through PIrANHA pipelines.
+*Output file types*: various text, PDF, and other graphical output from software that are linked through PIrANHA pipelines.
 
 ### Phylogenetic Partitioning Scheme/Model Selection: pyRAD2PartitionFinder
 Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (in code; a README is coming soon). [This description is under development.]
