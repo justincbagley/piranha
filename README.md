@@ -101,6 +101,9 @@ Shell script for going directly from pyRAD output (de novo-assembled loci) to in
 ### Estimating Gene Trees for Species Tree Inference: MAGNET (MAny GeNE Trees) Package
 Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package/Repository. [This description is under development.]
 
+### Automating Bayesian evolutionary analyses in BEAST: use BEASTRunner
+[BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2006; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
+
 ## Acknowledgments
 
 \*Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA.
