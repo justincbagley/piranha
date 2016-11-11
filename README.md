@@ -79,7 +79,7 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 ### Input and Output File Formats
 
 | Input file types       | Software (from)                   |
-| ---------------------- |-----------------------------------|
+| :--------------------- |:----------------------------------|
 | .partitions            | pyRAD                             |
 | .phy                   | pyRAD (or by hand)                |
 | .str                   | pyRAD                             |
