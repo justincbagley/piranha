@@ -102,6 +102,7 @@ module load beagle/2.1.2
 module load jdk/1.8.0-60
 
 java -Xmx5120M -jar /fslhome/bagle004/compute/BEAST_v2.4.2_linux/lib/beast.jar -beagle_sse -seed $(python -c "import random; print random.randint(10000,100000000000)") -beagle_GPU ${i} > ${i}.out
+## __PATH NEEDED__: User must change the fourth element of the above line to indicate the absolute path to the working version of beast.jar that the user has access to on the supercomputer.
 
 ##--Uncomment next five lines if you are running your xml in BEAST v2.3.1:
 #module purge
@@ -113,6 +114,7 @@ java -Xmx5120M -jar /fslhome/bagle004/compute/BEAST_v2.4.2_linux/lib/beast.jar -
 ##--Uncomment next lines if you are running your xml in BEAST v1.8.3:
 #module load beagle/2.1.2
 #java -Xmx5120M -jar /fslhome/bagle004/compute/BEASTv1.8.3_linux/lib/beast.jar -beagle_sse -seed $(python -c "import random; print random.randint(10000,100000000000)") -beagle_GPU ${i} > ${i}.out
+## __PATH NEEDED__: User must change the fourth element of the above line to indicate the absolute path to the working version of beast.jar that the user has access to on the supercomputer.
 
 ##--Uncomment next five lines if you want to run your xml in BEAST v1.8.0:
 #module purge
@@ -198,12 +200,11 @@ echo "INFO      | $(date) | STEP #4: SUBMIT ALL JOBS TO THE QUEUE. "
 ssh $MY_SSH_ACCOUNT '
 cd /bluehome3/bagle004/compute/BEASTRunner_TESTS/
 ## __PATH NEEDED__: User must change the above line to indicate the absolute path to the same folder that the $MY_SC_DESTINATION environmental variable points to (pulled from 'destination_path' in the cfg file during STEP #1 above).
-
 chmod u+x beastrunner_batch_qsub.sh
 ./beastrunner_batch_qsub.sh
-
 exit
 '
+
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting BEAST jobs to queue!!"
 
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
