@@ -39,7 +39,7 @@ PIrANHA is a mixture of shell scripts and R scripts written by the author, as we
 
 **What's new in this release?** 
 
-The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner' shell script for automating the uploading and submission (hence running) of multiple BEAST XML input files to BEAST1 or BEAST2 on a supercomputing cluster using SLURM resource management.
+The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a supercomputing cluster that uses SLURM resource management.
 
 *What is possible with PIrANHA?* *Who cares?*
 
@@ -77,20 +77,23 @@ Users must install all software not included in PIrANHA, and ensure that it is a
 As PIrANHA is primarily composed of shell scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities (the latter of which are typically Linux-based). As a result, there is no installation protocol for PIrANHA. It should run "out-of-the-box" from most any folder on your machine.
 
 ### Input and Output File Formats
-[under development.]
 
-- .partitions
-- .phy
-- .str
-- .gphocs
-- .nex
-- .trees
-- .species.trees
-- .log
-- .mle.log
-- Exabayes_topologies.\*
-- Exabayes_parameters.\*
+| Input file types         | Software (from)                  |
+| ------------------------ |----------------------------------|
+| - .partitions            | pyRAD                            |
+| - .phy                   | pyRAD (or by hand)               |
+| - .str                   | pyRAD                            |
+| - .gphocs                | pyRAD (or MAGNET/NEXUS2gphocs.sh)|
+| - .nex                   | pyRAD (or by hand)               |
+| - .trees                 | BEAST                            |
+| - .species.trees         | BEAST                            |
+| - .log                   | BEAST                            |
+| - .mle.log               | BEAST                            |
+| - .xml                   | BEAUti                           |
+| - Exabayes_topologies.\* | ExaBayes                         |
+| - Exabayes_parameters.\* | ExaBayes                         |
 
+Output file types: various text, PDF, and other graphical output from software that are linked through PIrANHA pipelines.
 
 ### Phylogenetic Partitioning Scheme/Model Selection: pyRAD2PartitionFinder
 Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (in code; a README is coming soon). [This description is under development.]
