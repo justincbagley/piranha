@@ -15,6 +15,17 @@
 ##--working directory on the supercomputer; 4) execute the batch submission file on the
 ##--supercomputer so that all jobs are submitted to the supercomputer queue.
 #
+##--Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is
+##--used by BEASTRunner.sh is fed to the program by culling the data from an external
+##--configuration file, named "beast_runner.cfg". There are six entries that users
+##--can supply in this file. However, three of these are essential for running BEAST
+##--using the BEASTRunner script, including: ssh user account info, the path to the parent 
+##--directory for BEAST runs on the supercomputer, and the user's email address. Users
+##--must fill this information in and save a new version of the .cfg file in the 
+##--working directory on their local machine prior to calling the program. Only then
+##--can the user call the program by opening a terminal window, typing "./BEASTRunner.sh",
+##--and pressing return.
+#
 ##--It is assumed that BEAST1 (e.g. v1.8.3) or BEAST2 (e.g. 2.4.2) is installed on the
 ##--supercomputer, and that the user can provide absolute paths to the software. During  
 ##--generation of the BEAST submission scripts (STEP #2 above), there are options within
