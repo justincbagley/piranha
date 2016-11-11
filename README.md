@@ -78,20 +78,20 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 
 ### Input and Output File Formats
 
-| Input file types         | Software (from)                  |
-| ------------------------ |----------------------------------|
-| - .partitions            | pyRAD                            |
-| - .phy                   | pyRAD (or by hand)               |
-| - .str                   | pyRAD                            |
-| - .gphocs                | pyRAD (or MAGNET/NEXUS2gphocs.sh)|
-| - .nex                   | pyRAD (or by hand)               |
-| - .trees                 | BEAST                            |
-| - .species.trees         | BEAST                            |
-| - .log                   | BEAST                            |
-| - .mle.log               | BEAST                            |
-| - .xml                   | BEAUti                           |
-| - Exabayes_topologies.\* | ExaBayes                         |
-| - Exabayes_parameters.\* | ExaBayes                         |
+| Input file types       | Software (from)                   |
+| ---------------------- |-----------------------------------|
+| .partitions            | pyRAD                             |
+| .phy                   | pyRAD (or by hand)                |
+| .str                   | pyRAD                             |
+| .gphocs                | pyRAD (or MAGNET/NEXUS2gphocs.sh) |
+| .nex                   | pyRAD (or by hand)                |
+| .trees                 | BEAST                             |
+| .species.trees         | BEAST                             |
+| .log                   | BEAST                             |
+| .mle.log               | BEAST                             |
+| .xml                   | BEAUti                            |
+| Exabayes_topologies.\* | ExaBayes                          |
+| Exabayes_parameters.\* | ExaBayes                          |
 
 Output file types: various text, PDF, and other graphical output from software that are linked through PIrANHA pipelines.
 
