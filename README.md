@@ -1,11 +1,11 @@
 #  PIrANHA (*P*hylogenet*I*cs *AN*d p*H*ylogeogr*A*phy) v0.1.3
 Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
-## License
+## LICENSE
 
 All code within the PIrANHA v0.1.3 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
-## Citation
+## CITATION
 
 If you use scripts from this repository as part of your published research, I require that you cite the repository as follows (also see DOI information below): 
   
@@ -23,15 +23,15 @@ The DOI for PIrANHA, via Zenodo, is as follows:  [![DOI](https://zenodo.org/badg
 
   Bagley, J.C. 2016. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.166309.  
 
-## Introduction
+## INTRODUCTION
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
 PIrANHA v0.1.3 is a repository of shell scripts and code (e.g. R, Perl, and Python) designed to help automate processing and analysis of multilocus or genome-scale DNA sequence data in phylogenetics and phylogeography projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2006, 2012), starBEAST (Heled & Drummond 2010), ExaBayes, and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper logfiles to extract information on the inferred ancestral geographic location. 
 
-The current code in PIrANH has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on a remote supercomputer machine and retrieving and processing the results. Thus, whereas some PIrANHA scripts are written for use on the user's local machine (e.g. pyRAD2PartitionFinder.sh), others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE resource management systems (e.g. Super-pyRAD2PartitionFinder.sh; and hence the "Super" in the filename). 
+The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on a remote supercomputer machine and retrieving and processing the results. Thus, whereas some PIrANHA scripts are written for use on the user's local machine, including [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts, others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
 
-### Distribution Structure and Pipelines
+### DISTRIBUTION STRUCTURE AND PIPELINES
 
 *What is in PIrANHA?*
 
@@ -39,7 +39,7 @@ PIrANHA is a mixture of shell scripts and R scripts written by the author, as we
 
 **What's new in this release?** 
 
-The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a supercomputing cluster that uses SLURM resource management.
+The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a remote supercomputing cluster.
 
 *What is possible with PIrANHA?* *Who cares?*
 
@@ -54,17 +54,17 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 **Figure 2**
 
 
-## Getting Started
+## GETTING STARTED
 
 ### Dependencies
 
-PIrANHA, and especially the MAGNET package within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; howere, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET distribution:
+PIrANHA, and especially the MAGNET package within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
 
 - PartitionFinder
 - BEAST v1.8.3 and v2.4.2
 	* default BEAST packages required
 - ExaBayes
-- RAxML, installed and running on remote supercomputer (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
+- RAxML, installed and running on local machine and/or remote supercomputer (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
 - Perl (available at: https://www.perl.org/get.html).
 - \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
 - Python (available at: https://www.python.org/downloads/).
@@ -104,11 +104,11 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 ### Automating Bayesian evolutionary analyses in BEAST: use BEASTRunner
 [BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2006; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
 
-## Acknowledgments
+## ACKNOWLEDGMENTS
 
 \*Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA.
 
-## References
+## REFERENCES
 
 - Avise JC (2000) Phylogeography: the history and formation of species. Cambridge, MA: Harvard University Press.
 - Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. Bioinformatics, 30, 1844-1849.
@@ -118,5 +118,5 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
 
-November 10, 2016
+November 11, 2016
 Justin C. Bagley, Tuscaloosa, AL, USA
