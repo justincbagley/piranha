@@ -128,5 +128,9 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
 
+## RECOMMENDED READING
+- Unix shell background info [here](https://www.gnu.org/software/bash/), [here](https://en.wikipedia.org/wiki/Bash_(Unix_shell)), [here](http://askubuntu.com/questions/141928/what-is-difference-between-bin-sh-and-bin-bash), and [here](http://www.computerworld.com.au/article/222764/).
+- GNU [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.pdf)
+
 November 13, 2016
 Justin C. Bagley, Tuscaloosa, AL, USA
