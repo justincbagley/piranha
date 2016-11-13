@@ -57,7 +57,7 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 PIrANHA, and especially the MAGNET package within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
 
 - PartitionFinder
-- BEAST v1.8.3 and v2.4.2
+- BEAST v1.8.3 and v2.4.2 (or newer)
 	* default BEAST packages required
 - ExaBayes
 - RAxML, installed and running on local machine and/or remote supercomputer (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
@@ -70,11 +70,13 @@ Users must install all software not included in PIrANHA, and ensure that it is a
 
 ### Installation
 
-As PIrANHA is primarily composed of UNIX shell scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for PIrANHA, because these systems come with the shell preinstalled; thus PIrANHA should run "out-of-the-box" from most any folder on your machine.
+:computer: As PIrANHA is primarily composed of UNIX shell scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for PIrANHA, because these systems come with the shell preinstalled; thus PIrANHA should run "out-of-the-box" from most any folder on your machine.
 
 ### IMPORTANT! - Passwordless SSH Access
 
-PIrANHA largely focuses on allowing users with access to a remote supercomputing cluster to take advantage of that resource in an automated fashion. Thus, it is implicitly assumed in most scripts and documentation that the user has set up passowordless ssh access to a supercomputer account. If you have not done this, or are unsure about this, then you should set up passwordless acces by creating and organizing appropriate and secure public and private ssh keys on your machine and the remote supercomputer prior to using PIrANHA. By "secure," I mean that, during this process, you should have closed write privledges to authorized keys by typing "chmod u-w authorized keys" after setting things up using ssh-keygen. Setting up passwordless SSH access is **VERY IMPORTANT** as PIrANHA scripts and pipelines will not work without setting this up first. 
+:exclamation: PIrANHA largely focuses on allowing users with access to a remote supercomputing cluster to take advantage of that resource in an automated fashion. Thus, it is implicitly assumed in most scripts and documentation that the user has set up passowordless ssh access to a supercomputer account. 
+
+:hand: If you have not done this, or are unsure about this, then you should set up passwordless acces by creating and organizing appropriate and secure public and private ssh keys on your machine and the remote supercomputer prior to using PIrANHA. By "secure," I mean that, during this process, you should have closed write privledges to authorized keys by typing "chmod u-w authorized keys" after setting things up using ssh-keygen. Setting up passwordless SSH access is **VERY IMPORTANT** as PIrANHA scripts and pipelines will not work without setting this up first. 
 
 The following links provide useful tutorials/discussions that can help users set up passwordless SSH access:
 
