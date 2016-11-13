@@ -54,7 +54,7 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 
 ### Dependencies
 
-PIrANHA, and especially the MAGNET package within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
+PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3)) package within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
 
 - PartitionFinder
 - BEAST v1.8.3 and v2.4.2 (or newer)
@@ -66,7 +66,7 @@ PIrANHA, and especially the MAGNET package within PIrANHA, relies on several sof
 - Python (available at: https://www.python.org/downloads/).
 - bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
 
-Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their supercomputer and/or local machine. For more details, see the [MAGNET README](https://github.com/justincbagley/MAGNET).
+Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their supercomputer and/or local machine. For more details, see the MAGNET README.
 
 ### Installation
 
