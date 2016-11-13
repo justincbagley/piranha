@@ -17,7 +17,7 @@ Alternatively, please provide the following link to this software repository in 
 
 ## DOI
 
-The DOI for PIrANHA, via Zenodo, is as follows:  [![DOI](https://zenodo.org/badge/64274217.svg)](https://zenodo.org/badge/latestdoi/64274217). Here are some examples of citing PIrANHA using the DOI: 
+The DOI for PIrANHA, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](https://zenodo.org/badge/64274217.svg)](https://zenodo.org/badge/latestdoi/64274217). Here are some examples of citing PIrANHA using the DOI: 
   
   Bagley, J.C. 2016. PIrANHA. GitHub package, Available at: http://doi.org/10.5281/zenodo.166309.
 
@@ -27,25 +27,21 @@ The DOI for PIrANHA, via Zenodo, is as follows:  [![DOI](https://zenodo.org/badg
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-PIrANHA v0.1.3 is a repository of shell scripts and code (e.g. R, Perl, and Python) designed to help automate processing and analysis of multilocus or genome-scale DNA sequence data in phylogenetics and phylogeography projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2006, 2012), starBEAST (Heled & Drummond 2010), ExaBayes, and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper logfiles to extract information on the inferred ancestral geographic location. 
+PIrANHA v0.1.3 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2006, 2012), starBEAST (Heled & Drummond 2010), ExaBayes, and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper logfiles to extract information on the inferred ancestral geographic location(s). 
 
-The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on a remote supercomputer machine and retrieving and processing the results. Thus, whereas some PIrANHA scripts are written for use on the user's local machine, including [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts, others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
+The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on a remote supercomputer machine, and then retrieving and processing the results. Whereas some PIrANHA scripts are written for use on the user's local machine, including the [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts, others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
 
-### DISTRIBUTION STRUCTURE AND PIPELINES
-
-*What is in PIrANHA?*
-
-PIrANHA is a mixture of shell scripts and R scripts written by the author, as well as Perl or Python code from other workers. This repository lists the files and folders within PIrANHA above. 
+### Distribution Structure and Pipelines
 
 **What's new in this release?** 
 
-The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a remote supercomputing cluster.
+The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a remote supercomputing cluster. 
 
 *What is possible with PIrANHA?* *Who cares?*
 
 **How PIrANHA scripts work together**
 
-PIrANHA facilitates analysis pipelines that could be of interest to nearly anyone conducting evolutionary analyses of DNA sequence data using recent maximum-likelihood and Bayesian methods. **Figure 1** and **Figure 2** below demonstrate flow and interactions of the current pipelines with **software** and **"file-types"** used to generate input for PIrANHA in the left column, and the way these are processed within/using PIrANHA illustrated in the right column. External software programs are shown in balloons with names in black italic font, while PIrANHA scripts are given in blue. Arrows show the flow of files through different pipelines, which terminate in results (shown right of final arrows at far right of each diagram).
+PIrANHA facilitates analysis pipelines that could be of interest to nearly anyone conducting evolutionary analyses of DNA sequence data using maximum-likelihood and Bayesian methods. **Figure 1** and **Figure 2** below demonstrate flow and interactions of the current pipelines with **software** and **"file types"** used to generate input for PIrANHA in the left column, and the way these are processed within/using PIrANHA illustrated in the right column. External software programs are shown in balloons with names in black italic font, while PIrANHA scripts are given in blue. Arrows show the flow of files through different pipelines, which terminate in results (shown right of final arrows at far right of each diagram).
 
 ![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273172/e92c125a-8fa1-11e6-9985-89739f33d932.png)
 **Figure 1**
@@ -70,11 +66,23 @@ PIrANHA, and especially the MAGNET package within PIrANHA, relies on several sof
 - Python (available at: https://www.python.org/downloads/).
 - bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
 
-Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their local machine. For more details, see the [MAGNET README](https://github.com/justincbagley/MAGNET).
+Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their supercomputer and local machine. For more details, see the [MAGNET README](https://github.com/justincbagley/MAGNET).
 
 ### Installation
 
 As PIrANHA is primarily composed of shell scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities (the latter of which are typically Linux-based). As a result, there is no installation protocol for PIrANHA. It should run "out-of-the-box" from most any folder on your machine.
+
+### IMPORTANT! - Passwordless SSH Access
+
+PIrANHA largely focuses on allowing users with access to a remote supercomputing cluster to take advantage of that resource in an automated fashion. Thus, it is implicitly assumed in most scripts and documentation that the user has set up passowordless ssh access to a supercomputer account. If you have not done this, or you are unsure about this, then prior to using PIrANHA, you should set up passwordless acces by creating and organizing appropriate and secure public and private ssh keys on your machine and the remote supercomputer. By "secure," I mean that, during this process, you should have closed write privledges to authorized keys by typing "chmod u-w authorized keys" after setting things up using ssh-keygen. This is **VERY IMPORTANT** as the MAGNET pipeline will not work without setting this up first. 
+
+The following links provide useful tutorials/discussions that can help users set up passwordless ssh access:
+
+- http://www.linuxproblem.org/art_9.html
+- http://www.macworld.co.uk/how-to/mac-software/how-generate-ssh-keys-3521606/
+- https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/  (preferred tutorial)
+- https://coolestguidesontheplanet.com/make-an-alias-in-bash-shell-in-os-x-terminal/  (needed to complete preceding tutorial)
+- http://unix.stackexchange.com/questions/187339/spawn-command-not-found
 
 ### Input and Output File Formats
 
@@ -96,10 +104,10 @@ As PIrANHA is primarily composed of shell scripts, it is well suited for running
 *Output file types*: various text, PDF, and other graphical output from software that are linked through PIrANHA pipelines.
 
 ### Phylogenetic Partitioning Scheme/Model Selection: pyRAD2PartitionFinder
-Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (in code; a README is coming soon). [This description is under development.]
+Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (in code; a README is coming soon).
 
 ### Estimating Gene Trees for Species Tree Inference: MAGNET (MAny GeNE Trees) Package
-Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package/Repository. [This description is under development.]
+Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package/Repository.
 
 ### Automating Bayesian evolutionary analyses in BEAST: use BEASTRunner
 [BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2006; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
@@ -118,5 +126,5 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
 
-November 11, 2016
+November 13, 2016
 Justin C. Bagley, Tuscaloosa, AL, USA
