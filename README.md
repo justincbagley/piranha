@@ -62,7 +62,7 @@ PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbag
 - ExaBayes (available at: http://sco.h-its.org/exelixis/web/software/exabayes/)
 - RAxML (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
 - Perl (available at: https://www.perl.org/get.html).
-- \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
+- \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html; note: some, but not all of these, come packaged within MAGNET).
 - Python (available at: https://www.python.org/downloads/).
 - bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
 
@@ -105,13 +105,17 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 | Exabayes_topologies.\* | ExaBayes                          |
 | Exabayes_parameters.\* | ExaBayes                          |
 
-### Phylogenetic Partitioning Scheme/Model Selection: pyRAD2PartitionFinder
+### :construction: _NOTE: The following 'Getting Started' content is Under Construction!_ :construction:
+### Phylogenetic Partitioning Scheme/Model Selection
+#### _pyRAD2PartitionFinder_
 Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (in code; a README is coming soon).
 
-### Estimating Gene Trees for Species Tree Inference: MAGNET (MAny GeNE Trees) Package
+### Estimating Gene Trees for Species Tree Inference
+#### _MAGNET (MAny GeNE Trees) Package_
 Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package/Repository.
 
-### Automating Bayesian evolutionary analyses in BEAST: use BEASTRunner
+### Automating Bayesian evolutionary analyses in BEAST
+#### _BEASTRunner_
 [BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2006; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
 
 ## ACKNOWLEDGMENTS
