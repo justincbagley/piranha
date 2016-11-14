@@ -1,6 +1,6 @@
 ##--------------------------------------- README ---------------------------------------##
 ##--THIS SCRIPT automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al.
-##--2006; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that
+##--2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that
 ##--uses SLURM resource management with PBS wrappers, or a PBS resource management system.
 #
 ##--The code starts from a single working directory on the user's local machine, which
@@ -67,9 +67,11 @@
 ##--   the code to accomodate both TORQUE/PBS resource management and SLURM Workload
 ##--   Manager, so that you can simply direct the script to use one or the other. 
 #
-##--References:
-##--Drummond et al. 2006.
-##--Bouckaert et al. 2014.
+##--REFERENCES:
+##--Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond AJ 
+##--(2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS Computational 
+##--Biology, 10, e1003537.
+#
+##--Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and the 
+##--BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 ##--------------------------------------------------------------------------------------##
-#
-#
