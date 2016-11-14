@@ -57,16 +57,16 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3)) package within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
 
 - PartitionFinder
-- BEAST v1.8.3 and v2.4.2 (or newer)
+- BEAST v1.8.3 and v2.4.2 (or newer; available at: http://beast.bio.ed.ac.uk/downloads and http://beast2.org, respectively)
 	* default BEAST packages required
-- ExaBayes
-- RAxML, installed and running on local machine and/or remote supercomputer (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
+- ExaBayes (available at: http://sco.h-its.org/exelixis/web/software/exabayes/)
+- RAxML (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
 - Perl (available at: https://www.perl.org/get.html).
 - \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
 - Python (available at: https://www.python.org/downloads/).
 - bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
 
-Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their supercomputer and/or local machine. For more details, see the MAGNET README.
+Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their supercomputer and/or local machine (best practice is to simply install all software in both places). For more details, see the MAGNET README.
 
 ### Installation
 
