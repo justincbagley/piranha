@@ -1,7 +1,10 @@
 #!/bin/sh
 
 ##########################################################################################
-# <><PIrANHA              pyRAD2PartitionFinder v1.0, July 2016                          #
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                         pyRAD2PartitionFinder v1.0, July 2016                          #
 #   SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD     #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
