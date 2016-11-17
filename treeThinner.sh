@@ -31,6 +31,7 @@ echo "
 
 ### STEP #1:
 read -p "Please enter the name of your MrBayes .t trees file : " MY_TFILE
+read -p "Please enter the frequency (n) of nth lines that you would like to keep : " NTH_LINES
 
 calc () {												## Make the "handy bash function 'calc'" for subsequent use.
    	bc -l <<< "$@"
