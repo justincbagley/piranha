@@ -138,5 +138,10 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 - Unix shell background info [here](https://www.gnu.org/software/bash/), [here](https://en.wikipedia.org/wiki/Bash_(Unix_shell)), [here](http://askubuntu.com/questions/141928/what-is-difference-between-bin-sh-and-bin-bash), and [here](http://www.computerworld.com.au/article/222764/).
 - GNU [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.pdf)
 
-November 13, 2016
+## TODO
+- Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in Super-pyRAD2PartitionFinder.sh, BEASTRunner.sh, BEASTPostProc.sh, and RAxMLRunner.sh)
+- Make pyrad and ipyrad batch run scripts available
+- Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
+
+November 17, 2016
 Justin C. Bagley, Tuscaloosa, AL, USA
