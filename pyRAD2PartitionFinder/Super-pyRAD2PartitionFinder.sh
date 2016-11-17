@@ -1,7 +1,10 @@
 #!/bin/bash
 
 ##########################################################################################
-# <><PIrANHA           Super-pyRAD2PartitionFinder v1.0, July 2016                       #
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                      Super-pyRAD2PartitionFinder v1.0, July 2016                       #
 #   SHELL SCRIPT FOR RUNNING SNP DATA IN PartitionFinder ON BYU FSL CLUSTER MARYLOU      #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
