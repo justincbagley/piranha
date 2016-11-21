@@ -80,6 +80,7 @@ if [ -f ./raxmlrunner_sbatch_sub.sh ]; then
     echo "INFO      | $(date) |          Batch queue submission file ("raxmlrunner_sbatch_sub.sh") successfully created. "
 else
     echo "INFO      | $(date) |          Something went wrong. Batch queue submission file ("raxmlrunner_sbatch_sub.sh") not created. "
+    exit
 fi
 
 echo "INFO      | $(date) | STEP #3: MOVE BATCH SUBMISSION FILE TO SUPERCOMPUTER. "
