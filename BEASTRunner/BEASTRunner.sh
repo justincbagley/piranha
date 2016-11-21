@@ -182,6 +182,14 @@ exit 0
 " > batch_qsub_bottom.txt
 cat batch_qsub_top.txt cd_and_qsub_commands.txt batch_qsub_bottom.txt > beastrunner_batch_qsub.sh
 
+##--More flow control. Check to make sure batch_qsub.sh file was successfully created.
+if [ -f ./beastrunner_batch_qsub.sh ]; then
+    echo "INFO      | $(date) |          Batch queue submission file ("beastrunner_batch_qsub.sh") successfully created. "
+else
+    echo "INFO      | $(date) |          Something went wrong. Batch queue submission file ("beastrunner_batch_qsub.sh") not created. "
+    exit
+fi
+
 echo "INFO      | $(date) |          Also copying configuration file to supercomputer..."
 scp ./beast_runner.cfg $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
 
