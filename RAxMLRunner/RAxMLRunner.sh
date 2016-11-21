@@ -101,7 +101,7 @@ echo "INFO      | $(date) | STEP #4: SUBMIT ALL JOBS TO THE QUEUE. "
 
 ssh $MY_SSH_ACCOUNT '
 cd ADD_PATH_TO_SC_DESTINATION_HERE
-## __PATH NEEDED__: User must change the above line to indicate the absolute path to the same folder that the $MY_SC_DESTINATION environmental variable points to (pulled from 'destination_path' in the cfg file during STEP #1 above).
+## __PATH NEEDED__: User must change the above line to indicate the absolute path to the same folder that the $MY_SC_DESTINATION environmental variable points to (pulled from 'destination_path' in the cfg file during STEP #1 above). This path must also end with a forward slash.
 chmod u+x raxmlrunner_sbatch_sub.sh
 ./raxmlrunner_sbatch_sub.sh
 exit
