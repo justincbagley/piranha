@@ -15,7 +15,8 @@
 echo "
 ##########################################################################################
 #                      ExaBayesPostProc v1.1, September 2016                             #
-##########################################################################################"
+##########################################################################################
+"
 
 echo "INFO      | $(date) | STEP #1: CALL PROGRAMS TO DO ExaBayes POST-PROCESSING. "
 	MY_EXABAYES_TREEFILES=./ExaBayes_topologies.*	## Assign "topologies" files in current directory to variable.
