@@ -15,8 +15,7 @@
 echo "
 ##########################################################################################
 #                         pyRAD2PartitionFinder v1.0, July 2016                          #
-##########################################################################################
-"
+##########################################################################################"
 
 ############ STEP #1: MODIFY pyRAD DATAFILE FOR PartitionFinder
 MY_PYRAD_PARTITION=./*.partitions           				## Assign "partition" files in current directory to variable.
