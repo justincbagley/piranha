@@ -212,6 +212,7 @@ rm ./batch_qsub_top.txt
 rm ./cd_and_qsub_commands.txt
 rm ./batch_qsub_bottom.txt
 rm ./beastrunner_batch_qsub.sh
+
 echo "INFO      | $(date) |          Bye."
 
 #
