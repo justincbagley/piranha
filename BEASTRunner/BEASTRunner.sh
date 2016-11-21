@@ -186,7 +186,7 @@ cat batch_qsub_top.txt cd_and_qsub_commands.txt batch_qsub_bottom.txt > beastrun
 if [ -f ./beastrunner_batch_qsub.sh ]; then
     echo "INFO      | $(date) |          Batch queue submission file ("beastrunner_batch_qsub.sh") successfully created. "
 else
-    echo "INFO      | $(date) |          Something went wrong. Batch queue submission file ("beastrunner_batch_qsub.sh") not created. "
+    echo "WARNING!  | $(date) |          Something went wrong. Batch queue submission file ("beastrunner_batch_qsub.sh") not created. Exiting... "
     exit
 fi
 
