@@ -79,7 +79,7 @@ cat sbatch_sub_top.txt cd_and_sbatch_commands.txt sbatch_sub_bottom.txt > raxmlr
 if [ -f ./raxmlrunner_sbatch_sub.sh ]; then
     echo "INFO      | $(date) |          Batch queue submission file ("raxmlrunner_sbatch_sub.sh") successfully created. "
 else
-    echo "INFO      | $(date) |          Something went wrong. Batch queue submission file ("raxmlrunner_sbatch_sub.sh") not created. "
+    echo "WARNING!  | $(date) |          Something went wrong. Batch queue submission file ("raxmlrunner_sbatch_sub.sh") not created. Exiting... "
     exit
 fi
 
