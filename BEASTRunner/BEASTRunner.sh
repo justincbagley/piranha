@@ -24,25 +24,25 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES, MAKE 4 COPIES PER INPUT XM
 FOR A TOTAL OF FIVE RUNS OF EACH MODEL/XML USING"
 echo "INFO      | $(date) |          DIFFERENT RANDOM SEEDS. "
 echo "INFO      | $(date) |          Setting up variables, including those specified in the cfg file..."
-MY_XML_FILES=./*.xml
-MY_NUM_XML="$(ls . | grep "\.xml$" | wc -l)"
+	MY_XML_FILES=./*.xml
+	MY_NUM_XML="$(ls . | grep "\.xml$" | wc -l)"
 echo "INFO      | $(date) |          Number of xml files read: $MY_NUM_XML"	## Check number of input files read into program.
 
-MY_SC_PBS_WKDIR_CODE="$(grep -n "pbs_wkdir_code" ./beast_runner.cfg | \
-awk -F"=" '{print $NF}')"
+	MY_SC_PBS_WKDIR_CODE="$(grep -n "pbs_wkdir_code" ./beast_runner.cfg | \
+	awk -F"=" '{print $NF}')"
 
-MY_SSH_ACCOUNT="$(grep -n "ssh_account" ./beast_runner.cfg | \
-awk -F"=" '{print $NF}')"
+	MY_SSH_ACCOUNT="$(grep -n "ssh_account" ./beast_runner.cfg | \
+	awk -F"=" '{print $NF}')"
 
-MY_EMAIL_ACCOUNT="$(grep -n "email_account" ./beast_runner.cfg | \
-awk -F"=" '{print $NF}')"
+	MY_EMAIL_ACCOUNT="$(grep -n "email_account" ./beast_runner.cfg | \
+	awk -F"=" '{print $NF}')"
 
 ##### Pull out the correct path to user's bin folder on the supercomputer from the "beast_runner.cfg" configuration file.
-MY_SC_BIN="$(grep -n "bin_path" ./beast_runner.cfg | \
-awk -F"=" '{print $NF}' | sed 's/\ //g')"
+	MY_SC_BIN="$(grep -n "bin_path" ./beast_runner.cfg | \
+	awk -F"=" '{print $NF}' | sed 's/\ //g')"
 
-MY_SC_DESTINATION="$(grep -n "destination_path" ./beast_runner.cfg | \
-awk -F"=" '{print $NF}' | sed 's/\ //g')"					## This pulls out the correct destination path on the supercomputer from the "beast_runner.cfg" configuration file in the working directory (generated/modified by user prior to running BEASTRunner).
+	MY_SC_DESTINATION="$(grep -n "destination_path" ./beast_runner.cfg | \
+	awk -F"=" '{print $NF}' | sed 's/\ //g')"					## This pulls out the correct destination path on the supercomputer from the "beast_runner.cfg" configuration file in the working directory (generated/modified by user prior to running BEASTRunner).
 
 
 echo "INFO      | $(date) |          Looping through original xmls and making four copies per file, renaming \
@@ -66,8 +66,8 @@ end in 'run.xml'."
 	done
 )
 
-rm ./*run.xml       ## Remove the original "run.xml" input files so that only XML files
-                    ## annotated with their run numbers 1-5 remain.
+	rm ./*run.xml       ## Remove the original "run.xml" input files so that only XML files
+	                    ## annotated with their run numbers 1-5 remain.
 
 
 echo "INFO      | $(date) | STEP #2: MAKE DIRECTORIES FOR RUNS AND GENERATE SHELL SCRIPTS UNIQUE TO EACH \
@@ -135,13 +135,13 @@ exit 0" > beast_pbs.sh
 )
 
 echo "INFO      | $(date) |          Setup and run check on the number of run folders created by the program..."
-MY_FILECOUNT="$(find . -type f | wc -l)"
-MY_DIRCOUNT="$(find . -type d | wc -l)"
-calc () {												## Make the "handy bash function 'calc'" for subsequent use.
-   	bc -l <<< "$@"
-}
-MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
-#"$(ls . | grep "./*/" | wc -l)"
+	MY_FILECOUNT="$(find . -type f | wc -l)"
+	MY_DIRCOUNT="$(find . -type d | wc -l)"
+	calc () {								## Make the "handy bash function 'calc'" for subsequent use.
+	   	bc -l <<< "$@"
+	}
+	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
+	#"$(ls . | grep "./*/" | wc -l)"
 echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS"
 
 
@@ -197,8 +197,8 @@ echo "INFO      | $(date) | STEP #4: SUBMIT ALL JOBS TO THE QUEUE. "
 ##--destination path and email which we placed into environmental variables above.
 
 ssh $MY_SSH_ACCOUNT '
-cd /bluehome3/bagle004/compute/BEASTRunner_TESTS/
-## __PATH NEEDED__: User must change the above line to indicate the absolute path to the same folder that the $MY_SC_DESTINATION environmental variable points to (pulled from 'destination_path' in the cfg file during STEP #1 above).
+cd ADD_PATH_TO_SC_DESTINATION_HERE
+## __PATH NEEDED__: User must change the above line to indicate the absolute path to the same folder that the $MY_SC_DESTINATION environmental variable points to (pulled from 'destination_path' in the cfg file during STEP #1 above). This path must also end with a forward slash.
 chmod u+x beastrunner_batch_qsub.sh
 ./beastrunner_batch_qsub.sh
 exit
@@ -207,11 +207,11 @@ exit
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting BEAST jobs to queue!!"
 
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
-rm ./*_1.xml ./*_2.xml ./*_3.xml ./*_4.xml ./*_5.xml
-rm ./batch_qsub_top.txt
-rm ./cd_and_qsub_commands.txt
-rm ./batch_qsub_bottom.txt
-rm ./beastrunner_batch_qsub.sh
+	rm ./*_1.xml ./*_2.xml ./*_3.xml ./*_4.xml ./*_5.xml
+	rm ./batch_qsub_top.txt
+	rm ./cd_and_qsub_commands.txt
+	rm ./batch_qsub_bottom.txt
+	rm ./beastrunner_batch_qsub.sh
 
 echo "INFO      | $(date) |          Bye."
 
