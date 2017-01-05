@@ -120,7 +120,7 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 
 ## ACKNOWLEDGMENTS
 
-*Nayoki Takebayashi*, who wrote and freely provided some Perl scripts I have used in PIrANHA.
+I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software.
 
 ## REFERENCES
 
