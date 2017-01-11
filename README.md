@@ -108,19 +108,19 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 ### :construction: _NOTE: The following 'Getting Started' content is Under Construction!_ :construction:
 ### Phylogenetic Partitioning Scheme/Model Selection
 #### _pyRAD2PartitionFinder_
-Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (in code; a README is coming soon).
+Shell script for going directly from pyRAD output (de novo-assembled loci) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (e.g. detailed comments located within the code itself; a README is coming soon).
 
 ### Estimating Gene Trees for Species Tree Inference
 #### _MAGNET (MAny GeNE Trees) Package_
-Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package/Repository.
+Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo.
 
 ### Automating Bayesian evolutionary analyses in BEAST
 #### _BEASTRunner_
-[BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
+[BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the BEASTRunner [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
 
 ## ACKNOWLEDGEMENTS
 
-I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software.
+I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
 
 ## REFERENCES
 
@@ -139,9 +139,10 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - GNU [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.pdf)
 
 ## TODO
-- Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in Super-pyRAD2PartitionFinder.sh, BEASTRunner.sh, BEASTPostProc.sh, and RAxMLRunner.sh)
+- ** Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in Super-pyRAD2PartitionFinder.sh, BEASTRunner.sh, BEASTPostProc.sh, and RAxMLRunner.sh) **
 - Make pyrad and ipyrad batch run scripts available
+- Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
 
-November 17, 2016
+January 11, 2017
 Justin C. Bagley, Tuscaloosa, AL, USA
