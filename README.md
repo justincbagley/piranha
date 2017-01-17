@@ -54,7 +54,7 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 
 ### Dependencies
 
-PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3)) package within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
+PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
 
 - PartitionFinder
 - BEAST v1.8.3 and v2.4.2 (or newer; available at: http://beast.bio.ed.ac.uk/downloads and http://beast2.org, respectively)
