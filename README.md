@@ -35,7 +35,7 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 
 **What's new in this release?** 
 
-The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a remote supercomputing cluster. 
+The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a remote supercomputing cluster. I also just (as of January 2017) added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand!
 
 *What is possible with PIrANHA?* *Who cares?*
 
@@ -118,6 +118,9 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 #### _BEASTRunner_
 [BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the BEASTRunner [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
 
+#### _BEAST_PathSampling_
+The BEAST_PathSampling directory is a new area of development within PIrANHA in which I am actively coding scripts to (1) edit BEAST v2+ XML files for paths sampling and (2) automate moving/running the new path sampling XML files to/on a supercomputer. This is very new stuff, as of January 2017.
+
 ## ACKNOWLEDGEMENTS
 
 I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
@@ -144,5 +147,5 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
 
-January 11, 2017
+January 19, 2017
 Justin C. Bagley, Tuscaloosa, AL, USA
