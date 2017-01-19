@@ -119,7 +119,7 @@ Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci 
 [BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the BEASTRunner [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
 
 #### _BEAST_PathSampling_
-The BEAST_PathSampling directory is a new area of development within PIrANHA in which I am actively coding scripts to (1) edit BEAST v2+ XML files for paths sampling and (2) automate moving/running the new path sampling XML files to/on a supercomputer. This is very new stuff, as of January 2017.
+The BEAST_PathSampling directory is a new area of development within PIrANHA in which I am actively coding scripts to (1) edit BEAST v2+ XML files for path sampling and (2) automate moving/running the new path sampling XML files to/on a supercomputer. This is very new stuff, as of January 2017.
 
 ## ACKNOWLEDGEMENTS
 
