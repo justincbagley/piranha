@@ -50,8 +50,7 @@ each copy with an extension of '_#.xml'"
 echo "INFO      | $(date) |          where # ranges from 2-5. *** IMPORTANT ***: The starting xml files MUST \
 end in 'run.xml'."
 (
-	for (( i=2; i<=5; i++ ))
-	    do
+	for (( i=2; i<=5; i++ )); do
 	    find . -type f -name '*run.xml' | while read FILE ; do
 	        newfile="$(echo ${FILE} | sed -e 's/\.xml/\_'$i'\.xml/')" ;
 	        cp "${FILE}" "${newfile}" ;
@@ -79,8 +78,7 @@ INPUT FILE FOR DIRECTING EACH RUN. "
 ##--the folder whose name corresponds to the particular input xml file being manipulated
 ##--at the same pass in the loop.
 (
-	for i in $MY_XML_FILES
-		do
+	for i in $MY_XML_FILES; do
 		mkdir "$(ls ${i} | sed 's/\.xml$//g')"
 	
 echo "#!/bin/bash
@@ -164,8 +162,7 @@ echo "#!/bin/bash
 " > batch_qsub_top.txt
 
 (
-	for j in ./*/
-		do
+	for j in ./*/; do
 		FOLDERNAME="$(echo $j | sed 's/\.\///g')"
 		scp -r $j $MY_SSH_ACCOUNT:$MY_SC_DESTINATION	## Safe copy to remote machine.
 
