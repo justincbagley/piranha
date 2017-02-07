@@ -92,8 +92,8 @@ sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')"
 MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)"
 MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)"
 
-##--This is the base name of the original nexus file, so you have it. This will not work if NEXUS file name is written in all caps, ".NEX", in the file name.
-MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.nex//g')"
+##--This is the base name of the original nexus file, so you have it. This WILL work regardless of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
+MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')"
 
 ##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
 convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta
