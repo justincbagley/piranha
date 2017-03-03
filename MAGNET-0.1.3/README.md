@@ -193,7 +193,7 @@ REFERENCES
 - Liu L, Yu L (2011) Estimating species trees from unrooted gene trees. Syst Biol, 60(5):661-667.
 - Larget BR, Kotha SK, Dewey CN, Ané C (2010) BUCKy: gene tree/species tree reconciliation with Bayesian concordance analysis. Bioinformatics, 26(22):2910-2911.
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
-
+- Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30.9, 1312-1313.
 
 November 10, 2016
 Justin C. Bagley, Tuscaloosa, AL, USA
