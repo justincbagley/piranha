@@ -4,12 +4,12 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                     MAGNET ~ MAny GeNE Trees v0.1.2, September 2016                    #
+#                      MAGNET ~ MAny GeNE Trees v0.1.3, March 2017                       #
 #   SHELL SCRIPT RUNNING THE MAGNET PIPELINE, WHICH AUTOMATES ESTIMATING ONE MAXIMUM-    #
 #   LIKELIHOOD (ML) GENE TREE IN RAxML FOR EACH OF MANY SNP LOCI (OR MULTILOCUS DATA)    #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
+#   Copyright (c)2017 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: September 7, 2016. For questions, please email     #
+#   further information. Last update: March 5, 2017. For questions, please email         #
 #   jcbagley@unb.br.                                                                     #
 ##########################################################################################
 
@@ -20,43 +20,73 @@ MY_RAXML_MODEL=GTRGAMMA
 MY_GAP_THRESHOLD=0.001
 MY_INDIV_MISSING_DATA=1
 
-## PARSE THE OPTIONS ##
-while getopts 'b:r:g:m:' opt ; do
-  case $opt in
-    b) MY_NUM_BOOTREPS=$OPTARG ;;
-    r) MY_RAXML_MODEL=$OPTARG ;;
-    g) MY_GAP_THRESHOLD=$OPTARG ;;
-    m) MY_INDIV_MISSING_DATA=$OPTARG ;;
-  esac
-done
+############ CREATE USAGE & HELP TEXTS
+Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -b r g m] inputNexus 
+ ## Help:
+  -h   help text (also: -help)
+  -H   verbose help text (also: -Help)
 
-## SKIP OVER THE PROCESSED OPTIONS ##
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-  echo "
-Usage: $0 [options] inputNexus
-  "
-  echo "Options: -b numBootstraps (def: $MY_NUM_BOOTREPS) | -r raxmlModel \
-(def: $MY_RAXML_MODEL; other: GTRGAMMAI, GTRCAT, GTRCATI) | -g gapThreshold (def: \
-$MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 individuals; takes float \
-proportion value) | -m indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
+ ## Options:
+  -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
+  -r   raxmlModel (def: $MY_RAXML_MODEL; other: GTRGAMMAI, GTRCAT, GTRCATI)
+  -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
+       individuals; takes float proportion value)
+  -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
 
-Reads in a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') datafile, splits each locus into 
-a separate phylip-formatted alignment file, and sets up and runs RAxML to infer gene trees 
-for each locus. If a NEXUS datafile is supplied, it is converted into G-PhoCS format (Gronau 
-et al. 2011). Sequence names may not include hyphen characters, or there will be issues. 
-For info on various dependencies, see 'README.md' file in the distribution folder; however,
-it is key that the dependencies are available from the command line interface. 
+ OVERVIEW
+ Reads in a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') datafile, splits each locus into 
+ a separate phylip-formatted alignment file, and sets up and runs RAxML (Stamatakis 2014) to 
+ infer gene trees for each locus. If a NEXUS datafile is supplied, it is converted into 
+ G-PhoCS format (Gronau et al. 2011). Sequence names may not include hyphen characters, or 
+ there will be issues. For info on various dependencies, see 'README.md' file in the 
+ distribution folder; however, it is key that the dependencies are available from the command 
+ line interface. 
 
-The -b flag sets the number of boostrap pseudoreplicates for RAxML to perform while estimating 
-the gene tree for each locus. The default is 100; remove bootstrapping by setting to 0.
+ CITATION
+ Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
+	<http://github.com/justincbagley/MAGNET>.
+ or
+ Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
+	<http://doi.org/10.5281/zenodo.166024>.
 
-The -r flag sets the RAxML model for each locus. This uses the full default GTRGAMMA model,
-and at present it is not possible to vary the model across loci. If you want to use HKY
-or K80, you will need to manually change the 'RAxMLRunner.sh' section of this script.
+ REFERENCES
+ Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human 
+	demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
+ Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
+	large phylogenies. Bioinformatics, 30, 1312-1313.
+"
 
-The following options are available ONLY if you are starting from a NEXUS input file:
+
+verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -b r g m] inputNexus 
+ ## Help:
+  -h   help text (also: -help)
+  -H   verbose help text (also: -Help)
+
+ ## Options:
+  -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
+  -r   raxmlModel (def: $MY_RAXML_MODEL; other: GTRGAMMAI, GTRCAT, GTRCATI)
+  -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
+       individuals; takes float proportion value)
+  -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
+
+ OVERVIEW
+ Reads in a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') datafile, splits each locus into 
+ a separate phylip-formatted alignment file, and sets up and runs RAxML (Stamatakis 2014) to 
+ infer gene trees for each locus. If a NEXUS datafile is supplied, it is converted into 
+ G-PhoCS format (Gronau et al. 2011). Sequence names may not include hyphen characters, or 
+ there will be issues. For info on various dependencies, see 'README.md' file in the 
+ distribution folder; however, it is key that the dependencies are available from the command 
+ line interface. 
+
+ DETAILS
+ The -b flag sets the number of boostrap pseudoreplicates for RAxML to perform while estimating 
+ the gene tree for each locus. The default is 100; remove bootstrapping by setting to 0.
+
+ The -r flag sets the RAxML model for each locus. This uses the full default GTRGAMMA model,
+ and at present it is not possible to vary the model across loci. If you want to use HKY
+ or K80, you will need to manually change the 'RAxMLRunner.sh' section of this script.
+
+ The following options are available **ONLY** if you are starting from a NEXUS input file:
 
 	The -g flag supplies a 'gap threshold' to an R script, which deletes all column sites in 
 	the DNA alignment with a proportion of gap characters '-' at or above the threshold value. 
@@ -72,18 +102,60 @@ The following options are available ONLY if you are starting from a NEXUS input 
 	indivMissingData=0 removes all such individuals from each locus; thus, while the input
 	file would have had the same number of individuals across loci, the resulting file could
 	have varying numbers of individuals for different loci.
+
+ CITATION
+ Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
+	<http://github.com/justincbagley/MAGNET>.
+ or
+ Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
+	<http://doi.org/10.5281/zenodo.166024>.
+
+ REFERENCES
+ Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human 
+	demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
+ Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
+	large phylogenies. Bioinformatics, 30, 1312-1313.
 "
 
+
+############ PARSE THE OPTIONS
+while getopts 'h:H:b:r:g:m:' opt ; do
+  case $opt in
+## Help texts:
+	h) echo "$Usage"
+       exit ;;
+	H) echo "$verboseHelp"
+       exit ;;
+
+## RAxML and datafile options:
+    b) MY_NUM_BOOTREPS=$OPTARG ;;
+    r) MY_RAXML_MODEL=$OPTARG ;;
+    g) MY_GAP_THRESHOLD=$OPTARG ;;
+    m) MY_INDIV_MISSING_DATA=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+  esac
+done
+
+############ SKIP OVER THE PROCESSED OPTIONS
+shift $((OPTIND-1)) 
+# Check for mandatory positional parameters
+if [ $# -lt 1 ]; then
+echo "$Usage"
   exit 1
 fi
 MY_NEXUS="$1"
 
 
-
-
 echo "
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.2, September 2016                    #
+#                      MAGNET ~ MAny GeNE Trees v0.1.3, March 2017                       #
 ##########################################################################################
 "
 
@@ -92,7 +164,8 @@ echo "INFO      | $(date) | Starting MAGNET pipeline... "
 echo "INFO      | $(date) | STEP #1: SETUP. "
 ###### Set paths and filetypes as different variables:
 	MY_WORKING_DIR="$(pwd)"
-	echo "INFO      | $(date) |          Setting working directory to: $MY_WORKING_DIR "
+	echo "INFO      | $(date) |          Setting working directory to: "
+	echo "$MY_WORKING_DIR "	
 	CR=$(printf '\r')
 	calc () {
 	   	bc -l <<< "$@"
@@ -112,9 +185,9 @@ else
 fi
 
 
-#################################### NEXUS2gphocs.sh #####################################
+	#################################### NEXUS2gphocs.sh #####################################
 
-NEXUS2gphocs_function () {
+	NEXUS2gphocs_function () {
 
 	############ GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
 	##--Extract charset info from sets block at end of NEXUS file: 
@@ -156,7 +229,6 @@ NEXUS2gphocs_function () {
 				
 			**/fasta2phylip.pl ./sites.fasta > ./sites.phy
 
-
 				##--If .phy file from NEXUS charset $j has gaps in alignment, then call 
 				##--rmGapSites.R R script to remove all column positions with gaps from
 				##--alignment and output new, gapless phylip file named "./sites_nogaps.phy". 
@@ -177,7 +249,6 @@ NEXUS2gphocs_function () {
 			   		cat ./sites.phy > ./sites_nogaps.phy
 				fi
 				
-				
 			phylip_header="$(head -n1 ./sites_nogaps.phy)"
 	        	locus_ntax="$(head -n1 ./sites_nogaps.phy | sed 's/[\ ]*[.0-9]*$//g')"
 			locus_nchar="$(head -n1 ./sites_nogaps.phy | sed 's/[0-9]*\ //g')"
@@ -193,25 +264,19 @@ NEXUS2gphocs_function () {
 					cat ./locus_top.tmp ./sites_nogaps.phy >> ./gphocs_body.txt
 				fi
 
-
 			rm ./sites.fasta ./sites.phy ./*.tmp
-			rm ./sites_nogaps.phy
-	
+			rm ./sites_nogaps.phy	
 		done
 	)
 
-grep -v "^[0-9]*\ [0-9]*.*$" ./gphocs_body.txt > ./gphocs_body_fix.txt
+	grep -v "^[0-9]*\ [0-9]*.*$" ./gphocs_body.txt > ./gphocs_body_fix.txt
+	sed 's/locus/'$CR'locus/g' ./gphocs_body_fix.txt > ./gphocs_body_fix2.txt
+	cat ./gphocs_top.txt ./gphocs_body_fix2.txt > $MY_NEXUS_BASENAME.gphocs
 
-sed 's/locus/'$CR'locus/g' ./gphocs_body_fix.txt > ./gphocs_body_fix2.txt
-
-cat ./gphocs_top.txt ./gphocs_body_fix2.txt > $MY_NEXUS_BASENAME.gphocs
-
-
-############ CLEANUP: REMOVE UNNECESSARY FILES
-rm ./gphocs_top.txt
-rm ./gap_threshold.txt
-rm ./gphocs_body*
-
+	############ CLEANUP: REMOVE UNNECESSARY FILES
+	rm ./gphocs_top.txt
+	rm ./gap_threshold.txt
+	rm ./gphocs_body*
 
 }
 
@@ -224,9 +289,6 @@ NEXUS2gphocs_function
 
 else
 	echo "INFO      | $(date) |          No NEXUS files in current working directory. Continuing... "
-#    echo "WARNING!  | $(date) |          Found no suitable input files in current working directory... "
-#    echo "INFO      | $(date) |          Quitting."
-#	exit
 fi
 
 shopt -s nullglob
@@ -240,147 +302,138 @@ else
 fi
 
 
-################################# gphocs2multiPhylip.sh ##################################
+	################################# gphocs2multiPhylip.sh ##################################
 
-MY_NLOCI="$(head -n1 $MY_GPHOCS_DATA_FILE)"
+	MY_NLOCI="$(head -n1 $MY_GPHOCS_DATA_FILE)"
 
 echo "INFO      | $(date) | STEP #3: MAKE ALIGNMENTS FOR EACH LOCUS. "
 echo "INFO      | $(date) |          In a single loop, using info from '.gphocs' file to split each locus block \
 into a separate phylip-formatted alignment file using gphocs2multiPhylip code... "
-(
-	for (( i=0; i<=$(calc $MY_NLOCI-1); i++ ))
-		do
-		echo $i
-		MY_NTAX="$(grep -n "locus$i\ " $MY_GPHOCS_DATA_FILE | \
-		awk -F"locus$i " '{print $NF}' | sed 's/\ [0-9]*//g')"			
+	(
+		for (( i=0; i<=$(calc $MY_NLOCI-1); i++ )); do
+			echo $i
+			MY_NTAX="$(grep -n "locus$i\ " $MY_GPHOCS_DATA_FILE | \
+			awk -F"locus$i " '{print $NF}' | sed 's/\ [0-9]*//g')"			
 
-		MY_NCHAR="$(grep -n "locus$i\ " $MY_GPHOCS_DATA_FILE | \
-		awk -F"locus$i [0-9]*\ " '{print $NF}')"	
+			MY_NCHAR="$(grep -n "locus$i\ " $MY_GPHOCS_DATA_FILE | \
+			awk -F"locus$i [0-9]*\ " '{print $NF}')"	
 		
-		awk "/locus"$i"\ / {for(j=1; j<="$MY_NTAX"; j++) {getline; print}}" $MY_GPHOCS_DATA_FILE > ./locus"$i".tmp
+			awk "/locus"$i"\ / {for(j=1; j<="$MY_NTAX"; j++) {getline; print}}" $MY_GPHOCS_DATA_FILE > ./locus"$i".tmp
 
-		echo "$MY_NTAX $MY_NCHAR" > ./locus"$i"_header.tmp
+			echo "$MY_NTAX $MY_NCHAR" > ./locus"$i"_header.tmp
 				
-		cat ./locus"$i"_header.tmp ./locus"$i".tmp > ./locus"$i".phy
+			cat ./locus"$i"_header.tmp ./locus"$i".tmp > ./locus"$i".phy
+		done
+	)
 
-	done
-)
+	############ CLEANUP: REMOVE UNNECESSARY OR TEMPORARY FILES
+	rm ./*.tmp
 
-############ CLEANUP: REMOVE UNNECESSARY OR TEMPORARY FILES
-rm ./*.tmp
-
-
-if [[ -n $(echo *.phy) ]]; then
-    MY_PHYLIP_ALIGNMENTS=./*.phy		## Assign Phylip-formatted genomic/SNP data files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
-else
-    echo "..."
-fi
+	if [[ -n $(echo *.phy) ]]; then
+	    MY_PHYLIP_ALIGNMENTS=./*.phy		## Assign Phylip-formatted genomic/SNP data files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
+	else
+	    echo "..."
+	fi
 
 
 
-################################# MultiRAxMLPrepper.sh ##################################
+	################################# MultiRAxMLPrepper.sh ##################################
 
 echo "INFO      | $(date) | STEP #4: MAKE RUN FOLDERS. "
-##--Loop through the input .phy files and do the following for each file: (A) generate one 
-##--folder per .phy file with the same name as the file, only minus the extension, then 
-##--(B) move input .phy file into corresponding folder.
-(
-	for i in $MY_PHYLIP_ALIGNMENTS
-		do
-		mkdir "$(ls ${i} | sed 's/\.phy$//g')"
-	    cp $i ./"$(ls ${i} | sed 's/\.phy$//g')"
-	done
-)
+	##--Loop through the input .phy files and do the following for each file: (A) generate one 
+	##--folder per .phy file with the same name as the file, only minus the extension, then 
+	##--(B) move input .phy file into corresponding folder.
+	(
+		for i in $MY_PHYLIP_ALIGNMENTS; do
+			mkdir "$(ls ${i} | sed 's/\.phy$//g')"
+			cp $i ./"$(ls ${i} | sed 's/\.phy$//g')"
+		done
+	)
 
-##### Setup and run check on the number of run folders created by the program:
-MY_FILECOUNT="$(find . -type f | wc -l)"
+	##### Setup and run check on the number of run folders created by the program:
+	MY_FILECOUNT="$(find . -type f | wc -l)"
 
-MY_DIRCOUNT="$(find . -type d | wc -l)"
+	MY_DIRCOUNT="$(find . -type d | wc -l)"
 
-MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
+	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
 echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
 
 
-################################### RAxMLRunner.sh #######################################
+	################################### RAxMLRunner.sh #######################################
 
 echo "INFO      | $(date) | STEP #5: ESTIMATE GENE TREES. "
 echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
-##--Each folder is set with the locus name corresponding to the locus' position in the
-##--original .gphocs alignment (which, if output by pyRAD, is simply in the order in which
-##--the loci were logged to file by pyRAD, no special order). Also, each folder contains
-##--one .phy file carrying the same basename as the folder name, e.g. "locus0.phy". So,
-##--all we need to do here is loop through each folder and call RAxML to run using its
-##--contents as the input file, as follows:
-(
-for i in ./*/
-    do
-    echo $i
-    cd $i
-    LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')"
-    raxmlHPC-SSE3 -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n raxml_out
-	cd ..
-done
-)
-##--NOTE: not currently using $LOCUS_NAME here, but leave for now, bc may need to use it later...
+	##--Each folder is set with the locus name corresponding to the locus' position in the
+	##--original .gphocs alignment (which, if output by pyRAD, is simply in the order in which
+	##--the loci were logged to file by pyRAD, no special order). Also, each folder contains
+	##--one .phy file carrying the same basename as the folder name, e.g. "locus0.phy". So,
+	##--all we need to do here is loop through each folder and call RAxML to run using its
+	##--contents as the input file, as follows:
+	(
+		for i in ./*/; do
+			echo $i
+			cd $i
+			LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')"
+			raxmlHPC-SSE3 -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n raxml_out
+			cd ..;
+		done
+	)
+	##--NOTE: not currently using $LOCUS_NAME here, but leave for now, bc may need to use it later...
 
 
-##--Here: adding loop code to move all .phy files remaining in the current working 
-##--directory, after STEP #3 of the pipeline, to a new folder called "phylip_files". This
-##--is done here because if the phylip_files folder is present at the end of STEP #3,
-##--then RAxML will also try to estimate a gene tree for .phy file(s) in this folder during
-##--STEP #5 of the pipeline above.
-mkdir ./phylip_files
-(
-	for i in $MY_PHYLIP_ALIGNMENTS 
-		do
-		echo $i
-		mv $i ./phylip_files/
-	done
-)
+	##--Here: adding loop code to move all .phy files remaining in the current working 
+	##--directory, after STEP #3 of the pipeline, to a new folder called "phylip_files". This
+	##--is done here because if the phylip_files folder is present at the end of STEP #3,
+	##--then RAxML will also try to estimate a gene tree for .phy file(s) in this folder during
+	##--STEP #5 of the pipeline above.
+	mkdir ./phylip_files
+	(
+		for i in $MY_PHYLIP_ALIGNMENTS; do
+			echo $i
+			mv $i ./phylip_files/
+		done
+	)
 
-
-################################## getGeneTrees.sh #######################################
 
 echo "INFO      | $(date) | STEP #6: RAxML POST-PROCESSING. "
-echo "INFO      | $(date) |          Organizing gene trees and making final output file containing all trees... "
-############ STEP #2: MAKE LIST OF RAxML GENE TREES IN WORKING DIRECTORY
-echo "INFO      | $(date) |          Making list of ML gene trees generated by RAxML... "
 
-ls **/RAxML_bestTree.raxml_out > geneTrees.list
+	################################## getGeneTrees.sh #######################################
+	echo "INFO      | $(date) |          Organizing gene trees and making final output file containing all trees... "
+	echo "INFO      | $(date) |          Making list of ML gene trees generated by RAxML... "
 
-##--Assign gene tree list to variable
-MY_GENE_TREE_LIST="$(cat ./geneTrees.list)"
+	ls **/RAxML_bestTree.raxml_out > geneTrees.list
 
-##--Make list of run folders that corresponds to order in geneTrees.list file:
-MY_RUN_FOLDERS="$(echo $MY_GENE_TREE_LIST | sed 's/\/[A-Za-z.\_\-]*//g')"
+	##--Assign gene tree list to variable
+	MY_GENE_TREE_LIST="$(cat ./geneTrees.list)"
 
-############ ORGANIZE GENE TREES INTO ONE LOCATION
-##--Place all inferred gene trees into a single "gene_trees" folder in the current
-##--working directory. However, all the gene tree files have the same name. So, in order
-##--to do this, we have to give each gene tree a name that matches the corresponding run
-##--folder, i.e. locus. We can rename each file right after downloading it.
-mkdir ./gene_trees
+	##--Make list of run folders that corresponds to order in geneTrees.list file:
+	MY_RUN_FOLDERS="$(echo $MY_GENE_TREE_LIST | sed 's/\/[A-Za-z.\_\-]*//g')"
 
-echo "INFO      | $(date) |          Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
-(
-	for j in ${MY_GENE_TREE_LIST}
-		do
-		echo $j
-		cp $j ./gene_trees/
-		MY_LOCUS_NAME="$(echo $j | sed 's/\/[A-Za-z.\_\-]*//g')"
-		cp ./gene_trees/RAxML_bestTree.raxml_out ./gene_trees/"$MY_LOCUS_NAME"_RAxML_best.tre
-		rm ./gene_trees/RAxML_bestTree.raxml_out
-	done
-)
+	############ ORGANIZE GENE TREES INTO ONE LOCATION
+	##--Place all inferred gene trees into a single "gene_trees" folder in the current
+	##--working directory. However, all the gene tree files have the same name. So, in order
+	##--to do this, we have to give each gene tree a name that matches the corresponding run
+	##--folder, i.e. locus. We can rename each file right after downloading it.
+	mkdir ./gene_trees
 
-echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
-(
-	for k in ./gene_trees/*
-	    do
-	    echo $k
-	    cat $k >> ./besttrees.tre
-	done
-)
+	echo "INFO      | $(date) |          Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
+	(
+		for j in ${MY_GENE_TREE_LIST}; do
+			echo $j
+			cp $j ./gene_trees/
+			MY_LOCUS_NAME="$(echo $j | sed 's/\/[A-Za-z.\_\-]*//g')"
+			cp ./gene_trees/RAxML_bestTree.raxml_out ./gene_trees/"$MY_LOCUS_NAME"_RAxML_best.tre
+			rm ./gene_trees/RAxML_bestTree.raxml_out
+		done
+	)
+
+	echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
+	(
+		for k in ./gene_trees/*; do
+			echo $k
+			cat $k >> ./besttrees.tre
+		done
+	)
 
 echo "INFO      | $(date) | Done estimating gene trees for many loci in RAxML using MAGNET."
 echo "INFO      | $(date) | Bye.
