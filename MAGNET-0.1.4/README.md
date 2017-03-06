@@ -133,7 +133,14 @@ Usage: MAGNET.sh [Help: -h help H Help] [Options: -b r g m] inputNexus
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 ```
 
-**_IMPORTANT NOTES on NEXUS2gphocs usage:_ You may use NEXUS2gphocs.sh as a standalone script for converting prior to running G-PhoCS on your data. In its current form, you must move NEXUS2gphocs.sh (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script.** (This also assumes the target inputNexus is also located in the MAGNET dir.) You could also move both scripts into another working directory containing your target inputNexus file. You can get the usage info for NEXUS2gphocs.sh, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The NEXUS2gphocs usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
+### NOTES ON NEXUS2gphocs USAGE
+
+- You may use NEXUS2gphocs.sh as a standalone script for converting prior to running G-PhoCS on your data. 
+- However, in its current form, you must move NEXUS2gphocs.sh (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target inputNexus is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target inputNexus file.
+- You can get the usage info for NEXUS2gphocs.sh, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The NEXUS2gphocs usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
+
+
+### USAGE EXAMPLES
 
 **Below I give some examples of how to use the software under the two most common scenarios:**
 
@@ -146,6 +153,7 @@ Usage: MAGNET.sh [Help: -h help H Help] [Options: -b r g m] inputNexus
 cd ~/Downloads/MAGNET-master/
 ./MAGNET.sh example.nex
 ```
+
 **SCENARIO 2.** If your data are relatively lower quality data (e.g. from NGS runs) and you have lots of missing data, including individuals with all missing data for a locus (as is common for RAD tag/SNP data), then RAxML will not run properly under the default MAGNET options. You will likely get up to ~10 messages like "ERROR: Sequence XXXXX consists entirely of undetermined values which will be treated as missing data", follwed by a summary like this: "ERROR: Found 10 sequences that consist entirely of undetermined values, exiting...", and RAxML will quit. The rest of the pipeline will be affected, for example the final summary gene tree file will make no sense because it will simply include a concatenation of all files in the working directory. 
 
 To avoid the above issues caused by large amounts of missing data, you should run MAGNET while **setting the -m flag to 0** (indivMissingData=0) to specify that individuals with missing data are NOT allowed:
@@ -172,7 +180,7 @@ In addition to the above, here are illustrations of the **RAxML options**:
 
 ## ACKNOWLEDGEMENTS
 
-I thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software.
+I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
 
 ## REFERENCES
 
