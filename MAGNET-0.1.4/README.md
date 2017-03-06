@@ -221,6 +221,7 @@ I thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providi
 
 ## REFERENCES
 
+- Chifman J, Kubatko L (2014) Quartet inference from SNP data under the coalescent model. Bioinformatics, 30, pages 3317–3324.
 - Eaton DAR (2014) PyRAD: assembly of de novo RADseq loci for phyloge-netic analyses. Bioinformatics, 30, 1844–1849.
 - Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
 - Larget BR, Kotha SK, Dewey CN, Ané C (2010) BUCKy: gene tree/species tree reconciliation with Bayesian concordance analysis. Bioinformatics, 26(22):2910-2911.
