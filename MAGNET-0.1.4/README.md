@@ -133,52 +133,7 @@ Usage: MAGNET.sh [Help: -h help H Help] [Options: -b r g m] inputNexus
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 ```
 
-**_IMPORTANT NOTE on NEXUS2gphocs usage:_ In its current form, you must move NEXUS2gphocs.sh (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script.** (This also assumes the target inputNexus is also located in the MAGNET dir.)
-
-To get usage info for NEXUS2gphocs.sh, type the first line blow while in the MAGNET directory, and you will get the output that follows:
-
-```
-./NEXUS2gphocs.sh
-Usage="Usage: NEXUS2gphocs.sh [Help: -h help H Help] [Options: -b r g m] inputNexus 
- ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
-
- ## Options:
-  -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
-       individuals; takes float proportion value)
-  -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
-
- OVERVIEW
- Reads in a single NEXUS datafile and converts it to '.gphocs' format for G-PhoCS software
- (Gronau et al. 2011). Sequence names may not include hyphen characters, or there will be 
- issues. For best results, update to R v3.3.1 or higher.
-
- The -g flag supplies a 'gap threshold' to an R script, which deletes all column sites in 
- the DNA alignment with a proportion of gap characters '-' at or above the threshold value. 
- If no gap threshold is specified, all sites with gaps are removed by default. If end goal
- is to produce a file for G-PhoCS, you  will want to leave gapThreshold at the default. 
- However, if the next step in your pipeline involves converting from .gphocs to other data 
- formats, you will likely want to set gapThreshold=1 (e.g. before converting to phylip 
- format for RAxML). 
-
- The -m flag allows users to choose their level of tolerance for individuals with missing
- data. The default is indivMissingData=1, allowing individuals with runs of 10 or more 
- missing nucleotide characters ('N') to be kept in the alignment. Alternatively, setting
- indivMissingData=0 removes all such individuals from each locus; thus, while the input
- file would have had the same number of individuals across loci, the resulting file could
- have varying numbers of individuals for different loci.
-
- Dependencies: Perl; R; and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' and 
- 'selectSites.pl' in working directory or available from command line (in your path)."
-
- CITATION
- Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
-	<http://github.com/justincbagley/MAGNET>.
- or
- Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
-	<http://doi.org/10.5281/zenodo.166024>.
-```
+**_IMPORTANT NOTES on NEXUS2gphocs usage:_ You may use NEXUS2gphocs.sh as a standalone script for converting prior to running G-PhoCS on your data. In its current form, you must move NEXUS2gphocs.sh (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script.** (This also assumes the target inputNexus is also located in the MAGNET dir.) You could also move both scripts into another working directory containing your target inputNexus file. You can get the usage info for NEXUS2gphocs.sh, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The NEXUS2gphocs usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
 
 **Below I give some examples of how to use the software under the two most common scenarios:**
 
