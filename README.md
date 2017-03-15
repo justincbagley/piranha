@@ -1,4 +1,6 @@
 #  PIrANHA (*P*hylogenet*I*cs *AN*d p*H*ylogeogr*A*phy) v0.1.3
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6ebf8b42a35f4b74a6a733312ac1d632)](https://www.codacy.com/app/justincbagley/PIrANHA?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=justincbagley/PIrANHA&amp;utm_campaign=Badge_Grade) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-green.svg?style=flat)](LICENSE)
+
 Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 ## LICENSE
