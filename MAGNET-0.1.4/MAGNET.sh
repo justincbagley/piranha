@@ -9,7 +9,7 @@
 #   LIKELIHOOD (ML) GENE TREE IN RAxML FOR EACH OF MANY SNP LOCI (OR MULTILOCUS DATA)    #
 #   Copyright (c)2017 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: March 5, 2017. For questions, please email         #
+#   further information. Last update: March 14, 2017. For questions, please email        #
 #   jcbagley@unb.br.                                                                     #
 ##########################################################################################
 
@@ -176,7 +176,7 @@ echo "INFO      | $(date) | STEP #2: INPUT FILE. "
 echo "INFO      | $(date) |          If '.gphocs' input file present, continue; else convert NEXUS file to \
 G-PhoCS format using NEXUS2gphocs code... "
 shopt -s nullglob
-if [[ -n $(echo *.gphocs) ]]; then
+if [[ -n $(find . -name "*.gphocs" -type f) ]]; then
 	echo "INFO      | $(date) |          Found '.gphocs' input file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs		## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
@@ -281,7 +281,7 @@ fi
 }
 
 shopt -s nullglob
-if [[ -n $(echo *.nex) ]]; then
+if [[ -n $(find . -name "*.nex" -type f) ]]; then
 
 NEXUS2gphocs_function
 
@@ -292,7 +292,7 @@ else
 fi
 
 shopt -s nullglob
-if [[ -n $(echo *.gphocs) ]]; then
+if [[ -n $(find . -name "*.gphocs" -type f) ]]; then
 	echo "INFO      | $(date) |          MAGNET successfully created a '.gphocs' input file from the existing NEXUS file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs		## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
@@ -329,7 +329,7 @@ into a separate phylip-formatted alignment file using gphocs2multiPhylip code...
 	############ CLEANUP: REMOVE UNNECESSARY OR TEMPORARY FILES
 	rm ./*.tmp
 
-	if [[ -n $(echo *.phy) ]]; then
+	if [[ -n $(find . -name "*.phy" -type f) ]]; then
 	    MY_PHYLIP_ALIGNMENTS=./*.phy		## Assign Phylip-formatted genomic/SNP data files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
 	else
 	    echo "..."
