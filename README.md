@@ -98,6 +98,7 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 | .phy                   | pyRAD (or by hand)                |
 | .str                   | pyRAD                             |
 | .gphocs                | pyRAD (or MAGNET/NEXUS2gphocs.sh) |
+| .loci                  | pyRAD                             |
 | .nex                   | pyRAD (or by hand)                |
 | .trees                 | BEAST                             |
 | .species.trees         | BEAST                             |
@@ -149,5 +150,5 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
 
-January 19, 2017
-Justin C. Bagley, Tuscaloosa, AL, USA
+April 8, 2017
+Justin C. Bagley, Richmond, VA, USA
