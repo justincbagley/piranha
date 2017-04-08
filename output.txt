@@ -1,0 +1,13 @@
+
+##########################################################################################
+#                         pyRADLocusVarSites v0.1.0, April 2017                          #
+##########################################################################################
+
+INFO      | Sat Apr  8 01:10:29 EDT 2017 | Path check PASSED. You're in pyRAD outfiles dir already. 
+INFO      | Sat Apr  8 01:10:29 EDT 2017 | Calculating numbers of variable sites (S) and parsimony-informative sites (PIS) for SNP loci... 
+INFO      | Sat Apr  8 01:10:29 EDT 2017 |      ./hypostomus_str.loci 
+INFO      | Sat Apr  8 01:10:29 EDT 2017 | Writing regular (unsorted) results to summary text files... 
+INFO      | Sat Apr  8 01:10:29 EDT 2017 | Ranking loci by number of variable and parsimony-informative sites, and writing tables with ranked loci... 
+INFO      | Sat Apr  8 01:10:29 EDT 2017 | Done calculating numbers of variable sites in pyRAD .loci file(s) and ranking SNP loci by variability. 
+INFO      | Sat Apr  8 01:10:29 EDT 2017 | Bye.
+
