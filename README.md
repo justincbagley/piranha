@@ -30,7 +30,7 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](h
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-PIrANHA v0.1.3 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2006, 2012), starBEAST (Heled & Drummond 2010), ExaBayes, and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper logfiles to extract information on the inferred ancestral geographic location(s). 
+PIrANHA v0.1.3 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD or ipyrad (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2012; Bouckaert et al. 2014), starBEAST (Heled & Drummond 2010), ExaBayes (Aberer et al. 2014), and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper (Lemmon and Lemmon 2008) logfiles to extract information on the inferred ancestral geographic location(s). 
 
 The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on a remote supercomputer machine, and then retrieving and processing the results. Whereas some PIrANHA scripts are written for use on the user's local machine, including the [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts, others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
 
@@ -38,7 +38,7 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 
 **What's new in this release?** 
 
-The current release, PIrANHA v0.1.3, includes a new 'BEASTRunner.sh' script that automates batch uploading and submission of multiple XML input files, corresponding to BEAST1 or BEAST2 runs, to a remote supercomputing cluster. I also just (as of January 2017) added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand!
+The current build has not yet been released, but contains several goodies, in addition to more minor improvements in the code. For example, as of January 2017, I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! And, as of April 2017, this build contains a new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. phylogenetically informative sites) in each SNP locus contained in .loci file from a pyRAD assembly run.
 
 *What is possible with PIrANHA?* *Who cares?*
 
@@ -57,7 +57,7 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 
 ### Dependencies
 
-PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
+PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.4)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
 
 - PartitionFinder
 - BEAST v1.8.3 and v2.4.2 (or newer; available at: http://beast.bio.ed.ac.uk/downloads and http://beast2.org, respectively)
@@ -131,6 +131,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 
 ## REFERENCES
 
+- Aberer AJ, Kobert K, Stamatakis A (2014) ExaBayes: massively parallel Bayesian tree inference for the whole-genome era. Molecular Biology and Evolution, 31, 2553-2556.
 - Avise JC (2000) Phylogeography: the history and formation of species. Cambridge, MA: Harvard University Press.
 - Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond AJ (2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS Computational Biology, 10, e1003537.
 - Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. Bioinformatics, 30, 1844-1849.
@@ -138,6 +139,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Felsenstein J (2004) Inferring phylogenies. Sunderland, MA: Sinauer Associates.
 - Heled J, Drummond AJ (2010) Bayesian inference of species trees from multilocus data. Molecular Biology and Evolution, 27, 570–580.
 - Lanfear R, Calcott B, Ho SYW, Guindon S (2012) PartitionFinder: combined selection of partitioning schemes and substitution models for phylogenetic analyses. Molecular Biology and Evolution, 29,1695-1701.
+- Lemmon AR, Lemmon E (2008) A likelihood framework for estimating phylogeographic history on a continuous landscape. Systematic Biology, 57, 544–561.
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
 
