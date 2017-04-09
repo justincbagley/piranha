@@ -1,4 +1,5 @@
-# MAGNET (MAny GeNE Trees) v0.1.4  :deciduous_tree::deciduous_tree::deciduous_tree:
+<a href="http://imgur.com/KyBBOwk"><img src="http://i.imgur.com/KyBBOwk.png" title="source: Justin C. Bagley" width=60% height=60% align="center" /></a>
+
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2ae9ac0297a54d469fd8b847f798b53f)](https://www.codacy.com/app/justincbagley/MAGNET?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=justincbagley/MAGNET&amp;utm_campaign=Badge_Grade) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-green.svg?style=flat)](LICENSE)
 
 Shell script pipeline for inferring ML gene trees for many loci (e.g. genomic SNP data)
