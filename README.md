@@ -38,7 +38,7 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 
 **What's new in this release?** 
 
-The current build has not yet been released, but contains several goodies, in addition to more minor improvements in the code. For example, as of January 2017, I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! And, as of April 2017, this build contains a new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. phylogenetically informative sites) in each SNP locus contained in .loci file from a pyRAD assembly run.
+The current build has not yet been released, but contains several goodies, in addition to more minor improvements in the code. For example, as of January 2017, I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! And, as of April 2017, this build contains a new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
 
 *What is possible with PIrANHA?* *Who cares?*
 
