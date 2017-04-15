@@ -5,8 +5,7 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                          BEASTRunner v1.0, November 2016                               #
-#   SHELL SCRIPT FOR AUTOMATING RUNNING BEAST ON A REMOTE SUPERCOMPUTER AND EXTRACTING   #
-#   THE RESULTS                                                                          #
+#   SHELL SCRIPT FOR AUTOMATING RUNNING BEAST ON A REMOTE SUPERCOMPUTING CLUSTER         #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
 #   further information. Last update: November 11, 2016. For questions, please email     #
