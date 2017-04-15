@@ -9,7 +9,7 @@
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
 #   further information. Last update: November 11, 2016. For questions, please email     #
-#   jcbagley@unb.br.                                                                     #
+#   jcbagley (at) unb.br.                                                                #
 ##########################################################################################
 
 echo "
@@ -79,13 +79,13 @@ INPUT FILE FOR DIRECTING EACH RUN. "
 (
 	for i in $MY_XML_FILES; do
 		mkdir "$(ls ${i} | sed 's/\.xml$//g')"
-	
+		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')"
 echo "#!/bin/bash
 
 #PBS -l nodes=1:ppn=1,pmem=1024mb,walltime=72:00:00
-#PBS -N "$(ls ${i} | sed 's/^.\///g; s/.xml$//g')"
+#PBS -N ${MY_INPUT_BASENAME}
 #PBS -m abe
-#PBS -M justin.bagley@byu.edu
+#PBS -M ${MY_EMAIL_ACCOUNT}
 
 #---Change walltime to be the expected number of hours for the run-------------#
 #---NOTE: The run will be killed if this time is exceeded----------------------#
@@ -134,7 +134,7 @@ exit 0" > beast_pbs.sh
 echo "INFO      | $(date) |          Setup and run check on the number of run folders created by the program..."
 	MY_FILECOUNT="$(find . -type f | wc -l)"
 	MY_DIRCOUNT="$(find . -type d | wc -l)"
-	calc () {								## Make the "handy bash function 'calc'" for subsequent use.
+	calc () {
 	   	bc -l <<< "$@"
 	}
 	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
@@ -211,7 +211,6 @@ exit
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting BEAST jobs to queue!!"
 
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
-	rm ./*_1.xml ./*_2.xml ./*_3.xml ./*_4.xml ./*_5.xml
 	rm ./batch_qsub_top.txt
 	rm ./cd_and_qsub_commands.txt
 	rm ./batch_qsub_bottom.txt
