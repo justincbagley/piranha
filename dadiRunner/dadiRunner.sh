@@ -201,6 +201,10 @@ INPUT FILE FOR DIRECTING EACH RUN. "
 ##--and can be used to submit job to supercomputer; (C) move the PBS shell script into 
 ##--the folder whose name corresponds to the particular input .py file being manipulated
 ##--at the same pass in the loop.
+#
+##--Note: shell scripts send output to files 1) as directed from within the .py scripts,
+##--and 2) output directly from the software is redirected to a file with the extension
+##--".out.txt".
 (
 	for i in $MY_INPUT_PY_FILES; do
 		mkdir "$(ls ${i} | sed 's/\.py$//g')"
@@ -219,7 +223,7 @@ echo "#!/bin/bash
 #---Change **EMAIL** to be your email address for notifications----------------#
 
 
-python ${i} > ${MY_INPUT_BASENAME}.out
+python ${i} > ${MY_INPUT_BASENAME}.out.txt
 
 $MY_SC_PBS_WKDIR_CODE
 
