@@ -149,7 +149,6 @@ else
 	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
 	exit
 fi
-	CR=$(printf '\r'); 
 	calc () { 
 		bc -l <<< "$@" 
 }
@@ -159,8 +158,6 @@ echo "INFO      | $(date) |          Number of .py ∂a∂i input files read: $M
 	MY_SSH_ACCOUNT="$(grep -n "ssh_account" ./dadi_runner.cfg | \
 	awk -F"=" '{print $NF}')"
 	MY_SC_DESTINATION="$(grep -n "destination_path" ./dadi_runner.cfg | \
-	awk -F"=" '{print $NF}' | sed 's/\ //g')"
-	MY_SC_BIN="$(grep -n "bin_path" ./dadi_runner.cfg | \
 	awk -F"=" '{print $NF}' | sed 's/\ //g')"
 	MY_EMAIL_ACCOUNT="$(grep -n "email_account" ./dadi_runner.cfg | \
 	awk -F"=" '{print $NF}')"
