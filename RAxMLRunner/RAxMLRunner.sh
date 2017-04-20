@@ -4,18 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          RAxMLRunner v1.2, November 2016                               #
+#                              RAxMLRunner v1.3, April 2017                              #
 #   SHELL SCRIPT FOR AUTOMATING MOVING AND RUNNING RAxML RUNS ON A REMOTE SUPERCOMPUTER  #
 #   (AND EXTRACTING THE RESULTS...coming soon)                                           #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
+#   Copyright (c)2017 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
 #   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: November 21, 2016. For questions, please email     #
+#   further information. Last update: April 20, 2017. For questions, please email        #
 #   jcbagley@unb.br.                                                                     #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                          RAxMLRunner v1.2, November 2016                               #
+#                              RAxMLRunner v1.3, April 2017                              #
 ##########################################################################################"
 
 echo "INFO      | $(date) | STEP #1: SETUP VARIABLES AND CHECK CONTENTS. "
