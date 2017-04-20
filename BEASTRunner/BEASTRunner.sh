@@ -171,6 +171,7 @@ qsub beast_pbs.sh
 
 	done
 )
+sed -i '' 1,3d ./cd_and_qsub_commands.txt		## First line of file attempts to cd to "./*/", but this will break the submission script. Here, we use sed to remove the first three lines, which contain the problematic cd line, a qsub line, and a blank line afterwards.
 
 echo "
 $MY_SC_PBS_WKDIR_CODE
@@ -195,18 +196,22 @@ scp ./beastrunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
 
 
 echo "INFO      | $(date) | STEP #4: SUBMIT ALL JOBS TO THE QUEUE. "
-##--This is the key: using ssh to connect to supercomputer, loop through all run folders, 
-##--and submit all jobs/runs (sh scripts in each folder) to the queue. We do this while  
-##--using the ssh "-c" flag to make variable expansion work, so that we can refer to our
-##--destination path and email which we placed into environmental variables above.
+##--This is the key: using ssh to connect to supercomputer and execute the "beastrunner_batch_qsub.sh"
+##--submission file created and moved into sc destination folder above. The batch qsub file
+##--loops through all run folders and submits all jobs/runs (sh scripts in each folder) to the 
+##--job queue. We do this (pass the commands to the supercomputer) using bash here document syntax 
+##--(as per examples on the following web page, URL: 
+##--https://www.cyberciti.biz/faq/linux-unix-osx-bsd-ssh-run-command-on-remote-machine-server/).
 
-ssh $MY_SSH_ACCOUNT '
-cd ADD_PATH_TO_SC_DESTINATION_HERE
-## __PATH NEEDED__: User must change the above line to indicate the absolute path to the same folder that the $MY_SC_DESTINATION environmental variable points to (pulled from 'destination_path' in the cfg file during STEP #1 above). This path must also end with a forward slash.
-chmod u+x beastrunner_batch_qsub.sh
+ssh $MY_SSH_ACCOUNT << HERE
+cd $MY_SC_DESTINATION
+pwd
+chmod u+x ./beastrunner_batch_qsub.sh
 ./beastrunner_batch_qsub.sh
+#
 exit
-'
+HERE
+
 
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting BEAST jobs to queue!!"
 
