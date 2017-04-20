@@ -6,7 +6,7 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 ## LICENSE
 
-All code within the PIrANHA v0.1.3 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA v0.1.4 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
@@ -30,21 +30,33 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](h
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-PIrANHA v0.1.3 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the software programs pyRAD or ipyrad (Eaton 2014), PartitionFinder (Lanfear et al. 2012), BEAST (Drummond et al. 2012; Bouckaert et al. 2014), starBEAST (Heled & Drummond 2010), ExaBayes (Aberer et al. 2014), and fastSTRUCTURE (Raj et al. 2014). I recently also added a draft script for processing PhyloMapper (Lemmon and Lemmon 2008) logfiles to extract information on the inferred ancestral geographic location(s). 
+PIrANHA v0.1.4 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the following software programs:
 
-The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on a remote supercomputer machine, and then retrieving and processing the results. Whereas some PIrANHA scripts are written for use on the user's local machine, including the [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.3) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts, others are written with sections allowing the script to be submitted to run on a supercomputing cluster using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
+- pyRAD or ipyrad (Eaton 2014),
+- PartitionFinder (Lanfear et al. 2012),
+- BEAST (Drummond et al. 2012; Bouckaert et al. 2014),
+- starBEAST (Heled & Drummond 2010),
+- ExaBayes (Aberer et al. 2014),
+- dadi (Gutenkunst et al. 2009),
+- fastSTRUCTURE (Raj et al. 2014), and
+- PhyloMapper (Lemmon and Lemmon 2008). 
+
+The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNPs or SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on the user's personal machine (e.g. [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.4) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts) or a remote supercomputer machine, and then conducting post-processing of the results. In particular, a number of scripts have been written with sections allowing them to be run (or cause other software to be called) on a supercomputing cluster, using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
 
 ### Distribution Structure and Pipelines
 
 **What's new in this release?** 
 
-The current build has not yet been released, but contains several goodies, in addition to more minor improvements in the code. For example, as of January 2017, I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! And, as of April 2017, this build contains a new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
+The current build, v0.1.4, has not yet been released, but contains several goodies, in addition to more minor improvements in the code!! 
+- As of January 2017, I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! 
+- As of April 2017, this build contains a new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run. 
+- Also in April, I added new 'dadiRunner.sh' script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo).
 
 *What is possible with PIrANHA?* *Who cares?*
 
 **How PIrANHA scripts work together**
 
-PIrANHA facilitates analysis pipelines that could be of interest to nearly anyone conducting evolutionary analyses of DNA sequence data using maximum-likelihood and Bayesian methods. **Figure 1** and **Figure 2** below demonstrate flow and interactions of the current pipelines with **software** and **"file types"** used to generate input for PIrANHA in the left column, and the way these are processed within/using PIrANHA illustrated in the right column. External software programs are shown in balloons with names in black italic font, while PIrANHA scripts are given in blue. Arrows show the flow of files through different pipelines, which terminate in results (shown right of final arrows at far right of each diagram).
+PIrANHA facilitates analysis pipelines that could be of interest to nearly anyone conducting evolutionary analyses of DNA sequence data using maximum-likelihood and Bayesian methods. **Figure 1** and **Figure 2** below demonstrate flow and interactions of the current partition scheme, population structure, and phylogenetics pipelines with **software** and **"file types"** used to generate input for PIrANHA in the left column, and the way these are processed within/using PIrANHA illustrated in the right column. External software programs are shown in balloons with names in black italic font, while PIrANHA scripts are given in blue. Arrows show the flow of files through different pipelines, which terminate in results (shown right of final arrows at far right of each diagram).
 
 ![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273172/e92c125a-8fa1-11e6-9985-89739f33d932.png)
 **Figure 1**
@@ -52,6 +64,10 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 ![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273268/419f0b0e-8fa2-11e6-9bfe-9f71670d16bb.png)
 **Figure 2**
 
+The following **Figure 3** illustrates new capacities of running and processing dadi (Gutenkunst et al. 2009) files in PIrANHA (note: the post-processing script is still under development).
+
+[Coming soon.]
+**Figure 3**
 
 ## GETTING STARTED
 
