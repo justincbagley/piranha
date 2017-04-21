@@ -58,10 +58,10 @@ The current build, v0.1.4, has not yet been released, but contains several goodi
 
 PIrANHA facilitates analysis pipelines that could be of interest to nearly anyone conducting evolutionary analyses of DNA sequence data using maximum-likelihood and Bayesian methods. **Figure 1** and **Figure 2** below demonstrate flow and interactions of the current partition scheme, population structure, and phylogenetics pipelines with **software** and **"file types"** used to generate input for PIrANHA in the left column, and the way these are processed within/using PIrANHA illustrated in the right column. External software programs are shown in balloons with names in black italic font, while PIrANHA scripts are given in blue. Arrows show the flow of files through different pipelines, which terminate in results (shown right of final arrows at far right of each diagram).
 
-![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273172/e92c125a-8fa1-11e6-9985-89739f33d932.png)
+<a href="http://imgur.com/2at3b8P"><img src="http://i.imgur.com/2at3b8P.png" title="source: Justin C. Bagley" align="center" /></a>
 **Figure 1**
 
-![alt tag](https://cloud.githubusercontent.com/assets/10584087/19273268/419f0b0e-8fa2-11e6-9bfe-9f71670d16bb.png)
+<a href="http://imgur.com/3zSt2gC"><img src="http://i.imgur.com/3zSt2gC.png" title="source: Justin C. Bagley" align="center" /></a>
 **Figure 2**
 
 The following **Figure 3** illustrates new capacities of running and processing dadi (Gutenkunst et al. 2009) files in PIrANHA (note: the post-processing script is still under development).
