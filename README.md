@@ -66,7 +66,7 @@ PIrANHA facilitates analysis pipelines that could be of interest to nearly anyon
 
 The following **Figure 3** illustrates new capacities of running and processing dadi (Gutenkunst et al. 2009) files in PIrANHA (note: the post-processing script is still under development).
 
-<a href="http://imgur.com/dyzkPCt"><img src="http://i.imgur.com/dyzkPCt.png" title="source: Justin C. Bagley" width=60% height=60% align="center" /></a>
+<a href="http://imgur.com/dyzkPCt"><img src="http://i.imgur.com/dyzkPCt.png" title="source: Justin C. Bagley" align="center" /></a>
 **Figure 3**
 
 ## GETTING STARTED
