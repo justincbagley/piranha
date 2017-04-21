@@ -73,23 +73,32 @@ The following **Figure 3** illustrates new capacities of running and processing 
 
 ### Dependencies
 
-PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.4)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, here I provide a full list of them, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release:
+PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.4)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, I provide a full list of them below, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release. Of course, you can usually get away with not installing dependencies or software that are unrelated to the analysis you are conducting with PIrANHA, but it is recommended that you install all dependencies to take full advantage of PIrANHA's capabilities, or be prepared for any analysis!
 
 - PartitionFinder
 - BEAST v1.8.3 and v2.4.2 (or newer; available at: http://beast.bio.ed.ac.uk/downloads and http://beast2.org, respectively)
+	* Updated Java, appropriate Java virtual machine / jdk required
+	* beagle-lib recommended
 	* default BEAST packages required
 - ExaBayes (available at: http://sco.h-its.org/exelixis/web/software/exabayes/)
-- RAxML (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
+- RAxML (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html)
 - Perl (available at: https://www.perl.org/get.html).
-- \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html; note: some, but not all of these, come packaged within MAGNET).
-- Python (available at: https://www.python.org/downloads/).
-- bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
+- \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html; note: some, but not all of these, come packaged within MAGNET)
+- Python v2.7 and/or 3+ (available at: https://www.python.org/downloads/)
+- bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh")
+- fastSTRUCTURE v1.0 (available at: https://rajanil.github.io/fastStructure/)
+	* Numpy (available at: http://www.numpy.org/)
+	* Scipy (available at: http://www.scipy.org/)
+	* Cython (available at: http://cython.org/)
+	* GNU Scientific Library (available at: http://www.gnu.org/software/gsl/)
+- dadi v1.7.0 (or v1.6.3 as modified by Tine et al. 2014; available at: https://bitbucket.org/gutenkunstlab/dadi/overview)
+- R v3+ (available at: https://cran.r-project.org/)
 
 Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their supercomputer and/or local machine (best practice is to simply install all software in both places). For more details, see the MAGNET README.
 
 ### Installation
 
-:computer: As PIrANHA is primarily composed of UNIX shell scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for PIrANHA, because these systems come with the shell preinstalled; thus PIrANHA should run "out-of-the-box" from most any folder on your machine.
+:computer: As PIrANHA is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for PIrANHA, because these systems come with the shell preinstalled; thus PIrANHA should run "out-of-the-box" from most any folder on your machine.
 
 ### IMPORTANT! - Passwordless SSH Access
 
@@ -122,6 +131,7 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 | .log                   | BEAST                             |
 | .mle.log               | BEAST                             |
 | .xml                   | BEAUti                            |
+| .sfs                   | easySFS                           |
 | Exabayes_topologies.\* | ExaBayes                          |
 | Exabayes_parameters.\* | ExaBayes                          |
 
@@ -158,6 +168,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Lemmon AR, Lemmon E (2008) A likelihood framework for estimating phylogeographic history on a continuous landscape. Systematic Biology, 57, 544–561.
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
+- Tine et al. 2014. Nature comm.
 
 ## RECOMMENDED READING
 - Unix shell background info [here](https://www.gnu.org/software/bash/), [here](https://en.wikipedia.org/wiki/Bash_(Unix_shell)), [here](http://askubuntu.com/questions/141928/what-is-difference-between-bin-sh-and-bin-bash), and [here](http://www.computerworld.com.au/article/222764/).
@@ -169,5 +180,5 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
 
-April 8, 2017
+April 21, 2017
 Justin C. Bagley, Richmond, VA, USA
