@@ -2,18 +2,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                        BEASTPostProc v1.1, September 2016                              #
-#   SHELL SCRIPT FOR POST-PROCESSING BEAST GENE & SPECIES TREES OUTPUT FILES ON A        #
-#   SUPERCOMPUTING CLUSTER                                                               #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: September 7, 2016. For questions, please email     #
-#   jcbagley@unb.br.                                                                     #
+#                             BEASTPostProc v1.1, April 2017                             #
+#  SHELL SCRIPT FOR POST-PROCESSING BEAST GENE TREE & SPECIES TREE OUTPUT FILES ON A     #
+#  REMOTE SUPERCOMPUTING CLUSTER                                                         #
+#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
+#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
+#  (http://github.com/justincbagley) for further information. Last update: April 25,     #
+#  2017. For questions, please email jcbagley@vcu.edu.                                   #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                        BEASTPostProc v1.1, September 2016                              #
+#                             BEASTPostProc v1.1, April 2017                             #
 ##########################################################################################
 "
 
@@ -142,8 +142,7 @@ calc () {
 	if [[ "${#files[@]}" -gt 0 ]] ; then
 		echo "INFO      | $(date) |         Renaming final 5k post-burnin species tree files."
 #+
-        for j in ./*.species.trees_final_5k.trees
-            do
+        for j in ./*.species.trees_final_5k.trees; do
             mv $j ${j/*/final_5k.species.trees}
         done
 #+
@@ -159,8 +158,7 @@ calc () {
 	if [[ "${#folders[@]}" -gt 0 ]] ; then
 		echo "INFO      | $(date) |         Step #3 succeeded. Renaming folders with TreeAnnotator species tree results. "
 #+
-		for k in ./*.species.trees.treeannotator
-			do
+		for k in ./*.species.trees.treeannotator; do
 			mv $k ${k/*/treeannotator.species.tree}
 		done
 #+
@@ -171,10 +169,9 @@ calc () {
 
 ###### Rename treeannotator output species tree file:
 (
-	for l in ./treeannotator.species.tree/*.treeannotator.out
-        do
-        mv $l ${l/*/MCC.species.tree.out}
-    done
+	for l in ./treeannotator.species.tree/*.treeannotator.out; do
+        	mv $l ${l/*/MCC.species.tree.out}
+    	done
 )
         mv MCC.species.tree.out ./treeannotator.species.tree
 
@@ -208,13 +205,11 @@ if [[ $MY_BEAST_GENETREE_FILES ]]; then
 								## NOTE: The above works like this: 55 million as the starting generation, do 55x10^6/4000=13750, gets you the starting point; stop point (# on right) is calculated by simply adding 5000 to the first number.
 
 ###### Convert your 5000 post-burnin gene trees into NEXUS tree file format:
-	MY_NTAX="$(grep -n "Dimensions" \
-	$m | \
-	awk -F"=" '{print $NF}' | sed 's/\;//g')"		
+	MY_NTAX="$(grep -n "Dimensions" $m | awk -F"=" '{print $NF}' | sed 's/\;//g')"		
 #
 	calc () {										
     	bc -l <<< "$@"
-	}
+}
 #
 	MY_HEADER_LENGTH="$(calc 2*$MY_NTAX + 11)"		
 	head -n $MY_HEADER_LENGTH $m > nexusHeader.txt
