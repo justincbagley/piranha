@@ -7,8 +7,9 @@
 #                             dadiRunner v0.1.0, April 2017                              #
 #  SHELL SCRIPT FOR AUTOMATING RUNNING ∂a∂i ON A REMOTE SUPERCOMPUTING CLUSTER           #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
-#  USA. See README and license on GitHub (http://github.com/justincbagley) for further   #
-#  information. Last update: April 20, 2017. For questions, email jcbagley@vcu.edu.      #
+#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
+#  (http://github.com/justincbagley) for further information. Last update: April 20,     #
+#  2017. For questions, please email jcbagley@vcu.edu.                                   #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
