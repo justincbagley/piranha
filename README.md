@@ -12,7 +12,7 @@ All code within the PIrANHA v0.1.4 repository is available "AS IS" under a gener
 
 If you use scripts from this repository as part of your published research, I require that you cite the repository as follows (also see DOI information below): 
   
-- Bagley, J.C. 2016. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
+- Bagley, J.C. 2017. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, please provide the following link to this software repository in your manuscript:
 
@@ -22,9 +22,9 @@ Alternatively, please provide the following link to this software repository in 
 
 The DOI for PIrANHA, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](https://zenodo.org/badge/64274217.svg)](https://zenodo.org/badge/latestdoi/64274217). Here are some examples of citing PIrANHA using the DOI: 
   
-  Bagley, J.C. 2016. PIrANHA. GitHub package, Available at: http://doi.org/10.5281/zenodo.166309.
+  Bagley, J.C. 2017. PIrANHA. GitHub package, Available at: http://doi.org/10.5281/zenodo.166309.
 
-  Bagley, J.C. 2016. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.166309.  
+  Bagley, J.C. 2017. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.166309.  
 
 ## INTRODUCTION
 
