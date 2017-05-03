@@ -48,9 +48,10 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 **What's new in this release?** 
 
 The current build, v0.1.4, has not yet been released, but contains several goodies listed below, in addition to minor improvements in the code!! 
-- January 2017: I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! 
+- May 2017: build now contains new 'BEASTRunner.sh' script and 'beast_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
 - April 2017: build now contains new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run. 
 - April 2017: = I added new 'dadiRunner.sh' script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo).
+- January 2017: I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! 
 
 *What is possible with PIrANHA?* *Who cares?*
 
