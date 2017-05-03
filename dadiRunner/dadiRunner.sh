@@ -78,10 +78,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -i n w] working
  
 		## Usage examples: 
 		"$0" .
-		"$0" -n 5 .
-		"$0" -i <SNPInput filename> .
-		"$0" -i <SNPInput filename> -n 20 .
-		"$0" -i <SNPInput filename> -n 20 -w 24:00:00 .		## Ex.: changing run walltime.
+		"$0" -i <SNPInput_filename> .
+		"$0" -i <SNPInput_filename> -n 20 .			## Ex.: changing nRuns.
+		"$0" -i <SNPInput_filename> -n 20 -w 24:00:00 .		## Ex.: changing run walltime.
 	
  CITATION
  Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
