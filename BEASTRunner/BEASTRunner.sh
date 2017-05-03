@@ -388,7 +388,7 @@ HERE
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting BEAST jobs to queue!!"
 
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
-	## for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".xml; done
+	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".xml; done
 	rm ./batch_qsub_top.txt
 	rm ./cd_and_qsub_commands.txt
 	rm ./batch_qsub_bottom.txt
