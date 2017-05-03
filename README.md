@@ -181,5 +181,5 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
 
-April 21, 2017
+May 3, 2017
 Justin C. Bagley, Richmond, VA, USA
