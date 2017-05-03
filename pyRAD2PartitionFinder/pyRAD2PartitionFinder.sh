@@ -4,17 +4,17 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                         pyRAD2PartitionFinder v1.0, July 2016                          #
+#                          pyRAD2PartitionFinder v1.0, May 2017                          #
 #   SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD     #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: July 18, 2016. For questions, please email         #
-#   jcbagley@unb.br.                                                                     #
+#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
+#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
+#  (http://github.com/justincbagley) for further information. Last update: May 3, 2017.  #
+#  For questions, please email jcbagley@vcu.edu.                                         #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                         pyRAD2PartitionFinder v1.0, July 2016                          #
+#                          pyRAD2PartitionFinder v1.0, May 2017                          #
 ##########################################################################################"
 
 ############ STEP #1: MODIFY pyRAD DATAFILE FOR PartitionFinder
@@ -22,22 +22,20 @@ MY_PYRAD_PARTITION=./*.partitions           				## Assign "partition" files in c
 MY_PHYLIP_FILE=./*.phy                      				## Assign PHYLIP SNP datafiles in current directory to variable.
 
 ###### FORMAT pyRAD PARTITION FILE FOR PartitionFinder: 
-for i in $MY_PYRAD_PARTITION               					## Look in the current directory for partition scheme files output by pyRAD.
-	do 
-	echo $i
-	sed 's/^DNA..//g' ${i} > ${i}_1.tmp					## Reformatting using nested for loops.
-			for j in ${i}_1.tmp
-				do 
+(
+	for i in $MY_PYRAD_PARTITION; do               					## Look in the current directory for partition scheme files output by pyRAD.
+		echo $i
+		sed 's/^DNA..//g' ${i} > ${i}_1.tmp					## Reformatting using nested for loops.
+			for j in ${i}_1.tmp; do
 				echo $j
 				sed 's/$/;/' ${j} > ${j}.PFparts.txt 
 			done
-				for k in *.partitions_1.tmp.PFparts.txt
-					do
-					mv $k ${k/.partitions_1.tmp.PFparts.txt/.newPartitions.txt}
-				done						## Line above renames the output.
-done
-#
-rm *_1.tmp									## Remove unnecessary files.
+		for k in *.partitions_1.tmp.PFparts.txt; do
+			mv $k ${k/.partitions_1.tmp.PFparts.txt/.newPartitions.txt}
+		done						## Line above renames the output.
+	done
+)
+	rm ./*_1.tmp	## Remove unnecessary files.
 
 
 ############ STEP #2: PREPARE PartitionFinder CONFIGURATION FILE
@@ -66,19 +64,17 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	#user schemes go here if search=user. See manual for how to define.#
 	" > PF_bottom.tmp
 
-cat ./PF_top.tmp ./*.newPartitions.txt \
-./PF_bottom.tmp > partition_finder.cfg  					## Make PartitionFinder configuration file.
-rm ./PF_top.tmp ./PF_bottom.tmp;  						## Remove unnecessary files.
+	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
+	rm ./PF_top.tmp ./PF_bottom.tmp;  						## Remove unnecessary files.
 
 
 ############ STEP #3: RUN PartitionFinder ON THE DATA IN WORKING DIRECTORY
 ###### Find path to PartitionFinder and assign to variable:
-MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | \
-	grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
+	MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
 	sed -n 's/.://p')"
 
-python $MY_PATH_TO_PARTITIONFINDER .						## __PATH NEEDED__: Change the path to PartitionFinder.py listed after "python" at the start of this line to the appropriate path on your computer, if necessary.
-										## Previously, for my machine, the previous line was: python /Applications/PartitionFinderV1.1.1_Mac/PartitionFinder.py .     # __PATH NEEDED__: Change the path to PartitionFinder.py listed after "python" at the start of this line to the appropriate path on your computer, if necessary.
+	python $MY_PATH_TO_PARTITIONFINDER .
+
 #
 #
 #
