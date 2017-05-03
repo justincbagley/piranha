@@ -39,14 +39,14 @@ Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] workingDir
  The code starts from a single working directory on the user's local machine, which contains
  one or multiple XML input files with extension '*run.xml' (where * is any set of 
  alphanumeric characters separated possibly by underscores but no spaces). These files are 
- identified and run through the BEASTRunner pipeline, which involves four steps, as follows: 
- 1) copy each XML file n times to create n+1 separate run XML files; 2) make directories 
- for runs (1 per XML) and create a shell script with the name "beast_pbs.sh" that is 
- specific to the input and can be used to submit job to supercomputer and move this PBS 
- shell script into the corresponding folder; 3) create a batch submission file (PBS format) 
- and move it and all run folders to the desired working directory on the supercomputer; 4) 
- execute the batch submission file on the supercomputer so that all jobs are submitted to 
- the supercomputer queue.
+ identified and run through the BEASTRunner pipeline, which involves five steps, as follows: 
+ 1) set up the workspace; 2) copy each XML file n times to create n+1 separate run XML files; 
+ 3) make directories for 1 run per XML (nRuns) and create a shell script with the name 
+ "beast_pbs.sh" that is specific to the input and can be used to submit job to supercomputer 
+ and move this PBS shell script into the corresponding folder; 4) create a batch submission 
+ file (PBS format) and move it and all run folders to the desired working directory on the 
+ supercomputer; 5) execute the batch submission file on the supercomputer so that all jobs 
+ are submitted to the supercomputer queue.
 
  Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
  by BEASTRunner.sh is fed to the program by culling the data from an external configuration 
@@ -102,14 +102,14 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] working
  The code starts from a single working directory on the user's local machine, which contains
  one or multiple XML input files with extension '*run.xml' (where * is any set of 
  alphanumeric characters separated possibly by underscores but no spaces). These files are 
- identified and run through the BEASTRunner pipeline, which involves four steps, as follows: 
- 1) copy each XML file n times to create n+1 separate run XML files; 2) make directories 
- for runs (1 per XML) and create a shell script with the name "beast_pbs.sh" that is 
- specific to the input and can be used to submit job to supercomputer and move this PBS 
- shell script into the corresponding folder; 3) create a batch submission file (PBS format) 
- and move it and all run folders to the desired working directory on the supercomputer; 4) 
- execute the batch submission file on the supercomputer so that all jobs are submitted to 
- the supercomputer queue.
+ identified and run through the BEASTRunner pipeline, which involves five steps, as follows: 
+ 1) set up the workspace; 2) copy each XML file n times to create n+1 separate run XML files; 
+ 3) make directories for 1 run per XML (nRuns) and create a shell script with the name 
+ "beast_pbs.sh" that is specific to the input and can be used to submit job to supercomputer 
+ and move this PBS shell script into the corresponding folder; 4) create a batch submission 
+ file (PBS format) and move it and all run folders to the desired working directory on the 
+ supercomputer; 5) execute the batch submission file on the supercomputer so that all jobs 
+ are submitted to the supercomputer queue.
 
  Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
  by BEASTRunner.sh is fed to the program by culling the data from an external configuration 
