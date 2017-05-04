@@ -88,7 +88,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                         pyRAD2PartitionFinder v1.0, July 2016                          #
+#                          pyRAD2PartitionFinder v1.1, May 2017                          #
 ##########################################################################################"
 
 ############ STEP #1: MODIFY pyRAD DATAFILE FOR PartitionFinder
