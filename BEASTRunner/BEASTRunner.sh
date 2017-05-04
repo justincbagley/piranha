@@ -76,10 +76,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] workingDir
  REFERENCES
  Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond 
  	AJ (2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS 
- 	Computational Biology 10: e1003537.
-
+ 	Computational Biology, 10, e1003537.
  Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and 
- 	the BEAST 1.7. Molecular Biology and Evolution 29: 1969-1973.
+ 	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 "
 
 verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] workingDir 
@@ -161,10 +160,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] working
  REFERENCES
  Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond 
  	AJ (2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS 
- 	Computational Biology 10: e1003537.
-
+ 	Computational Biology, 10, e1003537.
  Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and 
- 	the BEAST 1.7. Molecular Biology and Evolution 29: 1969-1973.
+ 	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 "
 
 ############ PARSE THE OPTIONS
