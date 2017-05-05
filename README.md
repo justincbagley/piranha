@@ -36,6 +36,7 @@ PIrANHA v0.1.4 is a repository of shell scripts and R scripts written by the aut
 - **PartitionFinder** (Lanfear et al. 2012, 2014)
 - **BEAST** (Drummond et al. 2012; Bouckaert et al. 2014)
 - **starBEAST** (Heled & Drummond 2010)
+- **MrBayes** (Ronquist et al. 2012)
 - **ExaBayes** (Aberer et al. 2014)
 - **RAxML** (Stamatakis 2014)
 - **dadi** (Gutenkunst et al. 2009)
@@ -82,6 +83,7 @@ PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbag
 	* Updated Java, appropriate Java virtual machine / jdk required
 	* beagle-lib recommended
 	* default BEAST packages required
+- MrBayes v3.2++ (available at: http://mrbayes.sourceforge.net/download.php)
 - ExaBayes (available at: http://sco.h-its.org/exelixis/web/software/exabayes/)
 - RAxML (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html)
 - Perl (available at: https://www.perl.org/get.html).
@@ -172,6 +174,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Lemmon AR, Lemmon E (2008) A likelihood framework for estimating phylogeographic history on a continuous landscape. Systematic Biology, 57, 544–561.
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
+- Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, et al. (2012) MrBayes v. 3.2: efficient Bayesian phylogenetic inference and model choice across a large model space. Systematic Biology, 61, 539-542.
 - Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30, 1312-1313.
 - Tine et al. 2014. Nature comm.
 
@@ -185,6 +188,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
 - Add MrBayes scripts
+- Add options to MrBayesPostProc script, e.g. for burnin frac and SS analysis.
 
 May 4, 2017
 Justin C. Bagley, Richmond, VA, USA
