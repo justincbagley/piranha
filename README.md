@@ -37,6 +37,7 @@ PIrANHA v0.1.4 is a repository of shell scripts and R scripts written by the aut
 - **BEAST** (Drummond et al. 2012; Bouckaert et al. 2014)
 - **starBEAST** (Heled & Drummond 2010)
 - **ExaBayes** (Aberer et al. 2014)
+- **RAxML** (Stamatakis 2014)
 - **dadi** (Gutenkunst et al. 2009)
 - **fastSTRUCTURE** (Raj et al. 2014)
 - **PhyloMapper** (Lemmon and Lemmon 2008)
@@ -47,7 +48,7 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 
 **What's new in this release?** 
 
-The current build, v0.1.4, has not yet been released, but contains several goodies listed below, in addition to minor improvements in the code!! 
+The current build, v0.1.4, which has just been released, contains several goodies listed below, in addition to minor improvements in the code!! 
 - **May 2017:** build now contains new 'BEASTRunner.sh' script and 'beast_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
 - **April 2017:** build now contains new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
 - **April 2017:** I added new 'dadiRunner.sh' script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo).
@@ -86,12 +87,12 @@ PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbag
 - Perl (available at: https://www.perl.org/get.html).
 - \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html; note: some, but not all of these, come packaged within MAGNET)
 - Python v2.7 and/or 3+ (available at: https://www.python.org/downloads/)
-- bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh")
-- fastSTRUCTURE v1.0 (available at: https://rajanil.github.io/fastStructure/)
 	* Numpy (available at: http://www.numpy.org/)
 	* Scipy (available at: http://www.scipy.org/)
 	* Cython (available at: http://cython.org/)
 	* GNU Scientific Library (available at: http://www.gnu.org/software/gsl/)
+	* bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh")
+- fastSTRUCTURE v1.0 (available at: https://rajanil.github.io/fastStructure/)
 - dadi v1.7.0 (or v1.6.3 as modified by Tine et al. 2014; available at: https://bitbucket.org/gutenkunstlab/dadi/overview)
 - R v3+ (available at: https://cran.r-project.org/)
 
@@ -143,7 +144,7 @@ Shell script for going directly from Phylip alignment (.phy) and partitions (.pa
 
 ### Estimating Gene Trees for Species Tree Inference
 #### _MAGNET (MAny GeNE Trees) Package_
-Shell script (and others) for inferring gene trees for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo.
+Shell script (and others) for inferring maximum-likelihood gene trees in RAxML (Stamatakis 2014) for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo. Starting file formats that are currently supported include .nex and .gphocs (from G-PhoCS software, Gronau et al. 2011).
 
 ### Automating Bayesian evolutionary analyses in BEAST
 #### _BEASTRunner_
@@ -165,11 +166,13 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Eaton DAR, Overcast I (2016) ipyrad: interactive assembly and analysis of RADseq data sets. Available at: <http://ipyrad.readthedocs.io/>.
 - Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 - Felsenstein J (2004) Inferring phylogenies. Sunderland, MA: Sinauer Associates.
+- Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
 - Heled J, Drummond AJ (2010) Bayesian inference of species trees from multilocus data. Molecular Biology and Evolution, 27, 570–580.
 - Lanfear R, Calcott B, Ho SYW, Guindon S (2012) PartitionFinder: combined selection of partitioning schemes and substitution models for phylogenetic analyses. Molecular Biology and Evolution, 29,1695-1701.
 - Lemmon AR, Lemmon E (2008) A likelihood framework for estimating phylogeographic history on a continuous landscape. Systematic Biology, 57, 544–561.
 - Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
+- Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30, 1312-1313.
 - Tine et al. 2014. Nature comm.
 
 ## RECOMMENDED READING
@@ -181,6 +184,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Make pyrad and ipyrad batch run scripts available
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
+- Add MrBayes scripts
 
-May 3, 2017
+May 4, 2017
 Justin C. Bagley, Richmond, VA, USA
