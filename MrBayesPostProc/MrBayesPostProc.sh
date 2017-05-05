@@ -34,16 +34,12 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES. "
     fi
 
 	MY_NEXUS=./*.nex
-	MY_NEXUS_FILENAME="$(echo ./*.nex | sed -n 's/.\///p')"		## Assumes only one NEXUS file in working directory corresponding to MrBayes run input file.
-	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.://p' | sed 's/\.mcmc$//g')" 	##--Note: If you want to check these variables, do: ~$ echo $MY_NEXUS_FILENAME; echo $MY_MRBAYES_FILENAME;
-
-    MY_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | \
-    awk -F"=" '{print $NF}')"
+	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.://p' | sed 's/\.mcmc$//g')"
+	MY_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | awk -F"=" '{print $NF}')"
 
 
 echo "INFO      | $(date) | STEP #2: REMOVE MRBAYES BLOCK FROM NEXUS FILE. "
 	MY_MRBAYES_BLOCK_START="$(grep -n "BEGIN mrbayes;" ./*.nex | sed 's/:.*$//g')"
-	MY_EOF_LINE="$(wc -l $MY_NEXUS)"
 	MY_HEADSTOP="$(calc $MY_MRBAYES_BLOCK_START-1)"
 
 	head -n$MY_HEADSTOP $MY_NEXUS > ./simple.nex
