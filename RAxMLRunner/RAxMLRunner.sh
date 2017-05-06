@@ -66,7 +66,7 @@ sbatch RAxML_sbatch.sh
 
 	done
 )
-sed -i '' 1,3d ./cd_and_sbatch_commands.txt		## First line of file attempts to cd to "./*/", but this will break the submission script. Here, we use sed to remove the first three lines, which contain the problematic cd line, a sbatch line, and a blank line afterwards.
+## NOT RUN:  sed -i '' 1,3d ./cd_and_sbatch_commands.txt		## First line of file attempts to cd to "./*/", but this will break the submission script. Here, we use sed to remove the first three lines, which contain the problematic cd line, a sbatch line, and a blank line afterwards.
 
 ##--Finish making batch queue submission file and name it "sbatch_sub.sh".
 echo "
