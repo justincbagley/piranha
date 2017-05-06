@@ -277,7 +277,7 @@ qsub dadi_pbs.sh
 
 	done
 )
-sed -i '' 1,3d ./cd_and_qsub_commands.txt		## First line of file attempts to cd to "./*/", but this will break the submission script. Here, we use sed to remove the first three lines, which contain the problematic cd line, a qsub line, and a blank line afterwards.
+## NOT RUN:  sed -i '' 1,3d ./cd_and_qsub_commands.txt		## First line of file attempts to cd to "./*/", but this will break the submission script. Here, we use sed to remove the first three lines, which contain the problematic cd line, a qsub line, and a blank line afterwards.
 
 echo "
 $MY_SC_PBS_WKDIR_CODE
