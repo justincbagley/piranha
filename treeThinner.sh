@@ -32,31 +32,31 @@ echo "
 read -p "Please enter the name of your MrBayes .t trees file : " MY_TFILE
 read -p "Please enter the frequency (n) of nth lines that you would like to keep : " NTH_LINES
 
-calc () {												## Make the "handy bash function 'calc'" for subsequent use.
-   	bc -l <<< "$@"
+   calc () {												## Make the "handy bash function 'calc'" for subsequent use.
+      bc -l <<< "$@"
 }
-MY_FIRST_TREELINE=$(awk '/&U/{ print NR}' $MY_TFILE | head -n1)
-MY_NUM_HEADER_LINES="$(calc $MY_FIRST_TREELINE - 1)"
+   MY_FIRST_TREELINE=$(awk '/&U/{ print NR}' $MY_TFILE | head -n1)
+   MY_NUM_HEADER_LINES="$(calc $MY_FIRST_TREELINE - 1)"
 
 ### STEP #2:
-head -n$MY_NUM_HEADER_LINES $MY_TFILE > header.txt
-## alternatively, extracting only interior lines: ~$ sed -n <first_line>,<second_line>p filename > newfile
+   head -n$MY_NUM_HEADER_LINES $MY_TFILE > header.txt
+   ## alternatively, extracting only interior lines: ~$ sed -n <first_line>,<second_line>p filename > newfile
 
 ### STEP #3:
-grep "&U" $MY_TFILE > trees.txt
-awk 'NR == 1 || NR % '$NTH_LINES' == 0' ./trees.txt | sed '1d' > thinned_trees.txt
+   grep "&U" $MY_TFILE > trees.txt
+   awk 'NR == 1 || NR % '$NTH_LINES' == 0' ./trees.txt | sed '1d' > thinned_trees.txt
 
 ### STEP #4:
-echo "END;
+   echo "END;
 " > ./end.txt
 
-cat ./header.txt ./thinned_trees.txt ./end.txt > ./nth_line_trees.t
+   cat ./header.txt ./thinned_trees.txt ./end.txt > ./nth_line_trees.t
 
 ### CLEANUP.
-rm ./header.txt
-rm ./trees.txt
-rm ./thinned_trees.txt
-rm ./end.txt 
+   rm ./header.txt
+   rm ./trees.txt
+   rm ./thinned_trees.txt
+   rm ./end.txt 
 
 #
 #
