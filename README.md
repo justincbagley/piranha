@@ -50,6 +50,7 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 **What's new in this release?** 
 
 The latest release, v0.1.4, contains several goodies listed below, in addition to minor improvements in the code!! 
+- **May 2017:** added options to 'MrBayesPostProc.sh' script for specifying relative burnin fraction (during sump and sumt), as well as calling stepping-stone sampling estimation of the log-marginal likelihood of the model.
 - **May 2017:** added new 'MrBayesPostProc.sh' script that summarizes the posterior distribution of trees and parameters from a single MrBayes run. Script picks up filenames from contents of run dir, and uses default burnin fraction of 0.25 during analyses.
 - **May 2017:** build now contains new 'BEASTRunner.sh' script and 'beast_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
 - **April 2017:** build now contains new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
@@ -166,6 +167,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 
 - Aberer AJ, Kobert K, Stamatakis A (2014) ExaBayes: massively parallel Bayesian tree inference for the whole-genome era. Molecular Biology and Evolution, 31, 2553-2556.
 - Avise JC (2000) Phylogeography: the history and formation of species. Cambridge, MA: Harvard University Press.
+- Baele et al. 2012.
 - Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond AJ (2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS Computational Biology, 10, e1003537.
 - Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. Bioinformatics, 30, 1844-1849.
 - Eaton DAR, Overcast I (2016) ipyrad: interactive assembly and analysis of RADseq data sets. Available at: <http://ipyrad.readthedocs.io/>.
@@ -180,18 +182,19 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, et al. (2012) MrBayes v. 3.2: efficient Bayesian phylogenetic inference and model choice across a large model space. Systematic Biology, 61, 539-542.
 - Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30, 1312-1313.
 - Tine et al. 2014. Nature comm.
+- Xie et al. 2011.
 
 ## RECOMMENDED READING
 - Unix shell background info [here](https://www.gnu.org/software/bash/), [here](https://en.wikipedia.org/wiki/Bash_(Unix_shell)), [here](http://askubuntu.com/questions/141928/what-is-difference-between-bin-sh-and-bin-bash), and [here](http://www.computerworld.com.au/article/222764/).
 - GNU [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.pdf)
 
 ## TODO
+- **Add MrBayes scripts** **DONE!** :white_check_mark:
+- **Add options to MrBayesPostProc script, e.g. for burnin frac and stepping-stone MLE analysis.** **DONE!** :white_check_mark:
 - ** Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in Super-pyRAD2PartitionFinder.sh, BEASTRunner.sh, BEASTPostProc.sh, and RAxMLRunner.sh) **
 - Make pyrad and ipyrad batch run scripts available
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
-- Add MrBayes scripts
-- Add options to MrBayesPostProc script, e.g. for burnin frac and SS analysis.
 
 May 4, 2017
 Justin C. Bagley, Richmond, VA, USA
