@@ -207,14 +207,14 @@ echo "
 ##########################################################################################"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Starting BEASTRunner pipeline... "
-echo "INFO      | $(date) | STEP #1: SETUP VARIABLES, MAKE 4 COPIES PER INPUT XML FILE \
-FOR A TOTAL OF FIVE RUNS OF EACH MODEL/XML USING"
-echo "INFO      | $(date) |          DIFFERENT RANDOM SEEDS. "
-echo "INFO      | $(date) |          Setting up variables, including those specified in the cfg file..."
 	calc () {
 	   	bc -l <<< "$@"
 }
+echo "INFO      | $(date) | Starting BEASTRunner pipeline... "
+echo "INFO      | $(date) | STEP #1: SETUP VARIABLES, MAKE $(calc $MY_NUM_INDEP_RUNS - 1) COPIES PER INPUT XML FILE \
+FOR A TOTAL OF FIVE RUNS OF EACH MODEL/XML USING"
+echo "INFO      | $(date) |          DIFFERENT RANDOM SEEDS. "
+echo "INFO      | $(date) |          Setting up variables, including those specified in the cfg file..."
 	MY_XML_FILES=./*.xml
 	MY_NUM_XML="$(ls . | grep "\.xml$" | wc -l)"
 echo "INFO      | $(date) |          Number of XML files read: $MY_NUM_XML"	## Check number of input files read into program.
