@@ -19,7 +19,7 @@ MY_SC_WALLTIME=48:00:00
 JAVA_MEM_ALLOC=5120M
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] workingDir 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -59,15 +59,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] workingDir
  typing "./BEASTRunner.sh", and pressing return.
  
  It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4.2++) is installed on the
- supercomputer, and that the user can provide absolute paths to the software. During  
- generation of the BEAST submission scripts (STEP #2 above), there are options within the 
- shell script template area of the BEASTRunner code (~Lines 99-124) that need to be 
- uncommented, but which would require having BEAST available from the command line interface 
- by simply typing "beast" (~Lines 112 and 124). This is optional and only needed for 
- conducting runs using BEAST v1.8 and v2.3.1++; really, these lines just give illustrations 
- of different ways to run BEAST, when the program can be loaded using different modules. 
- However, especially when many different versions are available, or modules are unavailable, 
- it is more convenient to supply the whole path to BEAST executables. 
+ supercomputer, and that the user can provide absolute paths to the BEAST jar file in the 
+ cfg file. Last testing was conducted using BEAST v2.4.5. Check for BEAST2 updates at 
+ <http://BEAST2.org>. 
 
  CITATION
  Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
@@ -81,7 +75,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] workingDir
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] workingDir 
+verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] workingDir 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -121,15 +115,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] working
  typing "./BEASTRunner.sh", and pressing return.
  
  It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4.2++) is installed on the
- supercomputer, and that the user can provide absolute paths to the software. During  
- generation of the BEAST submission scripts (STEP #2 above), there are options within the 
- shell script template area of the BEASTRunner code (~Lines 99-124) that need to be 
- uncommented, but which would require having BEAST available from the command line interface 
- by simply typing "beast" (~Lines 112 and 124). This is optional and only needed for 
- conducting runs using BEAST v1.8 and v2.3.1++; really, these lines just give illustrations 
- of different ways to run BEAST, when the program can be loaded using different modules. 
- However, especially when many different versions are available, or modules are unavailable, 
- it is more convenient to supply the whole path to BEAST executables. 
+ supercomputer, and that the user can provide absolute paths to the BEAST jar file in the 
+ cfg file. Last testing was conducted using BEAST v2.4.5. Check for BEAST2 updates at 
+ <http://BEAST2.org>. 
 
  DETAILS
  The -n flag sets the number of independent BEAST runs to be submitted to the supercomputer
@@ -149,8 +137,8 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] working
 		## Usage examples: 
 		"$0" .
 		"$0" -n 5 .
-		"$0" -n 20 .						## Ex.: changing number of runs.
-		"$0" -n 20 -w 24:00:00 .			## Ex.: changing run walltime.
+		"$0" -n 20 .		## Ex.: changing number of runs.
+		"$0" -n 20 -w 24:00:00 .	## Ex.: changing run walltime.
 		"$0" -n 20 -w 24:00:00 -m 2048M .	## Ex.: changing memory (RAM) allocation.
 	
  CITATION
@@ -165,14 +153,19 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -n w m] working
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 "
 
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
+	echo "$verboseHelp"
+	exit
+fi
+
 ############ PARSE THE OPTIONS
-while getopts 'h:H:n:w:m:' opt ; do
+while getopts 'n:w:m:' opt ; do
   case $opt in
-## Help texts:
-	h) echo "$Usage"
-       exit ;;
-	H) echo "$verboseHelp"
-       exit ;;
 
 ## BEASTRunner options:
     n) MY_NUM_INDEP_RUNS=$OPTARG ;;
@@ -229,8 +222,7 @@ echo "INFO      | $(date) |          Number of XML files read: $MY_NUM_XML"	## C
 	awk -F"=" '{print $NF}')"
 	MY_SC_PBS_WKDIR_CODE="$(grep -n "pbs_wkdir_code" ./beast_runner.cfg | \
 	awk -F"=" '{print $NF}')"
-	MY_NUM_INDEP_RUNS="$(grep -n "n_runs" ./beast_runner.cfg | \
-	awk -F"=" '{print $NF}')"
+##	MY_NUM_INDEP_RUNS="$(grep -n "n_runs" ./beast_runner.cfg | awk -F"=" '{print $NF}')"
 	MY_BEAST_PATH="$(grep -n "beast_path" ./beast_runner.cfg | \
 	awk -F"=" '{print $NF}')"
 
