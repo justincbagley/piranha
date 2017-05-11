@@ -21,7 +21,7 @@ MY_GAP_THRESHOLD=0.001
 MY_INDIV_MISSING_DATA=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -b r g m] inputNexus 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -b r g m] inputNexus 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -57,7 +57,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -b r g m] inputNexus
 "
 
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -b r g m] inputNexus 
+verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -b r g m] inputNexus 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -117,15 +117,19 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -b r g m] input
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 "
 
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
+	echo "$verboseHelp"
+	exit
+fi
 
 ############ PARSE THE OPTIONS
-while getopts 'h:H:b:r:g:m:' opt ; do
+while getopts 'b:r:g:m:' opt ; do
   case $opt in
-## Help texts:
-	h) echo "$Usage"
-       exit ;;
-	H) echo "$verboseHelp"
-       exit ;;
 
 ## RAxML and datafile options:
     b) MY_NUM_BOOTREPS=$OPTARG ;;
