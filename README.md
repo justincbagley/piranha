@@ -36,6 +36,7 @@ PIrANHA v0.1.4 is a repository of shell scripts and R scripts written by the aut
 - **PartitionFinder** (Lanfear et al. 2012, 2014)
 - **BEAST** (Drummond et al. 2012; Bouckaert et al. 2014)
 - **starBEAST** (Heled & Drummond 2010)
+- **SNAPP** (Bryant et al. 2012)
 - **MrBayes** (Ronquist et al. 2012)
 - **ExaBayes** (Aberer et al. 2014)
 - **RAxML** (Stamatakis 2014)
@@ -50,6 +51,7 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 **What's new in this release?** 
 
 The latest release, v0.1.4, contains several goodies listed below, in addition to minor improvements in the code!! 
+- **May 2017:** added 'SNAPPRunner.sh' script for conducting multiple runs of SNAPP ("SNP and AFLP Phylogenies") model in BEAST.
 - **May 2017:** added options to 'MrBayesPostProc.sh' script for specifying relative burnin fraction (during sump and sumt), as well as calling stepping-stone sampling estimation of the log-marginal likelihood of the model.
 - **May 2017:** added new 'MrBayesPostProc.sh' script that summarizes the posterior distribution of trees and parameters from a single MrBayes run. Script picks up filenames from contents of run dir, and uses default burnin fraction of 0.25 during analyses.
 - **May 2017:** build now contains new 'BEASTRunner.sh' script and 'beast_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
@@ -83,10 +85,11 @@ The following **Figure 3** illustrates new capacities of running and processing 
 PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.4)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, I provide a full list of them below, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release. Of course, you can usually get away with not installing dependencies or software that are unrelated to the analysis you are conducting with PIrANHA, but it is recommended that you install all dependencies to take full advantage of PIrANHA's capabilities, or be prepared for any analysis!
 
 - PartitionFinder
-- BEAST v1.8.3 and v2.4.2 (or newer; available at: http://beast.bio.ed.ac.uk/downloads and http://beast2.org, respectively)
+- BEAST v1.8.3 and v2.4.2++ (or newer; available at: http://beast.bio.ed.ac.uk/downloads and http://beast2.org, respectively)
 	* Updated Java, appropriate Java virtual machine / jdk required
-	* beagle-lib recommended
+	* beagle-lib required
 	* default BEAST packages required
+	* SNAPP package addon required
 - MrBayes v3.2++ (available at: http://mrbayes.sourceforge.net/download.php)
 - ExaBayes (available at: http://sco.h-its.org/exelixis/web/software/exabayes/)
 - RAxML (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html)
@@ -169,6 +172,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Avise JC (2000) Phylogeography: the history and formation of species. Cambridge, MA: Harvard University Press.
 - Baele et al. 2012.
 - Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond AJ (2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS Computational Biology, 10, e1003537.
+- Bryant D, Bouckaert R, Felsenstein J, Rosenberg NA, RoyChoudhury A (2012) Inferring species trees directly from biallelic genetic markers: bypassing gene trees in a full coalescent analysis. Molecular Biology and Evolution, 29, 1917–1932.
 - Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. Bioinformatics, 30, 1844-1849.
 - Eaton DAR, Overcast I (2016) ipyrad: interactive assembly and analysis of RADseq data sets. Available at: <http://ipyrad.readthedocs.io/>.
 - Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
