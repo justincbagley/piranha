@@ -20,10 +20,9 @@ MY_SS_NGEN=250000
 MY_SS_DIAGNFREQ=2500
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -b s g d] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d] workingDir 
  ## Help:
   -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
 
  ## Options:
   -b   relBurninFrac (def: $MY_RELBURNIN_FRAC) fraction of trees to discard as 'burn-in'
@@ -54,14 +53,14 @@ Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -b s g d] workingDir
  Xie
 "
 
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
 ############ PARSE THE OPTIONS
-while getopts 'h:H:b:s:g:d:' opt ; do
+while getopts 'b:s:g:d:' opt ; do
   case $opt in
-## Help texts:
-	h) echo "$Usage"
-       exit ;;
-	H) echo "$verboseHelp"
-       exit ;;
 
 ## MrBayesPostProc options:
     b) MY_RELBURNIN_FRAC=$OPTARG ;;
