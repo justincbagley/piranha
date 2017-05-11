@@ -19,7 +19,7 @@ MY_NUM_INDEP_RUNS=10
 MY_SC_WALLTIME=48:00:00
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -i n w] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] workingDir 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -46,7 +46,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H] [Options: -i n w] workingDir
  	PLOS Genetics 5(10): e1000695
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -i n w] workingDir 
+verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] workingDir 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -92,14 +92,19 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H] [Options: -i n w] working
  	PLOS Genetics 5(10): e1000695
 "
 
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
+	echo "$verboseHelp"
+	exit
+fi
+
 ############ PARSE THE OPTIONS
-while getopts 'h:H:i:n:w:' opt ; do
+while getopts 'i:n:w:' opt ; do
   case $opt in
-## Help texts:
-	h) echo "$Usage"
-       exit ;;
-	H) echo "$verboseHelp"
-       exit ;;
 
 ## ∂a∂i options:
     i) MY_SNP_DATA_FILE=$OPTARG ;;
@@ -163,8 +168,7 @@ echo "INFO      | $(date) |          Number of .py ∂a∂i input files read: $M
 	awk -F"=" '{print $NF}')"
 	MY_SC_PBS_WKDIR_CODE="$(grep -n "pbs_wkdir_code" ./dadi_runner.cfg | \
 	awk -F"=" '{print $NF}')"
-	MY_NUM_INDEP_RUNS="$(grep -n "n_runs" ./dadi_runner.cfg | \
-	awk -F"=" '{print $NF}')"
+##	MY_NUM_INDEP_RUNS="$(grep -n "n_runs" ./dadi_runner.cfg | awk -F"=" '{print $NF}')"
 
 
 echo "INFO      | $(date) | STEP #2: MAKE 9 COPIES PER INPUT .PY FILE FOR A TOTAL OF 10 RUNS OF EACH MODEL or "
