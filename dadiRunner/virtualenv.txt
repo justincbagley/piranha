@@ -1,0 +1,7 @@
+source ~/miniconda2/bin/virtualenvwrapper.sh
+MY_PATH=$(echo '`pwd -P`')
+#
+cd ~/.virtualenvs/
+workon dadi-mod
+#
+cd $(echo '$MY_PATH')
