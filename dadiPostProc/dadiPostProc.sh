@@ -79,10 +79,10 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n] work
  of 10 being the default, used for a model set with ten models named M1 to M10.
  
 		## Usage examples: 
-		"$0" .						## Using the defaults.
+		"$0" .				## Using the defaults.
 		"$0" -n 10 -l 1 -u 10 .		## A case equal to the defaults.
 		"$0" -n 5 -l 2 -u 7 .		## Illustrating that dadiPostProc accomodates model number
-									## ranges starting from values other than 1.
+								## ranges starting from values other than 1.
 
  CITATION
  Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
