@@ -116,7 +116,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] wo
 		"$0" -i <SNPInput filename> .
 		"$0" -i <SNPInput filename> -n 20 .			## Ex.: changing no. independent runs.
 		"$0" -i <SNPInput filename> -v 1 .			## Ex.: changing to ∂a∂i-mod version (requires virtualenv.txt file).
-		"$0" -i <SNPInput filename> -n 20 -w 24:00:00 .		## Ex.: changing run walltime.
+		"$0" -i <SNPInput filename> -n 20 -w 24:00:00 .	## Ex.: changing run walltime.
 	
  CITATION
  Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
