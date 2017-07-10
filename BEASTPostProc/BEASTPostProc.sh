@@ -91,12 +91,12 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 
 	(
 		for i in $MY_STARBEAST_SPECIESTREE_FILE; do 
-			echo $i
+			echo "INFO      | $(date) |               - Name of trees file being analyzed: $i "
 			tail -n 5000 "${i}" > ./"${i}"_5k_postburn.trees
 
 		###### Convert your 5000 post-burnin species trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $i | awk -F"=" '{print $NF}' | sed 's/\;//g')"	## Pull the number of taxa from the species trees file.
-			echo "INFO      | $(date) |          Number of taxa encountered: $MY_NTAX "
+			echo "INFO      | $(date) |               - Number of taxa encountered: $MY_NTAX "
 
 			NUM1="$MY_NTAX"
 			NUM2="$((2*NUM1))"
@@ -199,12 +199,12 @@ echo "INFO      | $(date) | STEP #3: GENE TREE ANALYSIS. "
 
 	(
 		for m in ${MY_BEAST_GENETREE_FILES}; do 
-			echo $m
+			echo "INFO      | $(date) |               - Name of trees file being analyzed: $m "
 			tail -n 5000 "${m}" > ./"${m}"_5k_postburn.trees		
 
 		###### Convert your 5000 post-burnin gene trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $m | awk -F"=" '{print $NF}' | sed 's/\;//g')"
-			echo "INFO      | $(date) |          Number of taxa encountered: $MY_NTAX "
+			echo "INFO      | $(date) |               - Number of taxa encountered: $MY_NTAX "
 			
 			NUM1="$MY_NTAX"
 			NUM2="$((2*NUM1))"
