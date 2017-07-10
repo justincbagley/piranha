@@ -96,6 +96,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 
 		###### Convert your 5000 post-burnin species trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $i | awk -F"=" '{print $NF}' | sed 's/\;//g')"	## Pull the number of taxa from the species trees file.
+			echo "INFO      | $(date) |          Number of taxa encountered: $MY_NTAX "
 
 			NUM1="$MY_NTAX"
 			NUM2="$((2*NUM1))"
@@ -203,7 +204,7 @@ echo "INFO      | $(date) | STEP #3: GENE TREE ANALYSIS. "
 
 		###### Convert your 5000 post-burnin gene trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $m | awk -F"=" '{print $NF}' | sed 's/\;//g')"
-			echo $MY_NTAX
+			echo "INFO      | $(date) |          Number of taxa encountered: $MY_NTAX "
 			
 			NUM1="$MY_NTAX"
 			NUM2="$((2*NUM1))"
