@@ -146,7 +146,7 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 | Exabayes_topologies.\* | ExaBayes                                  |
 | Exabayes_parameters.\* | ExaBayes                                  |
 
-### :construction: _NOTE: The following 'Getting Started' content is Under Construction!_ :construction:
+### :construction: _NOTE: The following 'Getting Started' content is Under Construction! E-mail me about it, or check back soon for updates!_ :construction:
 ### Phylogenetic Partitioning Scheme/Model Selection
 #### _pyRAD2PartitionFinder_
 Shell script for going directly from Phylip alignment (.phy) and partitions (.partisions) files output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016) (during de novo assembly of reduced-representation sequence data from an NGS experiment) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined SNP loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (e.g. detailed comments located within the code itself; a README is coming soon).
