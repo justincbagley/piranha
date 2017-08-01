@@ -4,12 +4,12 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          pyRAD2PartitionFinder v1.1, May 2017                          #
+#                        pyRAD2PartitionFinder v1.1, August 2017                         #
 #  SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD      #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further information. Last update: May 4, 2017.  #
-#  For questions, please email jcbagley@vcu.edu.                                         #
+#  (http://github.com/justincbagley) for further information. Last update: August 1,     #
+#  2017. For questions, please email jcbagley@vcu.edu.                                   #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -88,7 +88,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                          pyRAD2PartitionFinder v1.1, May 2017                          #
+#                        pyRAD2PartitionFinder v1.1, August 2017                         #
 ##########################################################################################"
 
 ############ STEP #1: MODIFY pyRAD DATAFILE FOR PartitionFinder
@@ -120,7 +120,7 @@ else
 fi
 
 
-if [[ "$MY_SEARCH_ALGORITHM" -eq "rcluster" ]]; then
+if [[ "$MY_SEARCH_ALGORITHM" = "rcluster" ]]; then
 
 echo "## ALIGNMENT FILE ##
 	alignment = $MY_PHYLIP_FILENAME;
