@@ -197,7 +197,7 @@ python $MY_PATH_TO_PARTITIONFINDER .
 
 
 
-elif [[ "$MY_SEARCH_ALGORITHM" -eq "hcluster" ]]; then
+elif [[ "$MY_SEARCH_ALGORITHM" = "hcluster" ]]; then
 
 echo "## ALIGNMENT FILE ##
 	alignment = $MY_PHYLIP_FILENAME;
