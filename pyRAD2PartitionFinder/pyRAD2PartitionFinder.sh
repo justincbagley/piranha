@@ -158,7 +158,7 @@ MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFind
 python $MY_PATH_TO_PARTITIONFINDER . --raxml --rcluster-percent 0.1
 
 
-elif [[ "$MY_SEARCH_ALGORITHM" -eq "greedy" ]]; then
+elif [[ "$MY_SEARCH_ALGORITHM" = "greedy" ]]; then
 
 echo "## ALIGNMENT FILE ##
 	alignment = $MY_PHYLIP_FILENAME;
