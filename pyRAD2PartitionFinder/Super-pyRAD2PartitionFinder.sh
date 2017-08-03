@@ -37,13 +37,13 @@ MY_PHYLIP_FILE=./*.phy                      				## Assign PHYLIP SNP datafiles i
 (
 	for i in $MY_PYRAD_PARTITION; do                					## Look in the current directory for partition scheme files output by pyRAD.
 		echo "$i"
-		sed 's/^DNA..//g' ${i} > ${i}_1.tmp						## Reformatting using nested for loops.
-			for j in ${i}_1.tmp; do
+		sed 's/^DNA..//g' "${i}" > "${i}"_1.tmp						## Reformatting using nested for loops.
+			for j in "${i}"_1.tmp; do
 				echo "$j"
-				sed 's/$/;/' ${j} > ${j}.PFparts.txt 
+				sed 's/$/;/' "${j}" > "${j}".PFparts.txt 
 			done
 		for k in *.partitions_1.tmp.PFparts.txt; do
-			mv $k ${k/.partitions_1.tmp.PFparts.txt/.newPartitions.txt}
+			mv "$k" ${k/.partitions_1.tmp.PFparts.txt/.newPartitions.txt}
 		done							## Line above renames the output.
 	done
 )
