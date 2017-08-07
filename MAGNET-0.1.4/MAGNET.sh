@@ -315,7 +315,7 @@ echo "INFO      | $(date) |          In a single loop, using info from '.gphocs'
 into a separate phylip-formatted alignment file using gphocs2multiPhylip code... "
 	(
 		for (( i=0; i<=$(calc $MY_NLOCI-1); i++ )); do
-			echo $i
+			echo "$i"
 			MY_NTAX="$(grep -n "locus$i\ " $MY_GPHOCS_DATA_FILE | \
 			awk -F"locus$i " '{print $NF}' | sed 's/\ [0-9]*//g')"			
 
@@ -375,8 +375,8 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 	##--contents as the input file, as follows:
 	(
 		for i in ./*/; do
-			echo $i
-			cd $i
+			echo "$i"
+			cd "$i"
 			LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')"
 			raxmlHPC-SSE3 -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n raxml_out
 			cd ..;
@@ -393,8 +393,8 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 	mkdir ./phylip_files
 	(
 		for i in $MY_PHYLIP_ALIGNMENTS; do
-			echo $i
-			mv $i ./phylip_files/
+			echo "$i"
+			mv "$i" ./phylip_files/
 		done
 	)
 
@@ -423,8 +423,8 @@ echo "INFO      | $(date) | STEP #6: RAxML POST-PROCESSING. "
 	echo "INFO      | $(date) |          Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
 	(
 		for j in ${MY_GENE_TREE_LIST}; do
-			echo $j
-			cp $j ./gene_trees/
+			echo "$j"
+			cp "$j" ./gene_trees/
 			MY_LOCUS_NAME="$(echo $j | sed 's/\/[A-Za-z.\_\-]*//g')"
 			cp ./gene_trees/RAxML_bestTree.raxml_out ./gene_trees/"$MY_LOCUS_NAME"_RAxML_best.tre
 			rm ./gene_trees/RAxML_bestTree.raxml_out
@@ -434,8 +434,8 @@ echo "INFO      | $(date) | STEP #6: RAxML POST-PROCESSING. "
 	echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
 	(
 		for k in ./gene_trees/*; do
-			echo $k
-			cat $k >> ./besttrees.tre
+			echo "$k"
+			cat "$k" >> ./besttrees.tre
 		done
 	)
 
