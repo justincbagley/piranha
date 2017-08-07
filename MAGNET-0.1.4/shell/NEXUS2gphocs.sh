@@ -50,7 +50,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -b r g m] inputN
  have varying numbers of individuals for different loci.
 
  Dependencies: Perl; R; and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' and 
- 'selectSites.pl' in working directory or available from command line (in your path)."
+ 'selectSites.pl' in working directory or available from command line (in your path).
 
  CITATION
  Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
