@@ -61,7 +61,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -b r g m] inputN
 "
 
 ############ PARSE THE OPTIONS
-while getopts 'g:m:' opt ; do
+while getopts 'h:H:g:m:' opt ; do
   case $opt in
 ## Help texts:
 	h) echo "$Usage"
