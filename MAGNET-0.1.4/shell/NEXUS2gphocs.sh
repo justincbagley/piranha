@@ -19,10 +19,9 @@ MY_GAP_THRESHOLD=0.001
 MY_INDIV_MISSING_DATA=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -b r g m] inputNexus 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -g m] inputNexus 
  ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+  -h   help text (also: -help -H -Help)
 
  ## Options:
   -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
@@ -66,7 +65,7 @@ while getopts 'h:H:g:m:' opt ; do
 ## Help texts:
 	h) echo "$Usage"
        exit ;;
-	H) echo "$verboseHelp"
+	H) echo "$Usage"
        exit ;;
 
 ## Datafile options:
