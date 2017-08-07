@@ -141,9 +141,9 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 	count=0
 	(
 		for j in ${MY_NEXUS_CHARSETS}; do
-			echo $j
+			echo "$j"
 			charRange="$(echo ${j} | sed 's/\,//g')"
-			echo $charRange
+			echo "$charRange"
 			setLower="$(echo ${j} | sed 's/\-.*$//g')"
 			setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')"
 
