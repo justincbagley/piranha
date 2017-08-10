@@ -17,7 +17,7 @@
 ## OPTION DEFAULTS ##
 CHAIN_LENGTH=100000
 ALPHA_VALUE=0.3
-ROOT_DIR=`pwd -P`	## Alternatively, set rootdir to pwd using ROOT_DIR=$(pwd | sed 's/$/\//g')
+#ROOT_DIR=If user supplies no rootdir at prompt, this is set to pwd at Line 152.
 BURN_IN_PERCENT=50
 PRE_BURN_IN=100000
 DELETE_OLDLOGS=true
@@ -142,6 +142,14 @@ echo "INFO      | $(date) | STEP #1: SETUP. "
 	RUNELEM_SEED_FLAG=$(echo "-seed")
 	RUNELEM_SEED_VAR=$(echo "\$(seed)")
 
+echo "INFO      | $(date) |          Read user input, set environmental variables..."
+echo "INPUT     | $(date) |          **NOTE: The current working directory will be used as rootdir if nothing is entered at the following prompt.** "
+	read -p "                                                     Enter absolute path to root directory (on local machine or supercomputer) where XML(s) will be run : " ROOT_DIR
+	echo ""
+if [[ "$ROOT_DIR" = "" ]]; then
+	ROOT_DIR=`pwd -P | sed 's/$/\//g'`
+fi
+
 
 ############ MAKE AND RUN EDIT FUNCTION
 echo "INFO      | $(date) | STEP #2: MAKE AND RUN FUNCTION TO EDIT XML FILES SO THEY HAVE PS CODE... "
@@ -159,20 +167,20 @@ echo "INFO      | $(date) | STEP #2: MAKE AND RUN FUNCTION TO EDIT XML FILES SO 
 
 		(
 			for i in $MY_XML_FILES; do
-				basename="$(ls ${i} | sed 's/\.xml$//g')"							## Get basename of XML file, for later use.
+				BASENAME="$(ls ${i} | sed 's/\.xml$//g')"							## Get basename of XML file, for later use.
 				sed 's/\<run\ /\<mcmc\ /g; s/\<\/run\>/\<\/mcmc\>\ '$CR'\<\/run\>/g' $i > edit1.xml		## Make temporary edited file containing some, but not all, of the text edits needed for path sampling (i.e. renaming the original run element to mcmc).
 
-				NLINES_TO_RUNELEM=$(sed -n '/\<run\ /{=; q;}' edit1.xml)			## These three lines get pertinent information about the number of lines in the edited XML, which is used below
-				MY_HEADSTOP="$(calc $NLINES_TO_RUNELEM-1)"							## in sed lines creating new tmp files containing the top and bottom portions of the edited XML. The edit1, xmlTop,
+				NLINES_TO_MCMCELEM=$(sed -n '/\<mcmc\ /{=; q;}' edit1.xml)			## These three lines get pertinent information about the number of lines in the edited XML, which is used below
+				MY_HEADSTOP="$(calc $NLINES_TO_MCMCELEM-1)"							## in sed lines creating new tmp files containing the top and bottom portions of the edited XML. The edit1, xmlTop,
 				NLINES_TOTAL=$(wc -l edit1.xml | sed 's/\ edit1\.xml//')			## and xmlBottom tmp files are concatenated together later with the new, custom run element tmp file created below
 																					## to create the final XML with path sampling code.
 					sed -n 1,"$MY_HEADSTOP"p edit1.xml > xmlTop.tmp
-					sed -n "$NLINES_TO_RUNELEM","$NLINES_TOTAL"p edit1.xml > xmlBottom.tmp
+					sed -n "$NLINES_TO_MCMCELEM","$NLINES_TOTAL"p edit1.xml > xmlBottom.tmp
 					
 echo "<run spec='beast.inference.PathSampler'
 chainLength='$CHAIN_LENGTH'
 alpha='$ALPHA_VALUE'
-rootdir='$ROOT_DIR'
+rootdir='$ROOT_DIR$BASENAME/'
 burnInPercentage='$BURN_IN_PERCENT'
 preBurnin='$PRE_BURN_IN'
 deleteOldLogs='$DELETE_OLDLOGS'
@@ -183,7 +191,7 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 
 				## Make new xml file, replacing original file:
 				rm $i
-				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $basename.xml
+				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml
 
 				## Clean up the working dir:
 				rm ./*.tmp ./edit1.xml
@@ -208,20 +216,20 @@ editXMLFiles
 ###### SECTION B. MAKE AND RUN FUNCTION WITH CODE FOR MANIPULATING THE SINGLE INPUT XML FILE SPECIFIED WHEN THE SHELL SCRIPT WAS CALLED:
 	editXMLFiles () {
 
-		basename="$(ls $MY_INPUTXMLFILE_VAR | sed 's/\.xml$//g')"			## Get basename of input XML file, for later use.
+		BASENAME="$(ls $MY_INPUTXMLFILE_VAR | sed 's/\.xml$//g')"			## Get basename of input XML file, for later use.
 		sed 's/\<run\ /\<mcmc\ /g; s/\<\/run\>/\<\/mcmc\>\ '$CR'\<\/run\>/g' $MY_INPUTXMLFILE_VAR > edit1.xml		## Make temporary edited file containing some, but not all, of the text edits needed for path sampling (i.e. renaming the original run element to mcmc).
 
-		NLINES_TO_RUNELEM=$(sed -n '/\<mcmc\ /{=; q;}' edit1.xml)			## These three lines get pertinent information about the number of lines in the edited XML, which is used below
-		MY_HEADSTOP="$(calc $NLINES_TO_RUNELEM-1)"							## in sed lines creating new tmp files containing the top and bottom portions of the edited XML. The edit1, xmlTop,
+		NLINES_TO_MCMCELEM=$(sed -n '/\<mcmc\ /{=; q;}' edit1.xml)			## These three lines get pertinent information about the number of lines in the edited XML, which is used below
+		MY_HEADSTOP="$(calc $NLINES_TO_MCMCELEM-1)"							## in sed lines creating new tmp files containing the top and bottom portions of the edited XML. The edit1, xmlTop,
 		NLINES_TOTAL=$(wc -l edit1.xml | sed 's/\ edit1\.xml//')			## and xmlBottom tmp files are concatenated together later with the new, custom run element tmp file created below
 																			## to create the final XML with path sampling code.
 		sed -n 1,"$MY_HEADSTOP"p edit1.xml > xmlTop.tmp
-		sed -n "$NLINES_TO_RUNELEM","$NLINES_TOTAL"p edit1.xml > xmlBottom.tmp
+		sed -n "$NLINES_TO_MCMCELEM","$NLINES_TOTAL"p edit1.xml > xmlBottom.tmp
 					
 echo "<run spec='beast.inference.PathSampler'
 chainLength='$CHAIN_LENGTH'
 alpha='$ALPHA_VALUE'
-rootdir='$ROOT_DIR'
+rootdir='$ROOT_DIR$BASENAME/'
 burnInPercentage='$BURN_IN_PERCENT'
 preBurnin='$PRE_BURN_IN'
 deleteOldLogs='$DELETE_OLDLOGS'
@@ -232,7 +240,7 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 
 		## Make new xml file, replacing original file:
 		rm $MY_INPUTXMLFILE_VAR
-		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $basename.xml
+		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml
 
 		## Clean up the working dir:
 		rm ./*.tmp ./edit1.xml
