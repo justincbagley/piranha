@@ -50,16 +50,16 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 
 **What's new in this release?** 
 
-The latest release, v0.1.4, contains several goodies listed below, in addition to minor improvements in the code!! 
+The current, modified PIrANHA v0.1.4 release contains several goodies listed below, in addition to minor improvements in the code!! 
+- **August 2017:** updated 'BEAST\_PSPrepper.sh' script automating editing existing BEAST v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
 - **May 2017:** added 'SNAPPRunner.sh' script for conducting multiple runs of SNAPP ("SNP and AFLP Phylogenies") model in BEAST.
 - **May 2017:** added options to 'MrBayesPostProc.sh' script for specifying relative burnin fraction (during sump and sumt), as well as calling stepping-stone sampling estimation of the log-marginal likelihood of the model.
 - **May 2017:** added new 'MrBayesPostProc.sh' script that summarizes the posterior distribution of trees and parameters from a single MrBayes run. Script picks up filenames from contents of run dir, and uses default burnin fraction of 0.25 during analyses.
-- **May 2017:** build now contains new 'BEASTRunner.sh' script and 'beast_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
+- **May 2017:** build now contains new 'BEASTRunner.sh' script and 'beast\_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
 - **April 2017:** build now contains new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
 - **April 2017:** I added new 'dadiRunner.sh' script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo).
-- **January 2017:** I added a new script called 'BEAST_PSPrepper.sh' that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand! 
 
-Subsequent to last release, but included in the current build, I have added a new 'MrBayesPostProc.sh' script and corresponding 'mrbayes_post_proc.cfg' configuration file, which together automate summarizing the posterior distribution of trees and parameters from a single MrBayes run. I intend to extend these scripts to provide options for several other anlayses of individual MrBayes runs/input files, as well as extend them to pulling down results from multiple MrBayes runs.
+I have also added a new 'MrBayesPostProc.sh' script and corresponding 'mrbayes_post_proc.cfg' configuration file, which together automate summarizing the posterior distribution of trees and parameters from a single MrBayes run. I intend to extend these scripts to provide options for several other anlayses of individual MrBayes runs/input files, as well as extend them to pulling down results from multiple MrBayes runs.
 
 *What is possible with PIrANHA?* *Who cares?*
 
@@ -193,6 +193,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - GNU [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.pdf)
 
 ## TODO
+- **Improve option and usage sections of BEASTRunner.sh script.** **DONE!** :white_check_mark:
 - **Add MrBayes scripts** **DONE!** :white_check_mark:
 - **Add options to MrBayesPostProc script, e.g. for burnin frac and stepping-stone MLE analysis.** **DONE!** :white_check_mark:
 - ** Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in Super-pyRAD2PartitionFinder.sh, BEASTRunner.sh, BEASTPostProc.sh, and RAxMLRunner.sh) **
@@ -200,5 +201,5 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
 
-May 4, 2017
+August 10, 2017
 Justin C. Bagley, Richmond, VA, USA
