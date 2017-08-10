@@ -16,6 +16,7 @@
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 CHAIN_LENGTH=100000
+ALPHA_VALUE=0.3
 ROOT_DIR=`pwd -P`	## Alternatively, set rootdir to pwd using ROOT_DIR=$(pwd | sed 's/$/\//g')
 BURN_IN_PERCENT=50
 PRE_BURN_IN=100000
@@ -23,15 +24,16 @@ DELETE_OLDLOGS=true
 NUM_PS_STEPS=10
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l r b p d n] inputXMLFile
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l a r b p d n] inputXMLFile
  ## Help:
   -h   help text (also: -help)
 
  ## Options:
   -l chainLength (length of MCMC chin for each path sampling step; default=100000)
+  -a alpha (shape parameter of the Beta distribution; default=0.3)
   -r rootdir (absolute path to root directory where files for each step will be kept; default=pwd)
   -b burnInPercentage (percent of samples discarded as burnin; default=50, same as in BEAST)
-  -p preBurnin (number of samples discarded from first step of analysis)
+  -p preBurnin (number of samples discarded from first step of analysis; default=100000)
   -d deleteOldLogs (logical variable specifying whether or not to delete previous logs that 
      may be present in the rootdir)
   -n nrOfSteps (total number of path sampling steps for analysis)
@@ -45,18 +47,19 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l r b p d n] inputXMLF
  The script expects as inputXMLFile one of the following: (i) one XML file, created and
  formatted for BEAST v2++ using BEAUti v2++ (e.g. latest release is v2.4.5), and present in
  the current working directory (pwd); or (ii) the code 'multiXML', which tells the script
- to use code meant to process multiple XML input files present in the working directory. 
- Regarding other inputs/flags, the alpha parameter used to space out the path sampling steps 
- is set to a default, fixed value of 0.3, based on recommedations in Xie et al. (2011). In 
- addition, the rootdir variable requires an absolute path, with opening and closing forward 
- slashes.
+ to use a loop to process multiple XML input files present in the current working directory. 
+ Regarding other inputs/flags, the rootdir variable requires an absolute path, with opening 
+ and closing forward slashes.
 
  Option defaults for path sampling parameters may or may not be ideal for your purposes. 
  For example, many more than 10 steps will likely be required to obtain good path sampling
- results, especially for larger or more complex data files. For example, the author has 
- found that setting chainLength to 1 million and setting the nrOfSteps parameter to 100
- has produced good results for a range of XMLs he uses in his research (e.g. Bagley et al.
- 2016).
+ results, especially for larger or more complex data files. The author has found that setting 
+ chainLength to 1 million and setting the nrOfSteps parameter to 100 has produced good results 
+ for a range of XMLs he uses in his research (e.g. Bagley et al. 2016). Also, by default, the 
+ alpha parameter used to space out the path sampling steps is set to 0.3, a value that Xie 
+ et al. (2011) found to be near optimal for simulated data and a phylogenetic example, and
+ thus suggested was 'generally optimal'. However, recent papers have published analyses using
+ alpha values as high as 0.4. The new -a flag lets the user change this value in the XMLs.
 
  CITATION
  Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
@@ -78,11 +81,12 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 'l:r:b:p:d:n:' opt ; do
+while getopts 'l:a:r:b:p:d:n:' opt ; do
   case $opt in
 
 ## Path sampling options:
     l) CHAIN_LENGTH=$OPTARG ;;
+    a) ALPHA_VALUE=$OPTARG ;;
     r) ROOT_DIR=$OPTARG ;;
     b) BURN_IN_PERCENT=$OPTARG ;;
     p) PRE_BURN_IN=$OPTARG ;;
@@ -167,8 +171,8 @@ echo "INFO      | $(date) | STEP #2: MAKE AND RUN FUNCTION TO EDIT XML FILES SO 
 					
 echo "<run spec='beast.inference.PathSampler'
 chainLength='$CHAIN_LENGTH'
-alpha='0.3'
-rootdir='ROOT_DIR_TEXT'
+alpha='$ALPHA_VALUE'
+rootdir='$ROOT_DIR'
 burnInPercentage='$BURN_IN_PERCENT'
 preBurnin='$PRE_BURN_IN'
 deleteOldLogs='$DELETE_OLDLOGS'
@@ -216,8 +220,8 @@ editXMLFiles
 					
 echo "<run spec='beast.inference.PathSampler'
 chainLength='$CHAIN_LENGTH'
-alpha='0.3'
-rootdir='ROOT_DIR_TEXT'
+alpha='$ALPHA_VALUE'
+rootdir='$ROOT_DIR'
 burnInPercentage='$BURN_IN_PERCENT'
 preBurnin='$PRE_BURN_IN'
 deleteOldLogs='$DELETE_OLDLOGS'
