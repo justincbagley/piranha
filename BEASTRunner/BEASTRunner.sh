@@ -58,7 +58,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] workingD
  calling the program. Only then can the user call the program by opening a terminal window, 
  typing "./BEASTRunner.sh", and pressing return.
  
- It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4.2++) is installed on the
+ It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4++) is installed on the
  supercomputer, and that the user can provide absolute paths to the BEAST jar file in the 
  cfg file. Last testing was conducted using BEAST v2.4.5. Check for BEAST2 updates at 
  <http://BEAST2.org>. 
@@ -114,7 +114,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] wo
  calling the program. Only then can the user call the program by opening a terminal window, 
  typing "./BEASTRunner.sh", and pressing return.
  
- It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4.2++) is installed on the
+ It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4++) is installed on the
  supercomputer, and that the user can provide absolute paths to the BEAST jar file in the 
  cfg file. Last testing was conducted using BEAST v2.4.5. Check for BEAST2 updates at 
  <http://BEAST2.org>. 
