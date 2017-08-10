@@ -1,21 +1,17 @@
 #!/bin/sh
 
 ##########################################################################################
-#                          BEAST_PSPrepper v0.1.0, January 2017                          #
-#   SHELL SCRIPT FOR AUTOMATING EDITING OF BEAST XML INPUT FILES TO RUN PATH SAMPLING    #
-#   USING BEAST v2+ PATHSAMPLER                                                          #
-#   Copyright (c)2017 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: January 19, 2017. For questions, please email      #
-#   jcbagley@unb.br.                                                                     #
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                          BEAST_PSPrepper v0.1.1, August 2017                           #
+#  SHELL SCRIPT FOR AUTOMATING EDITING OF BEAST XML INPUT FILES TO RUN PATH SAMPLING     #
+#  USING BEAST v2+ PATHSAMPLER                                                           #
+#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
+#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
+#  (http://github.com/justincbagley) for further information. Last update: August 10,    #
+#  2017. For questions, please email jcbagley@vcu.edu.                                   #
 ##########################################################################################
-
-echo "
-##########################################################################################
-#                          BEAST_PSPrepper v0.1.0, January 2017                          #
-##########################################################################################
-"
-echo "INFO      | $(date) | STEP #1: SETUP. SETTING OPTIONS AND PATH VARIABLE... "
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -26,66 +22,104 @@ PRE_BURN_IN=100000
 DELETE_OLDLOGS=true
 NUM_PS_STEPS=10
 
-## PARSE THE OPTIONS ##
+############ CREATE USAGE & HELP TEXTS
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l r b p d n] inputXMLFile
+ ## Help:
+  -h   help text (also: -help)
+
+ ## Options:
+  -l chainLength (length of MCMC chin for each path sampling step; default=100000)
+  -r rootdir (absolute path to root directory where files for each step will be kept; default=pwd)
+  -b burnInPercentage (percent of samples discarded as burnin; default=50, same as in BEAST)
+  -p preBurnin (number of samples discarded from first step of analysis)
+  -d deleteOldLogs (logical variable specifying whether or not to delete previous logs that 
+     may be present in the rootdir)
+  -n nrOfSteps (total number of path sampling steps for analysis)
+
+ OVERVIEW
+ This script works by (STEP #1) setting up user options/input, and then (STEP #2) using a 
+ function to go through the XML file or files (should be the only XMLs in working dir) and 
+ edit them for path sampling. For downstream processing and queuing, XML files should end
+ in 'run.xml' (e.g. 'ULN_PS100_run.xml').
+
+ The script expects as inputXMLFile one of the following: (i) one XML file, created and
+ formatted for BEAST v2++ using BEAUti v2++ (e.g. latest release is v2.4.5), and present in
+ the current working directory (pwd); or (ii) the code 'multiXML', which tells the script
+ to use code meant to process multiple XML input files present in the working directory. 
+ Regarding other inputs/flags, the alpha parameter used to space out the path sampling steps 
+ is set to a default, fixed value of 0.3, based on recommedations in Xie et al. (2011). In 
+ addition, the rootdir variable requires an absolute path, with opening and closing forward 
+ slashes.
+
+ Option defaults for path sampling parameters may or may not be ideal for your purposes. 
+ For example, many more than 10 steps will likely be required to obtain good path sampling
+ results, especially for larger or more complex data files. For example, the author has 
+ found that setting chainLength to 1 million and setting the nrOfSteps parameter to 100
+ has produced good results for a range of XMLs he uses in his research (e.g. Bagley et al.
+ 2016).
+
+ CITATION
+ Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+	<https://github.com/justincbagley/PIrANHA>.
+
+ REFERENCES
+ Bagley JC, Matamoros W, McMahan C, Chakrabarty P, Johnson JB (2016) Phylogeography and 
+ 	species delimitation in convict cichlids (Cichlidae: Amatitlania): implications for 
+ 	taxonomy and Plio–Pleistocene evolutionary history in Central America. Biological Journal
+  	of the Linnean Society. Early View on BJLS website. doi: 10.1111/bij.12845.
+
+ Xie W, Lewis PO, Fan Y, Kuo L, Chen MH. 2011. Improving marginal likelihood estimation for 
+ 	Bayesian phylogenetic model selection. Systematic Biology 60: 150–160.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+############ PARSE THE OPTIONS
 while getopts 'l:r:b:p:d:n:' opt ; do
   case $opt in
+
+## Path sampling options:
     l) CHAIN_LENGTH=$OPTARG ;;
     r) ROOT_DIR=$OPTARG ;;
     b) BURN_IN_PERCENT=$OPTARG ;;
     p) PRE_BURN_IN=$OPTARG ;;
     d) DELETE_OLDLOGS=$OPTARG ;;
     n) NUM_PS_STEPS=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
   esac
 done
 
-## SCRIPT USAGE ##
-##--Check for mandatory positional parameters and echo usage, then wait for commands...
-shift $((OPTIND-1))
+############ SKIP OVER THE PROCESSED OPTIONS
+shift $((OPTIND-1)) 
+# Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-  echo "
-Usage: $0 [options] inputXMLFile
-  "
-echo "Options: -l chainLength (length of MCMC chin for each path sampling step; default=100000) | \
--r rootdir (absolute path to root directory where files for each step will be kept; default=pwd) \
-| -b burnInPercentage (percent of samples discarded as burnin; default=50, same as in BEAST) | \
--p preBurnin (number of samples discarded from first step of analysis) | -d deleteOldLogs (logical \
-variable specifying whether or not to delete previous logs that may be present in the rootdir) | \
--n nrOfSteps (total number of path sampling steps for analysis)
-
-This script works by (STEP #1) setting up user options/input, and then (STEP #2) using a 
-function to go through the XML file or files (ideally, the only XMLs in working dir) and 
-edit them for path sampling. For downstream processing and queuing, XML files should end
-in "_run.xml", e.g. "ULN_PS100_run.xml".
-
-The script expects as inputXMLFile one of the following: (i) one XML file, created and
-formatted for BEAST v2+ using BEAUti v2+ (e.g. latest release is v2.4.4), and present in
-the current working directory (pwd); or (ii) the code "multiXML", which tells the script
-to use code meant to process multiple XML input files present in the working directory. 
-Regarding other inputs/flags, the alpha parameter used to space out the path sampling steps 
-is set to a default, fixed value of 0.3, based on recommedations in Xie et al. (2011). In 
-addition, the rootdir variable requires an absolute path, with opening and closing forward 
-slashes.
-
-Option defaults for path sampling parameters may or may not be ideal for your purposes. 
-For example, many more than 10 steps will likely be required to obtain good path sampling
-results, especially for larger or more complex data files. For example, the author has 
-found that setting chainLength to 1 million and setting the nrOfSteps parameter to 100
-has produced good results for a range of XMLs he uses in his research (e.g. Bagley et al.
-2016).
-
-**References**
-Bagley JC, Matamoros W, McMahan C, Chakrabarty P, Johnson JB (2016) Phylogeography and 
-species delimitation in convict cichlids (Cichlidae: Amatitlania): implications for taxonomy 
-and Plio–Pleistocene evolutionary history in Central America. Biological Journal of the 
-Linnean Society. Early View on BJLS website. doi: 10.1111/bij.12845.
-
-Xie W, Lewis PO, Fan Y, Kuo L, Chen MH. 2011. Improving marginal likelihood estimation for 
-Bayesian phylogenetic model selection. Systematic Biology 60: 150–160.
-"
-
+echo "$Usage"
   exit 1
 fi
+USER_SPEC_PATH="$1"
 
+echo "INFO      | $(date) |          Setting user-specified path to: "
+echo "$USER_SPEC_PATH "	
+
+
+echo "
+##########################################################################################
+#                          BEAST_PSPrepper v0.1.1, August 2017                           #
+##########################################################################################
+"
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting BEAST_PSPrepper pipeline... "
+echo "INFO      | $(date) | STEP #1: SETUP. "
 ## Make input file a mandatory parameter:
 	MY_INPUTXMLFILE_VAR="$1"
 ## Prep useful stuff:
