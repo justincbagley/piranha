@@ -17,7 +17,7 @@
 ## OPTION DEFAULTS ##
 CHAIN_LENGTH=100000
 ALPHA_VALUE=0.3
-#ROOT_DIR=If user supplies no rootdir at prompt, this is set to pwd at Line 152.
+ROOT_DIR=/tmp
 BURN_IN_PERCENT=50
 PRE_BURN_IN=100000
 DELETE_OLDLOGS=true
@@ -31,7 +31,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l a r b p d n] inputXM
  ## Options:
   -l chainLength (length of MCMC chin for each path sampling step; default=100000)
   -a alpha (shape parameter of the Beta distribution; default=0.3)
-  -r rootdir (absolute path to root directory where files for each step will be kept; default=pwd)
+  -r rootdir (absolute path to root directory where files for each step will be kept; default=/tmp)
   -b burnInPercentage (percent of samples discarded as burnin; default=50, same as in BEAST)
   -p preBurnin (number of samples discarded from first step of analysis; default=100000)
   -d deleteOldLogs (logical variable specifying whether or not to delete previous logs that 
@@ -49,7 +49,10 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l a r b p d n] inputXM
  the current working directory (pwd); or (ii) the code 'multiXML', which tells the script
  to use a loop to process multiple XML input files present in the current working directory. 
  Regarding other inputs/flags, the rootdir variable requires an absolute path, with opening 
- and closing forward slashes.
+ and closing forward slashes. If no rootdir is passed using the -r flag, then the user will
+ be asked (yes/no) if the default '/tmp' path is acceptable. If no, then the user will be 
+ prompted to provide a rootdir path on their local machine or supercomputing account, and 
+ if nothing is provided then rootdir will be left at '/tmp'.
 
  Option defaults for path sampling parameters may or may not be ideal for your purposes. 
  For example, many more than 10 steps will likely be required to obtain good path sampling
@@ -142,12 +145,21 @@ echo "INFO      | $(date) | STEP #1: SETUP. "
 	RUNELEM_SEED_FLAG=$(echo "-seed")
 	RUNELEM_SEED_VAR=$(echo "\$(seed)")
 
-echo "INFO      | $(date) |          Read user input, set environmental variables..."
-echo "INPUT     | $(date) |          **NOTE: The current working directory will be used as rootdir if nothing is entered at the following prompt.** "
-	read -p "                                                     Enter absolute path to root directory (on local machine or supercomputer) where XML(s) will be run : " ROOT_DIR
+echo "INFO      | $(date) |          Checking rootdir variable..."
+if [[ "$ROOT_DIR" = "/tmp" ]]; then
+echo "WARNING!  | $(date) |          ** The rootdir variable has NOT been changed from its default value. Respond to the following prompts: ** "
+	read -p "                                                     Is /tmp an acceptable root directory where path steps can be saved? (y/n) : " TMP_DIR_TEST
 	echo ""
-if [[ "$ROOT_DIR" = "" ]]; then
-	ROOT_DIR=`pwd -P | sed 's/$/\//g'`
+	if [[ "$TMP_DIR_TEST" = "y" ]]; then 
+		echo "INFO      | $(date) |          Moving forward with /tmp as rootdir... " 
+	fi
+	if [[ "$TMP_DIR_TEST" = "n" ]]; then
+		read -p "                                                     Enter the absolute path to a more suitable root directory (on local machine or supercomputer) : " ROOT_DIR
+		echo ""
+	fi
+	if [[ "$ROOT_DIR" = "" ]]; then 
+		ROOT_DIR=/tmp
+	fi	
 fi
 
 
@@ -190,8 +202,8 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 " > new_run_element.tmp
 
 				## Make new xml file, replacing original file:
-				rm "$i"
-				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > "$BASENAME".xml
+				rm $i
+				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml
 
 				## Clean up the working dir:
 				rm ./*.tmp ./edit1.xml
@@ -239,8 +251,8 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 " > new_run_element.tmp
 
 		## Make new xml file, replacing original file:
-		rm "$MY_INPUTXMLFILE_VAR"
-		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > "$BASENAME".xml
+		rm $MY_INPUTXMLFILE_VAR
+		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml
 
 		## Clean up the working dir:
 		rm ./*.tmp ./edit1.xml
