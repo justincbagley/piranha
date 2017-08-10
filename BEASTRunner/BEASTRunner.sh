@@ -277,7 +277,10 @@ echo "#!/bin/bash
 #---Change the -M flag to point to your email address.-------------------------#
 
 
-##--Uncomment next four lines if you are running your XML in BEAST v2.4++:
+##--ATTENTION: PIrANHA users may need to remove or edit the next three lines; for example, you 
+##--would remove this section if your supercomputing cluster did not use modules to load 
+##--software/libraries, and you would edit this section if modules had different locations or
+##--names on your cluster.
 module purge
 module load beagle/2.1.2
 module load jdk/1.8.0-60
