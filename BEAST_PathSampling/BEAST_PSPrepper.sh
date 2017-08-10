@@ -190,8 +190,8 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 " > new_run_element.tmp
 
 				## Make new xml file, replacing original file:
-				rm $i
-				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml
+				rm "$i"
+				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > "$BASENAME".xml
 
 				## Clean up the working dir:
 				rm ./*.tmp ./edit1.xml
@@ -239,8 +239,8 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 " > new_run_element.tmp
 
 		## Make new xml file, replacing original file:
-		rm $MY_INPUTXMLFILE_VAR
-		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml
+		rm "$MY_INPUTXMLFILE_VAR"
+		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > "$BASENAME".xml
 
 		## Clean up the working dir:
 		rm ./*.tmp ./edit1.xml
