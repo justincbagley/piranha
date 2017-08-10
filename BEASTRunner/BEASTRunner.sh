@@ -267,7 +267,7 @@ INPUT FILE FOR DIRECTING EACH RUN. "
 		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')"
 echo "#!/bin/bash
 
-#PBS -l nodes=1:ppn=1,pmem=1024mb,walltime=${MY_SC_WALLTIME}
+#PBS -l nodes=1:ppn=1,pmem=${JAVA_MEM_ALLOC},walltime=${MY_SC_WALLTIME}
 #PBS -N ${MY_INPUT_BASENAME}
 #PBS -m abe
 #PBS -M ${MY_EMAIL_ACCOUNT}
