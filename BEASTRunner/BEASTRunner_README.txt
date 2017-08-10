@@ -26,24 +26,23 @@
 ##--can the user call the program by opening a terminal window, typing "./BEASTRunner.sh",
 ##--and pressing return.
 #
-##--It is assumed that BEAST1 (e.g. v1.8.3) or BEAST2 (e.g. 2.4.2) is installed on the
-##--supercomputer, and that the user can provide absolute paths to the software. During  
-##--generation of the BEAST submission scripts (STEP #2 above), there are options within
-##--the shell script template area of the BEASTRunner code (Lines 99-124) that need to 
-##--be uncommented, but which would require having BEAST available from the command line
-##--interface by simply typing "beast" (Lines 112 and 124). This is optional and only
-##--needed for conducting runs using BEAST v1.8 and v2.3.1; really, these lines just
-##--provide illustrations of different ways to run BEAST, when the program can be loaded
-##--using different modules. However, especially when many different versions are 
-##--available, or modules are unavailable, it is more convenient to supply the whole
-##--path to BEAST executables. 
+##--It is assumed that BEAST1 (e.g. v1.8.3) or BEAST2 (e.g. 2.4++) is installed on the
+##--supercomputer, and that the user can provide absolute paths to the software in the 
+##--configuration file. During generation of the BEAST submission scripts (STEP #2 above), 
+##--there are options within the shell script template area of the BEASTRunner code (on
+##--Lines 268-288) that could (and probably should) be edited by the user, but which provide 
+##--an illustration of how to load prerequisite Java and Beagle library modules on a 
+##--supercomputing cluster that uses modules. However, especially when many different 
+##--versions are available, or modules are unavailable on your supercomputer, it will be
+##--more convenient to supply the whole path to BEAST executables instead of using module
+##--code like this. 
 #
 ##--POTENTIAL ERRORS / ISSUES TO AVOID:
 ##--Users will need to be especially mindful of the following potential issues, to avoid
 ##--them and keep BEASTRunner from failing on the first go-throughs:
 ##--1. Like most other scripts within PIrANHA, BEASTRunner assumes that the user has set
 ##--   up passwordless ssh acces. See notes within the script, and in the PIrANHA README
-##--   file for links and information on how to set this up PRIOR TO RUNNING.
+##--   file for links and information on how to set this up **PRIOR TO RUNNING**.
 ##--
 ##--2. The supercomputer that BEASTRunner was initially developed to work on uses modules
 ##--   to load different versions of BEAST and java/java runtime environment on which
