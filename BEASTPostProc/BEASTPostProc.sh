@@ -132,7 +132,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 		## Example: treeannotator -burnin 100 -heights mean test.trees out.txt
 		## Example: treeannotator -burnin 100 -target map.tree test.trees out.txt
 
-		/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator -burnin 0 -heights mean ${i}_final_5k.trees ${i}.treeannotator.out
+		/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator -burnin 0 -heights mean "${i}"_final_5k.trees "${i}".treeannotator.out
 		## __PATH NEEDED__: If necessary, change start of this line to include the absolute path to the "treeannotator" executable on your machine, or to just specify the executable name if it is already in your path. 
 
 		## NOTE: If you are pointing to a treeannotator executable from BEAST2 (any version), you may get a Java error here saying you need to update to the latest version of Java (e.g. from v6 to v8).
@@ -174,7 +174,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 	###### Rename treeannotator output species tree file:
 	(
 		for l in ./treeannotator.species.tree/*.treeannotator.out; do
-	        mv $l ${l/*/MCC.species.tree.out}
+	        mv "$l" ${l/*/MCC.species.tree.out}
 	    done
 	)
         mv MCC.species.tree.out ./treeannotator.species.tree
@@ -225,19 +225,19 @@ echo "INFO      | $(date) | STEP #3: GENE TREE ANALYSIS. "
 			sed -i -e '$a\' ./"${m}"_final_5k.trees
 
 		###### SUMMARIZE POSTERIOR DISTRIBUTION OF GENE TREES USING TREEANNOTATOR
-			/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator -burnin 0 -heights mean ${m}_final_5k.trees ${m}.treeannotator.out
+			/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator -burnin 0 -heights mean "${m}"_final_5k.trees "${m}".treeannotator.out
 			## __PATH NEEDED__: If necessary, change start of this line to include the absolute path to the "treeannotator" executable on your machine, or to just specify the executable name if it is already in your path. 
 
 		###### Change name of annotated tree file output by TreeAnnotator for this gene/partition:
 			partitionname="$(echo $m | sed 's/^[a-zA-Z0-9\_]*\.//g' | sed 's/\.trees//g')"
-			mv ./*.treeannotator.out ./MCC.${partitionname}.gene.tree.out
+			mv ./*.treeannotator.out ./MCC."${partitionname}".gene.tree.out
 
 		###### Make new directory for TreeAnnotator results for this gene/partition, with the
 		###### desired name, and then move the TreeAnnotator results into the new folder:
-			mkdir ./treeannotator.${partitionname}.gene.tree
-			mv ./MCC.${partitionname}.gene.tree.out ./treeannotator.${partitionname}.gene.tree
+			mkdir ./treeannotator."${partitionname}".gene.tree
+			mv ./MCC."${partitionname}".gene.tree.out ./treeannotator."${partitionname}".gene.tree
 			
-			mv ./${m}_final_5k.trees ./final_5k.${partitionname}.gene.trees
+			mv ./"${m}"_final_5k.trees ./final_5k."${partitionname}".gene.trees
 
 		done
 	)
