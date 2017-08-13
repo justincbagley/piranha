@@ -137,8 +137,8 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 
 		## NOTE: If you are pointing to a treeannotator executable from BEAST2 (any version), you may get a Java error here saying you need to update to the latest version of Java (e.g. from v6 to v8).
 
-		mkdir ${i}.treeannotator
-		mv ./${i}.treeannotator.out ./${i}.treeannotator
+		mkdir "${i}".treeannotator
+		mv ./"${i}".treeannotator.out ./"${i}".treeannotator
 
 		done
 	)
@@ -150,7 +150,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 		if [[ "${#files[@]}" -gt 0 ]] ; then
 			echo "INFO      | $(date) |          Renaming final 5k post-burnin species tree files."
 	        for j in ./*.species.trees_final_5k.trees; do
-	            mv $j ${j/*/final_5k.species.trees}
+	            mv "$j" ${j/*/final_5k.species.trees}
 	        done
 	    else
 	        echo "WARNING!  | $(date) |          Failed to rename final 5k post-burnin species tree files. "
@@ -164,7 +164,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 		if [[ "${#folders[@]}" -gt 0 ]] ; then
 			echo "INFO      | $(date) |          Previous step succeeded. Renaming folders with TreeAnnotator species tree results. "
 			for k in ./*.species.trees.treeannotator; do
-				mv $k ${k/*/treeannotator.species.tree}
+				mv "$k" ${k/*/treeannotator.species.tree}
 			done
 		else
 			echo "WARNING!  | $(date) |          ERROR: Found no folders with TreeAnnotator species tree results. "
