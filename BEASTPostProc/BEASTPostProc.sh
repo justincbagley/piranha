@@ -2,18 +2,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                             BEASTPostProc v1.3, July 2017                              #
+#                            BEASTPostProc v1.4, August 2017                             #
 #  SHELL SCRIPT FOR POST-PROCESSING BEAST GENE TREE & SPECIES TREES OUTPUT FILES ON A    #
 #  REMOTE SUPERCOMPUTING CLUSTER                                                         #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: July 10, 2017.       #
+#  (http://github.com/justincbagley) for further info. Last update: August 13, 2017.     #
 #  For questions, please email jcbagley@vcu.edu.                                         #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                             BEASTPostProc v1.3, July 2017                              #
+#                            BEASTPostProc v1.4, August 2017                             #
 ##########################################################################################
 "
 
@@ -22,13 +22,13 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES & SUMMARIZE RUN LOG FILE. "
 ##--extensions for BEAST output files:
 	shopt -s nullglob
 	## Check for and, if present, assign *BEAST species tree file in run directory to variable.
-	if [[ -n $(find . -name "*.species.trees" -type f) ]]; then
-		MY_STARBEAST_SPECIESTREE_FILE=./*.species.trees
+	if [[ -n $(find . -name "*species.trees" -type f) ]]; then
+		MY_STARBEAST_SPECIESTREE_FILE=./*species.trees
 	fi
 	## Check for and, if present, assign BEAST gene tree file in run directory to variable.
 	if [[ -n $(find . -name "*.trees" -type f) ]]; then
 		MY_BEAST_GENETREE_FILES="$(ls | grep -n ".trees$" | \
-		sed 's/[0-9]*://g' | sed '/.species.trees/ d')"
+		sed 's/[0-9]*://g' | sed '/species.trees/ d')"
 	fi
 	## Check for and, if present, assign BEAST log file containing all logged reg run parameters in run directory to variable.
 	if [[ -n $(find . -name "*.log" -type f) ]]; then
