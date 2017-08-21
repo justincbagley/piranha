@@ -6,7 +6,7 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 ## LICENSE
 
-All code within the PIrANHA v0.1.4 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA v0.1.5 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
@@ -30,7 +30,7 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](h
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-PIrANHA v0.1.4 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the following software programs:
+PIrANHA v0.1.5 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the following software programs:
 
 - **pyRAD** (Eaton 2014) or **ipyrad** (Eaton and Overcast 2016)
 - **PartitionFinder** (Lanfear et al. 2012, 2014)
@@ -44,22 +44,25 @@ PIrANHA v0.1.4 is a repository of shell scripts and R scripts written by the aut
 - **fastSTRUCTURE** (Raj et al. 2014)
 - **PhyloMapper** (Lemmon and Lemmon 2008)
 
-The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNPs or SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on the user's personal machine (e.g. [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.4) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts) or a remote supercomputer machine, and then conducting post-processing of the results. In particular, a number of scripts have been written with sections allowing them to be run (or cause other software to be called) on a supercomputing cluster, using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
+The current code in PIrANHA has been written largely with a focus on 1) analyses of DNA sequence data and SNPs or SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on the user's personal machine (e.g. [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.5) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts) or a remote supercomputer machine, and then conducting post-processing of the results. In particular, a number of scripts have been written with sections allowing them to be run (or cause other software to be called) on a supercomputing cluster, using code suitable for SLURM or TORQUE/PBS resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in Super-pyRAD2PartitionFinder.sh). 
 
 ### Distribution Structure and Pipelines
 
 **What's new in this release?** 
 
-The current, modified PIrANHA v0.1.4 release contains several goodies listed below, in addition to minor improvements in the code!! 
-- **August 2017:** updated 'BEAST\_PSPrepper.sh' script automating editing existing BEAST v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
-- **May 2017:** added 'SNAPPRunner.sh' script for conducting multiple runs of SNAPP ("SNP and AFLP Phylogenies") model in BEAST.
-- **May 2017:** added options to 'MrBayesPostProc.sh' script for specifying relative burnin fraction (during sump and sumt), as well as calling stepping-stone sampling estimation of the log-marginal likelihood of the model.
-- **May 2017:** added new 'MrBayesPostProc.sh' script that summarizes the posterior distribution of trees and parameters from a single MrBayes run. Script picks up filenames from contents of run dir, and uses default burnin fraction of 0.25 during analyses.
-- **May 2017:** build now contains new 'BEASTRunner.sh' script and 'beast\_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
-- **April 2017:** build now contains new 'pyRADLocusVarSites.sh' script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
-- **April 2017:** I added new 'dadiRunner.sh' script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo).
+The current release, PIrANHA v0.1.5, contains the following updates, in addition to minor improvements in the code:
+- **August 2017:** + updated MAGNET pipeline by editing 'MAGNET.sh' by adding three new command line options ("\-e", "\-m", and "\-o" flags), as follows:
+  \-e   executable (def: raxmlHPC-SSE3) name of RAxML executable, accessible from command line
+       on user's machine
+  \-m   indivMissingData (def: 1=allowed; 0=removed)
+  \-o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
+       separted list   
+- **August 2017:** + updated MAGNET pipeline by adding getBootTrees.sh script, which collates and organizes bootstrap trees from all RAxML runs in sub-folders of a working directory, especially results of a MAGNET run. This is the standalone version of the script.  
+- **August 2017:** + updated 'BEAST\_PSPrepper.sh' script automating editing existing BEAST v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
+- **bug fix:** - MAGNET.sh (unused code)
+- **bug fix:** - getGeneTrees.sh (unused code)
+- **bug fix:** - BEASTRunner.sh
 
-I have also added a new 'MrBayesPostProc.sh' script and corresponding 'mrbayes_post_proc.cfg' configuration file, which together automate summarizing the posterior distribution of trees and parameters from a single MrBayes run. I intend to extend these scripts to provide options for several other anlayses of individual MrBayes runs/input files, as well as extend them to pulling down results from multiple MrBayes runs.
 
 *What is possible with PIrANHA?* *Who cares?*
 
@@ -82,10 +85,10 @@ The following **Figure 3** illustrates new capacities of running and processing 
 
 ### Dependencies
 
-PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.4)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, I provide a full list of them below, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release. Of course, you can usually get away with not installing dependencies or software that are unrelated to the analysis you are conducting with PIrANHA, but it is recommended that you install all dependencies to take full advantage of PIrANHA's capabilities, or be prepared for any analysis!
+PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbagley/MAGNET) or [here](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.5)) within PIrANHA, relies on several software dependencies. These dependencies are described in some detail in README files for different scripts or packages; however, I provide a full list of them below, with asterisk marks preceding those already included in the MAGNET subdirectory of the current release. Of course, you can usually get away with not installing dependencies or software that are unrelated to the analysis you are conducting with PIrANHA, but it is recommended that you install all dependencies to take full advantage of PIrANHA's capabilities, or be prepared for any analysis!
 
 - PartitionFinder
-- BEAST v1.8.3 and v2.4.2++ (or newer; available at: http://beast.bio.ed.ac.uk/downloads and http://beast2.org, respectively)
+- BEAST v1.8.3++ and v2.4.2++ (or newer; available at: http://beast.community and http://beast2.org, respectively)
 	* Updated Java, appropriate Java virtual machine / jdk required
 	* beagle-lib required
 	* default BEAST packages required
@@ -119,7 +122,7 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 
 :exclamation: Setting up passwordless SSH access is **VERY IMPORTANT** as PIrANHA scripts and pipelines will not work without setting this up first. The following links provide useful tutorials/discussions that can help users set up passwordless SSH access:
 
-- http://www.linuxproblem.org/art_9.html
+- http://www.linuxproblem.org/art\_9.html
 - http://www.macworld.co.uk/how-to/mac-software/how-generate-ssh-keys-3521606/
 - https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/  (preferred tutorial)
 - https://coolestguidesontheplanet.com/make-an-alias-in-bash-shell-in-os-x-terminal/  (needed to complete preceding tutorial)
@@ -153,7 +156,7 @@ Shell script for going directly from Phylip alignment (.phy) and partitions (.pa
 
 ### Estimating Gene Trees for Species Tree Inference
 #### _MAGNET (MAny GeNE Trees) Package_
-Shell script (and others) for inferring maximum-likelihood gene trees in RAxML (Stamatakis 2014) for many loci (e.g. SNP loci from Next-Generation Sequencing) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo. Starting file formats that are currently supported include .nex and .gphocs (from G-PhoCS software, Gronau et al. 2011).
+Interactive shell pipeline for inferring maximum-likelihood gene trees in RAxML (Stamatakis 2014) for multilocus DNA sequence alignments (e.g. RAD loci from ddRAD-seq experiments, candidate genes, genomic contigs) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo. Three starting input file formats are currently supported, including single NEXUS (.nex), single G-PhoCS (.gphocs; formatted for G-PhoCS software, Gronau et al. 2011), and multiple Phylip files.
 
 ### Automating Bayesian evolutionary analyses in BEAST
 #### _BEASTRunner_
