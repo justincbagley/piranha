@@ -152,10 +152,10 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 ### :construction: _NOTE: The following 'Getting Started' content is Under Construction! E-mail me about it, or check back soon for updates!_ :construction:
 ### Phylogenetic Partitioning Scheme/Model Selection
 #### _pyRAD2PartitionFinder_
-Shell script for going directly from Phylip alignment (.phy) and partitions (.partisions) files output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016) (during de novo assembly of reduced-representation sequence data from an NGS experiment) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined SNP loci. See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more info (e.g. detailed comments located within the code itself; a README is coming soon).
+Shell script for going directly from Phylip alignment (.phy) and partitions (.partisions) files output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016; for de novo assembly of reduced-representation sequence data from an NGS experiment) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined SNP loci in PartitionFinder (Lanfear et al. 2012, 2016). See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more information (e.g. detailed comments located within the code itself; a README is coming soon).
 
 ### Estimating Gene Trees for Species Tree Inference
-#### _MAGNET (MAny GeNE Trees) Package_
+#### _MAGNET (MAny GeNE Trees)_
 Interactive shell pipeline for inferring maximum-likelihood gene trees in RAxML (Stamatakis 2014) for multilocus DNA sequence alignments (e.g. RAD loci from ddRAD-seq experiments, candidate genes, genomic contigs) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo. Three starting input file formats are currently supported, including single NEXUS (.nex), single G-PhoCS (.gphocs; formatted for G-PhoCS software, Gronau et al. 2011), and multiple Phylip files.
 
 ### Automating Bayesian evolutionary analyses in BEAST
@@ -163,7 +163,7 @@ Interactive shell pipeline for inferring maximum-likelihood gene trees in RAxML 
 [BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the BEASTRunner [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
 
 #### _BEAST_PathSampling_
-The BEAST_PathSampling directory is a new area of development within PIrANHA in which I am actively coding scripts to (1) edit BEAST v2+ XML files for path sampling and (2) automate moving/running the new path sampling XML files on a supercomputing cluster. This is very new stuff, as of January 2017, so stay tuned for more updates in the coming days/weeks.
+The BEAST\_PathSampling directory is a new area of development within PIrANHA in which I am actively coding scripts to (1) edit BEAST v2++ XML files for path sampling analyses (Xie et al. 2011; Baele et al. 2012) and (2) automate moving/running the new path sampling XML files on a supercomputing cluster. Even as of August 2017, this is*very new stuff that is experimental and may still not be working*, so stay tuned for more updates soon.
 
 ## ACKNOWLEDGEMENTS
 
