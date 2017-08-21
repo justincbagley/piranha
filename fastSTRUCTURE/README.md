@@ -1,6 +1,6 @@
 # README
 
-THIS SCRIPT runs fastSTRUCTURE to infer admixture groups, hence population genetic structuring, in a sample of unlinked, biallelic SNP loci present in the working  directory. 
+THIS SCRIPT runs fastSTRUCTURE (Raj et al. 2014) to infer admixture groups, hence population genetic structuring, in a sample of unlinked, biallelic SNP loci present in the working  directory. 
 
 Whereas the original script ("fastSTRUCTURE.sh", available on my website) was written to be interactive, prompting the user for input at several points, this shell script provides users a means of running fastSTRUCTURE in _non-interactive_ fashion, and thus must contain all information for a run internally. 
 
