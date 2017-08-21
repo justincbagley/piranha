@@ -51,6 +51,7 @@ The current code in PIrANHA has been written largely with a focus on 1) analyses
 **What's new in this release?** 
 
 The current release, PIrANHA v0.1.5, contains the following updates, in addition to minor improvements in the code:
+- **August 2017:** + added a Change Log file ('changeLog.md') to supplement releases page and provide log file within master.
 - **August 2017:** + updated MAGNET pipeline by editing 'MAGNET.sh' by adding three new command line options ("\-e", "\-m", and "\-o" flags), as follows:
   \-e   executable (def: raxmlHPC-SSE3) name of RAxML executable, accessible from command line
        on user's machine
