@@ -98,15 +98,15 @@ PIrANHA, and especially the MAGNET package ([here](https://github.com/justincbag
 - RAxML (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html)
 - Perl (available at: https://www.perl.org/get.html).
 - \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html; note: some, but not all of these, come packaged within MAGNET)
-- Python v2.7 and/or 3+ (available at: https://www.python.org/downloads/)
+- Python v2.7 and/or 3++ (available at: https://www.python.org/downloads/)
 	* Numpy (available at: http://www.numpy.org/)
 	* Scipy (available at: http://www.scipy.org/)
 	* Cython (available at: http://cython.org/)
 	* GNU Scientific Library (available at: http://www.gnu.org/software/gsl/)
 	* bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh")
 - fastSTRUCTURE v1.0 (available at: https://rajanil.github.io/fastStructure/)
-- dadi v1.7.0 (or v1.6.3 as modified by Tine et al. 2014; available at: https://bitbucket.org/gutenkunstlab/dadi/overview)
-- R v3+ (available at: https://cran.r-project.org/)
+- dadi v1.7.0++ (or v1.6.3; available at: https://bitbucket.org/gutenkunstlab/dadi/overview)
+- R v3++ (available at: https://cran.r-project.org/)
 
 Users must install all software not included in PIrANHA, and ensure that it is available via the command line on their supercomputer and/or local machine (best practice is to simply install all software in both places). For more details, see the MAGNET README.
 
@@ -173,7 +173,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 
 - Aberer AJ, Kobert K, Stamatakis A (2014) ExaBayes: massively parallel Bayesian tree inference for the whole-genome era. Molecular Biology and Evolution, 31, 2553-2556.
 - Avise JC (2000) Phylogeography: the history and formation of species. Cambridge, MA: Harvard University Press.
-- Baele et al. 2012.
+- Baele G, Lemey P, Bedford T, Rambaut A, Suchard MA, Alekseyenko AV (2012) Improving the accuracy of demographic and molecular clock model comparison while accommodating phylogenetic uncertainty. Molecular Biology and Evolution, 29, 2157-2167.
 - Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond AJ (2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS Computational Biology, 10, e1003537.
 - Bryant D, Bouckaert R, Felsenstein J, Rosenberg NA, RoyChoudhury A (2012) Inferring species trees directly from biallelic genetic markers: bypassing gene trees in a full coalescent analysis. Molecular Biology and Evolution, 29, 1917–1932.
 - Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. Bioinformatics, 30, 1844-1849.
@@ -189,8 +189,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
 - Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, et al. (2012) MrBayes v. 3.2: efficient Bayesian phylogenetic inference and model choice across a large model space. Systematic Biology, 61, 539-542.
 - Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30, 1312-1313.
-- Tine et al. 2014. Nature comm.
-- Xie et al. 2011.
+- Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
 
 ## RECOMMENDED READING
 - Unix shell background info [here](https://www.gnu.org/software/bash/), [here](https://en.wikipedia.org/wiki/Bash_(Unix_shell)), [here](http://askubuntu.com/questions/141928/what-is-difference-between-bin-sh-and-bin-bash), and [here](http://www.computerworld.com.au/article/222764/).
