@@ -61,6 +61,7 @@ The current release, PIrANHA v0.1.5, contains the following updates, in addition
 - **August 2017:** + updated MAGNET pipeline by adding getBootTrees.sh script, which collates and organizes bootstrap trees from all RAxML runs in sub-folders of a working directory, especially results of a MAGNET run. This is the standalone version of the script.  
 - **August 2017:** + updated 'BEAST\_PSPrepper.sh' script automating editing existing BEAST v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
 - **2017** + added 'phyNcharSumm.sh' script in MAGNET/shell dir, which creates table summarizing the number of characters (length, in bp) in each of multiple Phylip sequence alignments in a working directory.
+- **2017** + added 'phyNcharSumm.sh' script in MAGNET/shell dir, which creates table summarizing the number of characters (length, in bp) in each of multiple Phylip sequence alignments in a working directory.
 - **bug fix:** - MAGNET.sh (unused code)
 - **bug fix:** - getGeneTrees.sh (unused code)
 - **bug fix:** - BEASTRunner.sh
