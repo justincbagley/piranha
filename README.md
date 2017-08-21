@@ -163,7 +163,7 @@ Interactive shell pipeline for inferring maximum-likelihood gene trees in RAxML 
 
 ### Automating Bayesian evolutionary analyses in BEAST
 #### _BEASTRunner_
-[BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the BEASTRunner [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner_README.txt) for more information.
+[BEASTRunner](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/BEASTRunner.sh) automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM resource management with PBS wrappers, or a TORQUE/PBS resource management system. See the BEASTRunner [README](https://github.com/justincbagley/PIrANHA/blob/master/BEASTRunner/README.md) for more information.
 
 #### _BEAST_PathSampling_
 The BEAST\_PathSampling directory is a new area of development within PIrANHA in which I am actively coding scripts to (1) edit BEAST v2++ XML files for path sampling analyses (Xie et al. 2011; Baele et al. 2012) and (2) automate moving/running the new path sampling XML files on a supercomputing cluster. Even as of August 2017, this is*very new stuff that is experimental and may still not be working*, so stay tuned for more updates soon.
