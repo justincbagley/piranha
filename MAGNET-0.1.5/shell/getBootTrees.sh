@@ -31,10 +31,6 @@ echo "INFO      | $(date) | Starting getBootTrees.sh script... "
 	##--Assign bootstrap tree list to variable
 	MY_BOOT_TREE_LIST="$(cat ./bootTrees.list)"
 
-	##--Make list of run folders that corresponds to order in bootTrees.list file:
-	MY_RUN_FOLDERS="$(echo $MY_BOOT_TREE_LIST | sed 's/\/[A-Za-z.\_\-]*//g')"
-
-
 	############ ORGANIZE BOOTSTRAP TREES INTO ONE LOCATION
 	##--Place all inferred bootstrap tree files into a single "bootstrap_trees" folder in 
 	##--working directory. However, all the boot tree files have the same name. So, in order
