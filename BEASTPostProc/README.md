@@ -9,5 +9,6 @@ If you have run BEAST, this code processes the posterior distributions of gene t
 For interpreting files output by this script, please refer to the BEAST websites (http://beast.community and http://beast2.org), published papers on the software (e.g. Drummond et al., 2012), manuals and other docs included in the BEAST distributions, and also tutorials and comments on using BEAST on my website (http://www.justinbagley.org).
 
 ## References:
-Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and the BEAST 1.7. Mol. Biol. Evol. 29, 1969-1973.
-Heled J, Drummond AJ (2010) Bayesian inference of species trees from multilocus data. Mol Biol Evol. 27(3):570–580.
+
+- Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and the BEAST 1.7. Mol. Biol. Evol. 29, 1969-1973.
+- Heled J, Drummond AJ (2010) Bayesian inference of species trees from multilocus data. Mol Biol Evol. 27(3):570–580.
