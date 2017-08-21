@@ -203,7 +203,7 @@ I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided som
 - ** Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in Super-pyRAD2PartitionFinder.sh, BEASTRunner.sh, BEASTPostProc.sh, and RAxMLRunner.sh) **
 - Make pyrad and ipyrad batch run scripts available
 - Consider separate scripts to work with ipyrad
-- Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (BEASTRunner.sh)
+- Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (use BEASTRunner.sh as springboard to develop tools in BEAST\_PathSampling dir)
 
-August 10, 2017
+August 21, 2017
 Justin C. Bagley, Richmond, VA, USA
