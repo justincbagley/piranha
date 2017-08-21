@@ -12,5 +12,5 @@ Under this scenario, 'MLEResultsProc.sh' automates extracting the path sampling 
 Biology, 10, e1003537.
 - Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and the 
 BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
-Grummer JA, Bryson RW Jr, Reeder TW. 2014. Species delimitation using Bayes factors: simulations and application to the _Sceloporus scalaris_ species group (Squamata: Phrynosomatidae). Systematic Biology 63: 119–133.
+- Grummer JA, Bryson RW Jr, Reeder TW. 2014. Species delimitation using Bayes factors: simulations and application to the _Sceloporus scalaris_ species group (Squamata: Phrynosomatidae). Systematic Biology 63: 119–133.
 - Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
