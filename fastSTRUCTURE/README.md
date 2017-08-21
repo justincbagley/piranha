@@ -15,7 +15,7 @@ It is also assumed that your data are in the original Structure data format with
 
 This code takes you through all of the major steps of a simple fastSTRUCTURE analysis. However, the more complex models available in the software program, i.e. the logistic prior model, are not used; instead, the default setting is to run using the simple prior model. You can change this by calling the logistic model using the prior flag in fastSTRUCTURE, e.g. calling "--prior=logistic" when running "structure.py". This code also follows the fastSTRUCTURE default *NOT* to run a cross-validation step. 
 
-**To understand prompts or run settings, users should refer to the fastSTRUCTURE BioRxiv paper by Raj et al. and README.md file that come with the distribution. These are available from the regular website (https://rajanil.github.io/fastStructure/) or the GitHub website (https://github.com/rajanil/fastStructure) for the program. **
+**To understand prompts or run settings, users should refer to the fastSTRUCTURE Genetics paper by Raj et al. (2014) and README.md file that come with the distribution. These are available from the regular website (https://rajanil.github.io/fastStructure/) or the GitHub website (https://github.com/rajanil/fastStructure) for the program.**
 
 ## REFERENCES
 
