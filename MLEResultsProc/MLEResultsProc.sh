@@ -146,7 +146,7 @@ echo "INFO      | $(date) | STEP #5: LOAD MLE RESULTS INTO R AND COMPUTE BAYES F
 	echo "INFO      | $(date) |          Calculating Bayes factors in R using '2logeB10.R' script... "
 	R CMD BATCH 2logeB10.R
 
-if [[ -s ./2logeB10.Rout  ]] && [[ "$wc -c ./2logeB10.Rout)" -gt "3960" ]]; then
+if [[ -s ./2logeB10.Rout  ]] && [[ "$(wc -c ./2logeB10.Rout)" -gt "3960" ]]; then
 	echo "INFO      | $(date) |          R calculations complete. "
 fi
 
