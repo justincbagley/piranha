@@ -55,7 +55,7 @@ if(sum(SS.vec) == '0'){
 	mat[upper.tri(mat)] <- NA
 	mat
 }
-if( (! sum(PS.vec) == '0') & (! sum(SS.vec) == '0') ){    
+if( (sum(PS.vec) != '0') & (sum(SS.vec) != '0') ){    
 	lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
 }
 cat("\n \n")
@@ -70,7 +70,7 @@ sink()
 ##--matrix in which the above-diagonal elements were the same as the below-diagonal elements, 
 ##--only with the opposite sign. Such a table would be equivalent to the Bayes factors table 
 ##--already written to file in the step above, and thus would be unnecessary.
-if( (! sum(PS.vec) = '0') & (! sum(SS.vec) == '0') ){    
+if( (sum(PS.vec) != '0') & (sum(SS.vec) != '0') ){    
 sink("BayesFactors.out.txt", append=TRUE)
 cat("################################ BAYES FACTOR DIFFERENCES ################################
 Below diagonal: 2logeB10 values based on path sampling (PS) log-marginal likelihood estimates
