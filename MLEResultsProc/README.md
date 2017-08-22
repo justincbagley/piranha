@@ -15,7 +15,7 @@ The Bayes factors output by this procedure are 2loge(B10) Bayes factors (Kass an
 | 6 to 10                | Strong                                    |
 | >10                    | Very strong ["decisive"]                  |
 
-\*Bayes factors provide "weight of evidence" for or against a hypothesis; and during a MLEResultsProc analysis, Bayes factors are output as pairwise, "row-by-column" comparisons. Thus, a positive 2loge(B10) Bayes factor value for the model in a given row is indicative that that model has greater weight of evidence than the model in the corresponding column of the comparison.
+**\*Bayes factors provide "weight of evidence" for or against a hypothesis; and during a MLEResultsProc analysis, Bayes factors are output as pairwise, "row-by-column" comparisons. Thus, a positive 2loge(B10) Bayes factor value for the model in a given row is indicative that that model has greater weight of evidence than the model in the corresponding column of the comparison.**
 
 To conduct the R analysis, the '2logeB10.r' R script present in the MLEResultsProc folder is simply called from within the MLEResultsProc.sh script. If PS- and SS-based marginal-likelihood estimates are available in the output files being analyzed, then, in addition to a Bayes factor table, a second table will be output by R showing differences in the Bayes factors from the different methods, for all pairwise comparisons. This allows the user to easily see how the magnitude of Bayes factor support changes with a change in method.
 
