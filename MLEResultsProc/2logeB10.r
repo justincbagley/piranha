@@ -17,8 +17,15 @@ if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
 
 library(psych)
 
+############ Read data and output to file
 ##--Read in the data, output from STEP #1 of MLEResultsProc.sh script.
 data <- read.table(file="MLE.output.txt", header=TRUE, sep="\t")
+
+sink("2logeB10.output.txt")
+cat("########################### MARGINAL-LIKELIHOOD ESTIMATES ###########################\n")
+data
+cat("\n \n")
+sink()
 
 ############ Get marginal likelihood values and calculate 2loge B10 Bayes factors (2logeB10)
 #--Raw path-sampling (PS) log-marginal likelihood estimates:
@@ -41,22 +48,27 @@ SS.2logeB10
 ##--Use psych package function to combine the resulting matrices into a single, nice
 ##--output table with Bayes factors (BF) from PS MLEs below the diagonal and BFs from SS 
 ##--MLEs above the diagonal:
-sink("BayesFactors.out.txt", append=TRUE)
+sink("2logeB10.output.txt", append=TRUE)
 cat("##################################### BAYES FACTORS ######################################
 Below diagonal: 2logeB10 values based on path sampling (PS) log-marginal likelihood estimates
 Above diagonal: 2logeB10 values based on stepping-stone (SS) log-marginal likelihood estimates\n")
 if(sum(PS.vec) == '0'){    
-	mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
-	mat[lower.tri(mat)] <- NA
-	mat
+	BF_mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
+	BF_mat[lower.tri(BF_mat)] <- NA
+	rownames(BF_mat) <- 1:length(PS.vec)
+	colnames(BF_mat) <- 1:length(PS.vec)
+	BF_mat
 }
 if(sum(SS.vec) == '0'){    
-	mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
-	mat[upper.tri(mat)] <- NA
-	mat
+	BF_mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
+	BF_mat[upper.tri(BF_mat)] <- NA
+	rownames(BF_mat) <- 1:length(PS.vec)
+	colnames(BF_mat) <- 1:length(PS.vec)
+	BF_mat
 }
 if( (sum(PS.vec) != '0') & (sum(SS.vec) != '0') ){    
-	lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
+	BF_mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
+	BF_mat
 }
 cat("\n \n")
 sink()
@@ -71,11 +83,12 @@ sink()
 ##--only with the opposite sign. Such a table would be equivalent to the Bayes factors table 
 ##--already written to file in the step above, and thus would be unnecessary.
 if( (sum(PS.vec) != '0') & (sum(SS.vec) != '0') ){    
-sink("BayesFactors.out.txt", append=TRUE)
+sink("2logeB10.output.txt", append=TRUE)
 cat("################################ BAYES FACTOR DIFFERENCES ################################
 Below diagonal: 2logeB10 values based on path sampling (PS) log-marginal likelihood estimates
 Above diagonal: differences between PS- and SS-based BF values\n")
-	lowerUpper(PS.2logeB10, SS.2logeB10, diff=TRUE)
+	BF_diff_mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=TRUE)
+	BF_diff_mat
 cat("\n \n")
 sink()
 }
