@@ -6,7 +6,7 @@ Under this scenario, 'MLEResultsProc.sh' automates extracting the path sampling 
 
 ## Bayes factors
 
-The Bayes factors output by this procedure are 2loge(B10) Bayes factors (Kass and Raftery 1995). The scale for interpreting these Bayes factors is shown at the bottom right of p. 777 in Kass and Raftery (1995), which I reproduce here for convenience:
+The Bayes factors output by this procedure are 2loge(B10) Bayes factors (Kass and Raftery 1995). The scale for interpreting these Bayes factors is shown at the bottom left of p. 777 in Kass and Raftery (1995), which I reproduce here for convenience:
 
 | 2loge(B10)             | \*Evidence against null hypothesis (H0)    |
 | :--------------------- |:------------------------------------------|
