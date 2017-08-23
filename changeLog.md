@@ -1,5 +1,8 @@
 # PIrANHA Change Log
 
+## PIrANHA v0.1.5 (modified beta release - several changes after official 0.1.5 release)
+- **August 2017:** + updated all README files in the repository (for PIrANHA, BEASTPostProc, BEASTRunner, ExaBayesPostProc, MLEResultsProc, and fastSTRUCTURE scripts).
+
 ## PIrANHA v0.1.5 (official beta release) - August 21, 2017
 The current release, PIrANHA v0.1.5, contains the following updates, in addition to minor improvements in the code:
 - **August 2017:** + added a Change Log file ('changeLog.md') to supplement releases page and provide log file within master.
