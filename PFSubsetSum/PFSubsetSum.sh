@@ -4,18 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                           PFSubsetSum v1.0, September 2016                             #
+#                             PFSubsetSum v1.1, August 2017                              #
 #   SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FROM BEST PartitionFinder SCHEME     #
 #   SUBSETS                                                                              #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: September 7, 2016. For questions, please email     #
-#   jcbagley@unb.br.                                                                     #
+#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
+#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
+#  (http://github.com/justincbagley) for further info. Last update: August 23, 2017.     #
+#  For questions, please email jcbagley@vcu.edu.                                         #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                           PFSubsetSum v1.0, September 2016                             #
+#                             PFSubsetSum v1.1, August 2017                              #
 ##########################################################################################
 "
 
@@ -24,10 +24,6 @@ echo "INFO      | $(date) | STEP #1: SETUP. "
 ###### Set paths and filetypes as different variables:
 	MY_WORKING_DIR="$(pwd)"
 	echo "INFO      | $(date) |          Setting working directory to: $MY_WORKING_DIR "
-	CR=$(printf '\r')
-	calc () {
-	   	bc -l <<< "$@"
-	}
 
 
 ###### Detect and read in PartitionFinder best scheme file from current working directory:
