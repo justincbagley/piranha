@@ -1,4 +1,4 @@
-# README
+# fastSTRUCTURE
 
 THIS SCRIPT runs **fastSTRUCTURE** (Raj et al. 2014) to infer admixture groups, hence population genetic structuring, in a sample of unlinked, biallelic SNP loci present in the working  directory. 
 
@@ -20,3 +20,5 @@ This code takes you through all of the major steps of a simple fastSTRUCTURE ana
 ## REFERENCES
 
 - Raj A, Stephens M, and Pritchard JK (2014) fastSTRUCTURE: Variational Inference of Population Structure in Large SNP Data Sets. Genetics, 197, 573-589.
+
+August 23, 2017 Justin C. Bagley, Richmond, VA, USA
