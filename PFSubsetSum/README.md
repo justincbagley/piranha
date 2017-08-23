@@ -5,7 +5,7 @@ THIS SCRIPT automates calculating basic summary statistics for each subset in th
 Below, I provide an example of output to screen during a recent PFSubsetSum run on a phylogenomic dataset. The analysis took 6 seconds.
 
 ```
-$ cp PFSubsetSum /path/to/PartitionFinder/analysis/folder
+$ cp PFSubsetSum.sh /path/to/PartitionFinder/analysis/folder
 $ cd /path/to/PartitionFinder/analysis/folder
 $ chmod u+x ./*.sh
 $ ./PFSubsetSum.sh 
