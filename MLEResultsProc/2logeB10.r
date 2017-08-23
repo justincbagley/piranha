@@ -68,6 +68,8 @@ if(sum(SS.vec) == '0'){
 }
 if( (sum(PS.vec) != '0') & (sum(SS.vec) != '0') ){    
 	BF_mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=FALSE)
+	rownames(BF_mat) <- 1:length(PS.vec)
+	colnames(BF_mat) <- 1:length(PS.vec)
 	BF_mat
 }
 cat("\n \n")
@@ -88,6 +90,8 @@ cat("################################ BAYES FACTOR DIFFERENCES #################
 Below diagonal: 2logeB10 values based on path sampling (PS) log-marginal likelihood estimates
 Above diagonal: differences between PS- and SS-based BF values\n")
 	BF_diff_mat <- lowerUpper(PS.2logeB10, SS.2logeB10, diff=TRUE)
+	rownames(BF_diff_mat) <- 1:length(PS.vec)
+	colnames(BF_diff_mat) <- 1:length(PS.vec)
 	BF_diff_mat
 cat("\n \n")
 sink()
