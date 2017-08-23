@@ -1,4 +1,4 @@
-# README
+# ExaBayesPostProc
 
 THIS SCRIPT aids post-processing of ExaBayes v1.4 (Aberer et al. 2014) output files by1) summarizing run, tree, and parameter characteristics, and 2) modifying ExaBayes tree files (i.e. with "topologies" in their filenames), summarizing the posterior distribution of trees, and computing a 50% majority-rule consensus tree with branch lengths and Bayesian posterior probabilities >=50% along the nodes, using MrBayes v3.2(Ronquist et al. 2011).
 
@@ -10,3 +10,5 @@ For interpreting files output by this script, please refer to the ExaBayes and M
 
 - Aberer AJ, Kobert K, Stamatakis A (2014) ExaBayes: Massively parallel Bayesian tree inference for the whole-genome era. Mol. Biol. Evol. 31(10): 2553-2556. doi: 10.1093/molbev/msu236.
 - Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, H¨ohna S, Larget B, Liu L, Suchard MA, Huelsenbeck JP (2011) MrBayes 3.2: Efficient Bayesian phylogenetic inference and model choice across a large model space. Systematic Biology.
+
+August 23, 2017 Justin C. Bagley, Richmond, VA, USA
