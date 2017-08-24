@@ -33,7 +33,7 @@ java.lang.RuntimeException: An error was encounted. Terminating BEAST
 	at java.util.logging.Logger.log(Logger.java:788)
 	at java.util.logging.Logger.severe(Logger.java:1463)
 	at beast.app.beastapp.BeastMain.<init>(Unknown Source)
-	at beast.app.beastapp.BeastMain.main(Unknown Source)   '
+	at beast.app.beastapp.BeastMain.main(Unknown Source)
 ```
  
 ## DEPENDENCIES
