@@ -36,14 +36,36 @@ java.lang.RuntimeException: An error was encounted. Terminating BEAST
 	at beast.app.beastapp.BeastMain.main(Unknown Source)   '
 ```
  
-This script accepts as mandatory input the name of the workingDir where the program should be run. The main options determining the form of a run is the -i flag, which takes the name of a list file (e.g. 'list.txt' by default) containing names of sub-folders to be analyzed, one per line; and the -s flag, which specifies the name of the submission shell scripts (which must all be the same, or be entered with wildcards to accomodate all names used, e.g. 'beast*.sh'). These options are critical for customizing the run. The -m flag is currently experimental, so _do not_ use it.
-
-After detecting the local computing environment with the uname utility, BEASTReset.sh will perform one of two general operations, with two sub-options (a or b). (1a) If the environment is Mac OS X and no list of sub-folders is provided, then the script assumes the environment is the user's local Mac machine, and it goes through all sub-folders, looks for the submission script (-s flag), and then resets the seed in each script. In a similar case, the script (1b) accepts the list of sub-folders that failed (specified using the -i flag) and only modifies shell scripts in this list file. Alternatively, (2a) if the environment is Linux and no list file is specified, then the script assumes the environment is the remote supercomputer, and it will go through all sub-folders and reset the seed in each submission script (-s flag). Again, the script will also (2b) accept a list of sub-folders that failed (-i flag), which must contain paths to run sub-folders on the supercomputer, with on path per line). 
+## DEPENDENCIES
 
 Currently, the only dependency for BEASTReset is Python v2.7++ or v3.5++. BEASTReset is part of the PIrANHA software repository (Bagley 2017). See the BEASTReset and PIrANHA README files for additional information.
+
+## USAGE
+
+This script accepts as mandatory input the name of the workingDir where the program should be run. Options are as follows (first part of Usage text):
+
+```
+Usage: $(basename "$0") [Help: -h help] [Options: -i s m] workingDir 
+ ## Help:
+  -h   help text (also: -help)
+  -H   verbose help text (also: -Help)
+
+ ## Options:
+  -i   rerunList (def: $MY_RERUN_DIR_LIST) name of BEAST run sub-folders that need to be reset/rerun
+  -s   scriptName (def: $MY_RUN_SCRIPT) name of shell/bash run submission script (must be the
+       same for all runs, or entered with wildcards to accommodate all names used, e.g. 'beast*.sh')
+  -m   manager (def: $MY_SC_MANAGEMENT_SYS) name of scheduling and resource manager system on the supercomputer
+
+```
+
+The main options determining the form of a run is the -i flag, which takes the name of a list file (e.g. 'list.txt' by default) containing names of sub-folders to be analyzed, one per line; and the -s flag, which specifies the name of the submission shell scripts (which must all be the same, or be entered with wildcards to accomodate all names used, e.g. 'beast*.sh'). These options are critical for customizing the run. The -m flag is currently experimental, so _do not_ use it. 
+
+After detecting the local computing environment with the <uname> utility, BEASTReset.sh will perform one of two general operations, with two sub-options (a or b). (1a) If the environment is Mac OS X and no list of sub-folders is provided, then the script assumes the environment is the user's local Mac machine, and it goes through all sub-folders, looks for the submission script (-s flag), and then resets the seed in each script. In a similar case, the script (1b) accepts the list of sub-folders that failed (specified using the -i flag) and only modifies shell scripts in this list file. Alternatively, (2a) if the environment is Linux and no list file is specified, then the script assumes the environment is the remote supercomputer, and it will go through all sub-folders and reset the seed in each submission script (-s flag). Again, the script will also (2b) accept a list of sub-folders that failed (-i flag), which must contain paths to run sub-folders on the supercomputer, with on path per line). 
+
 
 ## REFERENCES
 
 - Bagley, J.C. 2017. PIrANHA v0.1.5. GitHub repository, Available at: <http://github.com/justincbagley/PIrANHA>.
 
-
+August 24, 2017
+Justin C. Bagley, Richmond, VA
