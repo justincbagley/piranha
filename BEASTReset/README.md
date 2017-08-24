@@ -38,7 +38,7 @@ java.lang.RuntimeException: An error was encounted. Terminating BEAST
  
 ## DEPENDENCIES
 
-Currently, the only dependency for BEASTReset is Python v2.7++ or v3.5++. BEASTReset is part of the PIrANHA software repository (Bagley 2017). See the BEASTReset and PIrANHA README files for additional information.
+Currently, the only dependency for BEASTReset is [Python](https://www.python.org/downloads/) v2.7++ or v3++. BEASTReset is part of the [PIrANHA](https://github.com/justincbagley/PIrANHA) software repository (Bagley 2017). See the BEASTReset and PIrANHA README files for additional information.
 
 ## USAGE
 
