@@ -175,9 +175,9 @@ fi
 ####### CASE 2: SUPERCOMPUTER ENVIRONMENT - FIX SUBMISSION SCRIPTS AND RUN THEM ON THE SUPERCOMPUTER,
 ####### EXPECTING DIFFERENT INPUT FILENAMES/FORMATS VARYING BY MANAGEMENT SYSTEM (PBS or SLURM):
 
-if [[ "${machine}" = "Linux" ]]; then
+if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "PBS" ]]; then
 
-####### RUN ON LINUX SUPERCOMPUTER:
+####### RUN ON LINUX SUPERCOMPUTER WITH TORQUE/PBS MANAGER:
 (
 	cat "$MY_RERUN_DIR_LIST" | while read i; do 
 		cd "$i"; 
@@ -188,6 +188,27 @@ if [[ "${machine}" = "Linux" ]]; then
 			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
 
 			qsub ./"$MY_RUN_SCRIPT"
+
+		cd ..; 
+	done
+)
+
+fi
+
+
+if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "SLURM" ]]; then
+
+####### RUN ON LINUX SUPERCOMPUTER WITH SLURM MANAGER:
+(
+	cat "$MY_RERUN_DIR_LIST" | while read i; do 
+		cd "$i"; 
+		echo "$i"; 
+			j=./"$MY_RUN_SCRIPT"
+			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
+			echo $MY_RANDOM_SEED; 
+			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
+
+			sbatch ./"$MY_RUN_SCRIPT"
 
 		cd ..; 
 	done
