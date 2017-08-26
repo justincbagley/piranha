@@ -4,13 +4,13 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                             BEASTReset v0.1.0, August 2017                             #
+#                             BEASTReset v0.1.1, August 2017                             #
 #  SHELL SCRIPT AUTOMATING RESETTING THE RANDOM STARTING SEEDS FOR n SHELL SCRIPTS       #
 #  CORRESPONDING TO n BEAST RUNS (SETUP IN A SERIES OF n RUN FOLDERS) DESTINED FOR A     #
 #  REMOTE SUPERCOMPUTER, AND IF DESIRED ALSO RE-QUEUING THE RUNS ON THE SUPERCOMPUTER    #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: August 24, 2017.     #
+#  (http://github.com/justincbagley) for further info. Last update: August 25, 2017.     #
 #  For questions, please email jcbagley@vcu.edu.                                         #
 ##########################################################################################
 
@@ -116,7 +116,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                             BEASTReset v0.1.0, August 2017                             #
+#                             BEASTReset v0.1.1, August 2017                             #
 ##########################################################################################
 "
 
