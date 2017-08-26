@@ -32,7 +32,8 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] workingDir
   -i   rerunList (def: $MY_RERUN_DIR_LIST) name of BEAST run sub-folders that need to be reset/rerun
   -s   scriptName (def: $MY_RUN_SCRIPT) name of shell/bash run submission script (must be the
        same for all runs, or entered with wildcards to accommodate all names used, e.g. 'beast*.sh')
-  -m   manager (def: $MY_SC_MANAGEMENT_SYS) name of scheduling and resource manager system on the supercomputer
+  -m   manager (def: $MY_SC_MANAGEMENT_SYS; other: SLURM) name of scheduling and resource manager system on the 
+       supercomputer
 
  OVERVIEW
  THI SCRIPT expects to start from a set of BEAST run sub-folders in the current working 
