@@ -5,8 +5,8 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        #
 # |                                                                                      #
 #                            MLEResultsProc v1.2, August 2017                            #
-#   SHELL SCRIPT FOR POST-PROCESSING OF MARGINAL LIKELIHOOD ESTIMATION RESULTS FROM      #
-#   CONDUCTING PATH SAMPLING OR STEPPING-STONE SAMPLING IN BEAST                         #
+#  SHELL SCRIPT FOR POST-PROCESSING OF MARGINAL LIKELIHOOD ESTIMATION RESULTS FROM       #
+#  CONDUCTING PATH SAMPLING OR STEPPING-STONE SAMPLING IN BEAST                          #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
 #  (http://github.com/justincbagley) for further info. Last update: August 22, 2017.     #
