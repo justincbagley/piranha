@@ -49,7 +49,9 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] workingDir
  analyzed, one per line; and the -s flag, which specifies the name of the submission 
  shell scripts (which must all be the same, or be entered with wildcards to accomodate all 
  names used, e.g. 'beast*.sh'). These options are critical for customizing the run. The -m 
- flag is currently experimental, so _do not_ use it.
+ flag tells the program whether the supercomputer uses a TORQUE/PBS or SLURM manager; if 
+ '-mPBS', the shell scripts must have PBS format (be queable using qsub); if '-mSLURM', the 
+ shell scripts must have SBATCH format.
 	After detecting the local computing environment with the uname utility, BEASTReset.sh
  will perform one of two general operations, with two sub-options (a or b). (1a) If the 
  environment is Mac OS X and no list of sub-folders is provided, then the script assumes the 
