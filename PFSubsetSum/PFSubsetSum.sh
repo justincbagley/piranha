@@ -4,18 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                             PFSubsetSum v1.1, August 2017                              #
+#                             PFSubsetSum v1.2, August 2017                              #
 #   SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FROM BEST PartitionFinder SCHEME     #
 #   SUBSETS                                                                              #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: August 23, 2017.     #
+#  (http://github.com/justincbagley) for further info. Last update: August 26, 2017.     #
 #  For questions, please email jcbagley@vcu.edu.                                         #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                             PFSubsetSum v1.1, August 2017                              #
+#                             PFSubsetSum v1.2, August 2017                              #
 ##########################################################################################
 "
 
@@ -72,9 +72,10 @@ echo "INFO      | $(date) |          1. Calculating numCharsets (number of chara
 	mkdir "$MY_WORKING_DIR"/numCharsets/
 
 (
-    for i in $MY_SUBSET_FILE_LIST; do
-        subsetname=$(echo $i | sed 's/\.\///g; s/\.txt//g')
-        number_of_occurrences=$(grep -o "\-" <<< cat $i | wc -l)
+    for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
+        subsetname="$(echo p$i)"
+        subsetfile="$(echo ./$subsetname.txt)"
+        number_of_occurrences=$(grep -o "\-" <<< cat $subsetfile | wc -l)
         echo $number_of_occurrences > "$subsetname"_numCharsets.out
 		
 		cat ./"$subsetname"_numCharsets.out >> ./numCharsets/ALL_numCharsets.txt
@@ -97,10 +98,11 @@ echo "INFO      | $(date) |          2. Calculating subsetLengths (alignment len
 	mkdir "$MY_WORKING_DIR"/subsetLengths/
 
 (
-	for i in $MY_SUBSET_FILE_LIST; do
-		cat $i > ./Rinput.txt
+    for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
+        subsetname="$(echo p$i)"
+        subsetfile="$(echo ./$subsetname.txt)"
+		cat $subsetfile > ./Rinput.txt
 		CHARSET_DUMP=$(cat ./Rinput.txt)
-		subsetname=$(echo $i | sed 's/\.\///g; s/\.txt//g')
 
 		##--Make R script and give it data from each subset file within the loop...
 echo "#!/usr/bin/env Rscript
