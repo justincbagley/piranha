@@ -56,16 +56,14 @@ echo "INFO      | $(date) |          The best scheme from PartitionFinder contai
 	##--across different p's:
 (
 	for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
-		subsetname=$(echo p$i)
+		subsetname="$(echo p$i)"
 		sed -n "$i"p $MY_SUBSETS_FILE | sed 's/DNA\,//g; s/p[0-9]*//g; s/^[\ =]*//g' > $subsetname.txt		##--This cleans up the subset data by removing everything except the charsets (e.g. deleting "DNA, "...
 
-		echo $subsetname >> ./subset_names.txt
+		echo "$subsetname" >> ./subset_names.txt
 
 	done			
 )	
 
-    ##--Prep work: make file list as variable...
-    MY_SUBSET_FILE_LIST=$(echo ./p*.txt)
 
 echo "INFO      | $(date) |          1. Calculating numCharsets (number of character sets) within each subset in the scheme...  "
 	##--Prep work: make output directory...
@@ -76,7 +74,7 @@ echo "INFO      | $(date) |          1. Calculating numCharsets (number of chara
         subsetname="$(echo p$i)"
         subsetfile="$(echo ./$subsetname.txt)"
         number_of_occurrences=$(grep -o "\-" <<< cat $subsetfile | wc -l)
-        echo $number_of_occurrences > "$subsetname"_numCharsets.out
+        echo "$number_of_occurrences" > "$subsetname"_numCharsets.out
 		
 		cat ./"$subsetname"_numCharsets.out >> ./numCharsets/ALL_numCharsets.txt
 
@@ -101,8 +99,8 @@ echo "INFO      | $(date) |          2. Calculating subsetLengths (alignment len
     for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
         subsetname="$(echo p$i)"
         subsetfile="$(echo ./$subsetname.txt)"
-		cat $subsetfile > ./Rinput.txt
-		CHARSET_DUMP=$(cat ./Rinput.txt)
+		cat "$subsetfile" > ./Rinput.txt
+		CHARSET_DUMP="$(cat ./Rinput.txt)"
 
 		##--Make R script and give it data from each subset file within the loop...
 echo "#!/usr/bin/env Rscript
@@ -145,7 +143,7 @@ cat ./table_header.txt ./table.txt > ./sumstats.txt
 rm ./table_header.txt ./table.txt ./subset_names.txt ./subsetModels.txt
 
 
-echo "INFO      | $(date) | Done calculating summary statistics for subsets in your best PartitionFinder scheme. "
+echo "INFO      | $(date) | Done calculating summary statistics for subsets in your best PartitionFinder scheme using PFSubsetSum. "
 echo "INFO      | $(date) | Bye. 
 "
 #
