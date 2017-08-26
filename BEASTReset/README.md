@@ -1,4 +1,4 @@
-# BEASTRerun
+# BEASTReset
 
 THI SCRIPT expects to start from a set of BEAST run sub-folders in the current working directory. Each sub-folder will correspond to a run that has been (or will be) submitted to a remote supercomputing cluster with a Linux operating system, and either a TORQUE/PBS or SLURM scheduling and resource management system. As a consequence, each run sub-folder will contain a run submission shell script for queuing on the supercomputer. BEASTReset saves the user time by automating the resetting of the random starting number seeds in each submission shell script. 
 
