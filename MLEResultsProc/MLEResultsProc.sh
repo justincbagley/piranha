@@ -27,10 +27,22 @@ echo "INFO      | $(date) | STEP #2: CHECK BEAST VERSION (DETECT AND ACCOMODATE 
 ##--Conditional on the following check, we will run one of two different versions of 
 ##--MLEResultsProc on the current working dir--one specific to the format of output (.out)
 ##--files from BEAST v1, and one specific to the format of .out files from BEAST v2.
-(	for i in $MY_BEAST_OUTPUT_FILES; do echo "$i" > file.tmp; break; done	)
+(	
+	for i in $MY_BEAST_OUTPUT_FILES; do 
+		echo "$i" > file.tmp; 
+	break; 
+	done	
+)
 	y="$(cat file.tmp)"
+
 	MY_BEAST1_VER_CHECK="$(grep -h 'BEAST\ v1' $y | wc -l)"
+#	echo "MY_BEAST1_VER_CHECK is $MY_BEAST1_VER_CHECK "
+	MY_BEAST1_VER_CHECK2="$(grep -h 'log\ marginal\ likelihood' $y | wc -l)"
+
 	MY_BEAST2_VER_CHECK="$(grep -h 'BEAST\ v2' $y | wc -l)"
+#	echo "MY_BEAST2_VER_CHECK is $MY_BEAST2_VER_CHECK "
+	MY_BEAST2_VER_CHECK2="$(grep -h 'marginal\ L\ estimate' $y | wc -l)"
+
 	rm ./file.tmp
 
 echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
@@ -46,7 +58,7 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 	(
 		for i in $MY_BEAST_OUTPUT_FILES; do 
 			echo "$i"
-			echo `basename "$i"` > "${i}"_filename.tmp
+			echo "$(basename $i)" > "${i}"_filename.tmp
 #
 				grep -n "log marginal likelihood (using path sampling) from pathLikelihood.delta =" ${i} | \
 				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp
@@ -78,7 +90,7 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 	(
 		for i in $MY_BEAST_OUTPUT_FILES; do 
 			echo "$i"
-			echo `basename "$i"` > "${i}"_filename.tmp
+			echo "$(basename $i)" > "${i}"_filename.tmp
 #
 				grep -n "marginal L estimate =" ${i} | \
 				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp
@@ -116,12 +128,12 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 ##--Don't forget to run the (single) appropriate function! If output files from BEAST1 *and*
 ##--BEAST2 runs are present in current working directory (=NOT ALLOWED!), then the BEAST1 
 ##--results will simply be overwritten. 
-if [[ "$MY_BEAST1_VER_CHECK" -gt "0" ]]; then
+if [[ "$MY_BEAST1_VER_CHECK" -gt "0" ]] || [[ "$MY_BEAST1_VER_CHECK2" -gt "0" ]]; then
 	echo "INFO      | $(date) |          BEAST v1+ output files detected; conducting post-processing accordingly... "
 	echo "INFO      | $(date) |          Extracting MLE results from the following output files: "
 	extractB1Results
 fi
-if [[ "$MY_BEAST2_VER_CHECK" -gt "0" ]]; then
+if [[ "$MY_BEAST2_VER_CHECK" -gt "0" ]] || [[ "$MY_BEAST2_VER_CHECK2" -gt "0" ]]; then
 	echo "INFO      | $(date) |          BEAST v2+ output files detected; conducting post-processing accordingly... "
 	echo "INFO      | $(date) |          Extracting MLE results from the following output files: "
 	extractB2Results
