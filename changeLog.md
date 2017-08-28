@@ -3,6 +3,7 @@
 ## PIrANHA v0.1.5 (modified beta release - several changes after official 0.1.5 release)
 - **August 2017:** + updated all README files in the repository (for PIrANHA, BEASTPostProc, BEASTRunner, ExaBayesPostProc, MLEResultsProc, and fastSTRUCTURE scripts).
 - **August 2017:** + added new 'BEASTReset.sh' script, and corresponding README, into BEASTReset sub-folder. This script automates re-setting random starting number seeds in BEAST run submission scripts for supercomputer runs. This is a time-saving script when many failed runs need to be restarted from a different seed!
+- **bug fix:** - MLEResultsProc.sh (expands capability of detecting and accounting for PS/SS runs conducted in different versions of BEAST, i.e. v1 vs. v2) 
 - **bug fix:** - PFSubsetSum.sh (fixes incorrect ordering of summary statistics) 
 
 ## PIrANHA v0.1.5 (official beta release) - August 21, 2017
