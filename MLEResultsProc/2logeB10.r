@@ -22,7 +22,7 @@ library(psych)
 data <- read.table(file="MLE.output.txt", header=TRUE, sep="\t")
 
 sink("2logeB10.output.txt")
-cat("########################### MARGINAL-LIKELIHOOD ESTIMATES ###########################\n")
+cat("############################# MARGINAL-LIKELIHOOD ESTIMATES ##############################\n")
 data
 cat("\n \n")
 sink()
