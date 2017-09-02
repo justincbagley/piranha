@@ -60,8 +60,8 @@ The current release, PIrANHA v0.1.5, contains the following updates, in addition
        separted list   
 - **August 2017:** + updated MAGNET pipeline by adding getBootTrees.sh script, which collates and organizes bootstrap trees from all RAxML runs in sub-folders of a working directory, especially results of a MAGNET run. This is the standalone version of the script.  
 - **August 2017:** + updated 'BEAST\_PSPrepper.sh' script automating editing existing BEAST v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
-- **2017** + added 'phyNcharSumm.sh' script in MAGNET/shell dir, which creates table summarizing the number of characters (length, in bp) in each of multiple Phylip sequence alignments in a working directory.
-- **2017** + added 'phyNcharSumm.sh' script in MAGNET/shell dir, which creates table summarizing the number of characters (length, in bp) in each of multiple Phylip sequence alignments in a working directory.
+- **2017** + added 'phyNcharSumm.sh' script in MAGNET/shell dir, which creates table summarizing the number of characters (length, in bp) in each of multiple PHYLIP sequence alignments in a working directory.
+- **2017** + added 'phyNcharSumm.sh' script in MAGNET/shell dir, which creates table summarizing the number of characters (length, in bp) in each of multiple PHYLIP sequence alignments in a working directory.
 - **bug fix:** - MAGNET.sh (unused code)
 - **bug fix:** - getGeneTrees.sh (unused code)
 - **bug fix:** - BEASTRunner.sh
@@ -155,11 +155,11 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 ### :construction: _NOTE: The following 'Getting Started' content is Under Construction! E-mail me about it, or check back soon for updates!_ :construction:
 ### Phylogenetic Partitioning Scheme/Model Selection
 #### _pyRAD2PartitionFinder_
-Shell script for going directly from Phylip alignment (.phy) and partitions (.partisions) files output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016; for de novo assembly of reduced-representation sequence data from an NGS experiment) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined SNP loci in PartitionFinder (Lanfear et al. 2012, 2016). See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more information (e.g. detailed comments located within the code itself; a README is coming soon).
+Shell script for going directly from PHYLIP alignment (.phy) and partitions (.partisions) files output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016; for de novo assembly of reduced-representation sequence data from an NGS experiment) to inference of the optimal partitioning scheme and models of DNA sequence evolution for pyRAD-defined SNP loci in PartitionFinder (Lanfear et al. 2012, 2016). See current release of pyRAD2PartitionFinder [scripts](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) for more information (e.g. detailed comments located within the code itself; a README is coming soon).
 
 ### Estimating Gene Trees for Species Tree Inference
 #### _MAGNET (MAny GeNE Trees)_
-Interactive shell pipeline for inferring maximum-likelihood gene trees in RAxML (Stamatakis 2014) for multilocus DNA sequence alignments (e.g. RAD loci from ddRAD-seq experiments, candidate genes, genomic contigs) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo. Three starting input file formats are currently supported, including single NEXUS (.nex), single G-PhoCS (.gphocs; formatted for G-PhoCS software, Gronau et al. 2011), and multiple Phylip files.
+Interactive shell pipeline for inferring maximum-likelihood gene trees in RAxML (Stamatakis 2014) for multilocus DNA sequence alignments (e.g. RAD loci from ddRAD-seq experiments, candidate genes, genomic contigs) to aid downstream  summary-statistics species tree inference. Please see the [README](https://github.com/justincbagley/MAGNET) for the MAGNET Package, which is available as its own stand-alone repository so that it can be tracked and continually given its own updated doi and citation by Zenodo. Three starting input file formats are currently supported, including single NEXUS (.nex), single G-PhoCS (.gphocs; formatted for G-PhoCS software, Gronau et al. 2011), and multiple PHYLIP files.
 
 ### Automating Bayesian evolutionary analyses in BEAST
 #### _BEASTRunner_
