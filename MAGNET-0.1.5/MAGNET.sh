@@ -31,9 +31,9 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] i
   -H   verbose help text (also: -Help)
 
  ## Options:
-  -f   fileType (def: 1; 1 = single inputFile, 2 = multiple Phylip files) starting file
+  -f   fileType (def: 1; 1 = single inputFile, 2 = multiple PHYLIP files) starting file
        type; if 1, script expects as stdin a single NEXUS or G-PhoCS inputFile in the
-       current directory; if 2, then script expects workingDir with multiple Phylip files
+       current directory; if 2, then script expects workingDir with multiple PHYLIP files
   -e   executable (def: $MY_RAXML_EXECUTABLE) name of RAxML executable, accessible from command line
        on user's machine
   -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
@@ -48,14 +48,14 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] i
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
  multiple loci, starting from one or multiple input files containing aligned DNA sequences.
  If supplied with a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') data file (using -f 1
- option), then this script splits each locus into a separate Phylip-formatted alignment file, 
+ option), then this script splits each locus into a separate PHYLIP-formatted alignment file, 
  and sets up and runs RAxML (Stamatakis 2014) to infer gene trees for each locus. If a NEXUS 
  datafile is supplied, it is converted into G-PhoCS format (Gronau et al. 2011) while splitting
  loci into separate interleaved sequence blocks based on information provided in a sets
  block at the end of the NEXUS file (e.g. defined using 'charset' commands), which is mandatory. 
  However, if -f 2, then the program expects as standard input the name of a working directory 
- (e.g. the relative or absolute path) containing multiple Phylip-formatted alignment files. 
- Under this scenario, MAGNET will skip directly to running the Phylip files in RAxML using 
+ (e.g. the relative or absolute path) containing multiple PHYLIP-formatted alignment files. 
+ Under this scenario, MAGNET will skip directly to running the PHYLIP files in RAxML using 
  user-specified options. Sequence names may not include hyphen characters, or there could be 
  issues. For detailed information on MAGNET and its various dependencies, see 'README.md' file 
  in the distribution folder; however, it is key that the dependencies are available from the 
@@ -82,9 +82,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [std
   -H   verbose help text (also: -Help)
 
  ## Options:
-  -f   fileType (def: 1; 1 = single inputFile, 2 = multiple Phylip files) starting file
+  -f   fileType (def: 1; 1 = single inputFile, 2 = multiple PHYLIP files) starting file
        type; if 1, script expects as stdin a single NEXUS or G-PhoCS inputFile in the
-       current directory; if 2, then script expects workingDir with multiple Phylip files
+       current directory; if 2, then script expects workingDir with multiple PHYLIP files
   -e   executable (def: $MY_RAXML_EXECUTABLE) name of RAxML executable, accessible from command line
        on user's machine
   -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
@@ -99,14 +99,14 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [std
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
  multiple loci, starting from one or multiple input files containing aligned DNA sequences.
  If supplied with a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') data file (using -f 1
- option), then this script splits each locus into a separate Phylip-formatted alignment file, 
+ option), then this script splits each locus into a separate PHYLIP-formatted alignment file, 
  and sets up and runs RAxML (Stamatakis 2014) to infer gene trees for each locus. If a NEXUS 
  datafile is supplied, it is converted into G-PhoCS format (Gronau et al. 2011) while splitting
  loci into separate interleaved sequence blocks based on information provided in a sets
  block at the end of the NEXUS file (e.g. defined using 'charset' commands), which is mandatory. 
  However, if -f 2, then the program expects as standard input the name of a working directory 
- (e.g. the relative or absolute path) containing multiple Phylip-formatted alignment files. 
- Under this scenario, MAGNET will skip directly to running the Phylip files in RAxML using 
+ (e.g. the relative or absolute path) containing multiple PHYLIP-formatted alignment files. 
+ Under this scenario, MAGNET will skip directly to running the PHYLIP files in RAxML using 
  user-specified options. Sequence names may not include hyphen characters, or there could be 
  issues. For detailed information on MAGNET and its various dependencies, see 'README.md' file 
  in the distribution folder; however, it is key that the dependencies are available from the 
@@ -136,7 +136,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [std
 	If no gap threshold is specified, all sites with gaps are removed by default. If end goal
 	is to produce a file for G-PhoCS, you  will want to leave gapThreshold at the default. 
 	However, if the next step in your pipeline involves converting from .gphocs to other data 
-	formats, you will likely want to set gapThreshold=1 (e.g. before converting to phylip 
+	formats, you will likely want to set gapThreshold=1 (e.g. before converting to PHYLIP 
 	format for RAxML). 
 
 	The -m flag allows users to choose their level of tolerance for individuals with missing
@@ -235,7 +235,7 @@ echo "INFO      | $(date) | STEP #1: SETUP. "
 
 echo "INFO      | $(date) | STEP #2: INPUT (SINGLE NEXUS/G-PhoCS FILE, OR MULTIPLE PHYLIP FILES). "
 echo "INFO      | $(date) |          For -f 1 or -f 2f '.gphocs' input file present, continue; else convert NEXUS file to "
-echo "INFO      | $(date) |          G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple Phylip files in  "
+echo "INFO      | $(date) |          G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple PHYLIP files in  "
 echo "INFO      | $(date) |          RAxML."
 shopt -s nullglob
 if [[ -n $(find . -name "*.gphocs" -type f) ]]; then
@@ -293,7 +293,7 @@ fi
 
 				##--If .phy file from NEXUS charset $j has gaps in alignment, then call 
 				##--rmGapSites.R R script to remove all column positions with gaps from
-				##--alignment and output new, gapless phylip file named "./sites_nogaps.phy". 
+				##--alignment and output new, gapless PHYLIP file named "./sites_nogaps.phy". 
 				##--If charset $j does not have gaps, go to next line of loop. We do the 
 				##--above by first creating a temporary file containing all lines in
 				##--sites.phy with the gap character:
@@ -370,7 +370,7 @@ fi
 
 echo "INFO      | $(date) | STEP #3: MAKE ALIGNMENTS FOR EACH LOCUS. "
 echo "INFO      | $(date) |          In a single loop, using info from '.gphocs' file to split each locus block \
-into a separate phylip-formatted alignment file using gphocs2multiPhylip code... "
+into a separate PHYLIP-formatted alignment file using gphocs2multiPhylip code... "
 	(
 		for (( i=0; i<=$(calc $MY_NLOCI-1); i++ )); do
 			echo "$i"
@@ -392,7 +392,7 @@ into a separate phylip-formatted alignment file using gphocs2multiPhylip code...
 	rm ./*.tmp
 
 	if [[ -n $(find . -name "*.phy" -type f) ]]; then
-	    MY_PHYLIP_ALIGNMENTS=./*.phy		## Assign Phylip-formatted genomic/SNP data files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
+	    MY_PHYLIP_ALIGNMENTS=./*.phy		## Assign PHYLIP-formatted genomic/SNP data files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
 	else
 	    echo "..."
 	fi
@@ -564,11 +564,11 @@ echo "INFO      | $(date) | STEP #1: SETUP. "
 
 echo "INFO      | $(date) | STEP #2: INPUT (SINGLE NEXUS/G-PhoCS FILE, OR MULTIPLE PHYLIP FILES). "
 echo "INFO      | $(date) |          For -f 1 or -f 2f '.gphocs' input file present, continue; else convert NEXUS file to "
-echo "INFO      | $(date) |          G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple Phylip files in  "
+echo "INFO      | $(date) |          G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple PHYLIP files in  "
 echo "INFO      | $(date) |          RAxML."
 
 
-	MY_PHYLIP_ALIGNMENTS=./*.phy		## Assign Phylip-formatted multilocus gene / genomic/SNP / RAD locus sequence alignment files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
+	MY_PHYLIP_ALIGNMENTS=./*.phy		## Assign PHYLIP-formatted multilocus gene / genomic/SNP / RAD locus sequence alignment files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
 
 
 	################################# MultiRAxMLPrepper.sh ##################################
