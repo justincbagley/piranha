@@ -4,7 +4,7 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          phylip2NEXUS v1.0, August 2016                                #
+#                          PHYLIP2NEXUS v1.0, August 2016                                #
 #   SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMAT DNA SEQUENCE ALIGNMENT FILE TO NEXUS     #
 #   FORMATTED FILE                                                                       #
 #   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
@@ -13,19 +13,19 @@
 #   jcbagley@unb.br.                                                                     #
 ##########################################################################################
 
-##--README: This shell script converts a single phylip-formatted DNA sequence alignment
+##--README: This shell script converts a single PHYLIP-formatted DNA sequence alignment
 ##--file present in the current working directory into NEXUS format. The starting file
 ##--must have the extension ".phy", and the first line of this file must contain the 
 ##--number of taxa, followed by one space, followed by the number of characters in the 
 ##--alignment. Some actions are echoed to screen. The output is a single NEXUS file with
 ##--the name, "BASENAME_p2N.nex", where "BASENAME" is the base or root name of the 
-##--original phylip file. For example in a starting file named "Smerianae_ND4.phy," the
+##--original PHYLIP file. For example in a starting file named "Smerianae_ND4.phy," the
 ##--BASENAME would be "Smerianae_ND4" and the resulting output file would be named
 ##--"Smerianae_ND4_p2N.nex". 
 
 echo "
 ##########################################################################################
-#                          phylip2NEXUS v1.0, August 2016                                #
+#                          PHYLIP2NEXUS v1.0, August 2016                                #
 ##########################################################################################"
 
 ############ STEP #1: SETUP VARIABLES AND SETUP FUNCTIONS
@@ -71,7 +71,7 @@ cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME"
 echo "##########  Removing temporary files... "
 rm ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp
 
-echo "##########  Done converting Phylip-formatted DNA sequence alignment to NEXUS format." 
+echo "##########  Done converting PHYLIP-formatted DNA sequence alignment to NEXUS format." 
 echo "Bye."
 #
 #
