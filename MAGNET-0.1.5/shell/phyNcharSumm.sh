@@ -3,7 +3,7 @@
 ###### (c) 2016 Justin C. Bagley, November 9, 2016, at The University of Alabama, 
 ###### Tuscaloosa, AL.
 
-###### Starting from a folder containing multiple phylip alignment files (e.g. as generated
+###### Starting from a folder containing multiple PHYLIP alignment files (e.g. as generated
 ## by MAGNET.sh for indiv. SNP loci), this script uses a for loop to echo all alignment
 ## names (containing locus or taxon information) to file, and then echo the number of 
 ## characters (Nchar) recursively to a file named "nchar.txt" in the working directory.
