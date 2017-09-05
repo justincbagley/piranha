@@ -125,7 +125,7 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 
 :exclamation: Setting up passwordless SSH access is **VERY IMPORTANT** as PIrANHA scripts and pipelines will not work without setting this up first. The following links provide useful tutorials/discussions that can help users set up passwordless SSH access:
 
-- http://www.linuxproblem.org/art\_9.html
+- http://www.linuxproblem.org/art_9.html
 - http://www.macworld.co.uk/how-to/mac-software/how-generate-ssh-keys-3521606/
 - https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/  (preferred tutorial)
 - https://coolestguidesontheplanet.com/make-an-alias-in-bash-shell-in-os-x-terminal/  (needed to complete preceding tutorial)
