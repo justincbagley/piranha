@@ -123,13 +123,11 @@ PIrANHA largely focuses on allowing users with access to a remote supercomputing
 
 :hand: If you have not done this, or are unsure about this, then you should set up passwordless acces by creating and organizing appropriate and secure public and private ssh keys on your machine and the remote supercomputer prior to using PIrANHA. By "secure," I mean that, during this process, you should have closed write privledges to authorized keys by typing "chmod u-w authorized keys" after setting things up using ssh-keygen. 
 
-:exclamation: Setting up passwordless SSH access is **VERY IMPORTANT** as PIrANHA scripts and pipelines will not work without setting this up first. The following links provide useful tutorials/discussions that can help users set up passwordless SSH access:
+:exclamation: Setting up passwordless SSH access is **VERY IMPORTANT** as PIrANHA scripts and pipelines will not work without setting this up first. The following links provide a list of useful tutorials/discussions that can help users set up passwordless SSH access:
 
-- http://www.linuxproblem.org/art_9.html
-- http://www.macworld.co.uk/how-to/mac-software/how-generate-ssh-keys-3521606/
-- https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/  (preferred tutorial)
-- https://coolestguidesontheplanet.com/make-an-alias-in-bash-shell-in-os-x-terminal/  (needed to complete preceding tutorial)
-- http://unix.stackexchange.com/questions/187339/spawn-command-not-found
+- https://www.msi.umn.edu/support/faq/how-do-i-setup-ssh-keys
+- https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/ 
+- https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
 
 ### Input and Output File Formats
 
