@@ -315,11 +315,10 @@ AND SUBMISSION FILE TO SUPERCOMPUTER. "
 ##--secure, I mean you closed write privledges to authorized keys by typing "chmod u-w 
 ##--authorized keys" after setting things up using ssh-keygen). This is VERY IMPORTANT
 ##--as the following will not work without completing this process first. The following
-##--are links to useful tutorials/discussions related to doing this:
-#	* http://www.macworld.co.uk/how-to/mac-software/how-generate-ssh-keys-3521606/
-#	* https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/  (preferred)
-#	* https://coolestguidesontheplanet.com/make-an-alias-in-bash-shell-in-os-x-terminal/  (needed to complete tutorial above)
-#	* http://unix.stackexchange.com/questions/187339/spawn-command-not-found
+##--links provide a list of useful tutorials/discussions related to doing this:
+#	* https://www.msi.umn.edu/support/faq/how-do-i-setup-ssh-keys
+#	* https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/ 
+#	* https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
 echo "INFO      | $(date) |          Copying run folders to working dir on supercomputer..."
 
 echo "#!/bin/bash
