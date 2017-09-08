@@ -4,18 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                             PFSubsetSum v1.2, August 2017                              #
-#   SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FROM BEST PartitionFinder SCHEME     #
-#   SUBSETS                                                                              #
+#                            PFSubsetSum v1.3, September 2017                            #
+#  SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FOR DNA SUBSETS WITHIN THE OPTIMUM    #
+#  PARTITIONING SCHEME IDENTIFIED FOR THE DATA BY PartitionFinder v1 or v2               #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: August 26, 2017.     #
+#  (http://github.com/justincbagley) for further info. Last update: September 8, 2017.   #
 #  For questions, please email jcbagley@vcu.edu.                                         #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                             PFSubsetSum v1.2, August 2017                              #
+#                            PFSubsetSum v1.3, September 2017                            #
 ##########################################################################################
 "
 
@@ -44,9 +44,12 @@ echo "INFO      | $(date) | STEP #3: COMPUTE SUMMARY STATISTICS FOR EACH SUBSET.
 echo "INFO      | $(date) |          Extracting and organizing subsets...  "
 
 	##--Extract subsets from PartitionFinder output file:
-	MY_NUM_SUBSETS=$(grep -n "DNA," $MY_BEST_SCHEME_FILE | wc -l)
-	tail -n $MY_NUM_SUBSETS $MY_BEST_SCHEME_FILE > ./subsets.txt
+	MY_NUM_SUBSETS=$(grep -n "^DNA," $MY_BEST_SCHEME_FILE | wc -l)
+	MY_START_LINE_NUM="$(cat $MY_BEST_SCHEME_FILE | grep -n '^DNA,' | head -n1 | sed 's/\:.*//')"
+	MY_END_LINE_NUM="$(cat $MY_BEST_SCHEME_FILE | grep -n '^DNA,' | tail -n1 | sed 's/\:.*//')"
+	sed -n "$MY_START_LINE_NUM","$MY_END_LINE_NUM"p $MY_BEST_SCHEME_FILE > ./subsets.txt
 	MY_SUBSETS_FILE=./subsets.txt
+
 echo "INFO      | $(date) |          The best scheme from PartitionFinder contains "$MY_NUM_SUBSETS" subsets.  "
 
 	##--Move each subset to its own file, with the same subset's name... The subsets
