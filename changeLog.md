@@ -5,6 +5,7 @@
 - **August 2017:** + added new 'BEASTReset.sh' script, and corresponding README, into BEASTReset sub-folder. This script automates re-setting random starting number seeds in BEAST run submission scripts for supercomputer runs. This is a time-saving script when many failed runs need to be restarted from a different seed!
 - **bug fix:** - MLEResultsProc.sh (expands capability of detecting and accounting for PS/SS runs conducted in different versions of BEAST, i.e. v1 vs. v2) 
 - **bug fix:** - PFSubsetSum.sh (fixes incorrect ordering of summary statistics) 
+- **bug fix:** - PFSubsetSum.sh (fixed script so that it works with PartitionFinder v1 and v2; last testing: v2.1.1) 
 
 ## PIrANHA v0.1.5 (official beta release) - August 21, 2017
 The current release, PIrANHA v0.1.5, contains the following updates, in addition to minor improvements in the code:
