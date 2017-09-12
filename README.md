@@ -168,7 +168,7 @@ The BEAST\_PathSampling directory is a new area of development within PIrANHA in
 
 ## ACKNOWLEDGEMENTS
 
-I gratefully acknowledge *Nayoki Takebayashi*, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
+I thank Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
 
 ## REFERENCES
 
