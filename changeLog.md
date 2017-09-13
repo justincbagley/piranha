@@ -1,13 +1,15 @@
 # PIrANHA Change Log
 
-## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
+## PIrANHA v0.1.6.1 (modified minor version release - several changes after official v0.1.6.1 release)
 
 - **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
-  * A specific fixes to the README include giving an updated DOI in the Zenodo badge in the DOI section. Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; this DOI will always resolve to the latest release tracked by Zenodo.
+  * A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
+
 
 ## PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
 
 - **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
+
 
 ## PIrANHA v0.1.6 (official minor version release) - September 13, 2017
 - **August 2017:** + updated all README files in the repository (for PIrANHA, BEASTPostProc, BEASTRunner, ExaBayesPostProc, MLEResultsProc, and fastSTRUCTURE scripts).
@@ -15,6 +17,7 @@
 - **bug fix:** - MLEResultsProc.sh (expands capability of detecting and accounting for PS/SS runs conducted in different versions of BEAST, i.e. v1 vs. v2) 
 - **bug fix:** - PFSubsetSum.sh (fixes incorrect ordering of summary statistics) 
 - **bug fix:** - PFSubsetSum.sh (fixed script so that it works with PartitionFinder v1 and v2; last testing: v2.1.1) 
+
 
 ## PIrANHA v0.1.5 (official minor version release) - August 21, 2017
 The current release, PIrANHA v0.1.5, contains the following updates, in addition to minor improvements in the code:
@@ -34,7 +37,7 @@ The current release, PIrANHA v0.1.5, contains the following updates, in addition
 - **bug fix:** - BEASTRunner.sh
 
 
-## PIrANHA v0.1.4 (modified minor version release - several changes after official 0.1.4 release)
+## PIrANHA v0.1.4 (modified minor version release - several changes after official v0.1.4 release)
 The current, modified PIrANHA v0.1.4 release contains several goodies listed below, in addition to minor improvements in the code!!
 - **August 2017:** + updated 'BEAST\_PSPrepper.sh' script automating editing existing BEAST v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
 - **May 2017:** + added 'SNAPPRunner.sh' script for conducting multiple runs of SNAPP ("SNP and AFLP Phylogenies") model in BEAST.
