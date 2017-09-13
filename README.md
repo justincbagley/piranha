@@ -6,7 +6,7 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 ## LICENSE
 
-All code within the ```PIrANHA``` v0.1.6 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the ```PIrANHA``` v0.1.6.1 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
@@ -30,7 +30,7 @@ The DOI for ```PIrANHA```, via [Zenodo](https://zenodo.org), is as follows:  [![
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-**```PIrANHA```** v0.1.6 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the following software programs:
+**```PIrANHA```** v0.1.6.1 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the following software programs:
 
 - **```pyRAD```** (Eaton 2014) or **```ipyrad```** (Eaton and Overcast 2016)
 - **```PartitionFinder```** (Lanfear et al. 2012, 2016)
@@ -50,7 +50,9 @@ The current code in ```PIrANHA``` has been written largely with a focus on 1) an
 
 **What's new in this release?** 
 
-The current release, ```PIrANHA``` v0.1.6, contains the following updates, in addition to minor improvements in the code:
+The current release, ```PIrANHA``` v0.1.6.1, updates the README and documentation for the repository.
+
+The previous release, ```PIrANHA``` v0.1.6, added the following updates, in addition to minor improvements in the code:
 - **August 2017:** + added a Change Log file (```'changeLog.md'```) to supplement releases page and provide log file within master.
 - **August 2017:** + updated ```MAGNET``` pipeline by editing ```'MAGNET.sh'``` by adding three new command line options ("\-e", "\-m", and "\-o" flags), as follows: ```\-e   executable (def: raxmlHPC-SSE3) name of ```RAxML``` executable, accessible from command line on user's machine \-m   indivMissingData (def: 1=allowed; 0=removed) \-o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-separted list```   
 - **August 2017:** + updated ```MAGNET``` pipeline by adding ```getBootTrees.sh``` script, which collates and organizes bootstrap trees from all RAxML runs in sub-folders of a working directory, especially results of a MAGNET run. This is the standalone version of the script.  
