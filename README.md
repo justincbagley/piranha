@@ -74,7 +74,7 @@ The goal of ```PIrANHA``` is to facilitate analysis pipelines that could be of i
 <a href="http://imgur.com/3zSt2gC"><img src="http://i.imgur.com/3zSt2gC.png" title="source: Justin C. Bagley" align="center" /></a>
 **Figure 2**
 
-The following **Figure 3** illustrates new capacities of running and processing dadi (Gutenkunst et al. 2009) files in PIrANHA (note: the post-processing script is still under development).
+The following **Figure 3** illustrates new capacities of running and processing dadi (Gutenkunst et al. 2009) files in ```PIrANHA``` (note: the post-processing script is still under development).
 
 <a href="http://imgur.com/UK0fI5j"><img src="http://i.imgur.com/UK0fI5j.png" title="source: Justin C. Bagley" align="center" /></a>
 **Figure 3**
