@@ -20,11 +20,11 @@ Alternatively, please provide the following link to this software repository in 
 
 ## DOI
 
-The DOI for ```PIrANHA```, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](https://zenodo.org/badge/64274217.svg)](https://zenodo.org/badge/latestdoi/64274217). Here are some examples of citing PIrANHA using the DOI: 
+The DOI for ```PIrANHA```, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.890815.svg)](https://doi.org/10.5281/zenodo.890815). Here are some examples of citing PIrANHA using the DOI: 
   
-  Bagley, J.C. 2017. PIrANHA. GitHub package, Available at: http://doi.org/10.5281/zenodo.890815.
+  Bagley, J.C. 2017. PIrANHA. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
-  Bagley, J.C. 2017. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.890815.  
+  Bagley, J.C. 2017. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
 ## INTRODUCTION
 
