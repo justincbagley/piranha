@@ -1,5 +1,10 @@
 # PIrANHA Change Log
 
+## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
+
+- **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
+  * A specific fixes to the README include giving an updated DOI in the Zenodo badge in the DOI section. Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; this DOI will always resolve to the latest release tracked by Zenodo.
+
 ## PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
 
 - **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
