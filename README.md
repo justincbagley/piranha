@@ -87,10 +87,10 @@ The following **Figure 3** illustrates new capacities of running and processing 
 
 - ```PartitionFinder```
 - ```BEAST``` v1.8.3++ and v2.4.2++ (or newer; available at: http://beast.community and http://beast2.org, respectively)
-	* Updated Java, appropriate Java virtual machine / jdk required
-	* beagle-lib required
-	* default BEAST packages required
-	* SNAPP package addon required
+	* Updated ```Java```, appropriate Java virtual machine / jdk required
+	* ```BEAGLE``` in beagle-lib (```libhmsbeagle```\* files) required
+	* default ```BEAST``` packages required
+	* ```SNAPP``` package addon required
 - ```MrBayes``` v3.2++ (available at: http://mrbayes.sourceforge.net/download.php)
 - ```ExaBayes``` (available at: http://sco.h-its.org/exelixis/web/software/exabayes/)
 - ```RAxML``` (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html)
@@ -110,7 +110,7 @@ Users must install all software not included in ```PIrANHA```, and ensure that i
 
 ### Installation
 
-:computer: As ```PIrANHA``` is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for PIrANHA, because these systems come with the shell preinstalled; thus ```PIrANHA``` should run "out-of-the-box" from most any folder on your machine.
+:computer: As ```PIrANHA``` is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for ```PIrANHA```, because these systems come with the shell preinstalled; thus ```PIrANHA``` should run "out-of-the-box" from most any folder on your machine.
 
 ### IMPORTANT! - Passwordless SSH Access
 
@@ -118,7 +118,7 @@ Users must install all software not included in ```PIrANHA```, and ensure that i
 
 :hand: If you have not done this, or are unsure about this, then you should set up passwordless acces by creating and organizing appropriate and secure public and private ssh keys on your machine and the remote supercomputer prior to using PIrANHA. By "secure," I mean that, during this process, you should have closed write privledges to authorized keys by typing "chmod u-w authorized keys" after setting things up using ssh-keygen. 
 
-:exclamation: Setting up passwordless SSH access is **VERY IMPORTANT** as PIrANHA scripts and pipelines will not work without setting this up first. The following links provide a list of useful tutorials/discussions that can help users set up passwordless SSH access:
+:exclamation: Setting up passwordless SSH access is **VERY IMPORTANT** as ```PIrANHA``` scripts and pipelines will not work without setting this up first. The following links provide a list of useful tutorials/discussions that can help users set up passwordless SSH access:
 
 - https://www.msi.umn.edu/support/faq/how-do-i-setup-ssh-keys
 - https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/ 
@@ -163,7 +163,7 @@ The BEAST\_PathSampling directory is a new area of development within PIrANHA in
 
 ## ACKNOWLEDGEMENTS
 
-I thank Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
+I thank Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in ```PIrANHA```. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
 
 ## REFERENCES
 
@@ -192,13 +192,13 @@ I thank Nayoki Takebayashi, who wrote and freely provided some Perl scripts I ha
 - GNU [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.pdf)
 
 ## TODO
-- **Improve option and usage sections of BEASTRunner.sh script.** **DONE!** :white_check_mark:
-- **Add MrBayes scripts** **DONE!** :white_check_mark:
-- **Add options to MrBayesPostProc script, e.g. for burnin frac and stepping-stone MLE analysis.** **DONE!** :white_check_mark:
-- ** Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in Super-pyRAD2PartitionFinder.sh, BEASTRunner.sh, BEASTPostProc.sh, and RAxMLRunner.sh) **
-- Make pyrad and ipyrad batch run scripts available
+- **Improve option and usage sections of ```BEASTRunner.sh``` script.** **DONE!** :white_check_mark:
+- **Add ```MrBayes``` scripts** **DONE!** :white_check_mark:
+- **Add options to ```MrBayesPostProc``` script, e.g. for burnin frac and stepping-stone MLE analysis.** **DONE!** :white_check_mark:
+- ** Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in ```Super-pyRAD2PartitionFinder.sh```, ```BEASTRunner.sh```, ```BEASTPostProc.sh```, and ```RAxMLRunner.sh```) **
+- Make ```pyrad``` and ```ipyrad``` batch run scripts available
 - Consider separate scripts to work with ipyrad
-- Add capacity of adding or not adding path sampling/stepping-stone sampling to BEAST runs (use BEASTRunner.sh as springboard to develop tools in BEAST\_PathSampling dir)
+- Add capacity of adding or not adding path sampling/stepping-stone sampling to ```BEAST``` runs (use ```BEASTRunner.sh``` as springboard to develop tools in BEAST\_PathSampling dir)
 
 September 13, 2017
 Justin C. Bagley, Richmond, VA, USA
