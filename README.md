@@ -105,9 +105,7 @@ Users must install all software not included in ```PIrANHA```, and ensure that i
 
 ### Installation
 
-:computer: As ```PIrANHA``` is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. Installing ```PIrANHA``` is thus very simple, because these systems come with the shell preinstalled; thus ```PIrANHA``` should run "out-of-the-box" from most any folder on your machine.
-
-To install ```PIrANHA```, simply clone this repository and modify permissions, as follows:
+:computer: As ```PIrANHA``` is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. Using ```PIrANHA``` is thus very straightforward, because these systems come with the shell preinstalled. To install ```PIrANHA```, simply clone this repository and modify permissions, as follows:
 
 ```
 $ cd ~
@@ -115,6 +113,7 @@ $ git clone https://github.com/justincbagley/PIrANHA.git
 $ cd ./PIrANHA/
 $ chmod u+x ./*.sh; chmod u+x ./*/*.sh; chmod u+x ./*/*.pl
 ```
+After doing this, ```PIrANHA``` should run "out-of-the-box" from most any folder on your machine. :thumbsup:
 
 
 ### IMPORTANT! - Passwordless SSH Access
@@ -200,10 +199,11 @@ I thank Nayoki Takebayashi, who wrote and freely provided some Perl scripts I ha
 - **Improve option and usage sections of ```BEASTRunner.sh``` script.** **DONE!** :white_check_mark:
 - **Add ```MrBayes``` scripts** **DONE!** :white_check_mark:
 - **Add options to ```MrBayesPostProc``` script, e.g. for burnin frac and stepping-stone MLE analysis.** **DONE!** :white_check_mark:
+- **Change new ```phylipSubsampler``` script so that it accounts for missing data (currently does not).**
 - ** Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in ```Super-pyRAD2PartitionFinder.sh```, ```BEASTRunner.sh```, ```BEASTPostProc.sh```, and ```RAxMLRunner.sh```) **
 - Make ```pyrad``` and ```ipyrad``` batch run scripts available
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to ```BEAST``` runs (use ```BEASTRunner.sh``` as springboard to develop tools in BEAST\_PathSampling dir)
 
-September 13, 2017
+September 26, 2017
 Justin C. Bagley, Richmond, VA, USA
