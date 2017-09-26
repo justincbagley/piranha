@@ -105,7 +105,7 @@ Users must install all software not included in ```PIrANHA```, and ensure that i
 
 ### Installation
 
-:computer: As ```PIrANHA``` is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for ```PIrANHA```, because these systems come with the shell preinstalled; thus ```PIrANHA``` should run "out-of-the-box" from most any folder on your machine.
+:computer: As ```PIrANHA``` is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. Installing ```PIrANHA``` is thus very simple, because these systems come with the shell preinstalled; thus ```PIrANHA``` should run "out-of-the-box" from most any folder on your machine.
 
 To install ```PIrANHA```, simply clone this repository and modify permissions, as follows:
 
