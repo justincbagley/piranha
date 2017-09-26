@@ -1,23 +1,13 @@
 # PIrANHA Change Log
 
-<<<<<<< Updated upstream
-## PIrANHA v0.1.6.1 (modified minor version release - several changes after official v0.1.6.1 release)
-
-- **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
-  * A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
-
-
-## PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
-
-- **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
-
-=======
 ## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
-- **September 2017:** Updated README and added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
+- **September 2017:** Added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
+- **September 2017:** Updated README. A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
+
 
 ## PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
 - **August 2017:** Made several updates to README and documentation for the repository.
->>>>>>> Stashed changes
+
 
 ## PIrANHA v0.1.6 (official minor version release) - September 13, 2017
 - **August 2017:** + updated all README files in the repository (for PIrANHA, BEASTPostProc, BEASTRunner, ExaBayesPostProc, MLEResultsProc, and fastSTRUCTURE scripts).
