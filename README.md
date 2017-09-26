@@ -50,18 +50,11 @@ The current code in ```PIrANHA``` has been written largely with a focus on 1) an
 
 **What's new in this release?** 
 
-The current release, ```PIrANHA``` v0.1.6.1, updates the README and documentation for the repository.
+See [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLog.md) for a full listing of updates to this repository. However, while the previous release, ```PIrANHA``` v0.1.6.1, updated the README and documentation for the repository, the current modified release includes the following changes:
 
-The previous release, ```PIrANHA``` v0.1.6, added the following updates, in addition to minor improvements in the code:
-- **August 2017:** + added a Change Log file (```'changeLog.md'```) to supplement releases page and provide log file within master.
-- **August 2017:** + updated ```MAGNET``` pipeline by editing ```'MAGNET.sh'``` by adding three new command line options ("\-e", "\-m", and "\-o" flags), as follows: ```\-e   executable (def: raxmlHPC-SSE3) name of ```RAxML``` executable, accessible from command line on user's machine \-m   indivMissingData (def: 1=allowed; 0=removed) \-o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-separted list```   
-- **August 2017:** + updated ```MAGNET``` pipeline by adding ```getBootTrees.sh``` script, which collates and organizes bootstrap trees from all RAxML runs in sub-folders of a working directory, especially results of a MAGNET run. This is the standalone version of the script.  
-- **August 2017:** + updated ```'BEAST\_PSPrepper.sh'``` script automating editing existing ```BEAST``` v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
-- **2017** + added ```'phyNcharSumm.sh'``` script in ```MAGNET/shell``` dir, which creates table summarizing the number of characters (length, in bp) in each of multiple PHYLIP sequence alignments in a working directory.
-- **2017** + added ```'phyNcharSumm.sh'``` script in ```MAGNET/shell``` dir, which creates table summarizing the number of characters (length, in bp) in each of multiple PHYLIP sequence alignments in a working directory.
-- **bug fix:** - ```MAGNET.sh``` (unused code)
-- **bug fix:** - ```getGeneTrees.sh``` (unused code)
-- **bug fix:** - ```BEASTRunner.sh```
+## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
+- **September 2017:** Added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
+- **September 2017:** Updated README. A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
 
 
 *What is possible with PIrANHA?* *Who cares?*
