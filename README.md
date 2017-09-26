@@ -107,6 +107,16 @@ Users must install all software not included in ```PIrANHA```, and ensure that i
 
 :computer: As ```PIrANHA``` is primarily composed of UNIX shell scripts and customized R scripts, it is well suited for running on a variety of types of machines, especially UNIX/LINUX-like systems that are now commonplace in personal computing and dedicated supercomputer cluster facilities. The UNIX shell is common to all Linux systems and mac OS X. There is no installation protocol for ```PIrANHA```, because these systems come with the shell preinstalled; thus ```PIrANHA``` should run "out-of-the-box" from most any folder on your machine.
 
+To install ```PIrANHA```, simply clone this repository and modify permissions, as follows:
+
+```
+$ cd ~
+$ git clone https://github.com/justincbagley/PIrANHA.git
+$ cd ./PIrANHA/
+$ chmod u+x ./*.sh; chmod u+x ./*/*.sh; chmod u+x ./*/*.pl
+```
+
+
 ### IMPORTANT! - Passwordless SSH Access
 
 ```PIrANHA``` largely focuses on allowing users with access to a remote supercomputing cluster to take advantage of that resource in an automated fashion. Thus, it is implicitly assumed in most scripts and documentation that the user has set up passowordless ssh access to a supercomputer account. 
