@@ -1,5 +1,6 @@
 # PIrANHA Change Log
 
+<<<<<<< Updated upstream
 ## PIrANHA v0.1.6.1 (modified minor version release - several changes after official v0.1.6.1 release)
 
 - **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
@@ -10,6 +11,13 @@
 
 - **September 2017:** This release, PIrANHA v0.1.6.1, includes updates to the README and documentation for the repository.
 
+=======
+## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
+- **September 2017:** Updated README and added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
+
+## PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
+- **August 2017:** Made several updates to README and documentation for the repository.
+>>>>>>> Stashed changes
 
 ## PIrANHA v0.1.6 (official minor version release) - September 13, 2017
 - **August 2017:** + updated all README files in the repository (for PIrANHA, BEASTPostProc, BEASTRunner, ExaBayesPostProc, MLEResultsProc, and fastSTRUCTURE scripts).
