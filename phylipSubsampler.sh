@@ -9,7 +9,7 @@
 #  FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)           #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: September 26, 2017.  #
+#  (http://github.com/justincbagley) for further info. Last update: September 27, 2017.  #
 #  For questions, please e-mail jcbagley@vcu.edu.                                        #
 ##########################################################################################
 
@@ -169,10 +169,10 @@ MY_PHYLIP_ALIGNMENTS=./*.phy
 		rm ./*.tmp
 
 		while read j; do
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
 		done < "$MY_ASSIGNMENT_FILE"
 
 	done
@@ -218,10 +218,10 @@ if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
 		rm ./*.tmp
 
 		while read j; do
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)[-0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
 		done < "$MY_ASSIGNMENT_FILE"
 
 	done
