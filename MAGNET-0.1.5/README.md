@@ -6,7 +6,7 @@ Shell script pipeline for inferring ML gene trees for many loci (e.g. genomic RA
 
 ## LICENSE
 
-All code within the PIrANHA repository, including MAGNET v0.1.5 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA repository, including MAGNET v0.1.6 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
@@ -14,7 +14,7 @@ If you use scripts from this repository as part of your published research, then
 
   Bagley, J.C. 2017. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
   
-  Bagley, J.C. 2017. MAGNET v0.1.5. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
+  Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
 Alternatively, please provide the following link to this software program in your manuscript:
 
@@ -22,7 +22,7 @@ Alternatively, please provide the following link to this software program in you
   
 **Example citations using the above URL:** 
 	"We estimated a gene tree for each RAD locus in RAxML v8 (Stamatakis 2014) using 
-	the MAGNET v0.1.5 pipeline (http://github.com/justincbagley/MAGNET). Each RAxML run
+	the MAGNET v0.1.6 pipeline (http://github.com/justincbagley/MAGNET). Each RAxML run
 	specified the GTRGAMMA model and coestimated the maximum-likelihood phylogeny and
 	bootstrap proportions from 500 bootstrap pseudoreplicates."
 
@@ -49,10 +49,10 @@ Despite the importance of gene trees in species tree and network inference, few 
 
 ## SOFTWARE DEPENDENCIES
 
-MAGNET v0.1.5 is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included in the MAGNET distribution:
+MAGNET v0.1.6 is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included in the MAGNET distribution:
 
 - Perl (available at: https://www.perl.org/get.html).
-- \*Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
+- Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
 - Python (available at: https://www.python.org/downloads/).
 - bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for "NEXUS2gphocs.sh").
 - RAxML, installed and running on local machine (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
@@ -80,7 +80,7 @@ After running the MAGNET pipeline, the shell script "getGeneTrees.sh" automates 
 Additional input file and usage information is available in the usage or help texts. To get regular usage info for MAGNET, type ```$ ./MAGNET.sh```, ```$ ./MAGNET.sh -h .```, or ```./MAGNET.sh -help``` while in the MAGNET directory. However, it is more useful (particularly when running for the first time) to get _verbose usage info_ for MAGNET, including detailed descriptions of each option; do this by typing ```$ ./MAGNET.sh -H .``` or ```./MAGNET.sh -Help``` (capital "H" flag) at the command line while in the MAGNET directory. The verbose usage text is as follows:
 ```
 $ ./MAGNET.sh
-Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] inputFile or workingDir
+Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile or workingDir
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -89,13 +89,15 @@ Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] inputFil
   -f   fileType (def: 1; 1 = single inputFile, 2 = multiple PHYLIP files) starting file
        type; if 1, script expects as stdin a single NEXUS or G-PhoCS inputFile in the
        current directory; if 2, then script expects workingDir with multiple PHYLIP files
-  -e   executable (def: $MY_RAXML_EXECUTABLE) name of RAxML executable, accessible from command line
+  -e   executable (def: raxmlHPC-SSE3) name of RAxML executable, accessible from command line
        on user's machine
-  -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
-  -r   raxmlModel (def: $MY_RAXML_MODEL; other: GTRGAMMAI, GTRCAT, GTRCATI)
-  -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
+  -b   numBootstraps (def: 100) RAxML bootstrap pseudoreplicates
+  -r   raxmlModel (def: GTRGAMMA; other: GTRGAMMAI, GTRCAT, GTRCATI)
+  -s   simpleModel (def: NULL; other: JC69, K80, HKY85) specifies simple substitution model
+       that will override any other model and apply to all DNA partitions
+  -g   gapThreshold (def: 0.001=essentially zero gaps allowed unless >1000 
        individuals; takes float proportion value)
-  -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
+  -m   indivMissingData (def: 1=allowed; 0=removed)
   -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
        separted list
 
@@ -131,7 +133,12 @@ Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] inputFil
 
  The -r flag sets the RAxML model for each locus. This uses the full default GTRGAMMA model,
  and at present it is not possible to vary the model across loci. If you want to use HKY
- or K80, you will need to manually change the 'RAxMLRunner.sh' section of this script.
+ or K80, you will need to use the -s flag (below).
+
+ The -s flag sets a simple RAxML model for each locus/partition, which will override any
+ model set using the -r flag above and apply to all partitions. In the current version of 
+ RAxML, it is possible to specify the JC69, K80, and HKY85 models as overrides. By default,
+ this option is turned off and the model set under the -r flag is used instead.
 
  The following two options are available **ONLY** if you are starting from a NEXUS input file:
 
@@ -155,10 +162,10 @@ Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] inputFil
  The first name in the list is prioritized, e.g. when members of the list are not monophyletic.
 
  CITATION
- Bagley, J.C. 2017. MAGNET v0.1.5. GitHub package, Available at: 
+ Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2017. MAGNET v0.1.5. GitHub package, Available at: 
+ Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.166024>.
 
  REFERENCES
@@ -215,6 +222,10 @@ In addition to the above, here are illustrations of varying the **RAxML options*
 ./MAGNET.sh -f1 -rGTRCAT -o outgroup inputFile
 ./MAGNET.sh -f2 -rGTRCAT -o outgroup .     ## multiple PHYLIP input files case.
 
+##--Scenario 1, overriding -r model with HKY85 and adding an outgroup:
+./MAGNET.sh -f1 -rGTRCAT -sHKY85 -o outgroup inputFile
+./MAGNET.sh -f2 -rGTRCAT -sHKY85 -o outgroup .     ## multiple PHYLIP input files case.
+
 ##--Scenario 2, 500 bootstrap reps per locus, instead of the default 100:
 ./MAGNET.sh -f1 -b500 -m0 inputFile
 ./MAGNET.sh -f2 -b500 -m0 .     ## multiple PHYLIP input files case.
@@ -226,7 +237,7 @@ In addition to the above, here are illustrations of varying the **RAxML options*
 
 ## ACKNOWLEDGEMENTS
 
-I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
+I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some Perl scripts I have used in PIrANHA and MAGNET. I also thank the Brigham Young University Fulton Supercomputing Lab (FSL) for providing computational resources used during the development of this software. J.C.B. received stipend support from a Ciência Sem Fronteiras (Science Without Borders) postdoctoral fellowship from the Brazilian Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq; Processo 314724/2014-1). Lab and computer space was also supplied by The University of Alabama, during an internship in the Lozier Lab in the UA Department of Biological Sciences.
 
 ## REFERENCES
 
@@ -242,5 +253,5 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 - Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
 
 
-August 21, 2017
+September 27, 2017
 Justin C. Bagley, Richmond, VA, USA

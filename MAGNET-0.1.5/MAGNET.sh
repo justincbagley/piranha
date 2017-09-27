@@ -4,12 +4,12 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                      MAGNET ~ MAny GeNE Trees v0.1.5, August 2017                      #
+#                    MAGNET ~ MAny GeNE Trees v0.1.6, September 2017                     #
 #  MAGNET PIPELINE: SHELL PIPELINE WHICH AUTOMATES ESTIMATING ONE MAXIMUM-LIKELIHOOD     #
 #  (ML) GENE TREE IN RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS DATASET       #
 #  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
 #  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: August 20, 2017.     #
+#  (http://github.com/justincbagley) for further info. Last update: September 27, 2017.  #
 #  For questions, please email jcbagley@vcu.edu.                                         #
 ##########################################################################################
 
@@ -19,13 +19,14 @@ STARTING_FILE_TYPE=1
 MY_RAXML_EXECUTABLE=raxmlHPC-SSE3
 MY_NUM_BOOTREPS=100
 MY_RAXML_MODEL=GTRGAMMA
+MY_SIMPLE_MODEL=NULL
 MY_GAP_THRESHOLD=0.001
 MY_INDIV_MISSING_DATA=1
 MY_OUTGROUP=NULL
 MY_OUTPUT_NAME=raxml_out
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] inputFile or workingDir
+Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile or workingDir
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -38,6 +39,8 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] i
        on user's machine
   -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
   -r   raxmlModel (def: $MY_RAXML_MODEL; other: GTRGAMMAI, GTRCAT, GTRCATI)
+  -s   simpleModel (def: $MY_SIMPLE_MODEL; other: JC69, K80, HKY85) specifies simple substitution model
+       that will override any other model and apply to all DNA partitions
   -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
        individuals; takes float proportion value)
   -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
@@ -62,10 +65,10 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] i
  command line interface. 
 
  CITATION
- Bagley, J.C. 2017. MAGNET v0.1.5. GitHub package, Available at: 
+ Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2017. MAGNET v0.1.5. GitHub package, Available at: 
+ Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.166024>.
 
  REFERENCES
@@ -76,7 +79,7 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] i
 "
 
 
-verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [stdin:] inputFile or workingDir
+verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile or workingDir
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -89,6 +92,8 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [std
        on user's machine
   -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
   -r   raxmlModel (def: $MY_RAXML_MODEL; other: GTRGAMMAI, GTRCAT, GTRCATI)
+  -s   simpleModel (def: $MY_SIMPLE_MODEL; other: JC69, K80) specifies simple substitution model
+       that will override any other model and apply to all DNA partitions
   -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
        individuals; takes float proportion value)
   -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
@@ -127,7 +132,12 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [std
 
  The -r flag sets the RAxML model for each locus. This uses the full default GTRGAMMA model,
  and at present it is not possible to vary the model across loci. If you want to use HKY
- or K80, you will need to manually change the 'RAxMLRunner.sh' section of this script.
+ or K80, you will need to use the -s flag (below).
+
+ The -s flag sets a simple RAxML model for each locus/partition, which will override any
+ model set using the -r flag above and apply to all partitions. In the current version of 
+ RAxML, it is possible to specify the JC69, K80, and HKY85 models as overrides. By default,
+ this option is turned off and the model set under the -r flag is used instead.
 
  The following two options are available **ONLY** if you are starting from a NEXUS input file:
 
@@ -151,10 +161,10 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r g m o] [std
  The first name in the list is prioritized, e.g. when members of the list are not monophyletic.
 
  CITATION
- Bagley, J.C. 2017. MAGNET v0.1.5. GitHub package, Available at: 
+ Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2017. MAGNET v0.1.5. GitHub package, Available at: 
+ Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.166024>.
 
  REFERENCES
@@ -175,7 +185,7 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 'f:e:b:r:g:m:o:' opt ; do
+while getopts 'f:e:b:r:s:g:m:o:' opt ; do
   case $opt in
 
 ## Input datafile and RAxML options:
@@ -183,6 +193,7 @@ while getopts 'f:e:b:r:g:m:o:' opt ; do
     e) MY_RAXML_EXECUTABLE=$OPTARG ;;
     b) MY_NUM_BOOTREPS=$OPTARG ;;
     r) MY_RAXML_MODEL=$OPTARG ;;
+    s) MY_SIMPLE_MODEL=$OPTARG ;;
     g) MY_GAP_THRESHOLD=$OPTARG ;;
     m) MY_INDIV_MISSING_DATA=$OPTARG ;;
     o) MY_OUTGROUP=$OPTARG ;;
@@ -209,7 +220,7 @@ fi
 
 echo "
 ##########################################################################################
-#                      MAGNET ~ MAny GeNE Trees v0.1.5, August 2017                      #
+#                    MAGNET ~ MAny GeNE Trees v0.1.6, September 2017                     #
 ##########################################################################################
 "
 
@@ -437,12 +448,20 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 			cd "$i"
 			LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')"
 
-			if [[ "$MY_OUTGROUP" = "NULL" ]]; then
+			if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
 				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n $MY_OUTPUT_NAME
 			fi
 
-			if [[ "$MY_OUTGROUP" != "NULL" ]]; then
+			if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
 				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+			fi
+
+			if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -n $MY_OUTPUT_NAME
+			fi
+
+			if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
 			fi
 
 			cd ..;
@@ -609,12 +628,20 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 			cd "$i"
 			LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')"
 
-			if [[ "$MY_OUTGROUP" = "NULL" ]]; then
+			if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
 				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n $MY_OUTPUT_NAME
 			fi
 
-			if [[ "$MY_OUTGROUP" != "NULL" ]]; then
+			if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
 				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+			fi
+
+			if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -n $MY_OUTPUT_NAME
+			fi
+
+			if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+				"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
 			fi
 
 			cd ..;
