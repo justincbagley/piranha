@@ -32,6 +32,15 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -s o d] inputVCFFile
   -d deleteOrig (def: 0=no, 1=yes) specifies whether or not to delete the original input
      .vcf file
 
+ CITATION
+ Bagley, J.C. 2017. PIrANHA. GitHub package, Available at: 
+	<http://github.com/justincbagley/PIrANHA>.
+ or
+ Bagley, J.C. 2017. PIrANHA. [Data set] Zenodo, Available at: 
+	<http://doi.org/10.5281/zenodo.596766>.
+ or
+ Bagley, J.C. 2017. justincbagley/PIrANHA. GitHub package, Available at: 
+	<http://doi.org/10.5281/zenodo.596766>.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
@@ -40,12 +49,13 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 's:o:' opt ; do
+while getopts 's:o:d:' opt ; do
   case $opt in
 
 ## vcfSubsampler options:
     s) MY_SNPS_FILE=$OPTARG ;;
     o) MY_OUTPUT_FILE=$OPTARG ;;
+    d) DELETE_ORIG_VCF=$OPTARG ;;
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
@@ -71,7 +81,6 @@ MY_INPUT_VCF="$1"
 ######################################## START ###########################################
 
 ##--Subsample input .vcf file using snps list:
-
 	while read j; do 
 		grep -h "$(echo $j)" ./"$MY_INPUT_VCF" >> "$MY_OUTPUT_VCF_FILE".tmp; 
 	done < ./"$MY_SNPS_FILE"
@@ -86,6 +95,13 @@ MY_INPUT_VCF="$1"
 ##--Cleanup temporary files:
 	rm ./*.tmp
 
+##--Final cleanup:
+##--Delete the original .vcf file if user has specified to do so:
+	if [[ "$DELETE_ORIG_VCF" = 0 ]]; then
+		echo ""
+	elif [[ "$DELETE_ORIG_VCF" = 1 ]]; then
+		rm ./"$MY_INPUT_VCF"
+	fi
 
 #
 #
