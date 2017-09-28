@@ -1,6 +1,7 @@
 # PIrANHA Change Log
 
 ## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
+- **September 2017:** Added 'vcfSubsampler.sh', a utility script that uses a list file to subsample a .vcf file so that it only contains SNPs in the list.
 - **September 2017:** Added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
 - **September 2017:** Updated README. A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
 - **bug fix:** - phylipSubsampler.sh (fixes bug causing incorrect number of characters on first line of input files) 
