@@ -40,7 +40,7 @@ The DOI for ```PIrANHA```, via [Zenodo](https://zenodo.org), is as follows:  [![
 - **```MrBayes```** (Ronquist et al. 2012)
 - **```ExaBayes```** (Aberer et al. 2014)
 - **```RAxML```** (Stamatakis 2014)
-- **```dadi```** (Gutenkunst et al. 2009)
+- **```∂a∂i```** (Gutenkunst et al. 2009)
 - **```fastSTRUCTURE```** (Raj et al. 2014)
 - **```PhyloMapper```** (Lemmon and Lemmon 2008)
 
@@ -69,7 +69,7 @@ The goal of ```PIrANHA``` is to facilitate analysis pipelines that could be of i
 <a href="http://imgur.com/3zSt2gC"><img src="http://i.imgur.com/3zSt2gC.png" title="source: Justin C. Bagley" align="center" /></a>
 **Figure 2**
 
-The following **Figure 3** illustrates new capacities of running and processing dadi (Gutenkunst et al. 2009) files in ```PIrANHA``` (note: the post-processing script is still under development).
+The following **Figure 3** illustrates new capacities of running and processing ∂a∂i (Gutenkunst et al. 2009) files in ```PIrANHA``` (note: the post-processing script is still under development).
 
 <a href="http://imgur.com/UK0fI5j"><img src="http://i.imgur.com/UK0fI5j.png" title="source: Justin C. Bagley" align="center" /></a>
 **Figure 3**
@@ -98,7 +98,7 @@ The following **Figure 3** illustrates new capacities of running and processing 
 	* GNU Scientific Library (available at: http://www.gnu.org/software/gsl/)
 	* ```bioscripts.convert``` v0.4 ```Python``` package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for ```'NEXUS2gphocs.sh'```)
 - ```fastSTRUCTURE``` v1.0 (available at: https://rajanil.github.io/fastStructure/)
-- ```dadi``` v1.7.0++ (or v1.6.3; available at: https://bitbucket.org/gutenkunstlab/dadi/overview)
+- ```∂a∂i``` v1.7.0++ (or v1.6.3; available at: https://bitbucket.org/gutenkunstlab/dadi/overview)
 - ```R``` v3++ (available at: https://cran.r-project.org/)
 
 Users must install all software not included in ```PIrANHA```, and ensure that it is available via the command line on their supercomputer and/or local machine (best practice is to simply install all software in both places). For more details, see the ```MAGNET``` README.
