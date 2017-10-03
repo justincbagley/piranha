@@ -53,6 +53,7 @@ The current code in ```PIrANHA``` has been written largely with a focus on 1) an
 See [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLog.md) for a full listing of updates to this repository. However, while the previous release, ```PIrANHA``` v0.1.6.1, updated the README and documentation for the repository, the current modified release includes the following changes:
 
 ## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
+- **October 2017:** Added 'dadiUncertainty.sh', a pipeline program and ∂a∂i wrapper that automates running uncertainty analysis on a ∂a∂i demographic model, using either the Godambe Information Matrix (GIM) or Fisher Information Matrix (FIM), to estimate standard deviations for calculating 95% CIs for model parameter estimates.
 - **September 2017:** Added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
 - **September 2017:** Updated README. A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
 
