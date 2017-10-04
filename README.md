@@ -202,7 +202,7 @@ I thank Nayoki Takebayashi, who wrote and freely provided some Perl scripts I ha
 - **Add options to ```MrBayesPostProc``` script, e.g. for burnin frac and stepping-stone MLE analysis.** **DONE!** :white_check_mark:
 - Change new ```phylipSubsampler``` script so that it accounts for missing data (currently does not).
 - Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in ```Super-pyRAD2PartitionFinder.sh```, ```BEASTRunner.sh```, ```BEASTPostProc.sh```, and ```RAxMLRunner.sh```)
-- Add mrbayes and beast search options to ```pyrad2PartitionFinder.sh``` and supercomputer version of the same script.
+- Add mrbayes and beast models options to ```pyrad2PartitionFinder.sh``` and supercomputer version of the same script.
 - Make ```pyrad``` and ```ipyrad``` batch run scripts available
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to ```BEAST``` runs (use ```BEASTRunner.sh``` as springboard to develop tools in BEAST\_PathSampling dir)
