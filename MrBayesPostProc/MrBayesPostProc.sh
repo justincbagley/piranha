@@ -112,7 +112,7 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES. "
     fi
 
 	MY_NEXUS=./*.nex
-	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.://p' | sed 's/\.mcmc$//g')"
+	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.*://p' | sed 's/\.mcmc$//g')"
 	MY_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | awk -F"=" '{print $NF}')"
 
 
