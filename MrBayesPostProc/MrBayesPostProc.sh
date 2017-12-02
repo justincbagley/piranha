@@ -51,9 +51,14 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] workingDir
 	<http://github.com/justincbagley/RAPFX>.
 
  REFERENCES
- Baele
- Ronquist 
- Xie
+ Baele G, Lemey P, Bedford T, Rambaut A, Suchard MA, Alekseyenko AV (2012) Improving the 
+    accuracy of demographic and molecular clock model comparison while accommodating 
+    phylogenetic uncertainty. Molecular Biology and Evolution, 29, 2157-2167.
+ Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, et al. (2012) MrBayes v. 3.2: 
+    efficient Bayesian phylogenetic inference and model choice across a large model space. 
+    Systematic Biology, 61, 539-542. 
+ Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for 
+    Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
