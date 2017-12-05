@@ -183,10 +183,19 @@ quit" > ./SS_batch.txt
 
 	$MY_SC_MB_PATH  < ./SS_batch.txt > Mrbayes_SS_log.txt &		## Use SS_batch to run SS analysis in MrBayes.
 
+
+echo "INFO      | $(date) | STEP #6: CLEANUP FILES. "
+## If user desires, remove temporary files created above.
+	if [[ "$MY_TEMP_FILE_SWITCH" -eq "1" ]]; then
+		if [[ -f ./batch.txt ]]; then rm ./batch.txt; fi
+		if [[ -f ./simple.nex ]]; then rm ./simple.nex; fi
+		if [[ -f ./SS_batch.txt ]]; then rm ./SS_batch.txt; fi
+	fi
+
 fi
 
 
-echo "INFO      | $(date) | STEP #6: CLEANUP FILES. "
+echo "INFO      | $(date) | STEP #5: CLEANUP FILES. "
 ## If user desires, remove temporary files created above.
 	if [[ "$MY_TEMP_FILE_SWITCH" -eq "1" ]]; then
 		if [[ -f ./batch.txt ]]; then rm ./batch.txt; fi
