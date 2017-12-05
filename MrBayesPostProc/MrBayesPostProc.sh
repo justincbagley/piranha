@@ -149,7 +149,7 @@ echo "INFO      | $(date) | STEP #2: REMOVE MRBAYES BLOCK FROM NEXUS FILE. "
 echo "INFO      | $(date) | STEP #3: CREATE BATCH FILE TO RUN IN MRBAYES. "
 echo "INFO      | $(date) |          Making batch file... "
 echo "set autoclose=yes nowarn=yes
-execute ./simple.nex
+execute simple.nex
 sumt Filename=${MY_MRBAYES_FILENAME} relburnin=yes burninfrac=${MY_RELBURNIN_FRAC}
 sump Filename=${MY_MRBAYES_FILENAME} relburnin=yes burninfrac=${MY_RELBURNIN_FRAC}
 quit" > ./batch.txt
