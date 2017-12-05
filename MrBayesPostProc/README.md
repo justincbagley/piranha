@@ -84,7 +84,7 @@ INFO      | Sat Dec  2 11:52:28 MST 2017 | STEP #3: CREATE BATCH FILE TO RUN IN 
 INFO      | Sat Dec  2 11:52:28 MST 2017 |          Making batch file... 
 INFO      | Sat Dec  2 11:52:28 MST 2017 |          MrBayes batch file (batch.txt) successfully created. 
 INFO      | Sat Dec  2 11:52:28 MST 2017 | STEP #4: SUMMARIZE RUN AND COMPUTE CONSENSUS TREE IN MRBAYES. 
-INFO      | Sat Dec  2 11:52:28 MST 2017 | STEP #6: CLEANUP FILES. 
+INFO      | Sat Dec  2 11:52:28 MST 2017 | STEP #5: CLEANUP FILES. 
 INFO      | Sat Dec  2 11:52:28 MST 2017 | Done with post-processing of MrBayes results using MrBayesPostProc. 
 INFO      | Sat Dec  2 11:52:28 MST 2017 | Bye. 
 ```
