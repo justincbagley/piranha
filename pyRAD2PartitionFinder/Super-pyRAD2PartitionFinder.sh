@@ -6,9 +6,9 @@
 # |                                                                                      #
 #                       Super-pyRAD2PartitionFinder v1.0, May 2016                       #
 #   SHELL SCRIPT FOR RUNNING SNP DATA IN PartitionFinder ON BYU FSL CLUSTER MARYLOU      #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: May 3, 2017. For questions, please email jcbagley@vcu.edu.                    #
+#  update: May 3, 2016. For questions, please email jcbagley@vcu.edu.                    #
 ##########################################################################################
 
 #PBS -l nodes=1:ppn=1,pmem=1gb,walltime=168:00:00           ## Not all supercomputing clusters allow a walltime this large; check with your IT/supercomputer website or personnel to get the maximum walltime allowed on your cluster.
