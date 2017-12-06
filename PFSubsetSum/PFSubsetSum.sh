@@ -7,10 +7,9 @@
 #                            PFSubsetSum v1.3, September 2017                            #
 #  SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FOR DNA SUBSETS WITHIN THE OPTIMUM    #
 #  PARTITIONING SCHEME IDENTIFIED FOR THE DATA BY PartitionFinder v1 or v2               #
-#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
-#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: September 8, 2017.   #
-#  For questions, please email jcbagley@vcu.edu.                                         #
+#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: September 8, 2017. For questions, please email jcbagley@vcu.edu.              #
 ##########################################################################################
 
 echo "
