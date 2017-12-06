@@ -6,10 +6,9 @@
 # |                                                                                      #
 #                        fastSTRUCTURE.sh v1.1, September 2016                           #
 #   SHELL SCRIPT FOR RUNNING fastSTRUCTURE ON BIALLELIC SNP DATASETS                     #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: July 25, 2016. For questions, please email         #
-#   jcbagley@unb.br.                                                                     #
+#  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: July 25, 2016. For questions, please email jcbagley@vcu.edu.                  #
 ##########################################################################################
 
 echo "
