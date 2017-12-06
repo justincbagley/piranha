@@ -8,10 +8,9 @@
 #  SHELL SCRIPT AUTOMATING RESETTING THE RANDOM STARTING SEEDS FOR n SHELL SCRIPTS       #
 #  CORRESPONDING TO n BEAST RUNS (SETUP IN A SERIES OF n RUN FOLDERS) DESTINED FOR A     #
 #  REMOTE SUPERCOMPUTER                                                                  #
-#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
-#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: August 25, 2017.     #
-#  For questions, please email jcbagley@vcu.edu.                                         #
+#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: August 25, 2017. For questions, please email jcbagley@vcu.edu.                #
 ##########################################################################################
 
 ##################################### BEASTReset.sh ######################################
