@@ -8,10 +8,9 @@
 #  SHELL SCRIPT AUTOMATING UNCERTAINTY ANALYSIS IN ∂a∂i, INCLUDING GENERATION OF BOOT-   #
 #  STRAPPED SNP FILES FOR PARAMETER STANDARD DEVIATION ESTIMATION USING THE GIM METHOD,  #
 #  AS WELL AS STANDARD DEVIATION ESTIMATION USING THE FIM METHOD (ORIG. DATA ONLY)       #
-#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
-#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: October 3, 2017.     #
-#  For questions, please e-mail jcbagley@vcu.edu.                                        #
+#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: October 3, 2017. For questions, please email jcbagley@vcu.edu.                #
 ##########################################################################################
 
 
