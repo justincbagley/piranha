@@ -7,10 +7,9 @@
 #                          PHYLIP2NEXUS v1.0, August 2016                                #
 #   SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMAT DNA SEQUENCE ALIGNMENT FILE TO NEXUS     #
 #   FORMATTED FILE                                                                       #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: August 11, 2016. For questions, please email       #
-#   jcbagley@unb.br.                                                                     #
+#  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: August 11, 2016. For questions, please email jcbagley@vcu.edu.                #
 ##########################################################################################
 
 ##--README: This shell script converts a single PHYLIP-formatted DNA sequence alignment
