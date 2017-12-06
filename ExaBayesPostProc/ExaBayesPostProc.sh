@@ -6,10 +6,9 @@
 # |                                                                                      #
 #                      ExaBayesPostProc v1.1, September 2016                             #
 #   SHELL SCRIPT FOR POST-PROCESSING OF ExaBayes OUTPUT FILES                            #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: September 7, 2016. For questions, please email     #
-#   jcbagley@unb.br.                                                                     #
+#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: September 7, 2017. For questions, please email jcbagley@vcu.edu.              #
 ##########################################################################################
 
 echo "
