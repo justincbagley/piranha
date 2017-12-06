@@ -7,10 +7,9 @@
 #                              RAxMLRunner v1.3, April 2017                              #
 #   SHELL SCRIPT FOR AUTOMATING MOVING AND RUNNING RAxML RUNS ON A REMOTE SUPERCOMPUTER  #
 #   (AND EXTRACTING THE RESULTS...coming soon)                                           #
-#   Copyright (c)2017 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil.  #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information. Last update: April 20, 2017. For questions, please email        #
-#   jcbagley@unb.br.                                                                     #
+#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: August 20, 2017. For questions, please email jcbagley@vcu.edu.                #
 ##########################################################################################
 
 echo "
