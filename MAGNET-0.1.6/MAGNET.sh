@@ -7,10 +7,9 @@
 #                    MAGNET ~ MAny GeNE Trees v0.1.6, September 2017                     #
 #  MAGNET PIPELINE: SHELL PIPELINE WHICH AUTOMATES ESTIMATING ONE MAXIMUM-LIKELIHOOD     #
 #  (ML) GENE TREE IN RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS DATASET       #
-#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
-#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further info. Last update: September 27, 2017.  #
-#  For questions, please email jcbagley@vcu.edu.                                         #
+#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: September 27, 2017. For questions, please email jcbagley@vcu.edu.             #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
