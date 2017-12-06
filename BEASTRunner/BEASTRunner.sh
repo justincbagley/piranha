@@ -6,10 +6,9 @@
 # |                                                                                      #
 #                               BEASTRunner v1.2, May 2017                               #
 #  SHELL SCRIPT FOR AUTOMATING RUNNING BEAST ON A REMOTE SUPERCOMPUTING CLUSTER          #
-#  Copyright (c)2017 Justinc C. Bagley, Virginia Commonwealth University, Richmond, VA,  #
-#  USA; Universidade de Brasília, Brasília, DF, Brazil. See README and license on GitHub #
-#  (http://github.com/justincbagley) for further information. Last update: May 3, 2017.  #
-#  For questions, please email jcbagley@vcu.edu.                                         #
+#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: May 3, 2017. For questions, please email jcbagley@vcu.edu.                    #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
