@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: October 2016. For questions, please email jcbagley@vcu.edu.                   #
+
 echo "
 ##########################################################################################
 #                          PhyloMapperNullProc v1, October 2016                          #
