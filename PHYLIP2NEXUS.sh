@@ -58,7 +58,7 @@ echo "INFO      | $(date) |          Examining current directory, setting variab
 	MY_NCHAR="$(head -n1 $MY_PHYLIP | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')"
 
 ###### Make NEXUS format file:
-	echo "INFO      | $(date) |          Making NEXUS formatted file... "
+	echo "INFO      | $(date) |          Making NEXUS-formatted file... "
 
 echo "#NEXUS
 
