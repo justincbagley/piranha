@@ -7,7 +7,7 @@
 #                             PHYLIP2NEXUS v1.1, March 2018                              #
 #  SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMAT DNA SEQUENCE ALIGNMENT FILE TO NEXUS      #
 #  FORMATTED FILE                                                                        #
-#  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: March 15, 2018. For questions, please email jcbagley@vcu.edu.                 #
 ##########################################################################################
@@ -21,7 +21,30 @@
 ##--PHYLIP file. For example, in a starting file named "Smerianae_ND4.phy," BASENAME would 
 ##--be "Smerianae_ND4" and the resulting output file would be named "Smerianae_ND4.nex". 
 
-############ SKIP OVER PROCESSED OPTIONS
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_PARTITIONS_FILE=NULL
+MY_PARTFILE_FORMAT=raxml
+
+############ PARSE THE OPTIONS
+while getopts 'p:f:' opt ; do
+  case $opt in
+
+## ∂a∂i options:
+    p) MY_PARTITIONS_FILE=$OPTARG ;;
+    f) MY_PARTFILE_FORMAT=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+  esac
+done
+
+############ SKIP OVER THE PROCESSED OPTIONS
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
@@ -74,12 +97,33 @@ END;
 
 	MY_PHYLIP_BASENAME="$(echo $MY_PHYLIP | sed 's/\.phy//g')"
 
+if [[ "$MY_PARTITIONS_FILE" = "NULL" ]]; then
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME".nex
 
+elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml" ]]; then
+	echo "begin sets;" > ./begin.tmp
+	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp
+	echo "end;" > ./end.tmp
+#	
+		unamestr="$(uname)"
+		if [[ "$unamestr" == "Darwin" ]]; then
+#			sed -i '' $'s/$/\n/' ./end.tmp
+			sed -i '' $'s/$/\\\n/' ./end.tmp
+		elif [[ "$unamestr" == "Linux" ]]; then
+			sed -i 's/$/\n/' ./end.tmp
+		fi
+#
+	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./begin.tmp ./NEXUS_charsets.tmp ./end.tmp > ./"$MY_PHYLIP_BASENAME".nex
+
+elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "NEX" ]] || [[ "$MY_PARTFILE_FORMAT" = "nex" ]]; then
+	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex
+
+fi
 
 ###### Remove temporary or unnecessary files created above:
 	echo "INFO      | $(date) |          Removing temporary files... "
-	rm ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp
+	## rm ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp
+	rm ./*.tmp
 
 echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment to NEXUS format using PHYLIP2NEXUS.sh." 
 echo "Bye.
