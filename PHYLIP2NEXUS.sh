@@ -20,6 +20,14 @@
 ##--the name, "BASENAME.nex", where "BASENAME" is the base or root name of the original
 ##--PHYLIP file. For example, in a starting file named "Smerianae_ND4.phy," BASENAME would 
 ##--be "Smerianae_ND4" and the resulting output file would be named "Smerianae_ND4.nex". 
+#
+##--Added two new options, one for specifying a partitions file (-p), and another related
+##--option for specifying the format of the partitions file (-f). If the partitions file is
+##--given, then the script expects partitions file format to be of either RAxML format 
+##--(specified with 'raxml') or NEXUS format ('NEX' or 'nex'). The RAxML format is the same
+##--format used in RAxML and output by PartitionFinder, and both this format and the more
+##--traditional NEXUS charset format (i.e. 'begin sets; ... charset 1 = 1-xxx;') will be 
+##--familiar to most users.
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -105,9 +113,9 @@ elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml"
 	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp
 	echo "end;" > ./end.tmp
 #	
+		## OS detection using idea from URL: https://stackoverflow.com/questions/394230/how-to-detect-the-os-from-a-bash-script
 		unamestr="$(uname)"
 		if [[ "$unamestr" == "Darwin" ]]; then
-#			sed -i '' $'s/$/\n/' ./end.tmp
 			sed -i '' $'s/$/\\\n/' ./end.tmp
 		elif [[ "$unamestr" == "Linux" ]]; then
 			sed -i 's/$/\n/' ./end.tmp
