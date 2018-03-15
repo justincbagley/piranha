@@ -89,9 +89,11 @@ END;
 	MY_PHYLIP_BASENAME="$(echo $MY_PHYLIP | sed 's/\.phy//g')"
 
 if [[ "$MY_PARTITIONS_FILE" = "NULL" ]]; then
+	echo "INFO      | $(date) |          No partitions file detected... "
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME".nex
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml" ]]; then
+	echo "INFO      | $(date) |          Read RAxML-style partitions file. Adding partition information to final NEXUS file... "
 	echo "begin sets;" > ./begin.tmp
 	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp
 	echo "end;" > ./end.tmp
@@ -107,6 +109,7 @@ elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml"
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./begin.tmp ./NEXUS_charsets.tmp ./end.tmp > ./"$MY_PHYLIP_BASENAME".nex
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "NEX" ]] || [[ "$MY_PARTFILE_FORMAT" = "nex" ]]; then
+	echo "INFO      | $(date) |          Read NEXUS-style charset file. Adding partition information to final NEXUS file... "
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex
 
 fi
