@@ -160,7 +160,7 @@ if [[ "${machine}" = "Mac" ]]; then
 		echo "$i"; 
 			j=./"$MY_RUN_SCRIPT"
 			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
-			echo $MY_RANDOM_SEED; 
+			echo "$MY_RANDOM_SEED"; 
 			sed -i '' "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
 		cd ..; 
 	done
@@ -186,7 +186,7 @@ if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "PBS" ]]; then
 		echo "$i"; 
 			j=./"$MY_RUN_SCRIPT"
 			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
-			echo $MY_RANDOM_SEED; 
+			echo "$MY_RANDOM_SEED"; 
 			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
 
 			qsub ./"$MY_RUN_SCRIPT"
@@ -207,7 +207,7 @@ if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "SLURM" ]]; then
 		echo "$i"; 
 			j=./"$MY_RUN_SCRIPT"
 			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
-			echo $MY_RANDOM_SEED; 
+			echo "$MY_RANDOM_SEED"; 
 			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
 
 			sbatch ./"$MY_RUN_SCRIPT"
