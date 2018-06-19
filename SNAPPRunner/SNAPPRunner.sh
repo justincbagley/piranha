@@ -4,11 +4,11 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                               SNAPPRunner v1.0, May 2017                               #
+#                              SNAPPRunner v1.0, June 2018                               #
 #  SHELL SCRIPT FOR AUTOMATING RUNNING SNAPP ON A REMOTE SUPERCOMPUTING CLUSTER          #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: May 10, 2017. For questions, please email jcbagley@vcu.edu.                   #
+#  update: June 19, 2018. For questions, please email jcbagley@vcu.edu.                  #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -211,7 +211,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                               SNAPPRunner v1.0, May 2017                               #
+#                              SNAPPRunner v1.0, June 2018                               #
 ##########################################################################################"
 
 ######################################## START ###########################################
@@ -278,7 +278,7 @@ INPUT FILE FOR DIRECTING EACH RUN. "
 #
 ##--Do two loops--one while giving no partition information to the shell scripts, the other
 ##--feeding user-specified supercomputer partition with the "--partition" flag of SBATCH.
-if [[ "$MY_SC_PARTITION" = "NULL" ]] && [[ "$MY_STARTING_SEED" = "NULL"]]; then
+if [[ "$MY_SC_PARTITION" = "NULL" ]] && [[ "$MY_STARTING_SEED" = "NULL" ]]; then
 
 (
 	for i in $MY_XML_FILES; do
@@ -319,7 +319,7 @@ exit 0" > snapp_sbatch.sh
 	done
 )
 
-elif [[ "$MY_SC_PARTITION" = "NULL" ]] && [[ "$MY_STARTING_SEED" != "NULL"]]; then
+elif [[ "$MY_SC_PARTITION" = "NULL" ]] && [[ "$MY_STARTING_SEED" != "NULL" ]]; then
 
 (
 	for i in $MY_XML_FILES; do
@@ -360,7 +360,7 @@ exit 0" > snapp_sbatch.sh
 	done
 )
 
-elif [[ "$MY_SC_PARTITION" != "NULL" ]] && [[ "$MY_STARTING_SEED" = "NULL"]]; then
+elif [[ "$MY_SC_PARTITION" != "NULL" ]] && [[ "$MY_STARTING_SEED" = "NULL" ]]; then
 
 (
 	for i in $MY_XML_FILES; do
@@ -402,7 +402,7 @@ exit 0" > snapp_sbatch.sh
 	done
 )
 
-elif [[ "$MY_SC_PARTITION" != "NULL" ]] && [[ "$MY_STARTING_SEED" != "NULL"]]; then
+elif [[ "$MY_SC_PARTITION" != "NULL" ]] && [[ "$MY_STARTING_SEED" != "NULL" ]]; then
 
 (
 	for i in $MY_XML_FILES; do
