@@ -1,6 +1,9 @@
 # PIrANHA Change Log
 
 ## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
+- **November 2018:** Rewrote 'pyRAD2PartitionFinder.sh' script, adding several options including options for choosing the PartitionFinder path and version, model set, model selection parameter (BIC, AIC, or AICc default), and whether or not to run PartitionFinder (or just create the input files). This new pyRAD2PartitionFinder script supersedes the old Super-pyRAD2PartitionFinder.sh script that was previously included for use on HPC supercomputer clusters. The new script has been tested on mac/UNIX and Linux (CentOS 6).
+- **June 2018:** Created 'snapp_runner.cfg' example configuration file for SNAPPRunner.
+- **May 2018:** Updated 'BEASTReset.sh' and 'fastSTRUCTURE.sh' scripts.
 - **October 2017:** Added 'dadiUncertainty.sh', a pipeline program and ∂a∂i wrapper that automates running uncertainty analysis on a ∂a∂i demographic model, using either the Godambe Information Matrix (GIM) or Fisher Information Matrix (FIM), to estimate standard deviations for calculating 95% CIs for model parameter estimates.
 - **September 2017:** Added 'vcfSubsampler.sh', a utility script that uses a list file to subsample a .vcf file so that it only contains SNPs in the list.
 - **September 2017:** Added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
