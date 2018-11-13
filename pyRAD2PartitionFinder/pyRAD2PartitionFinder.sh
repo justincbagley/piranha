@@ -4,26 +4,38 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                        pyRAD2PartitionFinder v1.1, August 2017                         #
+#                       pyRAD2PartitionFinder v1.2, November 2018                        #
 #  SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD      #
 #  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: August 1, 2017. For questions, please email jcbagley@vcu.edu.                 #
+#  update: November 12, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 MY_INPUT_PHYLIP_SWITCH=0
+MY_PF_RUN_SWITCH=1
+MY_PF_VERSION=1
+MY_PF_PATH=SEARCH
+MY_PF_EVOMODELS=beast
+MY_PF_MODSEL=BIC
 MY_SEARCH_ALGORITHM=rcluster
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Options: -i s] workingDir 
+Usage="Usage: $(basename "$0") [Options: -i r v p e m s] workingDir 
  ## Options:
   -i   inputPhylip (def: 0, .phy file in pwd; also takes name of .phy file in pwd, or absolute 
        path to .phy file in another dir) input Phylip sequence alignment file 
-  -s   search (def: $MY_SEARCH_ALGORITHM; also takes 'greedy' or 'hcluster') desired 
-       PartitionFinder search algorithm. 
-  
+  -r   runPF (def: 1; opt out: 0) whether or not to run PartitionFinder after prepping 
+       input files
+  -v   PFversion (def: 1 = v1.1.1; other: 2 = v2.1.1) specify PartitionFinder version
+  -p   PFpath (def: searches for PFversion locally) absolute path to PartitionFinder.py 
+       Python script to execute
+  -e   evoModels (def: beast; other: all, raxml, mrbayes)
+  -m   modSel (def: BIC; other: AIC, AICc) model selection metric
+  -s   search (def: $MY_SEARCH_ALGORITHM; other: greedy, hcluster) desired PartitionFinder
+       search algorithm
+
  OVERVIEW
  THIS SCRIPT automates running PartitionFinder (Lanfear et al. 2012, 2014) "out-of-the-box"
  starting from the Phylip DNA sequence alignment file ('.phy') and partitions ('.partitions') 
@@ -57,10 +69,15 @@ Usage="Usage: $(basename "$0") [Options: -i s] workingDir
 "
 
 ############ PARSE THE OPTIONS
-while getopts 'i:s:' opt ; do
+while getopts 'i:r:v:p:e:m:s:' opt ; do
   case $opt in
 ## pyRAD2PartitionFinder options:
     i) MY_INPUT_PHYLIP_SWITCH=$OPTARG ;;
+    r) MY_PF_RUN_SWITCH=$OPTARG ;;
+    v) MY_PF_VERSION=$OPTARG ;;
+    p) MY_PF_PATH=$OPTARG ;;
+    e) MY_PF_EVOMODELS=$OPTARG ;;
+    m) MY_PF_MODSEL=$OPTARG ;;
     s) MY_SEARCH_ALGORITHM=$OPTARG ;;
 
 ## Missing and illegal options:
@@ -87,7 +104,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                        pyRAD2PartitionFinder v1.1, August 2017                         #
+#                       pyRAD2PartitionFinder v1.2, November 2018                        #
 ##########################################################################################"
 
 ############ STEP #1: MODIFY pyRAD DATAFILE FOR PartitionFinder
@@ -112,8 +129,8 @@ MY_PYRAD_PARTITION=./*.partitions           				## Assign "partition" files in c
 
 
 ############ STEP #2: PREPARE PartitionFinder CONFIGURATION FILE
-if [[ "$MY_INPUT_PHYLIP_SWITCH" = "0" ]] || [[ "$MY_INPUT_PHYLIP_SWITCH" -eq "$(find . -n '*.phy' -type f)" ]]; then
-	MY_PHYLIP_FILENAME="$(echo ./*.phy | sed -n 's/.\///p')"	## Get name of PHYLIP datafile in current working directory. Usually there will only be one PHYLIP file in working directory corresponding to pyRAD output from SNP/RAD assembly in Phylip format.
+if [[ "$MY_INPUT_PHYLIP_SWITCH" = "0" ]] || [[ "$MY_INPUT_PHYLIP_SWITCH" = "$(find . -name '*.phy' -type f | sed 's/\.\/\.\_.*//g')" ]]; then
+	MY_PHYLIP_FILENAME="$(echo ./*.phy | sed 's/\.\/\.\_.*//g' | head -n1 | sed -n 's/.\///p')"	## Get name of PHYLIP datafile in current working directory. Usually there will only be one PHYLIP file in working directory corresponding to pyRAD output from SNP/RAD assembly in Phylip format.
 else
 	MY_PHYLIP_FILENAME="$MY_INPUT_PHYLIP_SWITCH"
 fi
@@ -129,10 +146,10 @@ echo "## ALIGNMENT FILE ##
 
 	## MODELS OF EVOLUTION for PartitionFinder: all | raxml | mrbayes | beast | <list> ##
 	##              for PartitionFinderProtein: all_protein | <list> ##
-	models = raxml;
+	models = $MY_PF_EVOMODELS;
 
 	# MODEL SELECCTION: AIC | AICc | BIC #
-	model_selection = BIC;
+	model_selection = $MY_PF_MODSEL;
 
 	## DATA BLOCKS: see manual for how to define ##
 	[data_blocks]
@@ -149,12 +166,23 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
 
 
+if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
 ############ STEP #3: RUN PartitionFinder ON THE DATA IN WORKING DIRECTORY
-###### Find path to PartitionFinder and assign to variable:
-MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
- sed -n 's/.://p')"
+###### Find path to PartitionFinder version <PFversion> ($MY_PF_VERSION) and assign to variable:
+#MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
+# sed -n 's/.://p')"
+#MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py\|partitionfinder-1.1.1/PartitionFinder.py' | sed -n 's/.://p' |  sed 's/\ .*//g')"
 
+	if [[ "$MY_PF_PATH" = "SEARCH" ]]; then 
+		MY_PATH_TO_PARTITIONFINDER="$MY_PF_PATH"
+	elif [[ "$MY_PF_PATH" != "SEARCH" ]] && [[ "$MY_PF_VERSION" -eq "1" ]]; then
+		MY_PATH_TO_PARTITIONFINDER="$(locate *1.1.1*/PartitionFinder.py | head -n1)"
+	elif [[ "$MY_PF_PATH" != "SEARCH" ]] && [[ "$MY_PF_VERSION" -eq "2" ]]; then
+		MY_PATH_TO_PARTITIONFINDER="$(locate *2.1.1*/PartitionFinder.py | head -n1)"
+	fi
+	
 python $MY_PATH_TO_PARTITIONFINDER . --raxml --rcluster-percent 0.1
+fi
 
 
 elif [[ "$MY_SEARCH_ALGORITHM" = "greedy" ]]; then
@@ -167,10 +195,10 @@ echo "## ALIGNMENT FILE ##
 
 	## MODELS OF EVOLUTION for PartitionFinder: all | raxml | mrbayes | beast | <list> ##
 	##              for PartitionFinderProtein: all_protein | <list> ##
-	models = all;
+	models = $MY_PF_EVOMODELS;
 
 	# MODEL SELECCTION: AIC | AICc | BIC #
-	model_selection = BIC;
+	model_selection = $MY_PF_MODSEL;
 
 	## DATA BLOCKS: see manual for how to define ##
 	[data_blocks]
@@ -187,13 +215,23 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
 
 
+if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
 ############ STEP #3: RUN PartitionFinder ON THE DATA IN WORKING DIRECTORY
-###### Find path to PartitionFinder and assign to variable:
-MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
- sed -n 's/.://p')"
+###### Find path to PartitionFinder version <PFversion> ($MY_PF_VERSION) and assign to variable:
+#MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
+# sed -n 's/.://p')"
+#MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py\|partitionfinder-1.1.1/PartitionFinder.py' | sed -n 's/.://p' |  sed 's/\ .*//g')"
+
+	if [[ "$MY_PF_PATH" = "SEARCH" ]]; then 
+		MY_PATH_TO_PARTITIONFINDER="$MY_PF_PATH"
+	elif [[ "$MY_PF_PATH" != "SEARCH" ]] && [[ "$MY_PF_VERSION" -eq "1" ]]; then
+		MY_PATH_TO_PARTITIONFINDER="$(locate *1.1.1*/PartitionFinder.py | head -n1)"
+	elif [[ "$MY_PF_PATH" != "SEARCH" ]] && [[ "$MY_PF_VERSION" -eq "2" ]]; then
+		MY_PATH_TO_PARTITIONFINDER="$(locate *2.1.1*/PartitionFinder.py | head -n1)"
+	fi
 
 python $MY_PATH_TO_PARTITIONFINDER .
-
+fi
 
 
 elif [[ "$MY_SEARCH_ALGORITHM" = "hcluster" ]]; then
@@ -206,10 +244,10 @@ echo "## ALIGNMENT FILE ##
 
 	## MODELS OF EVOLUTION for PartitionFinder: all | raxml | mrbayes | beast | <list> ##
 	##              for PartitionFinderProtein: all_protein | <list> ##
-	models = raxml;
+	models = $MY_PF_EVOMODELS;
 
 	# MODEL SELECCTION: AIC | AICc | BIC #
-	model_selection = BIC;
+	model_selection = $MY_PF_MODSEL;
 
 	## DATA BLOCKS: see manual for how to define ##
 	[data_blocks]
@@ -225,13 +263,23 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
 	rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
 
+if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
 ############ STEP #3: RUN PartitionFinder ON THE DATA IN WORKING DIRECTORY
-###### Find path to PartitionFinder and assign to variable:
-MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
- sed -n 's/.://p')"
+###### Find path to PartitionFinder version <PFversion> ($MY_PF_VERSION) and assign to variable:
+#MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py' |  \
+# sed -n 's/.://p')"
+#MY_PATH_TO_PARTITIONFINDER="$(locate PartitionFinder.py | grep -n 'PartitionFinderV1.1.1_Mac/PartitionFinder.py\|partitionfinder-1.1.1/PartitionFinder.py' | sed -n 's/.://p' |  sed 's/\ .*//g')"
+
+	if [[ "$MY_PF_PATH" = "SEARCH" ]]; then 
+		MY_PATH_TO_PARTITIONFINDER="$MY_PF_PATH"
+	elif [[ "$MY_PF_PATH" != "SEARCH" ]] && [[ "$MY_PF_VERSION" -eq "1" ]]; then
+		MY_PATH_TO_PARTITIONFINDER="$(locate *1.1.1*/PartitionFinder.py | head -n1)"
+	elif [[ "$MY_PF_PATH" != "SEARCH" ]] && [[ "$MY_PF_VERSION" -eq "2" ]]; then
+		MY_PATH_TO_PARTITIONFINDER="$(locate *2.1.1*/PartitionFinder.py | head -n1)"
+	fi
 
 python $MY_PATH_TO_PARTITIONFINDER . --raxml
-
+fi
 
 fi
 
