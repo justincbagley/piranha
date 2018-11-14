@@ -26,9 +26,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v] inputNexus
   -v   verbose (def: turned off)
 
  OVERVIEW
- Reads in a single NEXUS datafile and converts it to '.gphocs' format for G-PhoCS software
- (Gronau et al. 2011). Sequence names may not include hyphen characters, or there will be 
- issues. For best results, update to R v3.3.1 or higher.
+ Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
+ REF). Sequence names may not include hyphen characters, or there will be 
+ issues.
 
  The -g flag supplies a 'gap threshold' to an R script, which deletes all column sites in 
  the DNA alignment with a proportion of gap characters '-' at or above the threshold value. 
