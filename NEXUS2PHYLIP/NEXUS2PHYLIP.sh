@@ -15,49 +15,44 @@
 ## OPTION DEFAULTS ##
 MY_NAME_NCHARS_SWITCH=0
 MY_VERBOSE_OUT_SWITCH=0
+MY_KEEP_FASTA_SWITCH=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v] inputNexus 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNexus 
  ## Help:
   -h   help text (also: -help -H -Help)
 
  ## Options:
   -c   nameChars (def: turned off)
   -v   verbose (def: turned off)
+  -k   keepFasta (def: 1, on; 0, off)
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
  REF). Sequence names may not include hyphen characters, or there will be 
  issues.
 
- The -g flag supplies a 'gap threshold' to an R script, which deletes all column sites in 
- the DNA alignment with a proportion of gap characters '-' at or above the threshold value. 
- If no gap threshold is specified, all sites with gaps are removed by default. If end goal
- is to produce a file for G-PhoCS, you  will want to leave gapThreshold at the default. 
- However, if the next step in your pipeline involves converting from .gphocs to other data 
- formats, you will likely want to set gapThreshold=1 (e.g. before converting to phylip 
- format for RAxML). 
+ The -c flag specifies an integer number of character to shorten tip taxon names to, for 
+ example, such that a value of 9 will reduce all tip taxon names to 9 alphanumeric 
+ characters followed by a space by taking the first 9 characters of the names (for a 10 
+ character total at the start of each sequence-containing line of the alignment file. This 
+ takes advantage of -c flag capabilities in a dependency Perl script.
 
- The -m flag allows users to choose their level of tolerance for individuals with missing
- data. The default is indivMissingData=1, allowing individuals with runs of 10 or more 
- missing nucleotide characters ('N') to be kept in the alignment. Alternatively, setting
- indivMissingData=0 removes all such individuals from each locus; thus, while the input
- file would have had the same number of individuals across loci, the resulting file could
- have varying numbers of individuals for different loci.
+ The -v flag allows users to choose verbose output that prints name conversions to stderr.
 
- Dependencies: Perl; R; and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' and 
- 'selectSites.pl' in working directory or available from command line (in your path).
+ The -f flag specifies whether to keep intermediate fasta files, one per <inputNexus>, 
+ generated during a run of the script.
+
+ Dependencies: Perl and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' in working 
+ directory or available from command line (in your path). Tested with Perl v5.
 
  CITATION
- Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
-	<http://github.com/justincbagley/MAGNET>.
- or
- Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
-	<http://doi.org/10.5281/zenodo.166024>.
+ Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+	<https://github.com/justincbagley/PIrANHA>.
 "
 
 ############ PARSE THE OPTIONS
-while getopts 'h:H:g:m:' opt ; do
+while getopts 'h:H:c:v:k:' opt ; do
   case $opt in
 ## Help texts:
 	h) echo "$Usage"
@@ -66,8 +61,9 @@ while getopts 'h:H:g:m:' opt ; do
        exit ;;
 
 ## Datafile options:
-    g) MY_GAP_THRESHOLD=$OPTARG ;;
-    m) MY_INDIV_MISSING_DATA=$OPTARG ;;
+    c) MY_NAME_NCHARS_SWITCH=$OPTARG ;;
+    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+    k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
@@ -128,16 +124,32 @@ echo "
 
 ##--Convert data file from fasta to PHYLIP format using Nayoki Takebayashi fasta2phylip.pl 
 ##--Perl script (must be available from CLI):
-	fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
-	
+	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
+
+		fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
+
+	elif [[ "$MY_NAME_NCHARS_SWITCH" ! = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
+
+		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
+
+	elif [[ "$MY_NAME_NCHARS_SWITCH" ! = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" ! = "0" ]]; then
+
+		fasta2phylip.pl -c "$" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy		
+
+	fi
 
 ############ STEP #3: CHECK PHYLIP ALIGNMENT CHARACTERISTICS.
-# [IN PREP.]
+##--CODE IN PREP.
 
 ############ STEP #4: CLEANUP.
-	rm ./"$MY_NEXUS_BASENAME".fasta
+	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
+		rm ./"$MY_NEXUS_BASENAME".fasta
+	else
+		echo ""
+	fi
 
-#echo "INFO      | $(date) | Successfully created a '.gphocs' input file from the existing NEXUS file... "
+
+#echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
 #echo "INFO      | $(date) | Bye.
 #"
 #
