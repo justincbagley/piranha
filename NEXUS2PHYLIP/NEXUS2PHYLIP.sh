@@ -165,14 +165,33 @@ echo "
 ############ STEP #3: CHECK OUTPUT PHYLIP ALIGNMENT CHARACTERISTICS AGAINST NEXUS INFO.
 ##--CODE IN PREP.
 
+##--Need to make sure that total number of characters in tip taxon names in alignment is 
+##--10 but that there is also a space between the final name character and the first base 
+##--in the alignment. So, make temp file, remove header line (first line), read in each line,
+##--check whether 9 char then space is the name format, if not fix to delete last character
+##--in name and replace with space, then put name and sequence back together and write 
+##--back to file. If changes were made, overwrite initial .phy file with fixed .phy file
+##--so that name characteristics as well as expected output filename are correct.
+
+
 ############ STEP #4: CLEANUP (REMOVE, OR KEEP & ORGANIZE) INTERMEDIATE FASTA FILES.
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
 		rm ./"$MY_NEXUS_BASENAME".fasta
 	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "0" ]]; then
-	    mkdir fasta/;
+	    if [[ -s fasta/ ]]; then 
+		    rm -r fasta/;
+		    mkdir fasta/
+	    else
+		    mkdir fasta/;
+		fi
 		mv ./*.fasta ./fasta/;
 	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "1" ]]; then
-	    mkdir fasta/;
+	    if [[ -s fasta/ ]]; then 
+		    rm -r fasta/;
+		    mkdir fasta/
+	    else
+		    mkdir fasta/;
+		fi
 		mv -f ./*.fasta ./fasta/;
 	fi
 
