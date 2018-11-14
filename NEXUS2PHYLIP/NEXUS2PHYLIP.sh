@@ -4,8 +4,9 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            NEXUS2PHYLIP v1.0, November 2018                            #
-#   SHELL SCRIPT FOR CONVERTING SEQUENTIAL NEXUS FILE INTO PHYLIP FORMAT                 #
+#                            NEXUS2PHYLIP v1.1, November 2018                            #
+#  SHELL SCRIPT CONVERTING SEQUENTIAL NEXUS FILE INTO PHYLIP (AND OPTIONALLY ALSO FASTA) #
+#  DNA SEQUENCE ALIGNMENT FORMAT                                                         #
 #  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: November 14, 2018. For questions, please email bagleyj@umsl.edu.              #
@@ -24,9 +25,10 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
   -h   help text (also: -help -H -Help)
 
  ## Options:
-  -c   nameChars (def: turned off, full tip names kept) number of characters to shorten tip 
-       taxon names to (integer value between 1-10 recommended)
-  -v   verbose (def: turned off) specify verbose file name conversion output
+  -c   nameChars (def: 10-character names) number of characters to which tip taxon names
+       should be shortened, allowing integer values ranging 1-9
+  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
+       screen (stdout)
   -k   keepFasta (def: 0, off; 1, on, keep fasta intermediate) whether or not to keep 
        intermediate fasta files generated during the run
   -o   fastaOverwrite (def: 1, on; 0, off) whether or not to force overwrite of fasta 
@@ -34,16 +36,21 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
- REF). Sequence names may not include hyphen characters, or there will be 
- issues.
+ REF). Sequence names may include alphanumeric, hyphen, and underscore characters but no
+ spaces (or else there will be issues). By default, program runs quietly with no ouput to
+ screen or stderr or stdout files; however, -v option causes verbose run information to be
+ output to screen (stdout).
 
  The -c flag specifies an integer number of character to shorten tip taxon names to, for 
  example, such that a value of 9 will reduce all tip taxon names to 9 alphanumeric 
- characters followed by a space by taking the first 9 characters of the names (for a 10 
+ characters followed by a space by taking the first 9 characters of the names (for a 10-
  character total at the start of each sequence-containing line of the alignment file. This 
- takes advantage of -c flag capabilities in a dependency Perl script.
+ takes advantage of -c flag capabilities in a dependency Perl script. By default, 10-character
+ names will be kept, and single spaces will be placed between tip taxon names and corresponding
+ sequences.
 
- The -v flag allows users to choose verbose output that prints name conversions to stderr.
+ The -v flag allows users to choose verbose output that prints name conversions, as well as
+ step information (what the program is doing), to stdout. Off by default.
 
  The -k flag specifies whether to keep intermediate fasta files, one per <inputNexus>, 
  generated during a run of the script. Fasta files are deleted by default, but if set to 
@@ -97,15 +104,21 @@ fi
 MY_NEXUS="$1"
 
 
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+
 echo "
 ##########################################################################################
 #                            NEXUS2PHYLIP v1.0, November 2018                            #
 ##########################################################################################
 "
+fi
 
 ######################################## START ###########################################
 
-############ STEP #1: SETUP VARIABLES
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) |          STEP #1: SETUP ENVIRONMENT. "
+fi
+############ STEP #1: SETUP FUNCTIONS AND ENVIRONMENTAL VARIABLES
 ###### Set filetypes as different variables:
 #echo "INFO      | $(date) | Examining current directory, setting variables... "
 	MY_WORKING_DIR="$(pwd)"
@@ -114,6 +127,10 @@ echo "
 	   	bc -l <<< "$@"
 	}
 
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) |          STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT. "
+fi
 ############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
 ##--Extract charset info from sets block at end of NEXUS file: 
 	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" $MY_NEXUS | \
@@ -158,26 +175,71 @@ echo "
 		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
 			rm ./"$MY_NEXUS_BASENAME".phy
 		fi
-		fasta2phylip.pl -c "$" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy		
+		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy		
 
 	fi
 
-############ STEP #3: CHECK OUTPUT PHYLIP ALIGNMENT CHARACTERISTICS AGAINST NEXUS INFO.
-##--CODE IN PREP.
 
-##--Need to make sure that total number of characters in tip taxon names in alignment is 
-##--10 but that there is also a space between the final name character and the first base 
-##--in the alignment. So, make temp file, remove header line (first line), read in each line,
-##--check whether 9 char then space is the name format, if not fix to delete last character
-##--in name and replace with space, then put name and sequence back together and write 
-##--back to file. If changes were made, overwrite initial .phy file with fixed .phy file
-##--so that name characteristics as well as expected output filename are correct.
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) |          STEP #3: FIX PHYLIP TIP TAXON NAMES. "
+fi
+############ STEP #3: FIX SPACE BETWEEN TIP TAXON NAME AND SEQUENCE, AND CHECK OUTPUT PHYLIP ALIGNMENT CHARACTERISTICS AGAINST NEXUS INFO.
+##--Tip taxon name fixes are implemented, but code for checking PHYLIP file against NEXUS 
+##--characteristics is _in prep_.
+
+	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]]; then
+
+		perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy
+
+	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -le "9" ]]; then
+
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "9" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{9})[A-Za-z\_0-9\-\ ]{1}(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "8" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{8})[A-Za-z\_0-9\-\ ]{2}(.*)/$1\ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "7" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{7})[A-Za-z\_0-9\-\ ]{3}(.*)/$1\ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "6" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{6})[A-Za-z\_0-9\-\ ]{4}(.*)/$1\ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "5" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{5})[A-Za-z\_0-9\-\ ]{5}(.*)/$1\ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "4" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{4})[A-Za-z\_0-9\-\ ]{6}(.*)/$1\ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "3" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{3})[A-Za-z\_0-9\-\ ]{7}(.*)/$1\ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "2" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{2})[A-Za-z\_0-9\-\ ]{8}(.*)/$1\ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		if [[ "$MY_NAME_NCHARS_SWITCH" = "1" ]]; then
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{1})[A-Za-z\_0-9\-\ ]{9}(.*)/$1\ \ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+		fi
+		
+	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -gt "9" ]]; then
+
+		echo "WARNING!  | $(date) |          ERROR: Illegal tip taxon name size (only accepts integer values from 1-9). Quitting... "
+		exit 1
+
+	fi
 
 
-############ STEP #4: CLEANUP (REMOVE, OR KEEP & ORGANIZE) INTERMEDIATE FASTA FILES.
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) |          STEP #3: CLEAN UP INTERMEDIATE FASTA FILES IN WORKING DIRECTORY. "
+fi
+############ STEP #4: CLEAN UP (REMOVE, OR KEEP & ORGANIZE) INTERMEDIATE FASTA FILES IN WORKING DIRECTORY.
+##--Clean up intermediate fasta files:
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
+
 		rm ./"$MY_NEXUS_BASENAME".fasta
+
 	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "0" ]]; then
+
 	    if [[ -s fasta/ ]]; then 
 		    rm -r fasta/;
 		    mkdir fasta/
@@ -185,7 +247,9 @@ echo "
 		    mkdir fasta/;
 		fi
 		mv ./*.fasta ./fasta/;
+
 	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "1" ]]; then
+
 	    if [[ -s fasta/ ]]; then 
 		    rm -r fasta/;
 		    mkdir fasta/
@@ -193,16 +257,19 @@ echo "
 		    mkdir fasta/;
 		fi
 		mv -f ./*.fasta ./fasta/;
+
 	fi
 
+	
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
+echo "INFO      | $(date) | Bye.
+"
+fi
 
-#echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
-#echo "INFO      | $(date) | Bye.
-#"
 #
 #
 #
 ######################################### END ############################################
-
 
 exit 0
