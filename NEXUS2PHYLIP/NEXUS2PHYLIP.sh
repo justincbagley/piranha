@@ -131,11 +131,11 @@ echo "
 
 		fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
 
-	elif [[ "$MY_NAME_NCHARS_SWITCH" ! = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
+	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 
 		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
 
-	elif [[ "$MY_NAME_NCHARS_SWITCH" ! = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" ! = "0" ]]; then
+	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 
 		fasta2phylip.pl -c "$" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy		
 
