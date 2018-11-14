@@ -43,7 +43,8 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNe
  The -v flag allows users to choose verbose output that prints name conversions to stderr.
 
  The -k flag specifies whether to keep intermediate fasta files, one per <inputNexus>, 
- generated during a run of the script.
+ generated during a run of the script. Fasta files are deleted by default, but if set to 
+ keep (1), fastas will be moved to a sub-folder named 'fasta' at the end of the run.
 
  Dependencies: Perl and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' in working 
  directory or available from command line (in your path). Tested with Perl v5.
@@ -147,7 +148,8 @@ echo "
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
 		rm ./"$MY_NEXUS_BASENAME".fasta
 	else
-		echo ""
+	    mkdir fasta/;
+		mv ./*.fasta ./fasta/;
 	fi
 
 
