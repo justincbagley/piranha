@@ -16,9 +16,10 @@
 MY_NAME_NCHARS_SWITCH=0
 MY_VERBOSE_OUT_SWITCH=0
 MY_KEEP_FASTA_SWITCH=0
+MY_OVERWRITE_SWITCH=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNexus 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputNexus 
  ## Help:
   -h   help text (also: -help -H -Help)
 
@@ -28,6 +29,8 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNe
   -v   verbose (def: turned off) specify verbose file name conversion output
   -k   keepFasta (def: 0, off; 1, on, keep fasta intermediate) whether or not to keep 
        intermediate fasta files generated during the run
+  -o   fastaOverwrite (def: 1, on; 0, off) whether or not to force overwrite of fasta 
+       files in current working directory (e.g. from previous steps of pipeline)
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
@@ -46,8 +49,13 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNe
  generated during a run of the script. Fasta files are deleted by default, but if set to 
  keep (1), fastas will be moved to a sub-folder named 'fasta' at the end of the run.
 
+ The -o flag allows the user to specify whether or not to force output file overwrite of
+ fasta files in current working directory and is set to on as the default; set to 0 to skip 
+ overwrite and always preserve existing fasta files, if present (not recommended).
+
  Dependencies: Perl and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' in working 
- directory or available from command line (in your path). Tested with Perl v5.
+ directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
+ High Sierra (v10.13+).
 
  CITATION
  Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
@@ -55,7 +63,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNe
 "
 
 ############ PARSE THE OPTIONS
-while getopts 'h:H:c:v:k:' opt ; do
+while getopts 'h:H:c:v:k:o:' opt ; do
   case $opt in
 ## Help texts:
 	h) echo "$Usage"
@@ -67,6 +75,7 @@ while getopts 'h:H:c:v:k:' opt ; do
     c) MY_NAME_NCHARS_SWITCH=$OPTARG ;;
     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
     k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
+    o) MY_OVERWRITE_SWITCH=$OPTARG ;;
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
@@ -122,6 +131,9 @@ echo "
 	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')"
 
 ##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
+	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
+		rm ./"$MY_NEXUS_BASENAME".fasta
+	fi
 	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta
 	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')"
 
@@ -129,27 +141,39 @@ echo "
 ##--Perl script (must be available from CLI):
 	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 
+		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
+			rm ./"$MY_NEXUS_BASENAME".phy
+		fi
 		fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 
+		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
+			rm ./"$MY_NEXUS_BASENAME".phy
+		fi
 		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 
+		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
+			rm ./"$MY_NEXUS_BASENAME".phy
+		fi
 		fasta2phylip.pl -c "$" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy		
 
 	fi
 
-############ STEP #3: CHECK PHYLIP ALIGNMENT CHARACTERISTICS.
+############ STEP #3: CHECK OUTPUT PHYLIP ALIGNMENT CHARACTERISTICS AGAINST NEXUS INFO.
 ##--CODE IN PREP.
 
-############ STEP #4: CLEANUP.
+############ STEP #4: CLEANUP (REMOVE, OR KEEP & ORGANIZE) INTERMEDIATE FASTA FILES.
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
 		rm ./"$MY_NEXUS_BASENAME".fasta
-	else
+	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "0" ]]; then
 	    mkdir fasta/;
 		mv ./*.fasta ./fasta/;
+	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "1" ]]; then
+	    mkdir fasta/;
+		mv -f ./*.fasta ./fasta/;
 	fi
 
 
