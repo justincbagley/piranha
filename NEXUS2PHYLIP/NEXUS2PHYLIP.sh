@@ -15,7 +15,7 @@
 ## OPTION DEFAULTS ##
 MY_NAME_NCHARS_SWITCH=0
 MY_VERBOSE_OUT_SWITCH=0
-MY_KEEP_FASTA_SWITCH=1
+MY_KEEP_FASTA_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
 Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNexus 
@@ -23,9 +23,11 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNe
   -h   help text (also: -help -H -Help)
 
  ## Options:
-  -c   nameChars (def: turned off)
-  -v   verbose (def: turned off)
-  -k   keepFasta (def: 1, on; 0, off)
+  -c   nameChars (def: turned off, full tip names kept) number of characters to shorten tip 
+       taxon names to (integer value between 1-10 recommended)
+  -v   verbose (def: turned off) specify verbose file name conversion output
+  -k   keepFasta (def: 0, off; 1, on, keep fasta intermediate) whether or not to keep 
+       intermediate fasta files generated during the run
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
@@ -40,7 +42,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v -k] inputNe
 
  The -v flag allows users to choose verbose output that prints name conversions to stderr.
 
- The -f flag specifies whether to keep intermediate fasta files, one per <inputNexus>, 
+ The -k flag specifies whether to keep intermediate fasta files, one per <inputNexus>, 
  generated during a run of the script.
 
  Dependencies: Perl and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' in working 
