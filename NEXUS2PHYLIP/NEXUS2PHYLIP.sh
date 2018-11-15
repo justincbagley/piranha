@@ -36,7 +36,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
- REF). Sequence names may include alphanumeric, hyphen, and underscore characters but no
+ 2002). Sequence names may include alphanumeric, hyphen, and underscore characters but no
  spaces (or else there will be issues). By default, program runs quietly with no ouput to
  screen or stderr or stdout files; however, -v option causes verbose run information to be
  output to screen (stdout).
@@ -67,6 +67,10 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
  CITATION
  Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
+
+REFERENCES
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 "
 
 ############ PARSE THE OPTIONS
