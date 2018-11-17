@@ -22,7 +22,42 @@ MY_OVERWRITE_SWITCH=1
 ############ CREATE USAGE & HELP TEXTS
 Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputNexus 
  ## Help:
-  -h   help text (also: -help -H -Help)
+  -h   help text (also: -help)
+  -H   verbose help text (also: -Help)
+
+ ## Options:
+  -c   nameChars (def: 10-character names) number of characters to which tip taxon names
+       should be shortened, allowing integer values ranging 1-9
+  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
+       screen (stdout)
+  -k   keepFasta (def: 0, off; 1, on, keep fasta intermediate) whether or not to keep 
+       intermediate fasta files generated during the run
+  -o   fastaOverwrite (def: 1, on; 0, off) whether or not to force overwrite of fasta 
+       files in current working directory (e.g. from previous steps of pipeline)
+
+ OVERVIEW
+ Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
+ 2002). Sequence names may include alphanumeric, hyphen, and underscore characters but no
+ spaces (or else there will be issues). By default, program runs quietly with no ouput to
+ screen or stderr or stdout files; however, -v option causes verbose run information to be
+ output to screen (stdout).
+	Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working 
+ directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
+ High Sierra (v10.13+).
+
+ CITATION
+ Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+	<https://github.com/justincbagley/PIrANHA>.
+
+REFERENCES
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+"
+
+verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputNexus 
+ ## Help:
+  -h   help text (also: -help)
+  -H   verbose help text (also: -Help)
 
  ## Options:
   -c   nameChars (def: 10-character names) number of characters to which tip taxon names
@@ -41,6 +76,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
  screen or stderr or stdout files; however, -v option causes verbose run information to be
  output to screen (stdout).
 
+ DETAILS
  The -c flag specifies an integer number of character to shorten tip taxon names to, for 
  example, such that a value of 9 will reduce all tip taxon names to 9 alphanumeric 
  characters followed by a space by taking the first 9 characters of the names (for a 10-
@@ -60,7 +96,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
  fasta files in current working directory and is set to on as the default; set to 0 to skip 
  overwrite and always preserve existing fasta files, if present (not recommended).
 
- Dependencies: Perl and Naoki Takebayashi Perl scripts 'fasta2phylip.pl' in working 
+ Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working 
  directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
  High Sierra (v10.13+).
 
@@ -73,8 +109,18 @@ REFERENCES
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 "
 
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
+	echo "$verboseHelp"
+	exit
+fi
+
 ############ PARSE THE OPTIONS
-while getopts 'h:H:c:v:k:o:' opt ; do
+while getopts 'c:v:k:o:' opt ; do
   case $opt in
 ## Help texts:
 	h) echo "$Usage"
