@@ -9,7 +9,7 @@
 #  CONTAIN EVERY NTH TREE                                                                #
 #  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 17, 2016. For questions, please email jcbagley@vcu.edu.              #
+#  update: November 17, 2016. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 echo "
