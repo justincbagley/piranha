@@ -9,7 +9,7 @@
 #  FORMATTED FILE                                                                        #
 #  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: March 15, 2018. For questions, please email jcbagley@vcu.edu.                 #
+#  update: March 15, 2018. For questions, please email bagleyj@umsl.edu.                 #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
