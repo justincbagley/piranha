@@ -8,7 +8,7 @@
 #  SHELL SCRIPT FOR POST-PROCESSING OF MrBayes OUTPUT FILES ON A SUPERCOMPUTING CLUSTER  #
 #  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: December 2, 2017. For questions, please email jcbagley@vcu.edu.               #
+#  update: December 2, 2017. For questions, please email bagleyj@umsl.edu.               #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
