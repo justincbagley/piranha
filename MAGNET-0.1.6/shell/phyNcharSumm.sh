@@ -2,7 +2,7 @@
 
 #  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 9, 2016. For questions, please email jcbagley@vcu.edu.               #
+#  update: November 9, 2016. For questions, please email bagleyj@umsl.edu.               #
 
 ###### Starting from a folder containing multiple PHYLIP alignment files (e.g. as generated
 ## by MAGNET.sh for indiv. SNP loci), this script uses a for loop to echo all alignment
