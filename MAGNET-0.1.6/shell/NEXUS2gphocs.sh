@@ -5,9 +5,9 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                            NEXUS2gphocs v1.3, November 2018                            #
-#   SHELL SCRIPT FOR CONVERTING PARTITIONED NEXUS FILE INTO G-PhoCS FORMAT FOR MAGNET    #
-#   PIPELINE                                                                             #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  SHELL SCRIPT FOR CONVERTING PARTITIONED NEXUS FILE INTO G-PhoCS FORMAT FOR MAGNET     #
+#  PIPELINE                                                                              #
+#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: November 20, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
