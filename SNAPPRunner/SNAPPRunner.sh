@@ -8,7 +8,7 @@
 #  SHELL SCRIPT FOR AUTOMATING RUNNING SNAPP ON A REMOTE SUPERCOMPUTING CLUSTER          #
 #  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: June 19, 2018. For questions, please email jcbagley@vcu.edu.                  #
+#  update: June 19, 2018. For questions, please email bagleyj@umsl.edu.                  #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
