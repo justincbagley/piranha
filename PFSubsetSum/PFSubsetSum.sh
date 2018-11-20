@@ -9,7 +9,7 @@
 #  PARTITIONING SCHEME IDENTIFIED FOR THE DATA BY PartitionFinder v1 or v2               #
 #  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: September 8, 2017. For questions, please email jcbagley@vcu.edu.              #
+#  update: September 8, 2017. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 echo "
