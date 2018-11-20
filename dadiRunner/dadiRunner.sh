@@ -8,7 +8,7 @@
 #  SHELL SCRIPT FOR AUTOMATING RUNNING ∂a∂i ON A REMOTE SUPERCOMPUTING CLUSTER           #
 #  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: May 16, 2017. For questions, please email jcbagley@vcu.edu.                   #
+#  update: May 16, 2017. For questions, please email bagleyj@umsl.edu.                   #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
