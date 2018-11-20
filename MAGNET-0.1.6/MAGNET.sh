@@ -4,12 +4,12 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                    MAGNET ~ MAny GeNE Trees v0.1.6, September 2017                     #
+#                     MAGNET ~ MAny GeNE Trees v0.1.7, November 2018                     #
 #  MAGNET PIPELINE: SHELL PIPELINE WHICH AUTOMATES ESTIMATING ONE MAXIMUM-LIKELIHOOD     #
 #  (ML) GENE TREE IN RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS DATASET       #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: September 27, 2017. For questions, please email jcbagley@vcu.edu.             #
+#  update: November 20, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -219,7 +219,7 @@ fi
 
 echo "
 ##########################################################################################
-#                    MAGNET ~ MAny GeNE Trees v0.1.6, September 2017                     #
+#                     MAGNET ~ MAny GeNE Trees v0.1.7, November 2018                     #
 ##########################################################################################
 "
 
@@ -277,10 +277,25 @@ fi
 	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.nex//g')"
 	
 	##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
+	##--However, if alignment is too long (>100,000 bp), then need to convert to fasta using my 
+	##--script and then wrap to 60 characters with fold function (as suggested at stackexchange
+	##--post URL: https://unix.stackexchange.com/questions/25173/how-can-i-wrap-text-at-a-certain-column-size).
+	##--If this conversion failes because the alignment is too long, then the code to follow 
+	##--will have nothing to work with. So, I am here adding a conditional quit if the fasta
+	##--file is not generated.
+
+	#---------ADD IF/THEN CONDITIONAL AND MY OWN NEXUS2fasta SCRIPT HERE!!!!----------#
 	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta
 	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')"
 	
 	##--The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
+	##--Check to make sure the fasta was created; if so, echo info, if not, echo warning and quit:
+	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
+		echo "INFO      | $(date) |          Input NEXUS was successfully converted to fasta format. Moving forward... "
+	else
+		echo "WARNING!  | $(date) |          NEXUS to fasta file conversion FAILED! Quitting... "
+		exit 1
+	fi
 	
 	############ PUT COMPONENTS OF ORIGINAL NEXUS FILE AND THE FASTA FILE TOGETHER TO MAKE A
 	############ A G-PhoCS-FORMATTED DATA FILE
@@ -300,6 +315,12 @@ fi
 			**/selectSites.pl -s $charRange $MY_FASTA > ./sites.fasta
 				
 			**/fasta2phylip.pl ./sites.fasta > ./sites.phy
+
+			##--Need to make sure there is a space between the tip taxon name (10 characters as output
+			##--by the fasta2phylip.pl Perl script) and the corresponding sequence, for all tips. Use
+			##--a perl search and replace for this:
+
+			perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})/$1\ /g' ./sites.phy
 
 				##--If .phy file from NEXUS charset $j has gaps in alignment, then call 
 				##--rmGapSites.R R script to remove all column positions with gaps from
