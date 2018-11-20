@@ -279,6 +279,7 @@ if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
 	fi
 
 python $MY_PATH_TO_PARTITIONFINDER . --raxml
+
 fi
 
 fi
