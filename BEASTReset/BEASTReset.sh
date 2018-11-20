@@ -10,7 +10,7 @@
 #  REMOTE SUPERCOMPUTER                                                                  #
 #  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: May 13, 2018. For questions, please email jcbagley@vcu.edu.                   #
+#  update: May 13, 2018. For questions, please email bagleyj@umsl.edu.                   #
 ##########################################################################################
 
 ##################################### BEASTReset.sh ######################################
