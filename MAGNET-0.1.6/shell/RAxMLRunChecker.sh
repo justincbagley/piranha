@@ -14,6 +14,7 @@
 
 ## USAGE
 ## $ ./RAxMLRunChecker.sh <workingDir>
+## $ ./shell/RAxMLRunChecker.sh <workingDir>
 ##
 ## Examples
 ## e.g. run in current working directory (cwd), where MAGNET pipeline has been run, or is
