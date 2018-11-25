@@ -4,7 +4,7 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                           RAxMLRunChecker v1.0, November 2018                          #
+#                           RAxMLRunChecker v1.1, November 2018                          #
 #  SHELL SCRIPT THAT COUNTS NUMBER OF LOCI/PARTITIONS WITH COMPLETED RAxML RUNS DURING   #
 #  OR AFTER A RUN OF THE MAGNET PIPELINE, AND COLLATES RUN INFORMATION                   #
 #  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
@@ -12,8 +12,43 @@
 #  update: November 25, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
+## USAGE
+## $ ./RAxMLRunChecker.sh <workingDir>
+##
+## Examples
+## e.g. run in current working directory (cwd), where MAGNET pipeline has been run, or is
+## currently running, by entering the following from the command line from within cwd:
+## $ ./RAxMLRunChecker.sh .
+
 ######################################## START ###########################################
 
+# Check for mandatory positional parameters
+if [ $# -lt 1 ]; then
+  echo "WARNING!  | $(date) |          Missing argument for working directory path. Quitting... "
+  exit 1
+fi
+USER_SPEC_PATH="$1"
+
+
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	#MY_CWD=`pwd -P`
+	MY_CWD="$(printf '%q\n' "$(pwd)")"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)")"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd 	"$MY_CWD"
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
 	TAB=$(printf '\t'); 
 	calc () {
 	bc -l <<< "$@"
