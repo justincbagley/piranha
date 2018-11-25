@@ -44,7 +44,7 @@ elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
 		MY_CWD=$USER_SPEC_PATH
 		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
 		echo "$MY_CWD "
-		cd 	"$MY_CWD"
+		cd "$MY_CWD"
 	fi
 else
 	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
