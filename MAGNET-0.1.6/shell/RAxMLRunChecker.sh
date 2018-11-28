@@ -21,7 +21,7 @@
 ## currently running, by entering the following from the command line from within cwd:
 ## $ ./RAxMLRunChecker.sh .
 
-# Check for mandatory positional parameters
+############ Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
   echo "WARNING!  | $(date) |          Missing argument for working directory path. Quitting... "
   exit 1
@@ -29,6 +29,7 @@ fi
 USER_SPEC_PATH="$1"
 
 
+############ Set workingDir
 if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
 	#MY_CWD=`pwd -P`
 	MY_CWD="$(printf '%q\n' "$(pwd)")"
