@@ -21,8 +21,6 @@
 ## currently running, by entering the following from the command line from within cwd:
 ## $ ./RAxMLRunChecker.sh .
 
-######################################## START ###########################################
-
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
   echo "WARNING!  | $(date) |          Missing argument for working directory path. Quitting... "
@@ -50,6 +48,10 @@ else
 	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
 	exit 1
 fi
+
+
+######################################## START ###########################################
+
 	TAB=$(printf '\t'); 
 	calc () {
 	bc -l <<< "$@"
