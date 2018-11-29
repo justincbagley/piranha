@@ -25,7 +25,7 @@ MY_OUTGROUP=NULL
 MY_OUTPUT_NAME=raxml_out
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile or workingDir
+Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile OR workingDir
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
