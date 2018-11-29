@@ -9,7 +9,7 @@
 #  (ML) GENE TREE IN RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS DATASET       #
 #  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 20, 2018. For questions, please email bagleyj@umsl.edu.              #
+#  update: November 29, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
