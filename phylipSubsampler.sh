@@ -116,12 +116,21 @@ echo "INFO      | $(date) | Starting phylipSubsampler analysis... "
 echo "INFO      | $(date) | STEP #1: SETUP. "
 ###### Set new path/dir environmental variable to user specified path, then create useful
 ##--shell functions and variables:
-if [ "$USER_SPEC_PATH" = "$(echo $(pwd))" ]; then
-	MY_PATH=`pwd -P`
-	echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "
-elif [ "$USER_SPEC_PATH" != "$(echo $(pwd))" ]; then
-	MY_PATH=$USER_SPEC_PATH
-	echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "	
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	#MY_CWD=`pwd -P`
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd "$MY_CWD"
+	fi
 else
 	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
 	exit 1
