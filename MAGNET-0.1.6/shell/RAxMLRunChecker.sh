@@ -13,8 +13,8 @@
 ##########################################################################################
 
 ## USAGE
-## $ ./RAxMLRunChecker.sh <workingDir>
-## $ ./shell/RAxMLRunChecker.sh <workingDir>
+## $ ./RAxMLRunChecker.sh workingDir
+## $ ./shell/RAxMLRunChecker.sh workingDir
 ##
 ## Examples
 ## e.g. run in current working directory (cwd), where MAGNET pipeline has been run, or is
@@ -32,13 +32,13 @@ USER_SPEC_PATH="$1"
 ############ Set workingDir
 if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
 	#MY_CWD=`pwd -P`
-	MY_CWD="$(printf '%q\n' "$(pwd)")"
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
 	echo "INFO      | $(date) |          Setting working directory to:  "
 	echo "$MY_CWD "
 elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
 	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
 		cd ..;
-		MY_CWD="$(printf '%q\n' "$(pwd)")"
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
 	else
 		MY_CWD=$USER_SPEC_PATH
 		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
