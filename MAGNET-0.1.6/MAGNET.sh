@@ -118,7 +118,11 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [R
   -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
        separted list
 
- OVERVIEW
+ ## Resume: 
+ --resume   long option allowing the user to resume a previous MAGNET run in the specified
+       workingDir (usually current working directory)
+
+OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
  multiple loci, starting from one or multiple input files containing aligned DNA sequences.
  If supplied with a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') data file (using -f 1
