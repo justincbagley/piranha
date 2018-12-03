@@ -1,21 +1,17 @@
 #!/bin/sh
 
 ##########################################################################################
-#  __  o  __   __   __  |__   __                                                         #
-# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
-# |                                                                                      #
-#                     MAGNET ~ MAny GeNE Trees v0.1.7, November 2018                     #
+#                     MAGNET ~ MAny GeNE Trees v0.1.8, December 2018                     #
 #  MAGNET PIPELINE: SHELL PIPELINE WHICH AUTOMATES ESTIMATING ONE MAXIMUM-LIKELIHOOD     #
 #  (ML) GENE TREE IN RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS DATASET       #
 #  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 29, 2018. For questions, please email bagleyj@umsl.edu.              #
+#  update: December 3, 2018. For questions, please email bagleyj@umsl.edu.               #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 STARTING_FILE_TYPE=1
-MY_RAXML_EXECUTABLE=raxmlHPC-SSE3
 MY_NUM_BOOTREPS=100
 MY_RAXML_MODEL=GTRGAMMA
 MY_SIMPLE_MODEL=NULL
@@ -23,9 +19,26 @@ MY_GAP_THRESHOLD=0.001
 MY_INDIV_MISSING_DATA=1
 MY_OUTGROUP=NULL
 MY_OUTPUT_NAME=raxml_out
+MY_RESUME_SWITCH=0
+
+## Set raxml executable name depending on machine type:
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+if [[ "${machine}" = "Mac" ]]; then
+	MY_RAXML_EXECUTABLE=raxml
+fi
+if [[ "${machine}" = "Linux" ]]; then
+	MY_RAXML_EXECUTABLE=raxmlHPC-SSE3
+fi
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile OR workingDir
+Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] inputFile OR workingDir
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -46,6 +59,10 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:]
   -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
        separted list
 
+ ## Resume: 
+ --resume   long option allowing the user to resume a previous MAGNET run in the specified
+       workingDir (usually current working directory)
+ 
  OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
  multiple loci, starting from one or multiple input files containing aligned DNA sequences.
@@ -61,7 +78,9 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:]
  user-specified options. Sequence names may not include hyphen characters, or there could be 
  issues. For detailed information on MAGNET and its various dependencies, see 'README.md' file 
  in the distribution folder; however, it is key that the dependencies are available from the 
- command line interface. 
+ command line interface. Among the most important options is --resume (off by default), which 
+ tells MAGNET to resume a previous run in <workingDir>, including detecting incomplete run 
+ folders and running RAxML there without overwriting results from previously finished runs.
 
  CITATION
  Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
@@ -78,7 +97,7 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:]
 "
 
 
-verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile or workingDir
+verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] inputFile or workingDir
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -114,7 +133,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [s
  user-specified options. Sequence names may not include hyphen characters, or there could be 
  issues. For detailed information on MAGNET and its various dependencies, see 'README.md' file 
  in the distribution folder; however, it is key that the dependencies are available from the 
- command line interface. 
+ command line interface. Among the most important options is the --resume flag (see below).
 
  DETAILS
  The -f flag specifies the starting fileType. If -f 1, then the mandatory input is the name
@@ -159,6 +178,11 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [s
  manual, as a single name or as a comma-separated list with no spaces between taxon names. 
  The first name in the list is prioritized, e.g. when members of the list are not monophyletic.
 
+ --resume is among the most important options available in MAGNET because it tells the program 
+ to resume a previous run in <workingDir>, including to detect incomplete run folders
+ and run RAxML there without overwriting results from run folders with finished runs. Only
+ takes --resume, not resume or -resume. The default setting is to run without this option.
+ 
  CITATION
  Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
@@ -184,10 +208,12 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 'f:e:b:r:s:g:m:o:' opt ; do
+## Idea for long option hyphen in getopts came from suggestions at the following thread
+## URL: https://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
+while getopts 'f:e:b:r:s:g:m:o:-:' opt ; do
   case $opt in
 
-## Input datafile and RAxML options:
+## MAGNET, input datafile, and RAxML options:
     f) STARTING_FILE_TYPE=$OPTARG ;;
     e) MY_RAXML_EXECUTABLE=$OPTARG ;;
     b) MY_NUM_BOOTREPS=$OPTARG ;;
@@ -196,7 +222,10 @@ while getopts 'f:e:b:r:s:g:m:o:' opt ; do
     g) MY_GAP_THRESHOLD=$OPTARG ;;
     m) MY_INDIV_MISSING_DATA=$OPTARG ;;
     o) MY_OUTGROUP=$OPTARG ;;
-
+	-) LONG_OPTARG="${OPTARG#*=}"
+         case $OPTARG in
+         resume) MY_RESUME_SWITCH=1 ;;
+         esac ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
        echo "$Usage" >&2
@@ -206,9 +235,7 @@ while getopts 'f:e:b:r:s:g:m:o:' opt ; do
        exit 1 ;;
   esac
 done
-
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
+shift $((OPTIND-1)) # remove parsed options and args from $@ list
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
 echo "$Usage"
@@ -219,7 +246,7 @@ fi
 
 echo "
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.7, November 2018                     #
+#                     MAGNET ~ MAny GeNE Trees v0.1.8, December 2018                     #
 ##########################################################################################
 "
 
@@ -432,7 +459,12 @@ into a separate PHYLIP-formatted alignment file using gphocs2multiPhylip code...
 
 	################################# MultiRAxMLPrepper.sh ##################################
 
-echo "INFO      | $(date) | STEP #4: MAKE RUN FOLDERS. "
+echo "INFO      | $(date) | STEP #4: MAKE AND CHECK RUN FOLDERS. "
+
+if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
+
+	MY_N_PHYLIP_FILES="$(ls $MY_PHYLIP_ALIGNMENTS | wc -l | perl -pe 's/\t//g')"
+
 	##--Loop through the input .phy files and do the following for each file: (A) generate one 
 	##--folder per .phy file with the same name as the file, only minus the extension, then 
 	##--(B) move input .phy file into corresponding folder.
@@ -445,14 +477,32 @@ echo "INFO      | $(date) | STEP #4: MAKE RUN FOLDERS. "
 
 	##### Setup and run check on the number of run folders created by the program:
 	MY_FILECOUNT="$(find . -type f | wc -l)"
-
 	MY_DIRCOUNT="$(find . -type d | wc -l)"
+	#old: MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
+	MY_NUM_RUN_FOLDERS="$(ls ./*/*.phy | wc -l | perl -pe 's/\t//g; s/\ //g')"
 
-	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
-echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
+	echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
+
+	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
+		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+	else
+		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
+	fi
+
+elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
+	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
+		echo "IMPORTANT!| $(date) |          Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
+		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+	else
+		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
+	fi
+
+fi
 
 
 	################################### RAxMLRunner.sh #######################################
+
+if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
 echo "INFO      | $(date) | STEP #5: ESTIMATE GENE TREES. "
 echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
@@ -503,8 +553,57 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 		done
 	)
 
+elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 
-echo "INFO      | $(date) | STEP #6: RAxML POST-PROCESSING. "
+echo "INFO      | $(date) | STEP #3: RESUMING GENE TREE ESTIMATION. RUN ON REMAINING/INCOMPLETE RUN FOLDERS, SKIP THOSE WITH COMPLETED RAXML RUNS. "
+
+	(
+		for i in ./*/; do
+			cd "$i"
+			LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')"
+
+			if [[ ! -s ./RAxML_info.raxml_out ]]; then
+			echo "$i"
+
+				if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+				fi
+			fi
+			cd ..;
+		done
+	)
+
+	if [[ ! -s ./phylip_files/ ]]; then
+		mkdir ./phylip_files/;
+	fi
+	(
+		for i in $MY_PHYLIP_ALIGNMENTS; do
+			echo "$i"
+			mv "$i" ./phylip_files/
+		done
+	)
+fi
+
+
+
+
+if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
+	echo "INFO      | $(date) | STEP #6: RAxML POST-PROCESSING. "
+elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
+	echo "INFO      | $(date) | STEP #4: RAxML POST-PROCESSING. "
+fi
 
 	################################## getGeneTrees.sh #######################################
 	echo "INFO      | $(date) |          Organizing gene trees and making final output file containing all trees... "
@@ -612,7 +711,12 @@ echo "INFO      | $(date) |          RAxML."
 
 	################################# MultiRAxMLPrepper.sh ##################################
 
+if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
+
 echo "INFO      | $(date) | STEP #3: MAKE RUN FOLDERS. "
+
+	MY_N_PHYLIP_FILES="$(ls $MY_PHYLIP_ALIGNMENTS | wc -l | perl -pe 's/\t//g')"
+
 	##--Loop through the input .phy files and do the following for each file: (A) generate one 
 	##--folder per .phy file with the same name as the file, only minus the extension, then 
 	##--(B) move input .phy file into corresponding folder.
@@ -625,14 +729,31 @@ echo "INFO      | $(date) | STEP #3: MAKE RUN FOLDERS. "
 
 	##### Setup and run check on the number of run folders created by the program:
 	MY_FILECOUNT="$(find . -type f | wc -l)"
-
 	MY_DIRCOUNT="$(find . -type d | wc -l)"
+	#old: MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
+	MY_NUM_RUN_FOLDERS="$(ls ./*/*.phy | wc -l | perl -pe 's/\t//g; s/\ //g')"
 
-	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
-echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
+	echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
 
+	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
+		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+	else
+		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
+	fi
+
+elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
+	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
+		echo "IMPORTANT!| $(date) |          Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
+		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+	else
+		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
+	fi
+
+fi
 
 	################################### RAxMLRunner.sh #######################################
+
+if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
 echo "INFO      | $(date) | STEP #4: ESTIMATE GENE TREES. "
 echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
@@ -683,8 +804,56 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 		done
 	)
 
+elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 
-echo "INFO      | $(date) | STEP #5: RAxML POST-PROCESSING. "
+echo "INFO      | $(date) | STEP #3: RESUMING GENE TREE ESTIMATION. RUN ON REMAINING/INCOMPLETE RUN FOLDERS, SKIP THOSE WITH COMPLETED RAXML RUNS. "
+
+	(
+		for i in ./*/; do
+			cd "$i"
+			LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')"
+
+			if [[ ! -s ./RAxML_info.raxml_out ]]; then
+			echo "$i"
+
+				if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+				fi
+			fi
+			cd ..;
+		done
+	)
+
+	if [[ ! -s ./phylip_files/ ]]; then
+		mkdir ./phylip_files/;
+	fi
+	(
+		for i in $MY_PHYLIP_ALIGNMENTS; do
+			echo "$i"
+			mv "$i" ./phylip_files/
+		done
+	)
+fi
+
+
+
+if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
+	echo "INFO      | $(date) | STEP #5: RAxML POST-PROCESSING. "
+elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
+	echo "INFO      | $(date) | STEP #4: RAxML POST-PROCESSING. "
+fi
 
 	################################## getGeneTrees.sh #######################################
 	echo "INFO      | $(date) |          Organizing gene trees and making final output file containing all trees... "
