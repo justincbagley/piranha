@@ -51,10 +51,10 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -g m] inputNexus
  'selectSites.pl' in working directory or available from command line (in your path).
 
  CITATION
- Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2017. MAGNET. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.166024>.
 "
 
