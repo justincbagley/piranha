@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.9, February 2019                     #
+#                     MAGNET ~ MAny GeNE Trees v0.1.5, February 2019                     #
 #  SHELL PIPELINE FOR AUTOMATING ESTIMATION OF ONE MAXIMUM-LIKELIHOOD (ML) GENE TREE IN  #
 #  RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS SEQUENCE DATASET                #
 #  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
@@ -86,11 +86,11 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
  Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: 
 	<http://github.com/justincbagley/PIrANHA>.
  or
- Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
-	<http://doi.org/10.5281/zenodo.166024>.
+ Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: 
+	<https://doi.org/10.5281/zenodo.596774>.
 
  REFERENCES
  Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human 
@@ -194,11 +194,11 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [R
  Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: 
 	<http://github.com/justincbagley/PIrANHA>.
  or
- Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
-	<http://doi.org/10.5281/zenodo.166024>.
+ Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: 
+	<https://doi.org/10.5281/zenodo.596774>.
 
  REFERENCES
  Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human 
@@ -256,7 +256,7 @@ fi
 
 echo "
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.9, February 2019                     #
+#                     MAGNET ~ MAny GeNE Trees v0.1.5, February 2019                     #
 ##########################################################################################
 "
 
