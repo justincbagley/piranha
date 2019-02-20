@@ -64,7 +64,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l a r b p d n] inputXM
  alpha values as high as 0.4. The new -a flag lets the user change this value in the XMLs.
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
