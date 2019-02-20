@@ -2,9 +2,9 @@
 
 ##########################################################################################
 #                          rmGapSites Rscript v1.0, August 2016                          #
-#   Copyright (c)2016 Justin C. Bagley, Universidade de Brasília, Brasília, DF, Brazil   #
-#   See the README and license files on GitHub (http://github.com/justincbagley) for     #
-#   further information.                                                                 #
+#   Copyright (c)2019 Justin C. Bagley. See the PIrANHA README and license files (at     #
+#   http://github.com/justincbagley/PIrANHA) for further information. Last edit, August  #
+#   2016.                                                                                #
 ##########################################################################################
 
 ##--Load needed library, R code, or package stuff. Install package if not present.
