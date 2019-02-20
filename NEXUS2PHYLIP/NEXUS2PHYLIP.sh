@@ -7,7 +7,7 @@
 #                            NEXUS2PHYLIP v1.1, November 2018                            #
 #  SHELL SCRIPT CONVERTING SEQUENTIAL NEXUS FILE INTO PHYLIP (AND OPTIONALLY ALSO FASTA) #
 #  DNA SEQUENCE ALIGNMENT FORMAT                                                         #
-#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: November 14, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
