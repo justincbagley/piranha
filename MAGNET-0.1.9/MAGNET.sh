@@ -83,10 +83,10 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
  folders and running RAxML there without overwriting results from previously finished runs.
 
  CITATION
- Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.166024>.
 
  REFERENCES
@@ -188,10 +188,10 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [R
  takes --resume, not resume or -resume. The default setting is to run without this option.
  
  CITATION
- Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
+ Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.166024>.
 
  REFERENCES
