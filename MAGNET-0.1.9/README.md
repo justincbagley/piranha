@@ -6,7 +6,7 @@ Shell script pipeline for inferring ML gene trees for many loci (e.g. genomic RA
 
 ## LICENSE
 
-All code within the PIrANHA repository, including MAGNET v0.1.9 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA repository, including MAGNET v0.1.5 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
@@ -14,7 +14,7 @@ If you use scripts from this repository as part of your published research, then
 
   Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
   
-  Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
+  Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
 Alternatively, please provide the following link to this software program in your manuscript:
 
@@ -22,7 +22,7 @@ Alternatively, please provide the following link to this software program in you
   
 **Example citations using the above URL:** 
 	"We estimated a gene tree for each RAD locus in RAxML v8 (Stamatakis 2014) using 
-	the MAGNET v0.1.9 pipeline (http://github.com/justincbagley/MAGNET). Each RAxML run
+	the MAGNET v0.1.5 pipeline (http://github.com/justincbagley/MAGNET). Each RAxML run
 	specified the GTRGAMMA model and coestimated the maximum-likelihood phylogeny and
 	bootstrap proportions from 500 bootstrap pseudoreplicates."
 
@@ -30,7 +30,7 @@ Alternatively, please provide the following link to this software program in you
 
 The DOI for MAGNET, via Zenodo, is as follows:  [![DOI](https://zenodo.org/badge/66839898.svg)](https://zenodo.org/badge/latestdoi/66839898). Here is an example of citing MAGNET using the DOI: 
   
-  Bagley, J.C. 2019. MAGNET. GitHub package, Available at: http://doi.org/10.5281/zenodo.166024.
+  Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: https://doi.org/10.5281/zenodo.596774.
 
 ## INTRODUCTION
 
@@ -49,7 +49,7 @@ Despite the importance of gene trees in species tree and network inference, few 
 
 ## SOFTWARE DEPENDENCIES
 
-MAGNET v0.1.9 is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included in the MAGNET distribution:
+MAGNET v0.1.5 is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included in the MAGNET distribution:
 
 - Perl (available at: https://www.perl.org/get.html).
 - Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
@@ -173,11 +173,14 @@ Usage: MAGNET.sh [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [st
  takes --resume, not resume or -resume. The default setting is to run without this option.
  
  CITATION
- Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: 
+	<http://github.com/justincbagley/PIrANHA>.
+ or
+ Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
- Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: 
-	<http://doi.org/10.5281/zenodo.166024>.
+ Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: 
+	<https://doi.org/10.5281/zenodo.596774>.
 
  REFERENCES
  Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human 
