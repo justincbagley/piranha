@@ -48,7 +48,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] workingD
  https://gist.github.com/justincbagley/ecab6c39b62f89458b8ed3fab98fbeb2.
  
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<http://github.com/justincbagley/RAPFX>.
 
  REFERENCES
@@ -118,7 +118,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] wo
 		"$0" -i <SNPInput filename> -n 20 -w 24:00:00 .	## Ex.: changing run walltime.
 	
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<http://github.com/justincbagley/RAPFX>.
 
  REFERENCES
