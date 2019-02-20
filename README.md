@@ -6,13 +6,13 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 ## LICENSE
 
-All code within the ```PIrANHA``` v0.1.6.1 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the ```PIrANHA``` v0.1.7 repository is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
 If you use scripts from this repository as part of your published research, I require that you cite the repository as follows (also see DOI information below): 
   
-- Bagley, J.C. 2017. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
+- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, please provide the following link to this software repository in your manuscript:
 
@@ -22,15 +22,15 @@ Alternatively, please provide the following link to this software repository in 
 
 The DOI for ```PIrANHA```, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.890815.svg)](https://doi.org/10.5281/zenodo.890815). Here are some examples of citing PIrANHA using the DOI: 
   
-  Bagley, J.C. 2017. PIrANHA. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
+  Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
-  Bagley, J.C. 2017. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
+  Bagley, J.C. 2019. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
 ## INTRODUCTION
 
 *Taking steps towards automating boring stuff during analyses of genetic data in phylogenomics & phylogeography...*
 
-**```PIrANHA```** v0.1.6.1 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the following software programs:
+**```PIrANHA```** v0.1.7 is a repository of shell scripts and R scripts written by the author, as well as additional code (R, Perl, and Python scripts) from other authors, that is designed to help automate processing and analysis of DNA sequence data in phylogenetics and phylogeography research projects (Avise 2000; Felsensetin 2004). PIrANHA is fully command line-based and, rather than being structured as a single pipeline, it contains a series of scripts, some of which form pipelines, for aiding or completing tasks during evolutionary analyses of genetic data. Currently, PIrANHA scripts facilitate running or linking the following software programs:
 
 - **```pyRAD```** (Eaton 2014) or **```ipyrad```** (Eaton and Overcast 2016)
 - **```PartitionFinder```** (Lanfear et al. 2012, 2016)
@@ -44,18 +44,20 @@ The DOI for ```PIrANHA```, via [Zenodo](https://zenodo.org), is as follows:  [![
 - **```fastSTRUCTURE```** (Raj et al. 2014)
 - **```PhyloMapper```** (Lemmon and Lemmon 2008)
 
-The current code in ```PIrANHA``` has been written largely with a focus on 1) analyses of DNA sequence data and SNPs or SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on the user's personal machine (e.g. [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.6) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts) or a remote supercomputer machine, and then conducting post-processing of the results. In particular, a number of scripts have been written with sections allowing them to be run (or cause other software to be called) on a supercomputing cluster, using code suitable for [SLURM](https://slurm.schedmd.com) or [TORQUE](http://www.adaptivecomputing.com/products/open-source/torque/) (PBS; [Portable Batch System](https://en.wikipedia.org/wiki/Portable_Batch_System)) resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in ```Super-pyRAD2PartitionFinder.sh```). 
+The current code in ```PIrANHA``` has been written largely with a focus on 1) analyses of DNA sequence data and SNPs or SNP loci generated from massively parallel sequencing runs on ddRAD-seq genomic libraries (e.g. Peterson et al. 2012), and 2) automating running these software programs on the user's personal machine (e.g. [MAGNET](https://github.com/justincbagley/PIrANHA/tree/master/MAGNET-0.1.9) pipeline and [pyRAD2PartitionFinder](https://github.com/justincbagley/PIrANHA/tree/master/pyRAD2PartitionFinder) scripts) or a remote supercomputer machine, and then conducting post-processing of the results. In particular, a number of scripts have been written with sections allowing them to be run (or cause other software to be called) on a supercomputing cluster, using code suitable for [SLURM](https://slurm.schedmd.com) or [TORQUE](http://www.adaptivecomputing.com/products/open-source/torque/) (PBS; [Portable Batch System](https://en.wikipedia.org/wiki/Portable_Batch_System)) resource management systems (in some cases, this functionality is noted by adding "Super" in the script filename, as in ```Super-pyRAD2PartitionFinder.sh```). 
 
 ### Distribution Structure and Pipelines
 
 **What's new in this release?** 
 
-See [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLog.md) for a full listing of updates to this repository. However, while the previous release, ```PIrANHA``` v0.1.6.1, updated the README and documentation for the repository, the current modified release includes the following changes:
+Some of the changes included in the current official release are detailed below. However, refer to [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLog.md) for a full listing of updates to this repository since the last release (```PIrANHA``` v0.1.6.1).
 
-## PIrANHA v0.1.6.1 (modified minor version release - several changes after official 0.1.6.1 release)
-- **October 2017:** Added 'dadiUncertainty.sh', a pipeline program and ∂a∂i wrapper that automates running uncertainty analysis on a ∂a∂i demographic model, using either the Godambe Information Matrix (GIM) or Fisher Information Matrix (FIM), to estimate standard deviations for calculating 95% CIs for model parameter estimates.
-- **September 2017:** Added 'phylipSubsampler.sh', a utility script that automates subsampling one or multiple Phylip alignments down to one sequence per population/species (assuming no missing data).
-- **September 2017:** Updated README. A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
+## PIrANHA v0.1.7 (official minor version release) - February 19, 2019
+- **February 19 2019:** Improved ```phylipSubsampler.sh``` to check and account for differences in machine type. Now correctly accommodations UNIX (Mac) and LINUX systems.
+- **February 19 2019:** Updated MAGNET script by adding a getBipartTrees function to the MAGNET pipeline, which organizes RAxML bipartitions trees for each locus (= best ML trees with bootstrap proportions along nodes the corresponding bootstrap searches search; resulting from ```-f a -x```options, which are included in all MAGNET calls to RAxML). Edited header and script banner to be prepped for future official release of MAGNET with versioning 0.1.9.
+- **December 2018:** Added new MAGNET script updated to include --resume option, and to set raxml executable name one of two ways after detecting machine type (```raxml``` on Mac, ```raxmlHPC-SS3``` on Linux/supercomputer).
+- **November 25 2018:** Added to MAGNET/shell folder a new 'RAxMLRunChecker.sh' script v1.0, which counts the number of completed RAxML runs during the course of, or after, a MAGNET pipeline run, and also collates information on the dataset (e.g. number of patterns) and run (e.g. run time, optimum likelihood) for each locus/partition.
+- **November 20 2018 bug fix:** Updated MAGNET with edited 'MAGNET.sh' (now v0.1.7+) and 'NEXUS2gphocs.sh' (now v1.3+) scripts containing an important bug fix and some new code checking for whether the NEXUS to fasta file conversion succeeded.
 
 
 *What is possible with PIrANHA?* *Who cares?*
@@ -202,10 +204,10 @@ I thank Nayoki Takebayashi, who wrote and freely provided some Perl scripts I ha
 - **Add options to ```MrBayesPostProc``` script, e.g. for burnin frac and stepping-stone MLE analysis.** **DONE!** :white_check_mark:
 - Change new ```phylipSubsampler``` script so that it accounts for missing data (currently does not).
 - Give supercomputer scripts options (header w/flags) that will work for both a) TORQUE/PBS and b) SLURM Workload Manager cluster management and job scheduling systems (need meticulous work on this in ```Super-pyRAD2PartitionFinder.sh```, ```BEASTRunner.sh```, ```BEASTPostProc.sh```, and ```RAxMLRunner.sh```)
-- Add mrbayes and beast models options to ```pyrad2PartitionFinder.sh``` and supercomputer version of the same script.
+- Add mrbayes and beast model options to ```pyrad2PartitionFinder.sh``` and supercomputer version of the same script.
 - Make ```pyrad``` and ```ipyrad``` batch run scripts available
 - Consider separate scripts to work with ipyrad
 - Add capacity of adding or not adding path sampling/stepping-stone sampling to ```BEAST``` runs (use ```BEASTRunner.sh``` as springboard to develop tools in BEAST\_PathSampling dir)
 
-October 4, 2017
-Justin C. Bagley, Richmond, VA, USA
+February 19, 2019
+Justin C. Bagley, St. Louis, MO, USA
