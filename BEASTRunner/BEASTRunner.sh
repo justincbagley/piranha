@@ -63,7 +63,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] workingD
  <http://BEAST2.org>. 
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
@@ -141,7 +141,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] wo
 		"$0" -n 20 -w 24:00:00 -m 2048M .	## Ex.: changing memory (RAM) allocation.
 	
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
