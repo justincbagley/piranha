@@ -5,7 +5,7 @@
 #                            BEASTPostProc v1.4, August 2017                             #
 #  SHELL SCRIPT FOR POST-PROCESSING BEAST GENE TREE & SPECIES TREES OUTPUT FILES ON A    #
 #  REMOTE SUPERCOMPUTING CLUSTER                                                         #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: August 13, 2017. For questions, please email bagleyj@umsl.edu.                #
 ##########################################################################################
