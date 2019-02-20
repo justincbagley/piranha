@@ -64,15 +64,15 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] workingDir
  (-i flag), which must contain paths to run sub-folders on the supercomputer, with on path 
  per line). 
 	Currently, the only dependency for BEASTReset is Python v2.7++ or v3.5++. BEASTReset is
- part of the PIrANHA software repository (Bagley 2017). See the BEASTReset and PIrANHA 
+ part of the PIrANHA software repository (Bagley 2019). See the BEASTReset and PIrANHA 
  README files for additional information.
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.5. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<http://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
- Bagley, J.C. 2017. PIrANHA v0.1.5. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<http://github.com/justincbagley/PIrANHA>.
 "
 
