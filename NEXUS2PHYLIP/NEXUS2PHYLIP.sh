@@ -46,10 +46,10 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
  High Sierra (v10.13+).
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
-REFERENCES
+ REFERENCES
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 "
@@ -101,10 +101,10 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] 
  High Sierra (v10.13+).
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
-REFERENCES
+ REFERENCES
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 "
