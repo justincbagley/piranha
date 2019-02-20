@@ -4,7 +4,7 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          phylipSubsampler v1.1, February 2019                          #
+#                          PHYLIPsubsampler v1.1, February 2019                          #
 #  SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT      #
 #  FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)           #
 #  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
@@ -14,7 +14,7 @@
 
 echo "
 ##########################################################################################
-#                          phylipSubsampler v1.1, February 2019                          #
+#                          PHYLIPsubsampler v1.1, February 2019                          #
 ##########################################################################################
 "
 
@@ -70,13 +70,13 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] workingDir
 							## file named 'species.txt'.
 
  CITATION
- Bagley, J.C. 2017. PIrANHA. GitHub package, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: 
 	<http://github.com/justincbagley/PIrANHA>.
  or
- Bagley, J.C. 2017. PIrANHA. [Data set] Zenodo, Available at: 
+ Bagley, J.C. 2019. PIrANHA. [Data set] Zenodo, Available at: 
 	<http://doi.org/10.5281/zenodo.596766>.
  or
- Bagley, J.C. 2017. justincbagley/PIrANHA. GitHub package, Available at: 
+ Bagley, J.C. 2019. justincbagley/PIrANHA. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.596766>.
 "
 
