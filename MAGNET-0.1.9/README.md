@@ -12,7 +12,7 @@ All code within the PIrANHA repository, including MAGNET v0.1.9 pipeline code, i
 
 If you use scripts from this repository as part of your published research, then I require you to cite the PIrANHA repository and/or MAGNET package as follows (also see DOI information below):
 
-  Bagley, J.C. 2017. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
+  Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
   
   Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
