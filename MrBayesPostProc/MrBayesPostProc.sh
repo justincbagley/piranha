@@ -46,8 +46,8 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] workingDir
  must be provided in a MrBayes block at the end of the input NEXUS file in the current dir.
 
  CITATION
- Bagley, J.C. 2017. RAPFX v0.1.0. GitHub repository, Available at: 
-	<http://github.com/justincbagley/RAPFX>.
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
+	<http://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
  Baele G, Lemey P, Bedford T, Rambaut A, Suchard MA, Alekseyenko AV (2012) Improving the 
