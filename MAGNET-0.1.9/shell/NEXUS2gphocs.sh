@@ -7,7 +7,7 @@
 #                            NEXUS2gphocs v1.3, November 2018                            #
 #  SHELL SCRIPT FOR CONVERTING PARTITIONED NEXUS FILE INTO G-PhoCS FORMAT FOR MAGNET     #
 #  PIPELINE                                                                              #
-#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: November 20, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
@@ -51,6 +51,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -g m] inputNexus
  'selectSites.pl' in working directory or available from command line (in your path).
 
  CITATION
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: 
+	<http://github.com/justincbagley/PIrANHA>.
+ or
  Bagley, J.C. 2019. MAGNET. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
  or
