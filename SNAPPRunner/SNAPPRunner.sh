@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                              SNAPPRunner v1.0, June 2018                               #
 #  SHELL SCRIPT FOR AUTOMATING RUNNING SNAPP ON A REMOTE SUPERCOMPUTING CLUSTER          #
-#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: June 19, 2018. For questions, please email bagleyj@umsl.edu.                  #
 ##########################################################################################
@@ -68,7 +68,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] work
  using BEAST v2.4.5. Check for BEAST2 updates at BEAST2.org.
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
@@ -152,7 +152,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s
 		"$0" -n 20 -w 24:00:00 -m 2048M .	## Ex.: changing memory (RAM) allocation.
 	
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
