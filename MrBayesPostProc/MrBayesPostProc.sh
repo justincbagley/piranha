@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                          MrBayesPostProc v1.4, December 2017                           #
 #  SHELL SCRIPT FOR POST-PROCESSING OF MrBayes OUTPUT FILES ON A SUPERCOMPUTING CLUSTER  #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: December 2, 2017. For questions, please email bagleyj@umsl.edu.               #
 ##########################################################################################
