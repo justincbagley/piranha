@@ -1,12 +1,12 @@
 #!/bin/sh
 
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.8, December 2018                     #
-#  MAGNET PIPELINE: SHELL PIPELINE WHICH AUTOMATES ESTIMATING ONE MAXIMUM-LIKELIHOOD     #
-#  (ML) GENE TREE IN RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS DATASET       #
-#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
+#                     MAGNET ~ MAny GeNE Trees v0.1.9, February 2019                     #
+#  SHELL PIPELINE FOR AUTOMATING ESTIMATION OF ONE MAXIMUM-LIKELIHOOD (ML) GENE TREE IN  #
+#  RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS SEQUENCE DATASET                #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: December 3, 2018. For questions, please email bagleyj@umsl.edu.               #
+#  update: February 19, 2019. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -122,7 +122,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [R
  --resume   long option allowing the user to resume a previous MAGNET run in the specified
        workingDir (usually current working directory)
 
-OVERVIEW
+ OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
  multiple loci, starting from one or multiple input files containing aligned DNA sequences.
  If supplied with a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') data file (using -f 1
@@ -250,7 +250,7 @@ fi
 
 echo "
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.8, December 2018                     #
+#                     MAGNET ~ MAny GeNE Trees v0.1.9, February 2019                     #
 ##########################################################################################
 "
 
@@ -636,7 +636,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) |          Making final output file 'besttrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for k in ./gene_trees/*; do
 			echo "$k"
@@ -672,7 +672,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) |          Making final output file 'boottrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for m in ./bootstrap_trees/*; do
 			echo "$m"
@@ -680,8 +680,42 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final list of ML bootstrap trees in bootstrap_trees directory..."
+	echo "INFO      | $(date) |          Making final list of ML bootstrap trees ('final_bootTrees.list') in bootstrap_trees directory..."
 	ls ./bootstrap_trees/*.tre > final_bootTrees.list
+
+
+	################################## getBipartTrees.sh #######################################
+	echo "INFO      | $(date) |          Organizing bipartitions trees (with bootstrap proportion labels) and making final output file containing all bipartitions trees... "
+	ls **/RAxML_bipartitions.raxml_out > bipartTrees.list
+
+	##--Assign bootstrap tree list to variable
+	MY_BIPART_TREE_LIST="$(cat ./bipartTrees.list)"
+
+	############ ORGANIZE BIPARTITIONS TREES INTO ONE LOCATION
+	mkdir ./bipartitions_trees
+
+	echo "INFO      | $(date) |          Copying *ALL* RAxML bootstrap bipartitions trees to 'bipartitions_trees' folder in current directory for post-processing..."
+	(
+		for l in ${MY_BIPART_TREE_LIST}; do
+			echo "$l"
+			cp "$l" ./bipartitions_trees/
+			MY_LOCUS_NAME="$(echo $l | sed 's/\/[A-Za-z.\_\-]*//g')"
+			cp ./bipartitions_trees/RAxML_bipartitions.raxml_out ./bipartitions_trees/"$MY_LOCUS_NAME"_RAxML_bipartitions.tre
+			rm ./bipartitions_trees/RAxML_bipartitions.raxml_out
+		done
+	)
+
+	echo "INFO      | $(date) |          Making final output file 'biparttrees.tre' containing RAxML bipartitions trees from all runs/loci..."
+	(
+		for m in ./bipartitions_trees/*; do
+			echo "$m"
+			cat "$m" >> ./biparttrees.tre
+		done
+	)
+
+	echo "INFO      | $(date) |          Making final list of RAxML bipartitions trees ('final_bipartTrees.list') in bipartitions_trees directory..."
+	ls ./bipartitions_trees/*.tre > final_bipartTrees.list
+
 
 fi
 #######
@@ -886,7 +920,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) |          Making final output file 'besttrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for k in ./gene_trees/*; do
 			echo "$k"
@@ -922,7 +956,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) |          Making final output file 'boottrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for m in ./bootstrap_trees/*; do
 			echo "$m"
@@ -930,9 +964,41 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final list of ML bootstrap trees in bootstrap_trees directory..."
+	echo "INFO      | $(date) |          Making final list of ML bootstrap trees ('final_bootTrees.list') in bootstrap_trees directory..."
 	ls ./bootstrap_trees/*.tre > final_bootTrees.list
 
+
+	################################## getBipartTrees.sh #######################################
+	echo "INFO      | $(date) |          Organizing bipartitions trees (with bootstrap proportion labels) and making final output file containing all bipartitions trees... "
+	ls **/RAxML_bipartitions.raxml_out > bipartTrees.list
+
+	##--Assign bootstrap tree list to variable
+	MY_BIPART_TREE_LIST="$(cat ./bipartTrees.list)"
+
+	############ ORGANIZE BIPARTITIONS TREES INTO ONE LOCATION
+	mkdir ./bipartitions_trees
+
+	echo "INFO      | $(date) |          Copying *ALL* RAxML bootstrap bipartitions trees to 'bipartitions_trees' folder in current directory for post-processing..."
+	(
+		for l in ${MY_BIPART_TREE_LIST}; do
+			echo "$l"
+			cp "$l" ./bipartitions_trees/
+			MY_LOCUS_NAME="$(echo $l | sed 's/\/[A-Za-z.\_\-]*//g')"
+			cp ./bipartitions_trees/RAxML_bipartitions.raxml_out ./bipartitions_trees/"$MY_LOCUS_NAME"_RAxML_bipartitions.tre
+			rm ./bipartitions_trees/RAxML_bipartitions.raxml_out
+		done
+	)
+
+	echo "INFO      | $(date) |          Making final output file 'biparttrees.tre' containing RAxML bipartitions trees from all runs/loci..."
+	(
+		for m in ./bipartitions_trees/*; do
+			echo "$m"
+			cat "$m" >> ./biparttrees.tre
+		done
+	)
+
+	echo "INFO      | $(date) |          Making final list of RAxML bipartitions trees ('final_bipartTrees.list') in bipartitions_trees directory..."
+	ls ./bipartitions_trees/*.tre > final_bipartTrees.list
 
 fi
 #######
