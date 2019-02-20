@@ -4,17 +4,17 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                         phylipSubsampler v1.0, September 2017                          #
+#                          phylipSubsampler v1.1, February 2019                          #
 #  SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT      #
 #  FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)           #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 29, 2018. For questions, please email bagleyj@umsl.edu.              #
+#  update: February 19, 2019. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                         phylipSubsampler v1.0, September 2017                          #
+#                          phylipSubsampler v1.1, February 2019                          #
 ##########################################################################################
 "
 
@@ -115,6 +115,16 @@ USER_SPEC_PATH="$1"
 echo "INFO      | $(date) | Starting phylipSubsampler analysis... "
 echo "INFO      | $(date) | STEP #1: SETUP. "
 ###### Set new path/dir environmental variable to user specified path, then create useful
+###### CHECK MACHINE TYPE:
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+
 ##--shell functions and variables:
 if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
 	#MY_CWD=`pwd -P`
@@ -177,10 +187,19 @@ MY_PHYLIP_ALIGNMENTS=./*.phy
 		rm ./*.tmp
 
 		while read j; do
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			fi
+
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			fi
 		done < "$MY_ASSIGNMENT_FILE"
 
 	done
@@ -226,19 +245,25 @@ if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
 		rm ./*.tmp
 
 		while read j; do
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-			sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			fi
+
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+			fi
 		done < "$MY_ASSIGNMENT_FILE"
 
 	done
 )
 
 fi
-
-
-
 
 
 echo "INFO      | $(date) | Bye.
