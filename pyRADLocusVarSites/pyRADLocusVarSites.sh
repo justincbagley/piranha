@@ -8,9 +8,9 @@
 #  CALCULATES NUMBERS OF VARIABLE SITES AND PARSIMONY-INFORMATIVE (i.e. PHYLOGENETICALLY #
 #  INFORMATIVE SITES) FOR SET OF SNP LOCI IN pyRAD .loci OUTPUT, THEN RANKS LOCI BY      #
 #  VARIABILITY                                                                           #
-#  Copyright (c)2019 Justin C. Bagley. See the README and license files on GitHub (at    #
-#  http://github.com/justincbagley/PIrANHA) for further information. Last update: April  #
-#  7, 2017. For questions, please email bagleyj@umsl.edu.                                #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
+#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
+#  update: April 7, 2017. For questions, please email bagleyj@umsl.edu.                  #
 ##########################################################################################
 
 echo "
