@@ -6,7 +6,7 @@
 #  SHELL SCRIPT FOR POST-PROCESSING OUTPUT FROM ONE OR MULTIPLE ∂a∂i RUNS (IDEALLY RUN   #
 #  USING dadiRunner.sh), INCLUDING COLLATION OF BEST-FIT PARAMETER ESTIMATES, COMPOSITE  #
 #  LIKELIHOODS, AND OPTIMAL THETA VALUES                                                 #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: April 25, 2017. For questions, please email bagleyj@umsl.edu.                 #
 ##########################################################################################
