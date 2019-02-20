@@ -7,7 +7,7 @@
 #                           treeThinner v1.0, November 2016                              #
 #  SHELL SCRIPT FOR DOWNSAMPLING ("THINNING") TREES IN MRBAYES .T FILES SO THAT THEY     #
 #  CONTAIN EVERY NTH TREE                                                                #
-#  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: November 17, 2016. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
