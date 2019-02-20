@@ -6,7 +6,7 @@ Shell script pipeline for inferring ML gene trees for many loci (e.g. genomic RA
 
 ## LICENSE
 
-All code within the PIrANHA repository, including MAGNET v0.1.6 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA repository, including MAGNET v0.1.9 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
@@ -14,7 +14,7 @@ If you use scripts from this repository as part of your published research, then
 
   Bagley, J.C. 2017. PIrANHA. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
   
-  Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
+  Bagley, J.C. 2019. MAGNET v0.1.9. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
 Alternatively, please provide the following link to this software program in your manuscript:
 
@@ -22,7 +22,7 @@ Alternatively, please provide the following link to this software program in you
   
 **Example citations using the above URL:** 
 	"We estimated a gene tree for each RAD locus in RAxML v8 (Stamatakis 2014) using 
-	the MAGNET v0.1.6 pipeline (http://github.com/justincbagley/MAGNET). Each RAxML run
+	the MAGNET v0.1.9 pipeline (http://github.com/justincbagley/MAGNET). Each RAxML run
 	specified the GTRGAMMA model and coestimated the maximum-likelihood phylogeny and
 	bootstrap proportions from 500 bootstrap pseudoreplicates."
 
@@ -30,7 +30,7 @@ Alternatively, please provide the following link to this software program in you
 
 The DOI for MAGNET, via Zenodo, is as follows:  [![DOI](https://zenodo.org/badge/66839898.svg)](https://zenodo.org/badge/latestdoi/66839898). Here is an example of citing MAGNET using the DOI: 
   
-  Bagley, J.C. 2017. MAGNET. GitHub package, Available at: http://doi.org/10.5281/zenodo.166024.
+  Bagley, J.C. 2019. MAGNET. GitHub package, Available at: http://doi.org/10.5281/zenodo.166024.
 
 ## INTRODUCTION
 
@@ -49,7 +49,7 @@ Despite the importance of gene trees in species tree and network inference, few 
 
 ## SOFTWARE DEPENDENCIES
 
-MAGNET v0.1.6 is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included in the MAGNET distribution:
+MAGNET v0.1.9 is composed of shell, R, and Perl scripts and also calls several software programs; thus, it relies on several software dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included in the MAGNET distribution:
 
 - Perl (available at: https://www.perl.org/get.html).
 - Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
@@ -75,12 +75,14 @@ Apart from input file conversion steps, the MAGNET pipeline works by calling fiv
 
 After running the MAGNET pipeline, the shell script "getGeneTrees.sh" automates post-processing of the gene trees output by RAxML, including organizing all inferred gene trees into a single "gene\_trees" folder in the working directory, and combining the individual 'best' gene trees resulting from each run into a single file named "besttrees.tre". Also, if bootstrap pseudoreplicates were performed and the bootstrap tree files are detected, then the "getBootTrees.sh" script conducts similar processing on the bootstrap trees for each loucus, which are collated, renamed, and given a list file containing the name of each file. Given the directory of bootstrap trees resulting from a MAGNET run ("bootstrap\_trees") can take up substantial disk space (>200 MB), users may wish to compress this directory to a zip file, for example using ```$ zip -r bootstrap_trees.zip bootstrap_trees/``` at the conclusion of a run.
 
+A new feature of MAGNET (as of December 2018) is the --resume flag, a long option allowing the user to resume a previous MAGNET run in a working directory where MAGNET was previously run (specified to stdin as workingDir).
+
 ## USAGE
 
 Additional input file and usage information is available in the usage or help texts. To get regular usage info for MAGNET, type ```$ ./MAGNET.sh```, ```$ ./MAGNET.sh -h .```, or ```./MAGNET.sh -help``` while in the MAGNET directory. However, it is more useful (particularly when running for the first time) to get _verbose usage info_ for MAGNET, including detailed descriptions of each option; do this by typing ```$ ./MAGNET.sh -H .``` or ```./MAGNET.sh -Help``` (capital "H" flag) at the command line while in the MAGNET directory. The verbose usage text is as follows:
 ```
-$ ./MAGNET.sh
-Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputFile or workingDir
+$ ./MAGNET.sh -H
+Usage: MAGNET.sh [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] inputFile or workingDir
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -89,17 +91,21 @@ Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputF
   -f   fileType (def: 1; 1 = single inputFile, 2 = multiple PHYLIP files) starting file
        type; if 1, script expects as stdin a single NEXUS or G-PhoCS inputFile in the
        current directory; if 2, then script expects workingDir with multiple PHYLIP files
-  -e   executable (def: raxmlHPC-SSE3) name of RAxML executable, accessible from command line
+  -e   executable (def: raxml) name of RAxML executable, accessible from command line
        on user's machine
   -b   numBootstraps (def: 100) RAxML bootstrap pseudoreplicates
   -r   raxmlModel (def: GTRGAMMA; other: GTRGAMMAI, GTRCAT, GTRCATI)
-  -s   simpleModel (def: NULL; other: JC69, K80, HKY85) specifies simple substitution model
+  -s   simpleModel (def: NULL; other: JC69, K80) specifies simple substitution model
        that will override any other model and apply to all DNA partitions
   -g   gapThreshold (def: 0.001=essentially zero gaps allowed unless >1000 
        individuals; takes float proportion value)
   -m   indivMissingData (def: 1=allowed; 0=removed)
   -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
        separted list
+
+ ## Resume: 
+ --resume   long option allowing the user to resume a previous MAGNET run in the specified
+       workingDir (usually current working directory)
 
  OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
@@ -116,7 +122,7 @@ Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputF
  user-specified options. Sequence names may not include hyphen characters, or there could be 
  issues. For detailed information on MAGNET and its various dependencies, see 'README.md' file 
  in the distribution folder; however, it is key that the dependencies are available from the 
- command line interface. 
+ command line interface. Among the most important options is the --resume flag (see below).
 
  DETAILS
  The -f flag specifies the starting fileType. If -f 1, then the mandatory input is the name
@@ -161,6 +167,11 @@ Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputF
  manual, as a single name or as a comma-separated list with no spaces between taxon names. 
  The first name in the list is prioritized, e.g. when members of the list are not monophyletic.
 
+ --resume is among the most important options available in MAGNET because it tells the program 
+ to resume a previous run in <workingDir>, including to detect incomplete run folders
+ and run RAxML there without overwriting results from run folders with finished runs. Only
+ takes --resume, not resume or -resume. The default setting is to run without this option.
+ 
  CITATION
  Bagley, J.C. 2017. MAGNET v0.1.6. GitHub package, Available at: 
 	<http://github.com/justincbagley/MAGNET>.
@@ -173,6 +184,7 @@ Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [stdin:] inputF
 	demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
+
 ```
 
 ### NOTES ON NEXUS2gphocs USAGE
@@ -253,5 +265,5 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 - Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
 
 
-September 27, 2017
-Justin C. Bagley, Richmond, VA, USA
+February 19, 2019
+Justin C. Bagley, St. Louis, MO, USA
