@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                       pyRAD2PartitionFinder v1.2, November 2018                        #
 #  SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD      #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: November 12, 2018. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
@@ -53,7 +53,7 @@ Usage="Usage: $(basename "$0") [Options: -i r v p e m s] workingDir
  -s setting is set to rcluster by default.
  
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
