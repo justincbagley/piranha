@@ -4,16 +4,16 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        #
 # |                                                                                      #
-#                      ExaBayesPostProc v1.1, September 2016                             #
+#                      ExaBayesPostProc v1.1, September 2017                             #
 #   SHELL SCRIPT FOR POST-PROCESSING OF ExaBayes OUTPUT FILES                            #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: September 7, 2017. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                      ExaBayesPostProc v1.1, September 2016                             #
+#                      ExaBayesPostProc v1.1, September 2017                             #
 ##########################################################################################
 "
 
