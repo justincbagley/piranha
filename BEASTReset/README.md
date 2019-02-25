@@ -42,10 +42,10 @@ Currently, the only dependency for BEASTReset is [Python](https://www.python.org
 
 ## USAGE
 
-This script accepts as mandatory input the name of the workingDir where the program should be run. Options are as follows (first part of Usage text):
+This script accepts as mandatory input the name of the <workingDir> where the program should be run. Options are as follows (first part of Usage text):
 
 ```
-Usage: $(basename "$0") [Help: -h help] [Options: -i s m] workingDir 
+Usage: $(basename "$0") [Help: -h help] [Options: -i s m] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
