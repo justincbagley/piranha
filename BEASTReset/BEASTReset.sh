@@ -22,7 +22,7 @@ MY_RUN_SCRIPT=beast_pbs.sh
 MY_SC_MANAGEMENT_SYS=PBS
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] <workingDir>
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] [stdin:] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
