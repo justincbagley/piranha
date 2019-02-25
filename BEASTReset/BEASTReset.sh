@@ -22,7 +22,7 @@ MY_RUN_SCRIPT=beast_pbs.sh
 MY_SC_MANAGEMENT_SYS=PBS
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -42,7 +42,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] workingDir
  will contain a run submission shell script for queuing on the supercomputer. BEASTReset 
  saves the user time by automating the resetting of the random starting number seeds in 
  each submission shell script. 
- 	This script accepts as mandatory input the name of the workingDir where the program 
+ 	This script accepts as mandatory input the name of the <workingDir> where the program 
  should be run. The main options determining the form of a run is the -i flag, which takes 
  the name of a list file (e.g. 'list.txt' by default) containing names of sub-folders to be 
  analyzed, one per line; and the -s flag, which specifies the name of the submission 
