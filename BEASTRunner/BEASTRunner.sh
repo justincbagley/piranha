@@ -8,7 +8,7 @@
 #  SHELL SCRIPT FOR AUTOMATING RUNNING BEAST ON A REMOTE SUPERCOMPUTING CLUSTER          #
 #  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: May 3, 2017. For questions, please email bagleyj@umsl.edu.                    #
+#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -18,7 +18,7 @@ MY_SC_WALLTIME=48:00:00
 JAVA_MEM_ALLOC=5120M
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [stdin:] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -74,7 +74,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] workingD
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] workingDir 
+verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
