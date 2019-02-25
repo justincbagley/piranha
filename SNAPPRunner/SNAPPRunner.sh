@@ -4,11 +4,11 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                              SNAPPRunner v1.0, June 2018                               #
+#                            SNAPPRunner v1.0, February 2019                             #
 #  SHELL SCRIPT FOR AUTOMATING RUNNING SNAPP ON A REMOTE SUPERCOMPUTING CLUSTER          #
 #  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: June 19, 2018. For questions, please email bagleyj@umsl.edu.                  #
+#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -20,7 +20,7 @@ MY_SC_PARTITION=NULL
 MY_STARTING_SEED=NULL
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -82,7 +82,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] work
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] workingDir 
+verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
