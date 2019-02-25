@@ -6,7 +6,7 @@
 #  RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS SEQUENCE DATASET                #
 #  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: February 19, 2019. For questions, please email bagleyj@umsl.edu.              #
+#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -38,15 +38,15 @@ if [[ "${machine}" = "Linux" ]]; then
 fi
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] inputFile OR workingDir
+Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
 
  ## Options:
-  -f   fileType (def: 1; 1 = single inputFile, 2 = multiple PHYLIP files) starting file
-       type; if 1, script expects as stdin a single NEXUS or G-PhoCS inputFile in the
-       current directory; if 2, then script expects workingDir with multiple PHYLIP files
+  -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
+       type; if 1, script expects as stdin a single NEXUS or G-PhoCS <inputFile> in the
+       current directory; if 2, then script expects <workingDir> with multiple PHYLIP files
   -e   executable (def: $MY_RAXML_EXECUTABLE) name of RAxML executable, accessible from command line
        on user's machine
   -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
@@ -61,7 +61,7 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
 
  ## Resume: 
  --resume   long option allowing the user to resume a previous MAGNET run in the specified
-       workingDir (usually current working directory)
+       <workingDir> (usually current working directory)
  
  OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
@@ -100,15 +100,15 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
 "
 
 
-verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] inputFile or workingDir
+verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
 
  ## Options:
-  -f   fileType (def: 1; 1 = single inputFile, 2 = multiple PHYLIP files) starting file
-       type; if 1, script expects as stdin a single NEXUS or G-PhoCS inputFile in the
-       current directory; if 2, then script expects workingDir with multiple PHYLIP files
+  -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
+       type; if 1, script expects as stdin a single NEXUS or G-PhoCS <inputFile> in the
+       current directory; if 2, then script expects <workingDir> with multiple PHYLIP files
   -e   executable (def: $MY_RAXML_EXECUTABLE) name of RAxML executable, accessible from command line
        on user's machine
   -b   numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
@@ -123,7 +123,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [R
 
  ## Resume: 
  --resume   long option allowing the user to resume a previous MAGNET run in the specified
-       workingDir (usually current working directory)
+       <workingDir> (usually current working directory)
 
  OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
