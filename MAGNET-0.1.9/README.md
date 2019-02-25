@@ -82,15 +82,15 @@ A new feature of MAGNET (as of December 2018) is the --resume flag, a long optio
 Additional input file and usage information is available in the usage or help texts. To get regular usage info for MAGNET, type ```$ ./MAGNET.sh```, ```$ ./MAGNET.sh -h .```, or ```./MAGNET.sh -help``` while in the MAGNET directory. However, it is more useful (particularly when running for the first time) to get _verbose usage info_ for MAGNET, including detailed descriptions of each option; do this by typing ```$ ./MAGNET.sh -H .``` or ```./MAGNET.sh -Help``` (capital "H" flag) at the command line while in the MAGNET directory. The verbose usage text is as follows:
 ```
 $ ./MAGNET.sh -H
-Usage: MAGNET.sh [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] inputFile or workingDir
+Usage: MAGNET.sh [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
 
  ## Options:
-  -f   fileType (def: 1; 1 = single inputFile, 2 = multiple PHYLIP files) starting file
+  -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
        type; if 1, script expects as stdin a single NEXUS or G-PhoCS inputFile in the
-       current directory; if 2, then script expects workingDir with multiple PHYLIP files
+       current directory; if 2, then script expects <workingDir> with multiple PHYLIP files
   -e   executable (def: raxml) name of RAxML executable, accessible from command line
        on user's machine
   -b   numBootstraps (def: 100) RAxML bootstrap pseudoreplicates
@@ -105,7 +105,7 @@ Usage: MAGNET.sh [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [st
 
  ## Resume: 
  --resume   long option allowing the user to resume a previous MAGNET run in the specified
-       workingDir (usually current working directory)
+       <workingDir> (usually current working directory)
 
  OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
@@ -193,7 +193,7 @@ Usage: MAGNET.sh [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [st
 ### NOTES ON NEXUS2gphocs USAGE
 
 - You may use ```NEXUS2gphocs.sh``` as a standalone script for converting prior to running G-PhoCS on your data. 
-- However, in its current form, you must move ```NEXUS2gphocs.sh``` (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target inputFile is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target inputFile.
+- However, in its current form, you must move ```NEXUS2gphocs.sh``` (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target <inputFile> is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target <inputFile>.
 - You can get the usage info for ```NEXUS2gphocs.sh```, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The ```NEXUS2gphocs``` usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
 
 
@@ -204,8 +204,8 @@ Usage: MAGNET.sh [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [st
 **SCENARIO 1.** If your data contain very little missing data and, in particular, they contain no individuals with all missing data for a locus, then it should be fine to run MAGNET using the default options on either a single input file (-f 1) or multiple PHYLIP input files (-f 2), as follows:
 ```
 ##--Scenario 1, generic usage:
-./MAGNET.sh -f1 inputFile
-./MAGNET.sh -f2 workingDir     ## multiple PHYLIP input files case.
+./MAGNET.sh -f1 <inputFile>
+./MAGNET.sh -f2 <workingDir>     ## multiple PHYLIP input files case.
 
 ##--Examples:
 cd ~/Downloads/MAGNET-master/
@@ -218,8 +218,8 @@ cd ~/Downloads/MAGNET-master/
 To avoid the above issues caused by large amounts of missing data, you should run MAGNET while **setting the -m flag to 0** (indivMissingData=0) to specify that individuals with missing data are NOT allowed:
 ```
 ##--Scenario 2, all params except indivMissingData set to default options:
-./MAGNET.sh -f1 -m0 inputFile
-./MAGNET.sh -f1 -m0 workingDir     ## multiple PHYLIP input files case.
+./MAGNET.sh -f1 -m0 <inputFile>
+./MAGNET.sh -f1 -m0 <workingDir>     ## multiple PHYLIP input files case.
 
 ##--Example:
 cd ~/Downloads/MAGNET-master/
@@ -230,23 +230,23 @@ cd ~/Downloads/MAGNET-master/
 In addition to the above, here are illustrations of varying the **RAxML options**:
 ```
 ##--Scenario 1, GTRCAT model, instead of the default GTRGAMMA model:
-./MAGNET.sh -f1 -rGTRCAT inputFile
+./MAGNET.sh -f1 -rGTRCAT <inputFile>
 ./MAGNET.sh -f2 -rGTRCAT .     ## multiple PHYLIP input files case.
 
 ##--Scenario 1, adding name of an outgroup taxon:
-./MAGNET.sh -f1 -rGTRCAT -o outgroup inputFile
+./MAGNET.sh -f1 -rGTRCAT -o outgroup <inputFile>
 ./MAGNET.sh -f2 -rGTRCAT -o outgroup .     ## multiple PHYLIP input files case.
 
 ##--Scenario 1, overriding -r model with HKY85 and adding an outgroup:
-./MAGNET.sh -f1 -rGTRCAT -sHKY85 -o outgroup inputFile
+./MAGNET.sh -f1 -rGTRCAT -sHKY85 -o outgroup <inputFile>
 ./MAGNET.sh -f2 -rGTRCAT -sHKY85 -o outgroup .     ## multiple PHYLIP input files case.
 
 ##--Scenario 2, 500 bootstrap reps per locus, instead of the default 100:
-./MAGNET.sh -f1 -b500 -m0 inputFile
+./MAGNET.sh -f1 -b500 -m0 <inputFile>
 ./MAGNET.sh -f2 -b500 -m0 .     ## multiple PHYLIP input files case.
 
 ##--Scenario 2, *zero* bootstrap reps per locus:
-./MAGNET.sh -f1 -b0 -m0 inputFile
+./MAGNET.sh -f1 -b0 -m0 <inputFile>
 ./MAGNET.sh -f2 -b0 -m0 .     ## multiple PHYLIP input files case.
 ```
 
@@ -268,5 +268,5 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 - Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
 
 
-February 19, 2019
+February 24, 2019
 Justin C. Bagley, St. Louis, MO, USA
