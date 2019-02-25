@@ -23,7 +23,7 @@ DELETE_OLDLOGS=true
 NUM_PS_STEPS=10
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l a r b p d n] inputXMLFile
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l a r b p d n] [stdin:] <inputXMLFile>
  ## Help:
   -h   help text (also: -help)
 
@@ -43,7 +43,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -l a r b p d n] inputXM
  edit them for path sampling. For downstream processing and queuing, XML files should end
  in 'run.xml' (e.g. 'ULN_PS100_run.xml').
 
- The script expects as inputXMLFile one of the following: (i) one XML file, created and
+ The script expects as <inputXMLFile> one of the following: (i) one XML file, created and
  formatted for BEAST v2++ using BEAUti v2++ (e.g. latest release is v2.4.5), and present in
  the current working directory (pwd); or (ii) the code 'multiXML', which tells the script
  to use a loop to process multiple XML input files present in the current working directory. 
@@ -126,7 +126,7 @@ echo "
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting BEAST_PSPrepper pipeline... "
 echo "INFO      | $(date) | STEP #1: SETUP. "
-## Make input file a mandatory parameter:
+## Make input file, <inputXMLFile>, a mandatory parameter:
 	MY_INPUTXMLFILE_VAR="$1"
 ## Prep useful stuff:
 	CR=$(printf '\r')
