@@ -2,13 +2,13 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            dadiPostProc v0.1.0, April 2017                             #
+#                           dadiPostProc v0.1.0, February 2019                           #
 #  SHELL SCRIPT FOR POST-PROCESSING OUTPUT FROM ONE OR MULTIPLE ∂a∂i RUNS (IDEALLY RUN   #
 #  USING dadiRunner.sh), INCLUDING COLLATION OF BEST-FIT PARAMETER ESTIMATES, COMPOSITE  #
 #  LIKELIHOODS, AND OPTIMAL THETA VALUES                                                 #
 #  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: April 25, 2017. For questions, please email bagleyj@umsl.edu.                 #
+#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -18,7 +18,7 @@ MY_LOWER_MOD_NUM=1
 MY_UPPER_MOD_NUM=10
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n l u] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n l u] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -47,7 +47,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n l u] workingD
  	PLOS Genetics 5(10): e1000695
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n] workingDir 
+verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -136,7 +136,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                            dadiPostProc v0.1.0, April 2017                             #
+#                           dadiPostProc v0.1.0, February 2019                           #
 ##########################################################################################
 "
 
