@@ -4,16 +4,16 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        #
 # |                                                                                      #
-#                        fastSTRUCTURE.sh v1.1, September 2016                           #
+#                         fastSTRUCTURE.sh v1.1, September 2016                          #
 #  SHELL SCRIPT FOR RUNNING fastSTRUCTURE ON BIALLELIC SNP DATASETS                      #
-#  Copyright ©2016 Justinc C. Bagley. For further information, see README and license    #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
 #  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
 #  update: July 25, 2016. For questions, please email bagleyj@umsl.edu.                  #
 ##########################################################################################
 
 echo "
 ##########################################################################################
-#                        fastSTRUCTURE.sh v1.1, September 2016                           #
+#                         fastSTRUCTURE.sh v1.1, September 2016                          #
 ##########################################################################################"
 
 echo "INFO      | $(date) | STEP 1. SETUP: READ USER INPUT, SET VARIABLES. "
