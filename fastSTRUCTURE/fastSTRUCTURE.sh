@@ -2,20 +2,29 @@
 
 ##########################################################################################
 #  __  o  __   __   __  |__   __                                                         #
-# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                         fastSTRUCTURE.sh v1.1, September 2016                          #
-#  INTERACTIVE SHELL SCRIPT FOR RUNNING fastSTRUCTURE ON BIALLELIC SNP DATASETS          #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: September 7, 2016. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: fastSTRUCTURE.sh                                                                 #
+  version="v1.1"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300                      #
+# Last update: September 7, 2016                                                         #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# INTERACTIVE SHELL SCRIPT FOR RUNNING fastSTRUCTURE ON BIALLELIC SNP DATASETS           #
+#                                                                                        #
 ##########################################################################################
 
 echo "
 ##########################################################################################
 #                         fastSTRUCTURE.sh v1.1, September 2016                          #
-##########################################################################################"
+##########################################################################################
+"
 
+######################################## START ###########################################
 echo "INFO      | $(date) | STEP 1. SETUP: READ USER INPUT, SET VARIABLES. "
 	MY_FASTSTRUCTURE_WKDIR="$(pwd)"
 
@@ -63,6 +72,7 @@ echo "INFO      | $(date) | STEP 4. VISUALIZE RESULTS. "
 	MY_DISTRUCT_PATH="$(echo $fsPATH | sed 's/structure.py//g' | sed 's/$/distruct.py/g')"
 
 	python $MY_DISTRUCT_PATH -K $bestK --input="$MY_FASTSTRUCTURE_WKDIR/$fsOutput" --output="$fsOutput_distruct.svg"
+
 
 echo "INFO      | $(date) |         Done!!! fastSTRUCTURE analysis complete."
 echo "Bye.
