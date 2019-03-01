@@ -4,11 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            SNAPPRunner v1.0, February 2019                             #
-#  SHELL SCRIPT FOR AUTOMATING RUNNING SNAPP ON A REMOTE SUPERCOMPUTING CLUSTER          #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: SNAPPRunner.sh                                                                   #
+  version="v1.0"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400                      #
+# Last update: February 24, 2019                                                         #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR AUTOMATING RUNNING SNAPP ON A REMOTE SUPERCOMPUTING CLUSTER           #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -80,6 +87,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] [std
 	analysis. Molecular Biology and Evolution, 29, 1917–1932.
  Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and 
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
+
+Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s] [stdin:] <workingDir> 
@@ -164,6 +174,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m p s
 	analysis. Molecular Biology and Evolution, 29, 1917–1932.
  Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and 
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
+
+Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
