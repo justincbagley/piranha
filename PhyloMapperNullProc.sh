@@ -1,18 +1,22 @@
 #!/bin/sh
 
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: October 2016. For questions, please email bagleyj@umsl.edu.                   #
+##########################################################################################
+# File: PhyloMapperNullProc.sh, v1.0                                                     #
+# Author: Justin C. Bagley                                                               #
+#                                                                                        #
+# Created by Justin Bagley in October 2016, email <bagleyj@umsl.edu>                     #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+#                                                                                        #
+# Description:                                                                           #
+##########################################################################################
 
 echo "
 ##########################################################################################
 #                          PhyloMapperNullProc v1, October 2016                          #
 ##########################################################################################"
 
-pwd=$(echo pwd)
-	#cd /Users/justinbagley/Documents/2\ -\ by\ Project/BJT_phylogeography_project/Analyses/PhyloMapper/
 MY_LOGFILE=$(echo ./*.log)
-	#echo $MY_LOGFILE
+#echo $MY_LOGFILE
 MY_LOGFILE_BASENAME="$(echo $MY_LOGFILE | sed 's/\.\///g; s/\.log//g')"
 
 
@@ -20,12 +24,12 @@ MY_LOGFILE_BASENAME="$(echo $MY_LOGFILE | sed 's/\.\///g; s/\.log//g')"
 e.g. 'ingroup' : " focalClade 
 
 
-##--Next two lines work, but I want to comment them out and use different output file names (below).
-##	grep '\t'$focalClade'' $(echo $MY_LOGFILE) > ./"$MY_LOGFILE_BASENAME"_ancest.tmp
-##	sed 's/.*'$focalClade'//g' ./"$MY_LOGFILE_BASENAME"_ancest.tmp > ./"$MY_LOGFILE_BASENAME"_ancestLocs.txt
+	##--Next two lines work, but I want to comment them out and use different output file names (below).
+	##	grep '\t'$focalClade'' $(echo $MY_LOGFILE) > ./"$MY_LOGFILE_BASENAME"_ancest.tmp
+	##	sed 's/.*'$focalClade'//g' ./"$MY_LOGFILE_BASENAME"_ancest.tmp > ./"$MY_LOGFILE_BASENAME"_ancestLocs.txt
 
 
-##--File processing steps coded w/new output file names:
+	##--File processing steps coded w/new output file names:
 	grep '\t'$focalClade'' $(echo $MY_LOGFILE) > ./pm_"$focalClade"_ancest.tmp
 	sed 's/.*'$focalClade'//g; s/^	//g' ./pm_"$focalClade"_ancest.tmp > pm_"$focalClade"_ancest_2.tmp
 	echo "LATITUDE   LONGITUDE" > header.tmp
