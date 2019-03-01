@@ -4,13 +4,20 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                         pyRADLocusVarSites v0.1.0, April 2017                          #
-#  CALCULATES NUMBERS OF VARIABLE SITES AND PARSIMONY-INFORMATIVE (i.e. PHYLOGENETICALLY #
-#  INFORMATIVE SITES) FOR SET OF SNP LOCI IN pyRAD .loci OUTPUT, THEN RANKS LOCI BY      #
-#  VARIABILITY                                                                           #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: April 7, 2017. For questions, please email bagleyj@umsl.edu.                  #
+#                                                                                        #
+# File: pyRADLocusVarSites.sh                                                            #
+  version="v0.1.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400                       #
+# Last update: April 7, 2017                                                             #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# CALCULATES NUMBERS OF VARIABLE SITES AND PARSIMONY-INFORMATIVE (i.e. PHYLOGENETICALLY  #
+# INFORMATIVE SITES) FOR SET OF SNP LOCI IN pyRAD .loci OUTPUT, THEN RANKS LOCI BY       #
+# VARIABILITY                                                                            #
+#                                                                                        #
 ##########################################################################################
 
 echo "
@@ -18,7 +25,7 @@ echo "
 #                         pyRADLocusVarSites v0.1.0, April 2017                          #
 ##########################################################################################
 "
-
+######################################## START ###########################################
 ###### STEP #1: SETUP.
 	MY_PATH=`pwd -P`
 	CR=$(printf '\r'); 
