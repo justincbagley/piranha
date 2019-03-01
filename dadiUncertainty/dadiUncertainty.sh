@@ -4,15 +4,21 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          dadiUncertainty v0.1.0, October 2017                          #
-#  SHELL SCRIPT AUTOMATING UNCERTAINTY ANALYSIS IN ∂a∂i, INCLUDING GENERATION OF BOOT-   #
-#  STRAPPED SNP FILES FOR PARAMETER STANDARD DEVIATION ESTIMATION USING THE GIM METHOD,  #
-#  AS WELL AS STANDARD DEVIATION ESTIMATION USING THE FIM METHOD (ORIG. DATA ONLY)       #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: October 3, 2017. For questions, please email bagleyj@umsl.edu.                #
+#                                                                                        #
+# File: dadiUncertainty.sh                                                               #
+  version="v0.1.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400                       #
+# Last update: October 3, 2017                                                           #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT AUTOMATING UNCERTAINTY ANALYSIS IN ∂a∂i, INCLUDING GENERATION OF BOOT-    #
+# STRAPPED SNP FILES FOR PARAMETER STANDARD DEVIATION ESTIMATION USING THE GIM METHOD,   #
+# AS WELL AS STANDARD DEVIATION ESTIMATION USING THE FIM METHOD (ORIG. DATA ONLY)        #
+#                                                                                        #
 ##########################################################################################
-
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -117,6 +123,9 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] input
  Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLoS Genetics, 5(10), e1000695.
+
+Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
