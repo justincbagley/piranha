@@ -4,12 +4,19 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                              RAxMLRunner v1.3, April 2017                              #
-#  SHELL SCRIPT FOR AUTOMATING MOVING AND RUNNING RAxML RUNS ON A REMOTE SUPERCOMPUTER   #
-#  (AND EXTRACTING THE RESULTS...coming soon)                                            #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: August 20, 2017. For questions, please email bagleyj@umsl.edu.                #
+#                                                                                        #
+# File: RAxMLRunner.sh                                                                   #
+  version="v1.3"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Fri, 19 Aug 2016 00:33:27 -0300                      #
+# Last update: August 20, 2017                                                           #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR AUTOMATING MOVING AND RUNNING RAxML RUNS ON A REMOTE SUPERCOMPUTER    #
+# (AND EXTRACTING THE RESULTS...coming soon)                                             #
+#                                                                                        #
 ##########################################################################################
 
 echo "
@@ -17,6 +24,7 @@ echo "
 #                              RAxMLRunner v1.3, April 2017                              #
 ##########################################################################################"
 
+######################################## START ###########################################
 echo "INFO      | $(date) | STEP #1: SETUP VARIABLES AND CHECK CONTENTS. "
 ##### Setup and run check on the number of run folders in present working directory:
 	MY_WORKING_DIR="$(pwd)"
