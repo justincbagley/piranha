@@ -4,11 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                       pyRAD2PartitionFinder v1.2, November 2018                        #
-#  SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD      #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 12, 2018. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: pyRAD2PartitionFinder.sh                                                         #
+  version="v1.2"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300                      #
+# Last update: November 12, 2018                                                         #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD       #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -66,6 +73,9 @@ Usage="Usage: $(basename "$0") [Options: -i r v p e m s] workingDir
 	and Evolution, 29, 1695–1701. 
  Lanfear R, Calcott B, Kainer D, Mayer C, Stamatakis A (2014) Selecting optimal partitioning 
  	schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
+
+Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300
+Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
 ############ PARSE THE OPTIONS
@@ -105,8 +115,10 @@ echo "$USER_SPEC_PATH "
 echo "
 ##########################################################################################
 #                       pyRAD2PartitionFinder v1.2, November 2018                        #
-##########################################################################################"
+##########################################################################################
+"
 
+######################################## START ###########################################
 ############ STEP #1: MODIFY pyRAD DATAFILE FOR PartitionFinder
 MY_PYRAD_PARTITION=./*.partitions           				## Assign "partition" files in current directory to variable.
 
