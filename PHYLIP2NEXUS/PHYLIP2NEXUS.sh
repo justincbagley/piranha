@@ -4,11 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                             PHYLIP2NEXUS v1.1, March 2018                              #
-#  SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO NEXUS FORMAT #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: March 15, 2018. For questions, please email bagleyj@umsl.edu.                 #
+#                                                                                        #
+# File: PHYLIP2NEXUS.sh                                                                  #
+  version="v1.1"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Thu, 15 Mar 2018 15:27:49 -0400                      #
+# Last update: March 15, 2018                                                            #
+# Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO NEXUS FORMAT  #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
