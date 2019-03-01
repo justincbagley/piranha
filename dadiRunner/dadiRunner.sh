@@ -4,11 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                              dadiRunner v0.1.1, May 2017                               #
-#  SHELL SCRIPT FOR AUTOMATING RUNNING ∂a∂i ON A REMOTE SUPERCOMPUTING CLUSTER           #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: May 16, 2017. For questions, please email bagleyj@umsl.edu.                   #
+#                                                                                        #
+# File: dadiRunner.sh                                                                    #
+  version="v0.1.1"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400                      #
+# Last update: May 16, 2017                                                              #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR AUTOMATING RUNNING ∂a∂i ON A REMOTE SUPERCOMPUTING CLUSTER            #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -55,6 +62,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] workingD
  Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLOS Genetics 5(10): e1000695.
+
+Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] workingDir 
@@ -125,6 +135,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n w] wo
  Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLOS Genetics 5(10): e1000695.
+
+Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
@@ -171,7 +184,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                             dadiRunner v0.1.0, April 2017                              #
+#                             dadiRunner v0.1.1, April 2017                              #
 ##########################################################################################"
 
 ######################################## START ###########################################
