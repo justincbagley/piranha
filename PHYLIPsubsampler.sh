@@ -4,12 +4,19 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          PHYLIPsubsampler v1.1, February 2019                          #
-#  SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT      #
-#  FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)           #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: February 19, 2019. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: PHYLIPsubsampler.sh                                                              #
+  version="v1.1"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600                      #
+# Last update: February 19, 2019                                                         #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT       #
+# FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)            #
+#                                                                                        #
 ##########################################################################################
 
 echo "
@@ -24,7 +31,7 @@ MY_INPUT_FILE=NULL
 MY_ASSIGNMENT_FILE=assignments.txt
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
 
@@ -35,7 +42,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] workingDir
        population or taxon assignment codes, one per line
 
  OVERVIEW
- Takes as input the name of the current working directory (workingDir), where there exists
+ Takes as input the name of the current working directory, <workingDir>, where there exists
  a single sequential Phylip file (must use -i <filename.phy>) or multiple sequential Phylip 
  files that the user wishes to subsample, keeping one random (first) sequence per population 
  or species. This is very useful when you want to subsample one or more datasets in order
@@ -47,9 +54,9 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] workingDir
  assed to the program. Sequence names may not include space or underline characters, or 
  there will be issues. _Interleaved Phylip format is not supported._
 
- The -i flag supplies the name of a single input Phylip file in the current workingDir for
+ The -i flag supplies the name of a single input Phylip file in the current <workingDir> for
  analysis. If this flag is not used, then the program will assume that multiple Phylip files
- are present in workingDir and will attempt to subsample all of them. This is useful when
+ are present in <workingDir> and will attempt to subsample all of them. This is useful when
  you want to subsample a single Phylip file for single-tip phylogenetic analyses, for example
  during species tree reconstruction.
 
@@ -78,6 +85,9 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] workingDir
  or
  Bagley, J.C. 2019. justincbagley/PIrANHA. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.596766>.
+
+Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600
+Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
