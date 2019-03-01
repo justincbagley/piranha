@@ -1,13 +1,20 @@
 #!/bin/sh
 
 ##########################################################################################
-# File: PhyloMapperNullProc.sh, v1.0                                                     #
-# Author: Justin C. Bagley                                                               #
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
 #                                                                                        #
-# Created by Justin Bagley in October 2016, email <bagleyj@umsl.edu>                     #
+# File: PhyloMapperNullProc.sh                                                           #
+  version="v1.0"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300                      #
+# Last update:                                                                           #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
 # Description:                                                                           #
+#                                                                                        #
 ##########################################################################################
 
 echo "
