@@ -1,12 +1,15 @@
 #!/bin/sh
 
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.5, February 2019                     #
-#  SHELL PIPELINE FOR AUTOMATING ESTIMATION OF ONE MAXIMUM-LIKELIHOOD (ML) GENE TREE IN  #
-#  RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS SEQUENCE DATASET                #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
+# File: MAGNET.sh ~ MAny GeNE Trees, v0.1.5                                              #
+# Author: Justin C. Bagley                                                               #
+#                                                                                        #
+# Created by Justin Bagley on February 24, 2019, email <bagleyj@umsl.edu>                #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL PIPELINE FOR AUTOMATING ESTIMATION OF ONE MAXIMUM-LIKELIHOOD (ML) GENE TREE IN   #
+# RAxML FOR EACH OF MANY LOCI IN A RADseq OR MULTILOCUS SEQUENCE DATASET                 #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -97,6 +100,9 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
 	demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
+
+Created by Justin Bagley on February 24, 2019, email <bagleyj@umsl.edu>
+Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
 
@@ -205,6 +211,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [R
 	demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
+
+Created by Justin Bagley on February 24, 2019, email <bagleyj@umsl.edu>
+Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
