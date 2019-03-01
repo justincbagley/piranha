@@ -4,20 +4,29 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                           treeThinner v1.0, November 2016                              #
-#  SHELL SCRIPT FOR DOWNSAMPLING ("THINNING") TREES IN MRBAYES .T FILES SO THAT THEY     #
-#  CONTAIN EVERY NTH TREE                                                                #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 17, 2016. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: treeThinner.sh                                                                   #
+  version="v1.0"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600                      #
+# Last update: March 1, 2019                                                             #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR DOWNSAMPLING ("THINNING") TREES IN MRBAYES .T FILES SO THAT THEY      #
+# CONTAIN EVERY NTH TREE                                                                 #
+#                                                                                        #
 ##########################################################################################
 
 echo "
 ##########################################################################################
 #                           treeThinner v1.0, November 2016                              #
-##########################################################################################"
+##########################################################################################
+"
 
-## NOTE: try to expand to multipel treefile formats in future versions.
+######################################## START ###########################################
+## NOTE: try to expand to multiple treefile formats in future versions.
 
 ###### A method specific to MrBayes .t trees files: 1) count the number of lines in the
 ## header (NEXUS top and beginning of TREES block with translated taxon names) by 
