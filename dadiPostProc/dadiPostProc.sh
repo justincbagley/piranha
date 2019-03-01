@@ -1,14 +1,24 @@
+dadiPostProc : 
+Tue, 16 May 2017 08:17:15 -0400
+
 ##########################################################################################
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                           dadiPostProc v0.1.0, February 2019                           #
-#  SHELL SCRIPT FOR POST-PROCESSING OUTPUT FROM ONE OR MULTIPLE ∂a∂i RUNS (IDEALLY RUN   #
-#  USING dadiRunner.sh), INCLUDING COLLATION OF BEST-FIT PARAMETER ESTIMATES, COMPOSITE  #
-#  LIKELIHOODS, AND OPTIMAL THETA VALUES                                                 #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: dadiPostProc.sh                                                                  #
+  version="v0.1.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400                      #
+# Last update: February 24, 2019                                                         #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR POST-PROCESSING OUTPUT FROM ONE OR MULTIPLE ∂a∂i RUNS (IDEALLY RUN    #
+# USING dadiRunner.sh), INCLUDING COLLATION OF BEST-FIT PARAMETER ESTIMATES, COMPOSITE   #
+# LIKELIHOODS, AND OPTIMAL THETA VALUES                                                  #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -45,6 +55,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n l u] [stdin:]
  Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLOS Genetics 5(10): e1000695
+
+Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n] [stdin:] <workingDir> 
@@ -91,6 +104,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n] [std
  Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLOS Genetics 5(10): e1000695
+
+Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
@@ -279,7 +295,8 @@ echo "INFO      | $(date) |          SAME MODEL, LOOKING FOR SEPARATE M1 (MODEL 
 	cd ./final_output/;
 		cat ./*Summary.txt > All_Models_M"$MY_LOWER_MOD_NUM"_M"$MY_UPPER_MOD_NUM"_resultsSummary.txt
 	cd ..;
-	
+
+
 echo "INFO      | $(date) | Done post-processing results from one or multiple ∂a∂i runs using the dadiPostProc utility of PIrANHA. "
 echo "Bye.
 "
