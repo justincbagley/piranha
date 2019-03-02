@@ -2,6 +2,7 @@
 
 ##########################################################################################
 # File: MAGNET.sh ~ MAny GeNE Trees, v0.1.5                                              #
+version="v0.1.5"
 # Author: Justin C. Bagley                                                               #
 #                                                                                        #
 # Created by Justin Bagley on February 24, 2019, email <bagleyj@umsl.edu>                #
@@ -104,7 +105,6 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
 Created by Justin Bagley on February 24, 2019, email <bagleyj@umsl.edu>
 Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
-
 
 verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
@@ -223,6 +223,11 @@ fi
 
 if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 	echo "$verboseHelp"
+	exit
+fi
+
+if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
 	exit
 fi
 
