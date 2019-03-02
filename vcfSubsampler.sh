@@ -20,7 +20,7 @@ MY_OUTPUT_VCF_FILE=subsample
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -s o d] inputVCFFile
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -s o d] [stdin:] <inputVCFFile>
  ## Help:
   -h   help text (also: -help)
 
@@ -44,6 +44,11 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -s o d] inputVCFFile
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
 	exit
 fi
 
