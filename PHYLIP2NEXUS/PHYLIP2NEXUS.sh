@@ -18,15 +18,15 @@
 #                                                                                        #
 ##########################################################################################
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
-	exit
-fi
-
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 MY_PARTITIONS_FILE=NULL
 MY_PARTFILE_FORMAT=raxml
+
+if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
+	exit
+fi
 
 ############ PARSE THE OPTIONS
 while getopts 'p:f:' opt ; do
