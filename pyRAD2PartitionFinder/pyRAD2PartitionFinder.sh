@@ -78,6 +78,11 @@ Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300
 Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
+if [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
+	exit
+fi
+
 ############ PARSE THE OPTIONS
 while getopts 'i:r:v:p:e:m:s:' opt ; do
   case $opt in
