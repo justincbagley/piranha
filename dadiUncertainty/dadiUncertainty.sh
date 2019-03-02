@@ -133,6 +133,11 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	exit
 fi
 
+if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
+	exit
+fi
+
 ############ PARSE THE OPTIONS
 while getopts 'a:i:p:n:m:s:e:d:' opt ; do
   case $opt in
