@@ -5,6 +5,7 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                          vcfSubsampler v0.1.0, September 2017                          #
+                                    version="v0.1.0"
 #  SCRIPT THAT USES A LIST FILE TO SUBSAMPLE A VCF FILE SO THAT IT ONLY CONTAINS SNPs    #
 #  IN THE LIST                                                                           #
 #  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
