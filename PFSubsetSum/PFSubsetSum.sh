@@ -4,12 +4,19 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            PFSubsetSum v1.3, September 2017                            #
-#  SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FOR DNA SUBSETS WITHIN THE OPTIMUM    #
-#  PARTITIONING SCHEME IDENTIFIED FOR THE DATA BY PartitionFinder v1 or v2               #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: September 8, 2017. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: PFSubsetSum.sh                                                                   #
+  version="v1.3"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley in September 2017                                       #
+# Last update: September 8, 2017                                                         #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FOR DNA SUBSETS WITHIN THE OPTIMUM     #
+# PARTITIONING SCHEME IDENTIFIED FOR THE DATA BY PartitionFinder v1 or v2                #
+#                                                                                        #
 ##########################################################################################
 
 echo "
