@@ -4,12 +4,19 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            NEXUS2PHYLIP v1.1, November 2018                            #
-#  SHELL SCRIPT CONVERTING SEQUENTIAL NEXUS FILE INTO PHYLIP (AND OPTIONALLY ALSO FASTA) #
-#  DNA SEQUENCE ALIGNMENT FORMAT                                                         #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 14, 2018. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: NEXUS2PHYLIP.sh                                                                  #
+  version="v1.1"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley in November 2018                                        #
+# Last update: November 14, 2018                                                         #
+# Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT CONVERTING SEQUENTIAL NEXUS FILE INTO PHYLIP (AND OPTIONALLY ALSO FASTA)  #
+# DNA SEQUENCE ALIGNMENT FORMAT                                                          #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -52,6 +59,9 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
  REFERENCES
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+
+Created by Justin Bagley in November 2018 
+Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
 "
 
 verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputNexus 
@@ -107,6 +117,9 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] 
  REFERENCES
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+
+Created by Justin Bagley in November 2018 
+Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
@@ -116,6 +129,11 @@ fi
 
 if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 	echo "$verboseHelp"
+	exit
+fi
+
+if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
 	exit
 fi
 
