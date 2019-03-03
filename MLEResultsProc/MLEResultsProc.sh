@@ -2,15 +2,27 @@
 
 ##########################################################################################
 #  __  o  __   __   __  |__   __                                                         #
-# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            MLEResultsProc v1.2, August 2017                            #
-#  SHELL SCRIPT FOR POST-PROCESSING OF MARGINAL LIKELIHOOD ESTIMATION RESULTS FROM       #
-#  CONDUCTING PATH SAMPLING OR STEPPING-STONE SAMPLING IN BEAST                          #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: August 22, 2017. For questions, please email bagleyj@umsl.edu.                #
+#                                                                                        #
+# File: MLEResultsProc.sh                                                                #
+  version="v1.2"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Fri Jul 29 11:21:37 2016 -0300                       #
+# Last update: August 22, 2017                                                           #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR POST-PROCESSING OF MARGINAL LIKELIHOOD ESTIMATION RESULTS FROM        #
+# CONDUCTING PATH SAMPLING OR STEPPING-STONE SAMPLING IN BEAST                           #
+#                                                                                        #
 ##########################################################################################
+
+if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
+	exit
+fi
 
 echo "
 ##########################################################################################
@@ -18,6 +30,7 @@ echo "
 ##########################################################################################
 "
 
+######################################## START ###########################################
 echo "INFO      | $(date) | STEP #1: SETUP. "
 	MY_BEAST_OUTPUT_FILES=*.out
 
