@@ -1,10 +1,20 @@
 #!/usr/bin/env Rscript
 
 ##########################################################################################
-#                          2logeB10 Rscript v1.1, August 2017                            #
-#  Copyright (c)2019 Justinc C. Bagley. See PIrANHA README and license on GitHub (at     #
-#  http://github.com/justincbagley/PIrANHA) for further info. Last update: August 22,    #
-#  2017. For questions, please email bagleyj@umsl.edu.                                   #
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: 2logeB10.r (Rscript)                                                             #
+# version="v1.1"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Fri Aug 19 00:23:07 2016 -0300                       #
+# Last update: August 22, 2017                                                           #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+#                                                                                        #
 ##########################################################################################
 
 ##--Load needed library, R code, or package stuff. Install package if not present.
