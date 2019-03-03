@@ -4,13 +4,19 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          vcfSubsampler v0.1.0, September 2017                          #
-                                    version="v0.1.0"
-#  SCRIPT THAT USES A LIST FILE TO SUBSAMPLE A VCF FILE SO THAT IT ONLY CONTAINS SNPs    #
-#  IN THE LIST                                                                           #
-#  Copyright ©2017 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: September 28, 2017. For questions, please email bagleyj@umsl.edu.             #
+#                                                                                        #
+# File: vcfSubsampler.sh                                                                 #
+  version="v0.1.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Thu Sep 28 09:31:25 2017 -0400                       #
+# Last update: March 1, 2019                                                             #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SCRIPT THAT USES A LIST FILE TO SUBSAMPLE A VCF FILE SO THAT IT ONLY CONTAINS SNPs     #
+# IN THE LIST                                                                            #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -41,6 +47,9 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -s o d] [stdin:] <input
  or
  Bagley, J.C. 2017. justincbagley/PIrANHA. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.596766>.
+
+Created by Justin Bagley on Thu Sep 28 09:31:25 2017 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
