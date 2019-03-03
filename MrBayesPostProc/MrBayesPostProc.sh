@@ -4,11 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                          MrBayesPostProc v1.4, December 2017                           #
-#  SHELL SCRIPT FOR POST-PROCESSING OF MrBayes OUTPUT FILES ON A SUPERCOMPUTING CLUSTER  #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: December 2, 2017. For questions, please email bagleyj@umsl.edu.               #
+#                                                                                        #
+# File: MrBayesPostProc.sh                                                               #
+  version="v1.4"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: created by Justin Bagley on Thu May 4 22:39:41 2017 -0400                        #
+# Last update: December 2, 2017                                                          #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR POST-PROCESSING OF MrBayes OUTPUT FILES ON A SUPERCOMPUTING CLUSTER   #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -20,14 +27,14 @@ MY_SS_DIAGNFREQ=2500
 MY_TEMP_FILE_SWITCH=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] workingDir 
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
 
  ## Options:
   -b   relBurninFrac (def: $MY_RELBURNIN_FRAC) fraction of trees to discard as 'burn-in'
   -s   SS (def: 0, no stepping-stone (SS) analysis conducted; 1, run SS analysis) allows
-       calling stepping-stone analysis starting from NEXUS in current working dir
+       calling stepping-stone analysis starting from NEXUS in current <workingDir>
   -g   SSnGen (def: $MY_SS_NGEN) if 1 for SS above, allows specifying the number of total 
        SS sampling iterations (uses default number of steps, 50; total iterations will 
        be split over 50 steps) 
@@ -58,10 +65,18 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] workingDir
     Systematic Biology, 61, 539-542. 
  Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for 
     Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
+
+Created by Justin Bagley on Thu May 4 22:39:41 2017 -0400
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) ${version}";
 	exit
 fi
 
