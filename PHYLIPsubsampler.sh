@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsubsampler.sh                                                              #
-  version="v1.1"                                                                         #
+  VERSION="v1.1"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600                      #
 # Last update: February 19, 2019                                                         #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT       #
@@ -31,7 +31,7 @@ MY_INPUT_FILE=NULL
 MY_ASSIGNMENT_FILE=assignments.txt
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] [stdin:] <workingDir> 
+USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -i a] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
 
@@ -73,7 +73,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i a] [stdin:] <working
  expected if no assignment file is specified using the -a flag.
 
 		## EXAMPLE 
-		./phylipSubsampler.sh -a species.txt .	## With user-specified assignment
+		./PHYLIPsubsampler.sh -a species.txt .	## With user-specified assignment
 							## file named 'species.txt'.
 
  CITATION
@@ -91,12 +91,12 @@ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -109,10 +109,10 @@ while getopts 'i:a:' opt ; do
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -121,7 +121,7 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 USER_SPEC_PATH="$1"
@@ -142,7 +142,6 @@ esac
 
 ##--shell functions and variables:
 if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
-	#MY_CWD=`pwd -P`
 	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
 	echo "INFO      | $(date) |          Setting working directory to:  "
 	echo "$MY_CWD "
