@@ -11,7 +11,7 @@
 # Date: created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600                      #
 # Last update: March 3, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR DOWNSAMPLING ("THINNING") TREES IN MRBAYES .T FILES SO THAT THEY      #
