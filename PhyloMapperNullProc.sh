@@ -6,19 +6,21 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PhyloMapperNullProc.sh                                                           #
-  version="v1.0"                                                                         #
+  VERSION="v1.0"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300                      #
-# Last update:                                                                           #
+# Last update: March 3, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
 # Description:                                                                           #
+# SHELL SCRIPT FOR POST-PROCESSING RESULTS OF A PHYLOMAPPER NULL MODEL (RANDOMIZATION)   #
+# ANALYSIS                                                                               #
 #                                                                                        #
 ##########################################################################################
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -28,7 +30,7 @@ echo "
 ##########################################################################################"
 
 MY_LOGFILE=$(echo ./*.log)
-#echo $MY_LOGFILE
+echo "INPUT     | $(date) |         Read in the following PhyloMapper log file: $MY_LOGFILE "
 MY_LOGFILE_BASENAME="$(echo $MY_LOGFILE | sed 's/\.\///g; s/\.log//g')"
 
 
