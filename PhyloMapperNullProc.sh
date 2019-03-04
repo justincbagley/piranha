@@ -11,7 +11,7 @@
 # Date: created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300                      #
 # Last update: March 3, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR POST-PROCESSING RESULTS OF A PHYLOMAPPER NULL MODEL (RANDOMIZATION)   #
