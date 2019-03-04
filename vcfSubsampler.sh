@@ -11,7 +11,7 @@
 # Date: created by Justin Bagley on Thu Sep 28 09:31:25 2017 -0400                       #
 # Last update: March 3, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SCRIPT THAT USES A LIST FILE TO SUBSAMPLE A VCF FILE SO THAT IT ONLY CONTAINS SNPs     #
