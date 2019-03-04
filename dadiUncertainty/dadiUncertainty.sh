@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiUncertainty.sh                                                               #
-  version="v0.1.0"                                                                       #
+  VERSION="v0.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400                       #
 # Last update: October 3, 2017                                                           #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT AUTOMATING UNCERTAINTY ANALYSIS IN ∂a∂i, INCLUDING GENERATION OF BOOT-    #
@@ -33,7 +33,7 @@ MY_BESTMOD_PARAM_ESTIMATES=0.1,0.1,0.1,0.1,0.1,0.1
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] inputVCFFile
+USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] [stdin:] <inputVCFFile>
  ## Help:
   -h   help text (also: -help)
 
@@ -129,12 +129,12 @@ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -154,10 +154,10 @@ while getopts 'a:i:p:n:m:s:e:d:' opt ; do
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -166,7 +166,7 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 ## Make input file a mandatory parameter:
