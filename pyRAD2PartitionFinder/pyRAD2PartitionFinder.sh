@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRAD2PartitionFinder.sh                                                         #
-  version="v1.2"                                                                         #
+  VERSION="v1.2"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300                      #
 # Last update: November 12, 2018                                                         #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR RUNNING PartitionFinder ON SNP DNA PARTITIONS OUTPUT FROM pyRAD       #
@@ -29,7 +29,7 @@ MY_PF_MODSEL=BIC
 MY_SEARCH_ALGORITHM=rcluster
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Options: -i r v p e m s] workingDir 
+USAGE="Usage: $(basename "$0") [Options: -i r v p e m s] [stdin:] <workingDir> 
  ## Options:
   -i   inputPhylip (def: 0, .phy file in pwd; also takes name of .phy file in pwd, or absolute 
        path to .phy file in another dir) input Phylip sequence alignment file 
@@ -79,7 +79,7 @@ Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -97,10 +97,10 @@ while getopts 'i:r:v:p:e:m:s:' opt ; do
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -109,7 +109,7 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 USER_SPEC_PATH="$1"
