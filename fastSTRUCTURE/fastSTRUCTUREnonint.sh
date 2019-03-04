@@ -6,20 +6,20 @@
 # |                                                                                      #
 #                                                                                        #
 # File: fastSTRUCTUREnonint.sh                                                           #
-  version="v1.1"                                                                         #
+  VERSION="v1.1"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Wed, 27 Jul 2016 00:48:37 -0300                      #
 # Last update: July 25, 2016                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT FOR RUNNING fastSTRUCTURE ON BIALLELIC SNP DATASETS                       #
+# SHELL SCRIPT FOR RUNNING fastSTRUCTURE (Raj et al. 2014) ON BIALLELIC SNP DATASETS     #
 #                                                                                        #
 ##########################################################################################
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -30,7 +30,7 @@ echo "
 "
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | STEP 1. SETUP: READ USER INPUT, SET VARIABLES. "
+echo "INFO      | $(date) | STEP #1. SETUP: READ USER INPUT, SET VARIABLES. "
 	MY_FASTSTRUCTURE_WKDIR="$(pwd)"
 
 	fsPATH="/Applications/STRUCTURE-fastStructure-e47212f/structure.py"
@@ -46,30 +46,30 @@ echo "INFO      | $(date) | STEP 1. SETUP: READ USER INPUT, SET VARIABLES. "
 	MY_FASTSTRUCTURE_PATH="$(echo $fsPATH)"
 
 
-echo "INFO      | $(date) | STEP 2. RUN fastSTRUCTURE ON RANGE OF K SPECIFIED BY USER. "
-echo "INFO      | $(date) |         Modeling K = $lK to $uK clusters in fastSTRUCTURE. "
+echo "INFO      | $(date) | STEP #2. RUN fastSTRUCTURE ON RANGE OF K SPECIFIED BY USER. "
+echo "INFO      | $(date) |          Modeling K = $lK to $uK clusters in fastSTRUCTURE. "
 
 (
 	for (( i=$lK; i<=$uK; i++ )); do
-		echo $i
-		python $MY_FASTSTRUCTURE_PATH -K $i --input="$MY_FASTSTRUCTURE_WKDIR/$fsInput" --output="$fsOutput" --format=str --full --seed=100
+		echo "$i";
+		python $MY_FASTSTRUCTURE_PATH -K "$i" --input="$MY_FASTSTRUCTURE_WKDIR/$fsInput" --output="$fsOutput" --format=str --full --seed=100
 	done
 )
 
 echo "INFO      | $(date) |         fastSTRUCTURE runs completed. "
 
 
-echo "INFO      | $(date) | STEP 3. MODEL COMPLEXITY. "
+echo "INFO      | $(date) | STEP #3. MODEL COMPLEXITY. "
 ###### Obtain an estimate of the model complexity for each set of runs (per species):
 	MY_CHOOSEK_PATH="$(echo $fsPATH | sed 's/structure.py//g' | sed 's/$/chooseK.py/g')"
 
-	python $MY_CHOOSEK_PATH --input="$fsOutput" > chooseK.out.txt
+	python "$MY_CHOOSEK_PATH" --input="$fsOutput" > chooseK.out.txt
 
 echo "INFO      | $(date) |         Finished estimating model complexity. "
 	cat chooseK.out.txt
 
 
-echo "INFO      | $(date) | STEP 4. VISUALIZE RESULTS. "
+echo "INFO      | $(date) | STEP #4. VISUALIZE RESULTS. "
 ###### Use DISTRUCT to create graphical output of results corresponding to the best K value modeled.
 	MY_EXTRACTED_BESTK="$(grep -n "complexity" \
 	./chooseK.out.txt | \
@@ -77,7 +77,7 @@ echo "INFO      | $(date) | STEP 4. VISUALIZE RESULTS. "
 	
 	MY_DISTRUCT_PATH="$(echo $fsPATH | sed 's/structure.py//g' | sed 's/$/distruct.py/g')"
 	
-	python $MY_DISTRUCT_PATH -K $MY_EXTRACTED_BESTK --input="$MY_FASTSTRUCTURE_WKDIR/$fsOutput" --output="$fsOutput"_distruct.svg
+	python "$MY_DISTRUCT_PATH" -K "$MY_EXTRACTED_BESTK" --input="$MY_FASTSTRUCTURE_WKDIR/$fsOutput" --output="$fsOutput"_distruct.svg
 	
 
 echo "INFO      | $(date) | Done!!! fastSTRUCTURE analysis complete. "
