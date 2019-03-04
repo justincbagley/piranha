@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: treeThinner.sh                                                                   #
-  version="v1.0"                                                                         #
+  VERSION="v1.0"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600                      #
-# Last update: March 1, 2019                                                             #
+# Last update: March 3, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -20,7 +20,7 @@
 ##########################################################################################
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
