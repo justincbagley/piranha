@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PFSubsetSum.sh                                                                   #
-  version="v1.3"                                                                         #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley in September 2017                                       #
-# Last update: September 8, 2017                                                         #
-# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Date: created by Justin Bagley Wed Sep 7 01:07:20 2016 -0300                           #
+# Last update: March 3, 2019                                                             #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FOR DNA SUBSETS WITHIN THE OPTIMUM     #
@@ -20,13 +20,13 @@
 ##########################################################################################
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
 echo "
 ##########################################################################################
-#                            PFSubsetSum v1.3, September 2017                            #
+#                           PFSubsetSum v1.3.1, September 2017                           #
 ##########################################################################################
 "
 
@@ -61,7 +61,7 @@ echo "INFO      | $(date) |          Extracting and organizing subsets...  "
 	sed -n "$MY_START_LINE_NUM","$MY_END_LINE_NUM"p $MY_BEST_SCHEME_FILE > ./subsets.txt
 	MY_SUBSETS_FILE=./subsets.txt
 
-echo "INFO      | $(date) |          The best scheme from PartitionFinder contains "$MY_NUM_SUBSETS" subsets.  "
+echo "INFO      | $(date) |          The best scheme from PartitionFinder contains $MY_NUM_SUBSETS subsets.  "
 
 	##--Move each subset to its own file, with the same subset's name... The subsets
 	##--(a.k.a. "partitions", though this is not technically correct) are always named
@@ -70,10 +70,10 @@ echo "INFO      | $(date) |          The best scheme from PartitionFinder contai
 	##--across different p's:
 (
 	for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
-		subsetname="$(echo p$i)"
-		sed -n "$i"p $MY_SUBSETS_FILE | sed 's/DNA\,//g; s/p[0-9]*//g; s/^[\ =]*//g' > $subsetname.txt		##--This cleans up the subset data by removing everything except the charsets (e.g. deleting "DNA, "...
+		SUBSET_NAME="$(echo p$i)"
+		sed -n "$i"p $MY_SUBSETS_FILE | sed 's/DNA\,//g; s/p[0-9]*//g; s/^[\ =]*//g' > "$SUBSET_NAME".txt		##--This cleans up the subset data by removing everything except the charsets (e.g. deleting "DNA, "...).
 
-		echo "$subsetname" >> ./subset_names.txt
+		echo "$SUBSET_NAME" >> ./subset_names.txt
 
 	done			
 )	
@@ -85,12 +85,12 @@ echo "INFO      | $(date) |          1. Calculating numCharsets (number of chara
 
 (
     for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
-        subsetname="$(echo p$i)"
-        subsetfile="$(echo ./$subsetname.txt)"
-        number_of_occurrences=$(grep -o "\-" <<< cat $subsetfile | wc -l)
-        echo "$number_of_occurrences" > "$subsetname"_numCharsets.out
+        SUBSET_NAME="$(echo p$i)"
+        SUBSET_FILE="$(echo ./$SUBSET_NAME.txt)"
+        number_of_occurrences=$(grep -o "\-" <<< cat $SUBSET_FILE | wc -l)
+        echo "$number_of_occurrences" > "$SUBSET_NAME"_numCharsets.out
 		
-		cat ./"$subsetname"_numCharsets.out >> ./numCharsets/ALL_numCharsets.txt
+		cat ./"$SUBSET_NAME"_numCharsets.out >> ./numCharsets/ALL_numCharsets.txt
 
     done
 )
@@ -111,9 +111,9 @@ echo "INFO      | $(date) |          2. Calculating subsetLengths (alignment len
 
 (
     for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
-        subsetname="$(echo p$i)"
-        subsetfile="$(echo ./$subsetname.txt)"
-		cat "$subsetfile" > ./Rinput.txt
+        SUBSET_NAME="$(echo p$i)"
+        SUBSET_FILE="$(echo ./$SUBSET_NAME.txt)"
+		cat "$SUBSET_FILE" > ./Rinput.txt
 		CHARSET_DUMP="$(cat ./Rinput.txt)"
 
 		##--Make R script and give it data from each subset file within the loop...
@@ -122,7 +122,7 @@ echo "#!/usr/bin/env Rscript
 charsets_as_numbers <- c("$CHARSET_DUMP")
 out <- sum(abs(charsets_as_numbers)) + length(charsets_as_numbers)
 
-write.table(out, '"$MY_WORKING_DIR"/subsetLengths/"$subsetname"_subsetLength.out', sep='\t', quote=F, row.names=F, col.names=F)
+write.table(out, '"$MY_WORKING_DIR"/subsetLengths/"$SUBSET_NAME"_subsetLength.out', sep='\t', quote=F, row.names=F, col.names=F)
 
 " > ./GetSubsetLength.r
 
@@ -133,7 +133,7 @@ write.table(out, '"$MY_WORKING_DIR"/subsetLengths/"$subsetname"_subsetLength.out
 
         rm ./Rinput.txt ./GetSubsetLength.r
 
-		cat ./subsetLengths/"$subsetname"_subsetLength.out >> ./subsetLengths/ALL_subsetLengths.txt
+		cat ./subsetLengths/"$SUBSET_NAME"_subsetLength.out >> ./subsetLengths/ALL_subsetLengths.txt
 
 	done
 )
