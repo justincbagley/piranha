@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRADLocusVarSites.sh                                                            #
-  version="v0.1.0"                                                                       #
+  VERSION="v0.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400                       #
 # Last update: April 7, 2017                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # CALCULATES NUMBERS OF VARIABLE SITES AND PARSIMONY-INFORMATIVE (i.e. PHYLOGENETICALLY  #
@@ -21,7 +21,7 @@
 ##########################################################################################
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
