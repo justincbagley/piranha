@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: vcfSubsampler.sh                                                                 #
-  version="v0.1.0"                                                                       #
+  VERSION="v0.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu Sep 28 09:31:25 2017 -0400                       #
-# Last update: March 1, 2019                                                             #
+# Last update: March 3, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -27,7 +27,7 @@ MY_OUTPUT_VCF_FILE=subsample
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -s o d] [stdin:] <inputVCFFile>
+USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -s o d] [stdin:] <inputVCFFile>
  ## Help:
   -h   help text (also: -help)
 
@@ -53,12 +53,12 @@ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -73,10 +73,10 @@ while getopts 's:o:d:' opt ; do
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -85,7 +85,7 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 ## Make input file a mandatory parameter:
