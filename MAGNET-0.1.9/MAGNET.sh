@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MAGNET.sh ~ MAny GeNE Trees, v0.1.5                                              #
-  version="v0.1.5"                                                                       #
+  VERSION="v0.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Tue Feb 19 21:14:28 2019 -0600                       #
-# Last update: February 19, 2019                                                         #
+# Date: created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700                    #
+# Last update: March 4, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL PIPELINE FOR AUTOMATING ESTIMATION OF ONE MAXIMUM-LIKELIHOOD (ML) GENE TREE IN   #
@@ -48,7 +48,7 @@ if [[ "${machine}" = "Linux" ]]; then
 fi
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
+USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -108,11 +108,11 @@ Usage="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
-Created by Justin Bagley on Tue Feb 19 21:14:28 2019 -0600
+Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700
 Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
+VERBOSE_USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -218,22 +218,22 @@ verboseHelp="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [R
  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
-Created by Justin Bagley on Tue Feb 19 21:14:28 2019 -0600
+Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700
 Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
-	echo "$verboseHelp"
+	echo "$VERBOSE_USAGE"
 	exit
 fi
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -258,17 +258,17 @@ while getopts 'f:e:b:r:s:g:m:o:-:' opt ; do
          esac ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
 shift $((OPTIND-1)) # remove parsed options and args from $@ list
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 ## MY_NEXUS="$1"
@@ -276,7 +276,7 @@ fi
 
 echo "
 ##########################################################################################
-#                     MAGNET ~ MAny GeNE Trees v0.1.5, February 2019                     #
+#                      MAGNET ~ MAny GeNE Trees v0.1.5, March 2019                       #
 ##########################################################################################
 "
 
