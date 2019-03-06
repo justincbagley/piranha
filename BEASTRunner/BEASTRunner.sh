@@ -4,11 +4,18 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                               BEASTRunner v1.2, May 2017                               #
-#  SHELL SCRIPT FOR AUTOMATING RUNNING BEAST ON A REMOTE SUPERCOMPUTING CLUSTER          #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: BEASTRunner.sh                                                                   #
+  VERSION="v1.2.1"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600.                     #
+# Last update: March 6, 2019                                                             #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR AUTOMATING RUNNING BEAST ON A REMOTE SUPERCOMPUTING CLUSTER           #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -18,9 +25,9 @@ MY_SC_WALLTIME=48:00:00
 JAVA_MEM_ALLOC=5120M
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [stdin:] <workingDir>
+USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n w m V --version] [stdin:] <workingDir>
  ## Help:
-  -h   help text (also: -help)
+  -h   help text (also: -help) echo this help text and exit
   -H   verbose help text (also: -Help)
 
  ## Options:
@@ -29,35 +36,33 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [stdin:]
        supercomputer 
   -m   javaMem (def: $JAVA_MEM_ALLOC) memory, i.e. RAM, allocation for Java. Must be an
        appropriate value for the node, with units in M=megabytes or G=gigabytes.  
-  
+  -V   version (also: --version) echo version and exit
+
  OVERVIEW
  THIS SCRIPT automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012;
  Bouckaert et al. 2014) XML input files on a remote supercomputing cluster that uses SLURM
  resource management with PBS wrappers, or a PBS resource management system.
- 
- The code starts from a single working directory on the user's local machine, which contains
+	The code starts from a single working directory on the user's local machine, which contains
  one or multiple XML input files with extension '*run.xml' (where * is any set of 
  alphanumeric characters separated possibly by underscores but no spaces). These files are 
  identified and run through the BEASTRunner pipeline, which involves five steps, as follows: 
  1) set up the workspace; 2) copy each XML file n times to create n+1 separate run XML files; 
  3) make directories for 1 run per XML (nRuns) and create a shell script with the name 
- "beast_pbs.sh" that is specific to the input and can be used to submit job to supercomputer 
+ 'beast_pbs.sh' that is specific to the input and can be used to submit job to supercomputer 
  and move this PBS shell script into the corresponding folder; 4) create a batch submission 
  file (PBS format) and move it and all run folders to the desired working directory on the 
  supercomputer; 5) execute the batch submission file on the supercomputer so that all jobs 
  are submitted to the supercomputer queue.
-
- Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
+	Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
  by BEASTRunner.sh is fed to the program by culling the data from an external configuration 
- file, named "beast_runner.cfg". There are six entries that users can supply in this file. 
+ file, named 'beast_runner.cfg'. There are six entries that users can supply in this file. 
  However, three of these are essential for running BEAST using the BEASTRunner script, 
  including: ssh user account info, the path to the parent directory for BEAST runs on the 
  supercomputer, and the user's email address. Users must fill this information in and save 
  a new version of the .cfg file in the working directory on their local machine prior to 
  calling the program. Only then can the user call the program by opening a terminal window, 
- typing "./BEASTRunner.sh", and pressing return.
- 
- It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4++) is installed on the
+ typing './BEASTRunner.sh', and pressing return.
+	It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4++) is installed on the
  supercomputer, and that the user can provide absolute paths to the BEAST jar file in the 
  cfg file. Last testing was conducted using BEAST v2.4.5. Check for BEAST2 updates at 
  <http://BEAST2.org>. 
@@ -72,9 +77,12 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [stdin:]
  	Computational Biology, 10, e1003537.
  Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and 
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
+
+Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600. 
+Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [stdin:] <workingDir> 
+VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n w m] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -97,23 +105,21 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [s
  identified and run through the BEASTRunner pipeline, which involves five steps, as follows: 
  1) set up the workspace; 2) copy each XML file n times to create n+1 separate run XML files; 
  3) make directories for 1 run per XML (nRuns) and create a shell script with the name 
- "beast_pbs.sh" that is specific to the input and can be used to submit job to supercomputer 
+ 'beast_pbs.sh' that is specific to the input and can be used to submit job to supercomputer 
  and move this PBS shell script into the corresponding folder; 4) create a batch submission 
  file (PBS format) and move it and all run folders to the desired working directory on the 
  supercomputer; 5) execute the batch submission file on the supercomputer so that all jobs 
  are submitted to the supercomputer queue.
-
- Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
+	Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
  by BEASTRunner.sh is fed to the program by culling the data from an external configuration 
- file, named "beast_runner.cfg". There are six entries that users can supply in this file. 
+ file, named 'beast_runner.cfg'. There are six entries that users can supply in this file. 
  However, three of these are essential for running BEAST using the BEASTRunner script, 
  including: ssh user account info, the path to the parent directory for BEAST runs on the 
  supercomputer, and the user's email address. Users must fill this information in and save 
  a new version of the .cfg file in the working directory on their local machine prior to 
  calling the program. Only then can the user call the program by opening a terminal window, 
- typing "./BEASTRunner.sh", and pressing return.
- 
- It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4++) is installed on the
+ typing './BEASTRunner.sh', and pressing return.
+	It is assumed that BEAST1 (e.g. v1.8.3++) or BEAST2 (e.g. 2.4++) is installed on the
  supercomputer, and that the user can provide absolute paths to the BEAST jar file in the 
  cfg file. Last testing was conducted using BEAST v2.4.5. Check for BEAST2 updates at 
  <http://BEAST2.org>. 
@@ -134,11 +140,11 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [s
  or 5120M, or in terms of GB units: 1G, 2G, 3G, 4G, 5G.
  
 		## Usage examples: 
-		"$0" .
-		"$0" -n 5 .
-		"$0" -n 20 .		## Ex.: changing number of runs.
-		"$0" -n 20 -w 24:00:00 .	## Ex.: changing run walltime.
-		"$0" -n 20 -w 24:00:00 -m 2048M .	## Ex.: changing memory (RAM) allocation.
+		$0 .
+		$0 -n 5 .
+		$0 -n 20 .				## Ex.: changing number of runs.
+		$0 -n 20 -w 24:00:00 .		## Ex.: changing run walltime.
+		$0 -n 20 -w 24:00:00 -m 2048M .	## Ex.: changing memory (RAM) allocation.
 	
  CITATION
  Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
@@ -150,33 +156,39 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n w m] [s
  	Computational Biology, 10, e1003537.
  Drummond AJ, Suchard MA, Xie D, Rambaut A (2012) Bayesian phylogenetics with BEAUti and 
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
+
+Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600. 
+Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
-	echo "$verboseHelp"
+	echo "$VERBOSE_USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
 ############ PARSE THE OPTIONS
 while getopts 'n:w:m:' opt ; do
   case $opt in
-
 ## BEASTRunner options:
     n) MY_NUM_INDEP_RUNS=$OPTARG ;;
     w) MY_SC_WALLTIME=$OPTARG ;;
     m) JAVA_MEM_ALLOC=$OPTARG ;;
-
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -185,28 +197,27 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
-  exit 1
+	echo "$USAGE";
+	exit 1;
 fi
 USER_SPEC_PATH="$1"
 
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "$USER_SPEC_PATH "	
-
 echo "
 ##########################################################################################
-#                               BEASTRunner v1.2, May 2017                               #
+#                             BEASTRunner v1.2.1, March 2019                             #
 ##########################################################################################"
 
 ######################################## START ###########################################
-	calc () {
-	   	bc -l <<< "$@"
-}
 echo "INFO      | $(date) | Starting BEASTRunner pipeline... "
 echo "INFO      | $(date) | STEP #1: SETUP VARIABLES, MAKE $(calc $MY_NUM_INDEP_RUNS - 1) COPIES PER INPUT XML FILE \
 FOR A TOTAL OF FIVE RUNS OF EACH MODEL/XML USING"
 echo "INFO      | $(date) |          DIFFERENT RANDOM SEEDS. "
+echo "INFO      | $(date) |          Setting user-specified path to: "
+echo "$USER_SPEC_PATH "	
 echo "INFO      | $(date) |          Setting up variables, including those specified in the cfg file..."
+	calc () {
+	   	bc -l <<< "$@"
+}
 	MY_XML_FILES=./*.xml
 	MY_NUM_XML="$(ls . | grep "\.xml$" | wc -l)"
 echo "INFO      | $(date) |          Number of XML files read: $MY_NUM_XML"	## Check number of input files read into program.
@@ -248,7 +259,7 @@ end in 'run.xml'."
 	done
 )
 
-	rm ./*run.xml       ## Remove the original "run.xml" input files so that only XML files
+	rm ./*run.xml ; 	## Remove the original "run.xml" input files so that only XML files
 	            		## annotated with their run numbers 1 - $MY_NUM_INDEP_RUNS remain.
 
 
@@ -262,8 +273,9 @@ INPUT FILE FOR DIRECTING EACH RUN. "
 ##--at the same pass in the loop.
 (
 	for i in $MY_XML_FILES; do
-		mkdir "$(ls ${i} | sed 's/\.xml$//g')"
-		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')"
+		mkdir "$(ls ${i} | sed 's/\.xml$//g')";
+		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')";
+
 echo "#!/bin/bash
 
 #PBS -l nodes=1:ppn=1,pmem=${JAVA_MEM_ALLOC},walltime=${MY_SC_WALLTIME}
@@ -291,18 +303,18 @@ $MY_SC_PBS_WKDIR_CODE
 
 exit 0" > beast_pbs.sh
 
-	chmod +x beast_pbs.sh
-	mv ./beast_pbs.sh ./"$(ls ${i} | sed 's/.xml$//g')"
-	cp $i ./"$(ls ${i} | sed 's/\.xml$//g')"
+	chmod +x beast_pbs.sh;
+	mv ./beast_pbs.sh ./"$(ls ${i} | sed 's/.xml$//g')";
+	cp $i ./"$(ls ${i} | sed 's/\.xml$//g')";
 
 	done
 )
 
 echo "INFO      | $(date) |          Setup and run check on the number of run folders created by the program..."
-	MY_FILECOUNT="$(find . -type f | wc -l)"
-	MY_DIRCOUNT="$(find . -type d | wc -l)"
-	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)"
-	#"$(ls . | grep "./*/" | wc -l)"
+	MY_FILECOUNT="$(find . -type f | wc -l)";
+	MY_DIRCOUNT="$(find . -type d | wc -l)";
+	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)";
+
 echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS"
 
 
@@ -325,8 +337,8 @@ echo "#!/bin/bash
 
 (
 	for j in ./*/; do
-		FOLDERNAME="$(echo $j | sed 's/\.\///g')"
-		scp -r $j $MY_SSH_ACCOUNT:$MY_SC_DESTINATION	## Safe copy to remote machine.
+		FOLDERNAME="$(echo $j | sed 's/\.\///g')";
+		scp -r $j $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;	## Safe copy to remote machine.
 
 echo "cd $MY_SC_DESTINATION$FOLDERNAME
 qsub beast_pbs.sh
@@ -340,7 +352,8 @@ echo "
 $MY_SC_PBS_WKDIR_CODE
 exit 0
 " > batch_qsub_bottom.txt
-cat batch_qsub_top.txt cd_and_qsub_commands.txt batch_qsub_bottom.txt > beastrunner_batch_qsub.sh
+
+cat batch_qsub_top.txt cd_and_qsub_commands.txt batch_qsub_bottom.txt > beastrunner_batch_qsub.sh ;
 
 ##--More flow control. Check to make sure batch_qsub.sh file was successfully created.
 if [ -f ./beastrunner_batch_qsub.sh ]; then
@@ -351,10 +364,10 @@ else
 fi
 
 echo "INFO      | $(date) |          Also copying configuration file to supercomputer..."
-scp ./beast_runner.cfg $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
+scp ./beast_runner.cfg $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;
 
 echo "INFO      | $(date) |          Also copying batch_qsub_file to supercomputer..."
-scp ./beastrunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
+scp ./beastrunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;
 
 
 
@@ -379,14 +392,14 @@ HERE
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting BEAST jobs to queue!!"
 
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
-	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".xml; done
-	rm ./batch_qsub_top.txt
-	rm ./cd_and_qsub_commands.txt
-	rm ./batch_qsub_bottom.txt
-	rm ./beastrunner_batch_qsub.sh
+	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".xml; done ;
+	rm ./batch_qsub_top.txt;
+	rm ./cd_and_qsub_commands.txt;
+	rm ./batch_qsub_bottom.txt;
+	rm ./beastrunner_batch_qsub.sh;
 
-echo "INFO      | $(date) |          Bye."
-
+echo "INFO      | $(date) |          Bye.
+"
 #
 #
 #

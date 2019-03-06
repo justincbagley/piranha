@@ -7,21 +7,22 @@ THIS SCRIPT runs a simple program for post-processing results of a MrBayes v3.2+
 Use the -h flag to access the help text for the program, which defines and describes each of the options. The current help text reads as follows:
 
 ```
-Usage: MrBayesPostProc.sh [Help: -h help] [Options: -b s g d t] workingDir 
+Usage: MrBayesPostProc.sh [Help: -h help] [Options: -b s g d t V --version] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
 
  ## Options:
-  -b   relBurninFrac (def: 0.25) fraction of trees to discard as 'burn-in'
+  -b   relBurninFrac (def: $MY_RELBURNIN_FRAC) fraction of trees to discard as 'burn-in'
   -s   SS (def: 0, no stepping-stone (SS) analysis conducted; 1, run SS analysis) allows
-       calling stepping-stone analysis starting from NEXUS in current working dir
-  -g   SSnGen (def: 250000) if 1 for SS above, allows specifying the number of total 
+       calling stepping-stone analysis starting from NEXUS in current <workingDir>
+  -g   SSnGen (def: $MY_SS_NGEN) if 1 for SS above, allows specifying the number of total 
        SS sampling iterations (uses default number of steps, 50; total iterations will 
        be split over 50 steps) 
-  -d   SSDiagFreq (def: 2500) if 1 for SS above, this specifies the diagnosis 
+  -d   SSDiagFreq (def: $MY_SS_DIAGNFREQ) if 1 for SS above, this specifies the diagnosis 
        (logging) frequency for parameters during SS analysis, in number of generations
   -t   deleteTemp (def: 1, delete temporary files; 0, do not delete temporary files) calling
        0 will keep temporary files created during the run for later inspection 
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  Runs a simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012)
@@ -46,6 +47,8 @@ Usage: MrBayesPostProc.sh [Help: -h help] [Options: -b s g d t] workingDir
  Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for 
     Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
 
+Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 ```
 
 A 'basic' MrBayesPostProc run summarizes output of a given MrBayes run (folder) using default burnin fractions and other settings, and is called as follows:
@@ -96,5 +99,5 @@ INFO      | Sat Dec  2 11:52:28 MST 2017 | Bye.
 - Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, et al. (2012) MrBayes v. 3.2: efficient Bayesian phylogenetic inference and model choice across a large model space. Systematic Biology, 61, 539-542. 
 - Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
 
-December 2, 2017
-Justin C. Bagley, Richmond, VA, USA
+March 6, 2019
+Justin C. Bagley, St. Louis, MO

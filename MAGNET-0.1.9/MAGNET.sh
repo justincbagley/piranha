@@ -8,8 +8,8 @@
 # File: MAGNET.sh ~ MAny GeNE Trees, v0.1.5                                              #
   VERSION="v0.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700                    #
-# Last update: March 4, 2019                                                             #
+# Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -48,10 +48,10 @@ if [[ "${machine}" = "Linux" ]]; then
 fi
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
+USAGE="Usage: $(basename $0) [Help: -h H] [Options: -f e b r s g m o V --version] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+  -h   help text (also: -help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
 
  ## Options:
   -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
@@ -68,6 +68,7 @@ USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
   -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
   -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
        separted list
+  -V   version (also: --version) echo version and exit
 
  ## Resume: 
  --resume   long option allowing the user to resume a previous MAGNET run in the specified
@@ -108,14 +109,14 @@ USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume:
  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
-Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700
+Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.
 Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
+VERBOSE_USAGE="Usage: $(basename $0) [Help: -h H] [Options: -f e b r s g m o V --version] [Resume: --resume] [stdin:] <inputFile> [or] <workingDir>
  ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+  -h   help text (also: -help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
 
  ## Options:
   -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
@@ -132,6 +133,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] 
   -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
   -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
        separted list
+  -V   version (also: --version) echo version and exit
 
  ## Resume: 
  --resume   long option allowing the user to resume a previous MAGNET run in the specified
@@ -218,7 +220,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [Help: -h H] [Options: -f e b r s g m o] 
  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
-Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700
+Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.
 Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
@@ -242,7 +244,6 @@ fi
 ## URL: https://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 while getopts 'f:e:b:r:s:g:m:o:-:' opt ; do
   case $opt in
-
 ## MAGNET, input datafile, and RAxML options:
     f) STARTING_FILE_TYPE=$OPTARG ;;
     e) MY_RAXML_EXECUTABLE=$OPTARG ;;

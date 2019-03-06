@@ -8,10 +8,10 @@
 # File: MrBayesPostProc.sh                                                               #
   version="v1.4"                                                                         #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Thu May 4 22:39:41 2017 -0400                        #
-# Last update: December 2, 2017                                                          #
+# Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR POST-PROCESSING OF MrBayes OUTPUT FILES ON A SUPERCOMPUTING CLUSTER   #
@@ -27,7 +27,7 @@ MY_SS_DIAGNFREQ=2500
 MY_TEMP_FILE_SWITCH=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] [stdin:] <workingDir> 
+Usage="Usage: $(basename $0) [Help: -h help] [Options: -b s g d t V --version] [stdin:] <workingDir> 
  ## Help:
   -h   help text (also: -help)
 
@@ -42,6 +42,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] [stdin:] <w
        (logging) frequency for parameters during SS analysis, in number of generations
   -t   deleteTemp (def: 1, delete temporary files; 0, do not delete temporary files) calling
        0 will keep temporary files created during the run for later inspection 
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  Runs a simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012)
@@ -66,7 +67,7 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -b s g d t] [stdin:] <w
  Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for 
     Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
 
-Created by Justin Bagley on Thu May 4 22:39:41 2017 -0400
+Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.
 Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
@@ -75,22 +76,20 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	exit
 fi
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
 ############ PARSE THE OPTIONS
 while getopts 'b:s:g:d:t:' opt ; do
   case $opt in
-
 ## MrBayesPostProc options:
     b) MY_RELBURNIN_FRAC=$OPTARG ;;
     s) MY_SS_ANALYSIS_SWITCH=$OPTARG ;;
     g) MY_SS_NGEN=$OPTARG ;;
     d) MY_SS_DIAGNFREQ=$OPTARG ;;
     t) MY_TEMP_FILE_SWITCH=$OPTARG ;;
-    
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
        echo "$Usage" >&2
@@ -115,8 +114,9 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                          MrBayesPostProc v1.4, December 2017                           #
-##########################################################################################"
+#                            MrBayesPostProc v1.5, March 2019                            #
+##########################################################################################
+"
 
 ###### Prep files and then Summarize trees, their posterior probabilities, and their errors using MrBayes.
 
@@ -129,7 +129,7 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES. "
         echo "INFO      | $(date) |          Fixing NEXUS filename... "
     (
         for file in *.NEX; do
-            mv "$file" "`basename "$file" .NEX`.nex"
+            mv "$file" "`basename "$file" .NEX`.nex" ;
         done
     )
 	fi
@@ -143,20 +143,20 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES. "
 	## of the run, which will be the root/prefix of each output file. The mb path is self
 	## explanatory.
 	if [[ -s "$(nex_FILES=./*.nex; echo $nex_FILES | head -n1 | sed 's/\ .*//g')" ]]; then 
-		MY_NEXUS="$(ls ./*.nex | head -n1 | sed 's/\ //g')"
+		MY_NEXUS="$(ls ./*.nex | head -n1 | sed 's/\ //g')";
 	fi
-	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.*://p' | sed 's/\.mcmc$//g')"
-	MY_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | awk -F"=" '{print $NF}')"
+	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.*://p' | sed 's/\.mcmc$//g')";
+	MY_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | awk -F"=" '{print $NF}')";
 
 
 echo "INFO      | $(date) | STEP #2: REMOVE MRBAYES BLOCK FROM NEXUS FILE. "
-	MY_MRBAYES_BLOCK_START="$(grep -n "BEGIN MrBayes\|Begin MrBayes\|BEGIN mrbayes\|Begin mrbayes\|begin mrbayes" $MY_NEXUS | sed 's/\:.*//; s/\ //g')"
+	MY_MRBAYES_BLOCK_START="$(grep -n "BEGIN MrBayes\|Begin MrBayes\|BEGIN mrbayes\|Begin mrbayes\|begin mrbayes" $MY_NEXUS | sed 's/\:.*//; s/\ //g')";
 	if [[ "$MY_MRBAYES_BLOCK_START" -gt "0" ]] || [[ -s "$MY_MRBAYES_BLOCK_START" ]]; then
-		MY_HEADSTOP="$(calc $MY_MRBAYES_BLOCK_START-1)"
-		head -n"$MY_HEADSTOP" "$MY_NEXUS" > simple.nex
+		MY_HEADSTOP="$(calc $MY_MRBAYES_BLOCK_START-1)";
+		head -n"$MY_HEADSTOP" "$MY_NEXUS" > simple.nex ;
 	elif [[ ! "$MY_MRBAYES_BLOCK_START" -gt "0" ]]; then
 		echo "INFO      | $(date) |          NEXUS file contains no MrBayes block. Renaming NEXUS to 'simple.nex'... "
-		mv "$MY_NEXUS" simple.nex
+		mv "$MY_NEXUS" simple.nex ;
 	fi	
 
 

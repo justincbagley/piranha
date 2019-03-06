@@ -4,17 +4,29 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            BEASTPostProc v1.4, August 2017                             #
-#  SHELL SCRIPT FOR POST-PROCESSING BEAST GENE TREE & SPECIES TREES OUTPUT FILES ON A    #
-#  REMOTE SUPERCOMPUTING CLUSTER                                                         #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: August 13, 2017. For questions, please email bagleyj@umsl.edu.                #
+#                                                                                        #
+# File: BEASTPostProc.sh                                                                 #
+  VERSION="v1.5"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
+# Last update: March 6, 2019                                                             #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR POST-PROCESSING BEAST GENE TREE & SPECIES TREES OUTPUT FILES ON A     #
+# REMOTE, LINUX SUPERCOMPUTING CLUSTER                                                   #
+#                                                                                        #
 ##########################################################################################
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
 
 echo "
 ##########################################################################################
-#                            BEASTPostProc v1.4, August 2017                             #
+#                             BEASTPostProc v1.5, March 2019                             #
 ##########################################################################################
 "
 
@@ -24,7 +36,7 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES & SUMMARIZE RUN LOG FILE. "
 	shopt -s nullglob
 	## Check for and, if present, assign *BEAST species tree file in run directory to variable.
 	if [[ -n $(find . -name "*species.trees" -type f) ]]; then
-		MY_STARBEAST_SPECIESTREE_FILE=./*species.trees
+		MY_STARBEAST_SPECIESTREE_FILE=./*species.trees ;
 	fi
 	## Check for and, if present, assign BEAST gene tree file in run directory to variable.
 	if [[ -n $(find . -name "*.trees" -type f) ]]; then
@@ -33,11 +45,11 @@ echo "INFO      | $(date) | STEP #1: SETUP VARIABLES & SUMMARIZE RUN LOG FILE. "
 	fi
 	## Check for and, if present, assign BEAST log file containing all logged reg run parameters in run directory to variable.
 	if [[ -n $(find . -name "*.log" -type f) ]]; then
-		MY_BEAST_LOGFILE="$(ls | grep -n ".log$" | sed 's/[0-9\_\-]*://g' | sed '/.mle.log/ d')"
+		MY_BEAST_LOGFILE="$(ls | grep -n ".log$" | sed 's/[0-9\_\-]*://g' | sed '/.mle.log/ d')" ;
 	fi
 	## Check for and, if present, assign MLE log file in run directory to variable.
 	if [[ -n $(find . -name "*.mle.log" -type f) ]]; then
-		MY_MARGLIKE_LOGFILE=./*.mle.log
+		MY_MARGLIKE_LOGFILE=./*.mle.log ;
 	fi
 
 	###### Summarize parameters from reg .log file in LogAnalyser (from BEAST v1.8.3):
@@ -93,29 +105,30 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 	(
 		for i in $MY_STARBEAST_SPECIESTREE_FILE; do 
 			echo "INFO      | $(date) |               - Name of trees file being analyzed: $i "
-			tail -n 5000 "${i}" > ./"${i}"_5k_postburn.trees
+			tail -n 5000 "${i}" > ./"${i}"_5k_postburn.trees ;
 
 		###### Convert your 5000 post-burnin species trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $i | awk -F"=" '{print $NF}' | sed 's/\;//g')"	## Pull the number of taxa from the species trees file.
 			echo "INFO      | $(date) |               - Number of taxa encountered: $MY_NTAX "
 
-			NUM1="$MY_NTAX"
-			NUM2="$((2*NUM1))"
-			NUM3="$((NUM2+11))"
-			head -n"$NUM3" "$i" > ./nexusHeader.txt
-			cat ./nexusHeader.txt ./"${i}"_5k_postburn.trees > ./"${i}"_5k_postburn.trees.txt
+			NUM1="$MY_NTAX" ;
+			NUM2="$((2*NUM1))" ;
+			NUM3="$((NUM2+11))" ;
+			head -n"$NUM3" "$i" > ./nexusHeader.txt ;
+			cat ./nexusHeader.txt ./"${i}"_5k_postburn.trees > ./"${i}"_5k_postburn.trees.txt ;
 
 		###### CLEANUP #1: Next, do cleanup by removing any line starting with "==> " (preferred), OR remove line 1 and line $(calc $MY_HEADER_LENGTH + 1) (not preferred), where calc is bash function defined as $ calc () {    	bc -l <<< "$@" }.
-			sed '/^==>\ / d' ./"${i}"_5k_postburn.trees.txt > ./"${i}"_final_5k.trees
-			rm ./"${i}"_5k_postburn.trees 
-			rm ./nexusHeader.txt 
-			rm ./"${i}"_5k_postburn.trees.txt
+			sed '/^==>\ / d' ./"${i}"_5k_postburn.trees.txt > ./"${i}"_final_5k.trees ;
+			rm ./"${i}"_5k_postburn.trees ;
+			rm ./nexusHeader.txt ;
+			rm ./"${i}"_5k_postburn.trees.txt ;
 
-		###### CLEANUP #2: It's CRITICAL that we make sure the new "*_final_5k.trees" file ends with a newline (empty line). We use
-		##--sed to do this with a simple command that "adds \n at the end of the file only if it doesn’t already end with a newline",
+		###### CLEANUP #2: It's CRITICAL that we make sure the new '*_final_5k.trees' file ends with a newline (empty line). We use
+		##--sed to do this with a simple command that 'adds \n at the end of the file only if it doesn’t already end with a newline',
 		##--a trick which I have taken from stackexchange user l0b0's answer given at the following URL:
 		##--https://unix.stackexchange.com/questions/31947/how-to-add-a-newline-to-the-end-of-a-file. Thanks l0b0!!
-			sed -i -e '$a\' ./"${i}"_final_5k.trees
+			sed -i -e '$a\' ./"${i}"_final_5k.trees ;
+# '
 
 		###### SUMMARIZE POSTERIOR DISTRIBUTION OF SPECIES TREES USING TREEANNOTATOR
 		###### TREEANNOTATOR v1.8.3 HELP:
@@ -138,8 +151,8 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 
 		## NOTE: If you are pointing to a treeannotator executable from BEAST2 (any version), you may get a Java error here saying you need to update to the latest version of Java (e.g. from v6 to v8).
 
-		mkdir "${i}".treeannotator
-		mv ./"${i}".treeannotator.out ./"${i}".treeannotator
+		mkdir "${i}".treeannotator ;
+		mv ./"${i}".treeannotator.out ./"${i}".treeannotator ;
 
 		done
 	)
@@ -151,7 +164,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 		if [[ "${#files[@]}" -gt 0 ]] ; then
 			echo "INFO      | $(date) |          Renaming final 5k post-burnin species tree files."
 	        for j in ./*.species.trees_final_5k.trees; do
-	            mv "$j" ${j/*/final_5k.species.trees}
+	            mv "$j" ${j/*/final_5k.species.trees} ;
 	        done
 	    else
 	        echo "WARNING!  | $(date) |          Failed to rename final 5k post-burnin species tree files. "
@@ -165,7 +178,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 		if [[ "${#folders[@]}" -gt 0 ]] ; then
 			echo "INFO      | $(date) |          Previous step succeeded. Renaming folders with TreeAnnotator species tree results. "
 			for k in ./*.species.trees.treeannotator; do
-				mv "$k" ${k/*/treeannotator.species.tree}
+				mv "$k" ${k/*/treeannotator.species.tree} ;
 			done
 		else
 			echo "WARNING!  | $(date) |          ERROR: Found no folders with TreeAnnotator species tree results. "
@@ -175,7 +188,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 	###### Rename treeannotator output species tree file:
 	(
 		for l in ./treeannotator.species.tree/*.treeannotator.out; do
-	        mv "$l" ${l/*/MCC.species.tree.out}
+	        mv "$l" ${l/*/MCC.species.tree.out} ;
 	    done
 	)
         mv MCC.species.tree.out ./treeannotator.species.tree
@@ -201,29 +214,30 @@ echo "INFO      | $(date) | STEP #3: GENE TREE ANALYSIS. "
 	(
 		for m in ${MY_BEAST_GENETREE_FILES}; do 
 			echo "INFO      | $(date) |               - Name of trees file being analyzed: $m "
-			tail -n 5000 "${m}" > ./"${m}"_5k_postburn.trees		
+			tail -n 5000 "${m}" > ./"${m}"_5k_postburn.trees ;		
 
 		###### Convert your 5000 post-burnin gene trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $m | awk -F"=" '{print $NF}' | sed 's/\;//g')"
 			echo "INFO      | $(date) |               - Number of taxa encountered: $MY_NTAX "
 			
-			NUM1="$MY_NTAX"
-			NUM2="$((2*NUM1))"
-			NUM3="$((NUM2+11))"
-			head -n"$NUM3" "$m" > ./nexusHeader.txt
-			cat ./nexusHeader.txt ./"${m}"_5k_postburn.trees > ./"${m}"_5k_postburn.trees.txt
+			NUM1="$MY_NTAX" ;
+			NUM2="$((2*NUM1))" ;
+			NUM3="$((NUM2+11))" ;
+			head -n"$NUM3" "$m" > ./nexusHeader.txt ;
+			cat ./nexusHeader.txt ./"${m}"_5k_postburn.trees > ./"${m}"_5k_postburn.trees.txt ;
 
 		###### CLEANUP #1: Next, do cleanup by removing any line starting with "==> " (preferred), OR remove line 1 and line $(calc $MY_HEADER_LENGTH + 1) (not preferred), where calc is bash function defined as $ calc () {    	bc -l <<< "$@" }.
-			sed '/^==>\ / d' ./"${m}"_5k_postburn.trees.txt > ./"${m}"_final_5k.trees
-			rm ./"${m}"_5k_postburn.trees 
-			rm ./nexusHeader.txt 
-			rm ./"${m}"_5k_postburn.trees.txt
+			sed '/^==>\ / d' ./"${m}"_5k_postburn.trees.txt > ./"${m}"_final_5k.trees ;
+			rm ./"${m}"_5k_postburn.trees ;
+			rm ./nexusHeader.txt ;
+			rm ./"${m}"_5k_postburn.trees.txt ;
 
 		###### CLEANUP #2: It's CRITICAL that we make sure the new "*_final_5k.trees" file ends with a newline (empty line). We use
 		##--sed to do this with a simple command that "adds \n at the end of the file only if it doesn’t already end with a newline",
 		##--a trick which I have taken from stackexchange user l0b0's answer given at the following URL:
 		##--https://unix.stackexchange.com/questions/31947/how-to-add-a-newline-to-the-end-of-a-file. Thanks l0b0!!
 			sed -i -e '$a\' ./"${m}"_final_5k.trees
+# '
 
 		###### SUMMARIZE POSTERIOR DISTRIBUTION OF GENE TREES USING TREEANNOTATOR
 			/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator -burnin 0 -heights mean "${m}"_final_5k.trees "${m}".treeannotator.out
@@ -238,7 +252,7 @@ echo "INFO      | $(date) | STEP #3: GENE TREE ANALYSIS. "
 			mkdir ./treeannotator."${partitionname}".gene.tree
 			mv ./MCC."${partitionname}".gene.tree.out ./treeannotator."${partitionname}".gene.tree
 			
-			mv ./"${m}"_final_5k.trees ./final_5k."${partitionname}".gene.trees
+			mv ./"${m}"_final_5k.trees ./final_5k."${partitionname}".gene.trees ;
 
 		done
 	)

@@ -4,12 +4,19 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                            NEXUS2gphocs v1.3, November 2018                            #
-#  SHELL SCRIPT FOR CONVERTING PARTITIONED NEXUS FILE INTO G-PhoCS FORMAT FOR MAGNET     #
-#  PIPELINE                                                                              #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: November 20, 2018. For questions, please email bagleyj@umsl.edu.              #
+#                                                                                        #
+# File: NEXUS2gphocs.sh                                                                  #
+  VERSION="v1.4"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
+# Last update: March 6, 2019                                                             #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT       #
+# FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)            #
+#                                                                                        #
 ##########################################################################################
 
 ############ SCRIPT OPTIONS
@@ -18,20 +25,22 @@ MY_GAP_THRESHOLD=0.001
 MY_INDIV_MISSING_DATA=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -g m] inputNexus 
+USAGE="Usage: $(basename $0) [Help: -h help] [Options: -g m V --version] <inputNexus>
  ## Help:
-  -h   help text (also: -help -H -Help)
+  -h   help text (also: --help) echo this help text and exit
 
  ## Options:
   -g   gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless >1000 
        individuals; takes float proportion value)
   -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed)
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to '.gphocs' format for G-PhoCS software
  (Gronau et al. 2011). Sequence names may not include hyphen characters, or there will be 
  issues. For best results, update to R v3.3.1 or higher.
 
+ DETAILS
  The -g flag supplies a 'gap threshold' to an R script, which deletes all column sites in 
  the DNA alignment with a proportion of gap characters '-' at or above the threshold value. 
  If no gap threshold is specified, all sites with gaps are removed by default. If end goal
@@ -59,27 +68,31 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -g m] inputNexus
  or
  Bagley, J.C. 2019. MAGNET v0.1.5. GitHub package, Available at: 
 	<https://doi.org/10.5281/zenodo.596774>.
+
+Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.
+(c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
 ############ PARSE THE OPTIONS
-while getopts 'h:H:g:m:' opt ; do
+while getopts 'h:g:m:' opt ; do
   case $opt in
 ## Help texts:
-	h) echo "$Usage"
+	h) echo "$USAGE"
        exit ;;
-	H) echo "$Usage"
-       exit ;;
-
 ## Datafile options:
     g) MY_GAP_THRESHOLD=$OPTARG ;;
     m) MY_INDIV_MISSING_DATA=$OPTARG ;;
-
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -88,7 +101,7 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 MY_NEXUS="$1"
@@ -96,7 +109,7 @@ MY_NEXUS="$1"
 
 echo "
 ##########################################################################################
-#                            NEXUS2gphocs v1.3, November 2018                            #
+#                             NEXUS2gphocs v1.4, March 2019                              #
 ##########################################################################################
 "
 
@@ -117,15 +130,15 @@ echo "INFO      | $(date) | Examining current directory, setting variables... "
 	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" $MY_NEXUS | \
 	awk -F"=" '{print $NF}' | sed 's/\;/\,/g' | \
 	awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}' | \
-	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')"
+	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')";
 
 ##--Count number of loci present in the NEXUS file, based on number of charsets defined.
 ##--Also get corrected count starting from 0 for numbering loci below...
-	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)"
-	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)"
+	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)";
+	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)";
 
 ##--This is the base name of the original nexus file, so you have it. This WILL work regardless of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
-	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')"
+	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')";
 
 ##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
 ##--However, if alignment is too long (>100,000 bp), then need to convert to fasta using my 
@@ -136,8 +149,8 @@ echo "INFO      | $(date) | Examining current directory, setting variables... "
 ##--file is not generated.
 
 #---------ADD IF/THEN CONDITIONAL AND MY OWN NEXUS2fasta SCRIPT HERE!!!!----------#
-	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta
-	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')"
+	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta;
+	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')";
 	
 	##--The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
 	##--Check to make sure the fasta was created; if so, echo info, if not, echo warning and quit:
@@ -158,21 +171,21 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 	count=0
 	(
 		for j in ${MY_NEXUS_CHARSETS}; do
-			echo "$j"
-			charRange="$(echo ${j} | sed 's/\,//g')"
-			echo "$charRange"
-			setLower="$(echo ${j} | sed 's/\-.*$//g')"
-			setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')"
+			echo "$j";
+			charRange="$(echo ${j} | sed 's/\,//g')";
+			echo "$charRange";
+			setLower="$(echo ${j} | sed 's/\-.*$//g')";
+			setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
 
-			**/selectSites.pl -s $charRange $MY_FASTA > ./sites.fasta
+			**/selectSites.pl -s $charRange $MY_FASTA > ./sites.fasta;
 			
-			**/fasta2phylip.pl ./sites.fasta > ./sites.phy
+			**/fasta2phylip.pl ./sites.fasta > ./sites.phy;
 
 			##--Need to make sure there is a space between the tip taxon name (10 characters as output
 			##--by the fasta2phylip.pl Perl script) and the corresponding sequence, for all tips. Use
 			##--a perl search and replace for this:
 
-			perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})/$1\ /g' ./sites.phy
+			perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})/$1\ /g' ./sites.phy;
 
 				##--If .phy file from NEXUS charset $j has gaps in alignment, then call 
 				##--rmGapSites.R R script to remove all column positions with gaps from
@@ -180,7 +193,7 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 				##--If charset $j does not have gaps, go to next line of loop. We do the 
 				##--above by first creating a temporary file containing all lines in
 				##--sites.phy with the gap character:
-				grep -n "-" ./sites.phy > ./gaptest.tmp
+				grep -n "-" ./sites.phy > ./gaptest.tmp;
 				
 				##--Next, we test for nonzero testfile, indicating presence of gaps in $j, 
 				##--using UNIX test operator "-s" (returns true if file size is not zero). 
@@ -188,38 +201,38 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 				##--is output by rmGapSites.R and move forward:
 				if [ -s ./gaptest.tmp ]; then
 					echo "Removing column sites in locus"$count" with gaps. "
-					R CMD BATCH **/rmGapSites.R
+					R CMD BATCH **/rmGapSites.R ;
 				else
 			   		echo ""
-			   		cat ./sites.phy > ./sites_nogaps.phy
+			   		cat ./sites.phy > ./sites_nogaps.phy ;
 				fi
 					
-			phylip_header="$(head -n1 ./sites_nogaps.phy)"
-			locus_ntax="$(head -n1 ./sites_nogaps.phy | sed 's/[\ ]*[.0-9]*$//g')"
-			locus_nchar="$(head -n1 ./sites_nogaps.phy | sed 's/[0-9]*\ //g')"
+			phylip_header="$(head -n1 ./sites_nogaps.phy)" ;
+			locus_ntax="$(head -n1 ./sites_nogaps.phy | sed 's/[\ ]*[.0-9]*$//g')" ;
+			locus_nchar="$(head -n1 ./sites_nogaps.phy | sed 's/[0-9]*\ //g')" ;
 			
         		if [ $MY_INDIV_MISSING_DATA == 0 ]; then
-					sed '1d' ./sites_nogaps.phy | egrep -v 'NNNNNNNNNN|nnnnnnnnnn' > ./cleanLocus.tmp
-					cleanLocus_ntax="$(cat ./cleanLocus.tmp | wc -l)"
-					echo locus"$((count++))" $cleanLocus_ntax $locus_nchar > ./locus_top.tmp
-					cat ./locus_top.tmp ./cleanLocus.tmp >> ./gphocs_body.txt
+					sed '1d' ./sites_nogaps.phy | egrep -v 'NNNNNNNNNN|nnnnnnnnnn' > ./cleanLocus.tmp ;
+					cleanLocus_ntax="$(cat ./cleanLocus.tmp | wc -l)" ;
+					echo locus"$((count++))" $cleanLocus_ntax $locus_nchar > ./locus_top.tmp ;
+					cat ./locus_top.tmp ./cleanLocus.tmp >> ./gphocs_body.txt ;
 				else
-					echo locus"$((count++))" $locus_ntax $locus_nchar > ./locus_top.tmp
-					cat ./locus_top.tmp ./sites_nogaps.phy >> ./gphocs_body.txt
+					echo locus"$((count++))" $locus_ntax $locus_nchar > ./locus_top.tmp ;
+					cat ./locus_top.tmp ./sites_nogaps.phy >> ./gphocs_body.txt ;
 				fi
 
-			rm ./sites.fasta ./sites.phy ./*.tmp
-			rm ./sites_nogaps.phy
+			rm ./sites.fasta ./sites.phy ./*.tmp ;
+			rm ./sites_nogaps.phy ;
 		done
 	)
 
-	grep -v "^[0-9]*\ [0-9]*.*$" ./gphocs_body.txt > ./gphocs_body_fix.txt
-	cat ./gphocs_top.txt ./gphocs_body_fix.txt > $MY_NEXUS_BASENAME.gphocs
+	grep -v "^[0-9]*\ [0-9]*.*$" ./gphocs_body.txt > ./gphocs_body_fix.txt ;
+	cat ./gphocs_top.txt ./gphocs_body_fix.txt > $MY_NEXUS_BASENAME.gphocs ;
 
 	############ STEP #4: CLEANUP: REMOVE UNNECESSARY FILES
-	rm ./gphocs_top.txt
-	rm ./gap_threshold.txt
-	rm ./gphocs_body.txt
+	rm ./gphocs_top.txt ;
+	rm ./gap_threshold.txt ;
+	rm ./gphocs_body.txt ;
 
 echo "INFO      | $(date) | Successfully created a '.gphocs' input file from the existing NEXUS file... "
 echo "INFO      | $(date) | Bye.

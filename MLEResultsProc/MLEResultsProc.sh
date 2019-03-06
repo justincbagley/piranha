@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MLEResultsProc.sh                                                                #
-  version="v1.2"                                                                         #
+  VERSION="v1.3"                                                                         #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Fri Jul 29 11:21:37 2016 -0300                       #
-# Last update: August 22, 2017                                                           #
+# Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.                     #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR POST-PROCESSING OF MARGINAL LIKELIHOOD ESTIMATION RESULTS FROM        #
@@ -19,14 +19,14 @@
 #                                                                                        #
 ##########################################################################################
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
 echo "
 ##########################################################################################
-#                            MLEResultsProc v1.2, August 2017                            #
+#                            MLEResultsProc v1.3, March 2019                             #
 ##########################################################################################
 "
 
@@ -48,11 +48,9 @@ echo "INFO      | $(date) | STEP #2: CHECK BEAST VERSION (DETECT AND ACCOMODATE 
 	y="$(cat file.tmp)"
 
 	MY_BEAST1_VER_CHECK="$(grep -h 'BEAST\ v1' $y | wc -l)"
-#	echo "MY_BEAST1_VER_CHECK is $MY_BEAST1_VER_CHECK "
 	MY_BEAST1_VER_CHECK2="$(grep -h 'log\ marginal\ likelihood' $y | wc -l)"
 
 	MY_BEAST2_VER_CHECK="$(grep -h 'BEAST\ v2' $y | wc -l)"
-#	echo "MY_BEAST2_VER_CHECK is $MY_BEAST2_VER_CHECK "
 	MY_BEAST2_VER_CHECK2="$(grep -h 'marginal\ L\ estimate' $y | wc -l)"
 
 	rm ./file.tmp
@@ -105,13 +103,9 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 			echo "$(basename $i)" > "${i}"_filename.tmp
 #
 				grep -n "marginal L estimate =" ${i} | \
-				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp
+				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp ;
 	
-##				grep -n "log marginal likelihood (using stepping stone sampling) from pathLikelihood.delta =" ${i} | \
-##				awk -F"= " '{print $NF}' > "${i}"_SSMLEs.tmp
-#
-				MY_PS_RESULT="$(head -n1 ${i}_PSMLEs.tmp)"
-##				MY_SS_RESULT="$(head -n1 ${i}_SSMLEs.tmp)"
+				MY_PS_RESULT="$(head -n1 ${i}_PSMLEs.tmp)" ;
 #
 	
 			##--The next step will be putting a final file of the MLE results together. Here,
@@ -125,14 +119,12 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 			##--In order to fix this, we simply will add zeros in place of the SS_MLE values 
 			##--(in place of "$MY_SS_RESULT" on Line 60 above), effectively creating a "dummy"
 			##--variable of the third column, as follows:
-			echo "${i}"_filename.tmp "$MY_PS_RESULT" 0 >> data.tmp
+			echo "${i}"_filename.tmp "$MY_PS_RESULT" 0 >> data.tmp ;
 		done
 	)
 
-	rm ./*_filename.tmp
-	rm ./*_PSMLEs.tmp
-##	rm ./*_SSMLEs.tmp
-
+	rm ./*_filename.tmp ;
+	rm ./*_PSMLEs.tmp ;
 }
 
 
@@ -155,12 +147,12 @@ fi
 
 echo "INFO      | $(date) | STEP #4: ARRANGE MLE RESULTS IN TAB-DELIMITED FILE WITH HEADER. "
 	echo "INFO      | $(date) |          Placing results into 'MLE.output.txt' in current working directory. "
-	echo "File	PS_MLE	SS_MLE" > header.txt	## Make header row. Change these codes as needed.
-	cat header.txt data.tmp | sed 's/\_filename.tmp//g; s/\ /	/g' > MLE.output.txt
+	echo "File	PS_MLE	SS_MLE" > header.txt ;	## Make header row. Change these codes as needed.
+	cat header.txt data.tmp | sed 's/\_filename.tmp//g; s/\ /	/g' > MLE.output.txt ;
 
 	echo "INFO      | $(date) |          Cleaning up... "
-	rm header.txt
-	rm data.tmp
+	rm header.txt ;
+	rm data.tmp ;
 
 
 echo "INFO      | $(date) | STEP #5: LOAD MLE RESULTS INTO R AND COMPUTE BAYES FACTOR TABLES. "

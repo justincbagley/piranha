@@ -6,16 +6,18 @@
 # |                                                                                      #
 #                                                                                        #
 # File: 2logeB10.r (Rscript)                                                             #
-# version="v1.1"                                                                         #
+#  VERSION="v1.2"                                                                        #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Fri Aug 19 00:23:07 2016 -0300                       #
-# Last update: August 22, 2017                                                           #
+# Date: Created by Justin Bagley on Fri, 19 Aug 2016 00:23:07 -0300.                     #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 #                                                                                        #
 ##########################################################################################
+
+######################################## START ###########################################
 
 ##--Load needed library, R code, or package stuff. Install package if not present.
 #source("2logeB10.R", chdir = TRUE)
@@ -112,6 +114,7 @@ sink()
 ##--matrix in which the above-diagonal elements were the same as the below-diagonal elements, 
 ##--only with the opposite sign. Such a table would be equivalent to the Bayes factors table 
 ##--already written to file in the step above, and thus would be unnecessary.
+
 sink("2logeB10.output.txt", append=TRUE)
 if( (sum(PS_vec) != '0') & (sum(SS_vec) != '0') ){    
 cat("################################ BAYES FACTOR DIFFERENCES ################################

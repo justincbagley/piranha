@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  version="v1.1"                                                                         #
+  VERSION="v1.1"                                                                         #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley in November 2018                                        #
+# Date: Created by Justin Bagley on Wed, 14 Nov 2018 10:12:31 -0600.                     #
 # Last update: November 14, 2018                                                         #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT CONVERTING SEQUENTIAL NEXUS FILE INTO PHYLIP (AND OPTIONALLY ALSO FASTA)  #
@@ -27,10 +27,10 @@ MY_KEEP_FASTA_SWITCH=0
 MY_OVERWRITE_SWITCH=1
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputNexus 
+USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -c v k o V --version] <inputNEXUS> 
  ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+  -h   help text (also: --help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
 
  ## Options:
   -c   nameChars (def: 10-character names) number of characters to which tip taxon names
@@ -41,6 +41,7 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
        intermediate fasta files generated during the run
   -o   fastaOverwrite (def: 1, on; 0, off) whether or not to force overwrite of fasta 
        files in current working directory (e.g. from previous steps of pipeline)
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
@@ -60,14 +61,14 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputN
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
-Created by Justin Bagley in November 2018 
+Created by Justin Bagley on Wed, 14 Nov 2018 10:12:31 -0600.
 Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] inputNexus 
+VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -c v k o V --version] <inputNEXUS> 
  ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+  -h   help text (also: --help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
 
  ## Options:
   -c   nameChars (def: 10-character names) number of characters to which tip taxon names
@@ -78,6 +79,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] 
        intermediate fasta files generated during the run
   -o   fastaOverwrite (def: 1, on; 0, off) whether or not to force overwrite of fasta 
        files in current working directory (e.g. from previous steps of pipeline)
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 
@@ -98,7 +100,7 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] 
  The -v flag allows users to choose verbose output that prints name conversions, as well as
  step information (what the program is doing), to stdout. Off by default.
 
- The -k flag specifies whether to keep intermediate fasta files, one per <inputNexus>, 
+ The -k flag specifies whether to keep intermediate fasta files, one per <inputNEXUS>, 
  generated during a run of the script. Fasta files are deleted by default, but if set to 
  keep (1), fastas will be moved to a sub-folder named 'fasta' at the end of the run.
 
@@ -118,22 +120,22 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -c v k o] 
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3. 
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
-Created by Justin Bagley in November 2018 
+Created by Justin Bagley on Wed, 14 Nov 2018 10:12:31 -0600.
 Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
-	echo "$verboseHelp"
+	echo "$VERBOSE_USAGE"
 	exit
 fi
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -141,23 +143,21 @@ fi
 while getopts 'c:v:k:o:' opt ; do
   case $opt in
 ## Help texts:
-	h) echo "$Usage"
+	h) echo "$USAGE"
        exit ;;
-	H) echo "$Usage"
+	H) echo "$VERBOSE_USAGE"
        exit ;;
-
 ## Datafile options:
     c) MY_NAME_NCHARS_SWITCH=$OPTARG ;;
     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
     k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
     o) MY_OVERWRITE_SWITCH=$OPTARG ;;
-
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -166,15 +166,14 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 MY_NEXUS="$1"
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-
-echo "
+	echo "
 ##########################################################################################
 #                            NEXUS2PHYLIP v1.0, November 2018                            #
 ##########################################################################################
@@ -184,7 +183,7 @@ fi
 ######################################## START ###########################################
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-echo "INFO      | $(date) |          STEP #1: SETUP ENVIRONMENT. "
+	echo "INFO      | $(date) |          STEP #1: SETUP ENVIRONMENT. "
 fi
 ############ STEP #1: SETUP FUNCTIONS AND ENVIRONMENTAL VARIABLES
 ###### Set filetypes as different variables:
@@ -197,51 +196,51 @@ fi
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-echo "INFO      | $(date) |          STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT. "
+	echo "INFO      | $(date) |          STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT. "
 fi
 ############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
 ##--Extract charset info from sets block at end of NEXUS file: 
 	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" $MY_NEXUS | \
 	awk -F"=" '{print $NF}' | sed 's/\;/\,/g' | \
 	awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}' | \
-	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')"
+	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')";
 
 ##--Count number of loci present in the NEXUS file, based on number of charsets defined.
 ##--Also get corrected count starting from 0 for numbering loci below...
-	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)"
-	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)"
+	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)";
+	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)";
 
 ##--This is the base name of the original nexus file, so you have it. This WILL work regardless 
 ##--of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
-	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')"
+	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')";
 
 ##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
 	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
-		rm ./"$MY_NEXUS_BASENAME".fasta
+		rm ./"$MY_NEXUS_BASENAME".fasta;
 	fi
-	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta
-	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')"
+	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta;
+	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')";
 
 ##--Convert data file from fasta to PHYLIP format using Nayoki Takebayashi fasta2phylip.pl 
 ##--Perl script (must be available from CLI):
 	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 
 		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy
+			rm ./"$MY_NEXUS_BASENAME".phy;
 		fi
 		fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 
 		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy
+			rm ./"$MY_NEXUS_BASENAME".phy;
 		fi
 		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 
 		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy
+			rm ./"$MY_NEXUS_BASENAME".phy;
 		fi
 		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy		
 
@@ -249,7 +248,7 @@ fi
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-echo "INFO      | $(date) |          STEP #3: FIX PHYLIP TIP TAXON NAMES. "
+	echo "INFO      | $(date) |          STEP #3: FIX PHYLIP TIP TAXON NAMES. "
 fi
 ############ STEP #3: FIX SPACE BETWEEN TIP TAXON NAME AND SEQUENCE, AND CHECK OUTPUT PHYLIP ALIGNMENT CHARACTERISTICS AGAINST NEXUS INFO.
 ##--Tip taxon name fixes are implemented, but code for checking PHYLIP file against NEXUS 
@@ -257,36 +256,36 @@ fi
 
 	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]]; then
 
-		perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy
+		perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy;
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -le "9" ]]; then
 
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "9" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{9})[A-Za-z\_0-9\-\ ]{1}(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{9})[A-Za-z\_0-9\-\ ]{1}(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "8" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{8})[A-Za-z\_0-9\-\ ]{2}(.*)/$1\ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{8})[A-Za-z\_0-9\-\ ]{2}(.*)/$1\ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "7" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{7})[A-Za-z\_0-9\-\ ]{3}(.*)/$1\ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{7})[A-Za-z\_0-9\-\ ]{3}(.*)/$1\ \ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "6" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{6})[A-Za-z\_0-9\-\ ]{4}(.*)/$1\ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{6})[A-Za-z\_0-9\-\ ]{4}(.*)/$1\ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "5" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{5})[A-Za-z\_0-9\-\ ]{5}(.*)/$1\ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{5})[A-Za-z\_0-9\-\ ]{5}(.*)/$1\ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "4" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{4})[A-Za-z\_0-9\-\ ]{6}(.*)/$1\ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{4})[A-Za-z\_0-9\-\ ]{6}(.*)/$1\ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "3" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{3})[A-Za-z\_0-9\-\ ]{7}(.*)/$1\ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{3})[A-Za-z\_0-9\-\ ]{7}(.*)/$1\ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "2" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{2})[A-Za-z\_0-9\-\ ]{8}(.*)/$1\ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{2})[A-Za-z\_0-9\-\ ]{8}(.*)/$1\ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "1" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{1})[A-Za-z\_0-9\-\ ]{9}(.*)/$1\ \ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{1})[A-Za-z\_0-9\-\ ]{9}(.*)/$1\ \ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy;
 		fi
 		
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -gt "9" ]]; then
@@ -298,13 +297,13 @@ fi
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-echo "INFO      | $(date) |          STEP #3: CLEAN UP INTERMEDIATE FASTA FILES IN WORKING DIRECTORY. "
+	echo "INFO      | $(date) |          STEP #3: CLEAN UP INTERMEDIATE FASTA FILES IN WORKING DIRECTORY. "
 fi
 ############ STEP #4: CLEAN UP (REMOVE, OR KEEP & ORGANIZE) INTERMEDIATE FASTA FILES IN WORKING DIRECTORY.
 ##--Clean up intermediate fasta files:
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
 
-		rm ./"$MY_NEXUS_BASENAME".fasta
+		rm ./"$MY_NEXUS_BASENAME".fasta;
 
 	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "0" ]]; then
 
@@ -330,11 +329,10 @@ fi
 
 	
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
-echo "INFO      | $(date) | Bye.
+	echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
+	echo "INFO      | $(date) | Bye.
 "
 fi
-
 #
 #
 #

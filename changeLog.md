@@ -1,5 +1,11 @@
 # PIrANHA Change Log
 
+## Since last release
+- **March 2019:** Changed license to 3-Clause BSD license. Need to delete old versions still available on GitHub or Zenodo with GPLv2+ license, so that only this release, with current license, is available.
+- **March 2019:** Updated script headers, dates, and copyright information, most scripts.
+- **February – March 2019:** Added -V and --version flag options, to echo version to screen, to most scripts in the repo.
+
+
 ## PIrANHA v0.1.7 (official minor version release) - February 19, 2019
 - **February 19 2019:** Improved ```phylipSubsampler.sh``` to check and account for differences in machine type. Now correctly accommodations UNIX (Mac) and LINUX systems.
 - **February 19 2019:** Updated MAGNET script by adding a getBipartTrees function to the MAGNET pipeline, which organizes RAxML bipartitions trees for each locus (= best ML trees with bootstrap proportions along nodes the corresponding bootstrap searches search; resulting from ```-f a -x```options, which are included in all MAGNET calls to RAxML). Edited header and script banner to be prepped for future official release of MAGNET with versioning 0.1.9.

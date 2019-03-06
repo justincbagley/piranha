@@ -4,13 +4,20 @@
 #  __  o  __   __   __  |__   __                                                         #
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
-#                              BEASTReset v0.1.1, May 2018                               #
-#  SHELL SCRIPT AUTOMATING RESETTING THE RANDOM STARTING SEEDS FOR n SHELL SCRIPTS       #
-#  CORRESPONDING TO n BEAST RUNS (SETUP IN A SERIES OF n RUN FOLDERS) DESTINED FOR A     #
-#  REMOTE SUPERCOMPUTER                                                                  #
-#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
-#  available in the PIrANHA repository (https://github.com/justincbagley/PIrANHA/). Last #
-#  update: May 13, 2018. For questions, please email bagleyj@umsl.edu.                   #
+#                                                                                        #
+# File: BEASTReset.sh                                                                    #
+  VERSION="v0.1.2"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.                     #
+# Last update: March 6, 2019                                                             #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT AUTOMATING RESETTING THE RANDOM STARTING SEEDS FOR n SHELL SCRIPTS        #
+# CORRESPONDING TO n BEAST RUNS (SETUP IN A SERIES OF n RUN FOLDERS) DESTINED FOR A      #
+# REMOTE SUPERCOMPUTER                                                                   #
+#                                                                                        #
 ##########################################################################################
 
 ##################################### BEASTReset.sh ######################################
@@ -22,7 +29,7 @@ MY_RUN_SCRIPT=beast_pbs.sh
 MY_SC_MANAGEMENT_SYS=PBS
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] [stdin:] <workingDir>
+Usage="Usage: $(basename $0) [Help: -h help] [Options: -i s m V --version] [stdin:] <workingDir>
  ## Help:
   -h   help text (also: -help)
   -H   verbose help text (also: -Help)
@@ -74,10 +81,18 @@ Usage="Usage: $(basename "$0") [Help: -h help] [Options: -i s m] [stdin:] <worki
  REFERENCES
  Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<http://github.com/justincbagley/PIrANHA>.
+
+Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.
+Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
@@ -115,7 +130,7 @@ echo "$USER_SPEC_PATH "
 
 echo "
 ##########################################################################################
-#                              BEASTReset v0.1.1, May 2018                               #
+#                             BEASTReset v0.1.2, March 2019                              #
 ##########################################################################################
 "
 
@@ -124,12 +139,24 @@ echo "INFO      | $(date) | Starting BEASTReset script... "
 echo "INFO      | $(date) | STEP #1: SETUP. "
 ###### Set new path/dir environmental variable to user specified path, then create useful
 ##--shell functions and variables:
-if [[ "$USER_SPEC_PATH" = "$(echo $(pwd))" ]]; then
-	MY_PATH=`pwd -P`
-	echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "
-elif [[ "$USER_SPEC_PATH" != "$(echo $(pwd))" ]]; then
-	MY_PATH=$USER_SPEC_PATH
-	echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "	
+############ SET AND MOVE INTO WORKING DIRECTORY
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	MY_PATH="$(pwd -P | perl -pe 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_PATH "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+			MY_PATH="$(pwd -P | perl -pe 's/\\//g')"
+			echo "INFO      | $(date) |          Setting working directory to:  "
+			echo "$MY_PATH "
+	else
+		MY_PATH=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_PATH "
+		cd "$MY_PATH"
+	fi
 else
 	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
 	exit 1
