@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PhyloMapperNullProc.sh                                                           #
-  VERSION="v1.0"                                                                         #
+  VERSION="v1.1"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300.                     #
 # Last update: March 3, 2019                                                             #
@@ -26,7 +26,7 @@ fi
 
 echo "
 ##########################################################################################
-#                          PhyloMapperNullProc v1, October 2016                          #
+#                          PhyloMapperNullProc v1.1, March 2019                          #
 ##########################################################################################
 "
 
@@ -45,16 +45,16 @@ e.g. 'ingroup' : " focalClade
 
 
 	##--File processing steps coded w/new output file names:
-	grep '\t'$focalClade'' $(echo $MY_LOGFILE) > ./pm_"$focalClade"_ancest.tmp
-	sed 's/.*'$focalClade'//g; s/^	//g' ./pm_"$focalClade"_ancest.tmp > pm_"$focalClade"_ancest_2.tmp
-	echo "LATITUDE   LONGITUDE" > header.tmp
+	grep '\t'$focalClade'' $(echo $MY_LOGFILE) > ./pm_"$focalClade"_ancest.tmp ;
+	sed 's/.*'$focalClade'//g; s/^	//g' ./pm_"$focalClade"_ancest.tmp > pm_"$focalClade"_ancest_2.tmp ;
+	echo "LATITUDE   LONGITUDE" > header.tmp ;
 
-	cat header.tmp pm_"$focalClade"_ancest_2.tmp > ./pm_"$focalClade"_ancestLocs.txt
+	cat header.tmp pm_"$focalClade"_ancest_2.tmp > ./pm_"$focalClade"_ancestLocs.txt ;
 
-	rm ./*.tmp
+	rm ./*.tmp;
 
 
-echo "INFO      | $(date) | Done processing results of PhyloMapper null (randomization) analysis."
+echo "INFO      | $(date) | Done processing results of PhyloMapper null (randomization) analysis. "
 echo "INFO      | $(date) | Bye.
 "
 #
