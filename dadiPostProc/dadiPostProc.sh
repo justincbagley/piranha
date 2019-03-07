@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiPostProc.sh                                                                  #
-  VERSION="v0.1.2"                                                                       #
+  VERSION="v0.1.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -152,14 +152,12 @@ fi
 USER_SPEC_PATH="$1"
 
 echo "
-##########################################################################################
-#                             dadiPostProc v0.1.2, March 2019                            #
-##########################################################################################
-"
-
+dadiPostProc v0.1.3, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dadiPostProc analysis... "
-echo "INFO      | $(date) | STEP #1: SETUP, AND DETECT ONE OR MULTIPLE ∂a∂i RUN SUB-FOLDERS IN CURRENT DIR. "
+echo "INFO      | $(date) | Step #1: Set up workspace, detect one or multiple ∂a∂i run subfolders in current directory. "
 echo "INFO      | $(date) |          Setting user-specified path to: "
 echo "$USER_SPEC_PATH "	
 	calc () { 
@@ -175,8 +173,8 @@ elif [[ "$(find . -type d | wc -l)" -gt "1" ]]; then
 fi
 
 
-echo "INFO      | $(date) | STEP #2: POST-PROCESSING OUTPUT FILE: EXTRACTING & SAVING BEST-FIT PARAMETERS, COMPOSITE LIKELIHOOD, AND "
-echo "INFO      | $(date) |          OPTIMAL THETA ESTIMATE (IF PRESENT) TO A SINGLE FILE WITH THE SAME BASENAME AS THE RUN FOLDER. "
+echo "INFO      | $(date) | Step #2: Post-processing output file: Extract & save best-fit parameters, composite likelihood, and "
+echo "INFO      | $(date) |          optimal theta estimate (if present) to a single file with same basename as the run folder. "
 
 
 ## if MY_MULTIRUN_DIR_SWITCH=FALSE, ...
@@ -349,8 +347,8 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "TRUE" ]]; then
 	)
 
 
-echo "INFO      | $(date) | STEP #3: FOR MULTIRUN CASE, COLLATE RESULTS FROM FILES (IN ./output/ DIR) FROM INDPENENDENT RUNS OF THE "
-echo "INFO      | $(date) |          SAME MODEL, LOOKING FOR SEPARATE M1 (MODEL 1) RUN FILES CONTAINING FILENAMES PREFIXED WITH 'M1'. "
+echo "INFO      | $(date) | Step #3: For multirun case, collate results from files (in ./output/ dir) from independent runs of the "
+echo "INFO      | $(date) |          same model, looking for separate M1 (model 1) run files containing filenames prefixed with 'M1'. "
 ###### Here, recursively cat results from all files with the same model names in their prefixes 
 ##--(cycling through M1 to Mx, where x is the total number of models) into separate summaries 
 ##--for each model (e.g. one file for 10 M1 runs, a second file for 10 M2 runs, and so on).
@@ -369,8 +367,10 @@ fi
 ######
 
 
-echo "INFO      | $(date) | Done post-processing results from one or multiple ∂a∂i runs using the dadiPostProc utility of PIrANHA. "
-echo "Bye.
+#echo "INFO      | $(date) | Done post-processing results from one or multiple ∂a∂i runs using the dadiPostProc utility of PIrANHA. "
+#echo "Bye.
+#"
+echo "------------------------------------------------------------------------------------------
 "
 #
 #
