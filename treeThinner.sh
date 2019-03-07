@@ -9,7 +9,7 @@
   VERSION="v1.1"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.                     #
-# Last update: March 3, 2019                                                             #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -25,10 +25,9 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 echo "
-##########################################################################################
-#                             treeThinner v1.1, March 2019                               #
-##########################################################################################
-"
+treeThinner v1.1, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 
 ######################################## START ###########################################
 ## NOTE: try to expand to multiple treefile formats in future versions.
@@ -41,36 +40,49 @@ echo "
 ## the trees; and 4) paste the header, the trees, and an appropriate final 1-2 lines 
 ## back together as a final output .t file that has been "thinned".
 
-### STEP #1:
-read -p "Please enter the name of your MrBayes .t trees file : " MY_TFILE ;
-read -p "Please enter the frequency (n) of nth lines that you would like to keep : " NTH_LINES ;
-
+echo "INFO      | $(date) | Step #1: Set up workspace and read user input. "
+############ I. SET UP WORKSPACE.
+## Nothing to do for working dir because script executes in current working dir (of execution/
+## sourcing). Only echo cwd to screen:
+MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
+echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "
 calc () {
 	bc -l <<< "$@"
 }
+
+read -p "Please enter the name of your MrBayes .t trees file : " MY_TFILE ;
+read -p "Please enter the frequency (n) of nth lines that you would like to keep : " NTH_LINES ;
+
    MY_FIRST_TREELINE=$(awk '/&U/{ print NR}' $MY_TFILE | head -n1) ;
    MY_NUM_HEADER_LINES="$(calc $MY_FIRST_TREELINE - 1)" ;
 
+echo "INFO      | $(date) | Step #2: Extract header. "
 ### STEP #2:
-   head -n$MY_NUM_HEADER_LINES $MY_TFILE > header.txt ;
+   head -n$MY_NUM_HEADER_LINES $MY_TFILE > ./header.txt ;
    ## alternatively, extracting only interior lines: ~$ sed -n <first_line>,<second_line>p filename > newfile
 
+echo "INFO      | $(date) | Step #3: Thin trees. "
 ### STEP #3:
    grep "&U" $MY_TFILE > trees.txt ;
    awk 'NR == 1 || NR % '$NTH_LINES' == 0' ./trees.txt | sed '1d' > thinned_trees.txt ;
 
-### STEP #4:
+echo "INFO      | $(date) |          Make complete file with thinned trees from every nth line. "
    echo "END;
 " > ./end.txt
 
    cat ./header.txt ./thinned_trees.txt ./end.txt > ./nth_line_trees.t ;
 
+echo "INFO      | $(date) | Step #4: Clean up workspace. "
 ### CLEANUP.
+echo "INFO      | $(date) |          Removing temporary files created during the run... "
    rm ./header.txt ;
    rm ./trees.txt ;
    rm ./thinned_trees.txt ;
    rm ./end.txt ;
 
+echo "------------------------------------------------------------------------------------------"
+echo "output file: ./nth_line_trees.t
+"
 #
 #
 #

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PhyloMapperNullProc.sh                                                           #
-  VERSION="v1.1"                                                                         #
+  VERSION="v1.2"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300.                     #
-# Last update: March 3, 2019                                                             #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -25,11 +25,19 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 echo "
-##########################################################################################
-#                          PhyloMapperNullProc v1.1, March 2019                          #
-##########################################################################################
-"
+PhyloMapperNullProc v1.2, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 
+echo "INFO      | $(date) | Step #1: Set up workspace and read user input. "
+############ I. SET UP WORKSPACE.
+## Nothing to do for working dir because script executes in current working dir (of execution/
+## sourcing). Only echo cwd to screen:
+MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
+echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "
+
+echo "INFO      | $(date) | Step #2: Read and process PhyloMapper null model results file. "
+############ II. READ IN AND PROCESS PHYLOMAPPER LOG FILE.
 MY_LOGFILE=$(echo ./*.log)
 echo "INPUT     | $(date) |         Read in the following PhyloMapper log file: $MY_LOGFILE "
 MY_LOGFILE_BASENAME="$(echo $MY_LOGFILE | sed 's/\.\///g; s/\.log//g')"
@@ -51,11 +59,17 @@ e.g. 'ingroup' : " focalClade
 
 	cat header.tmp pm_"$focalClade"_ancest_2.tmp > ./pm_"$focalClade"_ancestLocs.txt ;
 
+echo "INFO      | $(date) | Step #3: Clean up workspace. "
+### CLEANUP.
+echo "INFO      | $(date) |          Removing temporary files created during the run... "
 	rm ./*.tmp;
 
 
-echo "INFO      | $(date) | Done processing results of PhyloMapper null (randomization) analysis. "
-echo "INFO      | $(date) | Bye.
+#echo "INFO      | $(date) | Done processing results of PhyloMapper null (randomization) analysis. "
+#echo "INFO      | $(date) | Bye.
+#"
+echo "------------------------------------------------------------------------------------------"
+echo "output file: ./pm_${focalClade}_ancestLocs.txt
 "
 #
 #
