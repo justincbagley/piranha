@@ -91,9 +91,9 @@ VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n l u V -
  of 10 being the default, used for a model set with ten models named M1 to M10.
  
 		## Usage examples: 
-		"$0" .				## Using the defaults.
-		"$0" -n 10 -l 1 -u 10 .		## A case equal to the defaults.
-		"$0" -n 5 -l 2 -u 7 .		## Illustrating that dadiPostProc accomodates model number
+		$0 .				## Using the defaults.
+		$0 -n 10 -l 1 -u 10 .		## A case equal to the defaults.
+		$0 -n 5 -l 2 -u 7 .		## Illustrating that dadiPostProc accomodates model number
 								## ranges starting from values other than 1.
 
  CITATION
@@ -105,7 +105,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n l u V -
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLOS Genetics 5(10): e1000695
 
-Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400
+Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.
 Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
