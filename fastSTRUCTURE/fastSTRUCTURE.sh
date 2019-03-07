@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: fastSTRUCTURE.sh                                                                 #
-  VERSION="v1.1"                                                                         #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.                     #
-# Last update: September 7, 2016                                                         #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -26,7 +26,7 @@ fi
 
 echo "
 ##########################################################################################
-#                         fastSTRUCTURE.sh v1.1, September 2016                          #
+#                          fastSTRUCTURE.sh v1.1.1, March 2019                           #
 ##########################################################################################
 "
 
