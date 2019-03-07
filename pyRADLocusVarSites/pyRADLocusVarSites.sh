@@ -102,7 +102,8 @@ fi
 #echo "INFO      | $(date) | Done calculating numbers of variable sites in pyRAD .loci file(s) and ranking SNP loci by variability. "
 #echo "INFO      | $(date) | Bye.
 #"
-echo "------------------------------------------------------------------------------------------"
+echo "------------------------------------------------------------------------------------------
+"
 #
 #
 #
