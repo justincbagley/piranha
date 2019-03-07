@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiUncertainty.sh                                                               #
-  VERSION="v0.1.0"                                                                       #
+  VERSION="v0.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400                       #
-# Last update: October 3, 2017                                                           #
+# Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -33,9 +33,9 @@ MY_BESTMOD_PARAM_ESTIMATES=0.1,0.1,0.1,0.1,0.1,0.1
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] [stdin:] <inputVCFFile>
+USAGE="Usage: $(basename $0) [Help: -h help] [Options: -a i p n m s e d V --version] [stdin:] <inputVCFFile>
  ## Help:
-  -h   help text (also: -help)
+  -h   help text (also: --help) echo this help text and exit
 
  ## Options:
   -a   assignmentFile (def: $MY_ASSIGNMENT_FILE) Name of population/species assignment file,
@@ -55,6 +55,7 @@ USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] [stdi
        estimates from original model run (beforehand)
   -d   deleteOrig (def: 0=no; other: 1=yes) specifies whether or not to delete the original
        input .vcf file
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  THIS SCRIPT automates conducting uncertainty analysis in ∂a∂i v1.7+ (Gutenkunst et al. 
@@ -67,9 +68,8 @@ USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] [stdi
  each individual in the VCF file to population/species; (3) the original python file corres-
  ponding to the ∂a∂i model being evaluated; (4) the site frequency spectrum file used during
  the original model analysis; and (5) this script, with correct permissions set.
- 
- From the above starting conditions, dadiUncertainty.sh will automate file preparation and 
- processing, as well as either one or both of the following uncertainty analyses described
+	From the above starting conditions, dadiUncertainty.sh will automate file preparation 
+ and processing, as well as either one or both of the following uncertainty analyses described
  in the ∂a∂i user manual: (A) uncertainty estimation using the Godambe Information Matrix 
  (GIM), in which case the user must specify the number of bootstrapped datasets that the 
  analysis should be based on; or (B) uncertainty estimation using a Fisher Information Matrix
@@ -79,15 +79,13 @@ USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] [stdi
  disequilibrium (e.g. created by physical proximity, or by gene flow). However, if the user
  has some _a priori_ reason to believe that their SNPs are unlinked, then a FIM analysis
  may be justified.
- 
- In the case of a GIM analysis, the software will output a 'bootstrap_data' folder containing
- the bootstrapped datasets, a 'bootstrap_fs' folder of frequency spectrum files (corresponding 
- 1-to-1 to the bootstrapped datasets), and an 'uncerts_GIM.txt' output file containing the 
- GIM-based standard deviations. In the case of FIM analysis, the software will output only a 
- single 'uncerts_FIM.txt' file containing the FIM-based standard deviations. 
- 
- For additional details about GIM and FIM analyses, see the ∂a∂i user's manual as well as 
- the paper by Coffman et al. (2015).
+	In the case of a GIM analysis, the software will output a 'bootstrap_data' folder
+ with the bootstrapped datasets, an 'bootstrap_fs' folder of frequency spectrum files 
+ (corresponding 1-to-1 to the bootstrapped datasets), and an 'uncerts_GIM.txt' output file 
+ containing the GIM-based standard deviations. In the case of FIM analysis, the software will 
+ output only a single 'uncerts_FIM.txt' file containing the FIM-based standard deviations. 
+	For additional details about GIM and FIM analyses, see the ∂a∂i user's manual as well 
+ as the paper by Coffman et al. (2015).
  
 		## Usage examples: 
 		##--Example from 'real' analysis of a three-population southwestern white pine dataset
@@ -107,13 +105,13 @@ USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] [stdi
 		4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf
  
  CITATION
- Bagley, J.C. 2017. PIrANHA. GitHub package, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: 
 	<http://github.com/justincbagley/PIrANHA>.
  or
- Bagley, J.C. 2017. PIrANHA. [Data set] Zenodo, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. [Data set] Zenodo, Available at: 
 	<http://doi.org/10.5281/zenodo.596766>.
  or
- Bagley, J.C. 2017. justincbagley/PIrANHA. GitHub package, Available at: 
+ Bagley, J.C. 2019. justincbagley/PIrANHA. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.596766>.
 
  REFERENCES
@@ -124,7 +122,7 @@ USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -a i p n m s e d] [stdi
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLoS Genetics, 5(10), e1000695.
 
-Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400
+Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.
 Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
@@ -133,7 +131,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	exit
 fi
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
@@ -141,8 +139,7 @@ fi
 ############ PARSE THE OPTIONS
 while getopts 'a:i:p:n:m:s:e:d:' opt ; do
   case $opt in
-
-## vcfSubsampler options:
+## dadiUncertainty options:
     a) MY_ASSIGNMENT_FILE=$OPTARG ;;
     i) MY_POP_IDS=$OPTARG ;;
     p) My_PROJECTION_VALUES=$OPTARG ;;
@@ -151,7 +148,6 @@ while getopts 'a:i:p:n:m:s:e:d:' opt ; do
     s) MY_DADI_MODEL_SCRIPT=$OPTARG ;;
     e) MY_BESTMOD_PARAM_ESTIMATES=$OPTARG ;;
     d) DELETE_ORIG_VCF=$OPTARG ;;
-
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
        echo "$USAGE" >&2
@@ -166,12 +162,11 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$USAGE"
-  exit 1
+	echo "$USAGE"
+	exit 1
 fi
 ## Make input file a mandatory parameter:
 MY_INPUT_VCF="$1"
-
 
 echo "
 ##########################################################################################
@@ -183,10 +178,9 @@ echo "
 echo "INFO      | $(date) | Starting dadiUncertainty analysis... "
 
 ###### Set paths and filetypes as different variables:
-	MY_WORKING_DIR="$(pwd)"
+	MY_WORKING_DIR="$(pwd -P)"
 	echo "INFO      | $(date) | Setting working directory to: "
 	echo "$MY_WORKING_DIR "	
-
 	TAB=$(printf '\t');
 	calc () {
 		bc -l <<< "$@" 
@@ -426,13 +420,13 @@ print \quoteboot \$b\n\quote;
 
 EOF
 
-	sed -i '' 's/\\quote/\"/g' ./dadiBoot.pl
-	sed -i '' "s/\\singlequote/'/g" ./dadiBoot.pl
-	sed -i '' $'s/\TAB/\t/g' ./dadiBoot.pl
-	sed -i '' 's/^\\//g' ./dadiBoot.pl
-	perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl
-	sed -i '' 's/\;\\/\;/g' ./dadiBoot.pl
-	perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl
+	sed -i '' 's/\\quote/\"/g' ./dadiBoot.pl ;
+	sed -i '' "s/\\singlequote/'/g" ./dadiBoot.pl ;
+	sed -i '' $'s/\TAB/\t/g' ./dadiBoot.pl ;
+	sed -i '' 's/^\\//g' ./dadiBoot.pl ;
+	perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
+	sed -i '' 's/\;\\/\;/g' ./dadiBoot.pl ;
+	perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
 
 
 ################# SECTION II. PREP BOOTSTRAPPED SNP DATA FILES & SPECTRA FOR UNCERTAINTY ANALYSIS:
@@ -440,23 +434,23 @@ EOF
 echo "INFO      | $(date) | STEP #2: FIX SCRIPT PERMISSIONS, CONVERT VCF TO DADI AND MAKE FIRST-ROUND BOOTSTRAPPED DATA FILES. "
 #######
 ##--Ensure correct execute permissions on shell and perl scripts in current working dir:
-	chmod u+x ./*.sh ./*.pl
+	chmod u+x ./*.sh ./*.pl ;
 
 ##--Use vcf2dadi.pl perl script to convert vcf to dadi (dictionary) input file:
-	perl vcf2dadi.pl "$MY_INPUT_VCF" "$MY_ASSIGNMENT_FILE"
+	perl vcf2dadi.pl "$MY_INPUT_VCF" "$MY_ASSIGNMENT_FILE" ;
 
 
 ##--Use dadiBoot.pl perl script to make first round of bootstrapped SNP dataset files, which 
 ##--will contain the following string near the end of the filename: 'data.boot'
-	MY_DADI_DATA_FROM_VCF2DADI="$(find . -name "*dadi.data" -type f)"
-	perl dadiBoot.pl in="$MY_DADI_DATA_FROM_VCF2DADI"
+	MY_DADI_DATA_FROM_VCF2DADI="$(find . -name "*dadi.data" -type f)" ;
+	perl dadiBoot.pl in="$MY_DADI_DATA_FROM_VCF2DADI" ;
 
 
 echo "INFO      | $(date) | STEP #3: FIX BOOTSTRAPPED DATA FILES SO THAT ALL GENE NAMES ARE UNIQUE. "
 ##--Make all Gene names (in 'Gene' column) _unique_ in bootstrapped data files:
 	(
 		for i in ./*dadi.data.boot*; do
-		echo "$i"
+		echo "$i";
 
 				count=0
 				while read line; do 
@@ -465,8 +459,8 @@ echo "INFO      | $(date) | STEP #3: FIX BOOTSTRAPPED DATA FILES SO THAT ALL GEN
 					COUNT_PLUS_ONE="$((count++))"; 
 				done < ./"$i"
 
-			rm "$i"
-			mv ./file2.tmp "$i"
+			rm "$i";
+			mv ./file2.tmp "$i";
 		done
 	)
 
@@ -480,8 +474,8 @@ echo "INFO      | $(date) |          (.fs FILES) FOR EACH BOOTSTRAPPED DATA FILE
 ################# A. DRAFT CUSTOM PYTHON SCRIPT TO MAKE CONTENT/BODY CODE FOR FINAL PYTHON SCRIPT:
 ##--Draft custom Python script:
 
-MY_NUM_BOOT_DATASETS_PLUSONE="$(calc $MY_NUM_BOOT_DATASETS + 1)"
-MY_DADI_DATA_BOOT_BASENAME="$(ls ./*dadi.data.boot* | head -n1 | sed 's/\.\///; s/\(^.*boot\)[0-9]*$/\1/g')"
+MY_NUM_BOOT_DATASETS_PLUSONE="$(calc $MY_NUM_BOOT_DATASETS + 1)";
+MY_DADI_DATA_BOOT_BASENAME="$(ls ./*dadi.data.boot* | head -n1 | sed 's/\.\///; s/\(^.*boot\)[0-9]*$/\1/g')";
 
 echo "
 #!/usr/bin/env python
@@ -514,15 +508,15 @@ for i in range(1,$MY_NUM_BOOT_DATASETS_PLUSONE):
 
 ##--Fix "\quote" in ./scriptMaker.py by adding in real double quote, '\"'; fix \TAB by adding in 
 ##--real tab, '\t'. Do this using in-place sed editing (-i flag):
-	sed -i '' 's/\\quote/\"/g' ./scriptMaker.py
-	sed -i '' $'s/\TAB/\t/g' ./scriptMaker.py
-	sed -i '' 's/^\\//g' ./scriptMaker.py
+	sed -i '' 's/\\quote/\"/g' ./scriptMaker.py;
+	sed -i '' $'s/\TAB/\t/g' ./scriptMaker.py;
+	sed -i '' 's/^\\//g' ./scriptMaker.py;
 
 
 ################# B. DRAFT CUSTOM makeBootFS PYTHON SCRIPT THAT WILL ACTUALLY MAKE THE BOOTSTRAP FS FILES:
 ##--Make first-draft makeBootFS python script:
-	python ./scriptMaker.py >> ./makeBootFS.py.tmp
-	sed -i '' '/error.*$/d' ./makeBootFS.py.tmp
+	python ./scriptMaker.py >> ./makeBootFS.py.tmp;
+	sed -i '' '/error.*$/d' ./makeBootFS.py.tmp;
 
 ##--Make python header for final python file:
 echo "
@@ -539,41 +533,41 @@ import json
 
 ##--Make final makeBootFS.py python script that, when called, will use ∂a∂i to create a data 
 ##--dictionary and make the fs for each bootstrapped dataset: 
-	cat ./py_header.tmp ./makeBootFS.py.tmp > ./makeBootFS.py
+	cat ./py_header.tmp ./makeBootFS.py.tmp > ./makeBootFS.py;
 
 
 ################# C. MAKE SITE FREQUENCY SPECTRA (.fs) FILES FOR ALL BOOTSTRAPPED DATASETS USING makeBootFS.py:
 ##--Call final makeBootFS.py python script to make all of the .fs files for the bootstrapped
 ##--datasets:
-	python ./makeBootFS.py
+	python ./makeBootFS.py;
 
 
 ################# D. FIX NAMES OF SITE FREQUENCY SPECTRA TO BE FROM 00.fs TO y.fs, WHERE y IS THE TOTAL NUMBER
 #################    OF BOOTSTRAPPED DATASETS MINUS ONE (y = n - 1) AND y SPANS TWO CHARACTERS, AND CLEAN 
 #################    UP WORKING DIR.
 ##--In practice, just change the last boot*.fs file to be named 'boot00.fs':
-	mv ./"$MY_NUM_BOOT_DATASETS".fs ./00.fs
-	mv ./1.fs ./01.fs
-	mv ./2.fs ./02.fs
-	mv ./3.fs ./03.fs
-	mv ./4.fs ./04.fs
-	mv ./5.fs ./05.fs
-	mv ./6.fs ./06.fs
-	mv ./7.fs ./07.fs
-	mv ./8.fs ./08.fs
-	mv ./9.fs ./09.fs
+	mv ./"$MY_NUM_BOOT_DATASETS".fs ./00.fs ;
+	mv ./1.fs ./01.fs ;
+	mv ./2.fs ./02.fs ;
+	mv ./3.fs ./03.fs ;
+	mv ./4.fs ./04.fs ;
+	mv ./5.fs ./05.fs ;
+	mv ./6.fs ./06.fs ;
+	mv ./7.fs ./07.fs ;
+	mv ./8.fs ./08.fs ;
+	mv ./9.fs ./09.fs ;
 
 ##--Clean up bootstrap fs files by creating a 'bootstrap_fs' directory and placing all of 
 ##--them in that directory for safe keeping and analysis:
-	mkdir ./bootstrap_fs/
-	cp ./*.fs ./bootstrap_fs/
-	rm ./*.fs
+	mkdir ./bootstrap_fs/ ;
+	cp ./*.fs ./bootstrap_fs/ ;
+	rm ./*.fs ;
 
 ##--Also clean up original bootstrapped datasets by creating 'bootstrap_data' folder and 
 ##--placing all bootstrapped datasets in that directory for safe keeping:
-	mkdir ./bootstrap_data/
-	cp ./*dadi.data.boot* ./bootstrap_data/
-	rm ./*dadi.data.boot*
+	mkdir ./bootstrap_data/ ;
+	cp ./*dadi.data.boot* ./bootstrap_data/ ;
+	rm ./*dadi.data.boot* ;
 
 ##--Check to make sure you have the correct number of bootstrap .fs files in the 'bootstrap_fs'
 ##--folder. If not, throw error message to screen out (and save to file) but continue analysis 
@@ -587,8 +581,8 @@ import json
 	fi
 
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):
-	if [[ -n $(find . -name "*.pl" -type f) ]]; then rm ./*.pl; fi
-	if [[ -n $(find . -name "*.tmp" -type f) ]]; then rm ./*.tmp; fi
+	if [[ -n $(find . -name "*.pl" -type f) ]]; then rm ./*.pl; fi ;
+	if [[ -n $(find . -name "*.tmp" -type f) ]]; then rm ./*.tmp; fi ;
 
 
 
@@ -624,14 +618,14 @@ echo "INFO      | $(date) | STEP #5: CONDUCT FINAL ∂a∂i UNCERTAINTY ANALYSES
 	echo "INFO      | $(date) |          Prepping custom Python script for GIM-based uncertainty analysis in ∂a∂i... "
 	##--Line at which the preamble of .py file starts is assumed to be 2nd line or 3rd line,
 	##--but start with 2nd by default:
-	MY_PY_PREAMBLE_START=2
+	MY_PY_PREAMBLE_START=2 ;
 
 	##--The second important number is the first line where 'func_ex' occurs and is defined,
 	##--which we find this way:
-	MY_PY_PREAMBLE_STOP="$(grep -n "func\_ex" ./M6_run_8.py | head -n1 | sed 's/\:.*//g')"
+	MY_PY_PREAMBLE_STOP="$(grep -n "func\_ex" ./M6_run_8.py | head -n1 | sed 's/\:.*//g')" ;
 
 	##--Now pull the preamble from the original .py script file ($MY_DADI_MODEL_SCRIPT):
-	sed -n "$MY_PY_PREAMBLE_START","$MY_PY_PREAMBLE_STOP"p "$MY_DADI_MODEL_SCRIPT" > ./py_preamble.tmp
+	sed -n "$MY_PY_PREAMBLE_START","$MY_PY_PREAMBLE_STOP"p "$MY_DADI_MODEL_SCRIPT" > ./py_preamble.tmp ;
 
 	##--Now make new py shebang header for GIM anaysis:
 echo "
@@ -639,7 +633,7 @@ echo "
 
 ###  GIM ANALYSIS  ###
 " > py_shebang_header.tmp
-sed -i '' '1d' ./py_shebang_header.tmp 
+sed -i '' '1d' ./py_shebang_header.tmp  ;
 
 	##--Automatically detect whether spectra are folded (no outgroup) or not folded (polarized,
 	##--that is, having the ancestral state known, because an outgroup was available to determine
@@ -648,10 +642,10 @@ sed -i '' '1d' ./py_shebang_header.tmp
 	
 	##### Folded test:
 	if [[ -n $(find . -name "*.fs" -type f) ]]; then 
-		MY_FOLDED_TEST="$(grep -n "folded" ./*.fs | sed 's/\:.*//g')"
+		MY_FOLDED_TEST="$(grep -n "folded" ./*.fs | sed 's/\:.*//g')" ;
 	fi
 	if [[ -n $(find . -name "*.sfs" -type f) ]]; then 
-		MY_FOLDED_TEST="$(grep -n "folded" ./*.sfs | sed 's/\:.*//g')"
+		MY_FOLDED_TEST="$(grep -n "folded" ./*.sfs | sed 's/\:.*//g')" ;
 	fi
 
 
@@ -678,7 +672,7 @@ popt = array([$MY_BESTMOD_PARAM_ESTIMATES])
 	## spectra are folded or not. Before making the actual tmp python code, check the name
 	## of the pts var in the user's demographic model .py file and make sure you place that same
 	## var name in the code to follow:
-	MY_PTS_VAR_NAME="$(grep -h '\[[0-9]*\,[0-9]*' $MY_DADI_MODEL_SCRIPT | head -n1 | sed 's/\=.*//g; s/\ //g')"
+	MY_PTS_VAR_NAME="$(grep -h '\[[0-9]*\,[0-9]*' $MY_DADI_MODEL_SCRIPT | head -n1 | sed 's/\=.*//g; s/\ //g')" ;
 
 echo "
 ## Place all frequency spectra from bootstrapped datsets into 'all_boot' var:
@@ -691,7 +685,7 @@ uncerts_GIM = dadi.Godambe.GIM_uncert(func_ex, $MY_PTS_VAR_NAME, all_boot, popt,
 " > all_boot_runGIM.tmp
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runGIM.tmp
-	sed -i '' 's/file(\\/file(/g' ./all_boot_runGIM.tmp
+	sed -i '' 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
 
 ##--ADD ONE MORE SECTION TO SCRIPT HERE (python file) TO PRINT RESULTS TO FILE --##
 echo "
@@ -713,11 +707,11 @@ np.savetxt('uncerts_GIM.tmp', uncerts_GIM, fmt='%2.10f', delimiter=',')
 ##--Fix output uncerts_GIM.tmp file so that it contains each parameter name followed by its 
 ##--stdev estimate, in tab-separated text file format:
 	if [[ -n $(find . -name "uncerts_GIM.tmp" -type f) ]]; then 
-		grep -h "\=\ params\|params\ \=" ./"$MY_DADI_MODEL_SCRIPT" | head -n1 | sed 's/\ //g; s/\=//g; s/params//g' | perl -pe 's/\t//g' > ./params.tmp.txt
-		perl -p -i -e 's/\,/\n/g' ./params.tmp.txt
-		echo "theta" >> ./params.tmp.txt		## Since multinom=True in dadi.Godambe.GIM_uncert(...) function, there is an extra entry (at end) in the standard deviations (which is too large to make any sense at all) that corresponds to theta, which was not estimated in the model. Of course, the theta stdev is meaningless; but this line adds a label for it to the first column of the results file.
+		grep -h "\=\ params\|params\ \=" ./"$MY_DADI_MODEL_SCRIPT" | head -n1 | sed 's/\ //g; s/\=//g; s/params//g' | perl -pe 's/\t//g' > ./params.tmp.txt ;
+		perl -p -i -e 's/\,/\n/g' ./params.tmp.txt ;
+		echo "theta" >> ./params.tmp.txt ;		## Since multinom=True in dadi.Godambe.GIM_uncert(...) function, there is an extra entry (at end) in the standard deviations (which is too large to make any sense at all) that corresponds to theta, which was not estimated in the model. Of course, the theta stdev is meaningless; but this line adds a label for it to the first column of the results file.
 #		
-		paste ./params.tmp.txt ./uncerts_GIM.tmp > ./uncerts_GIM.txt
+		paste ./params.tmp.txt ./uncerts_GIM.tmp > ./uncerts_GIM.txt ;
 	fi
 
 fi
@@ -739,14 +733,14 @@ fi
 	echo "INFO      | $(date) |          Prepping custom Python script for FIM-based uncertainty analysis in ∂a∂i... "
 	##--Line at which the preamble of .py file starts is assumed to be 2nd line or 3rd line,
 	##--but start with 2nd by default:
-	MY_PY_PREAMBLE_START=2
+	MY_PY_PREAMBLE_START=2 ;
 
 	##--The second important number is the first line where 'func_ex' occurs and is defined,
 	##--which we find this way:
-	MY_PY_PREAMBLE_STOP="$(grep -n "func\_ex" ./M6_run_8.py | head -n1 | sed 's/\:.*//g')"
+	MY_PY_PREAMBLE_STOP="$(grep -n "func\_ex" ./M6_run_8.py | head -n1 | sed 's/\:.*//g')" ;
 
 	##--Now pull the preamble from the original .py script file ($MY_DADI_MODEL_SCRIPT):
-	sed -n "$MY_PY_PREAMBLE_START","$MY_PY_PREAMBLE_STOP"p "$MY_DADI_MODEL_SCRIPT" > ./py_preamble.tmp
+	sed -n "$MY_PY_PREAMBLE_START","$MY_PY_PREAMBLE_STOP"p "$MY_DADI_MODEL_SCRIPT" > ./py_preamble.tmp ;
 
 	##--Now make new py shebang header for FIM anaysis:
 echo "
@@ -754,7 +748,7 @@ echo "
 
 ###  FIM ANALYSIS  ###
 " > py_shebang_header.tmp
-sed -i '' '1d' ./py_shebang_header.tmp 
+sed -i '' '1d' ./py_shebang_header.tmp  ;
 
 	##--Automatically detect whether spectra are folded (no outgroup) or not folded (polarized,
 	##--that is, having the ancestral state known, because an outgroup was available to determine
@@ -763,10 +757,10 @@ sed -i '' '1d' ./py_shebang_header.tmp
 	
 	##### Folded test:
 	if [[ -n $(find . -name "*.fs" -type f) ]]; then 
-		MY_FOLDED_TEST="$(grep -n "folded" ./*.fs | sed 's/\:.*//g')"
+		MY_FOLDED_TEST="$(grep -n "folded" ./*.fs | sed 's/\:.*//g')" ;
 	fi
 	if [[ -n $(find . -name "*.sfs" -type f) ]]; then 
-		MY_FOLDED_TEST="$(grep -n "folded" ./*.sfs | sed 's/\:.*//g')"
+		MY_FOLDED_TEST="$(grep -n "folded" ./*.sfs | sed 's/\:.*//g')" ;
 	fi
 
 
@@ -793,7 +787,7 @@ popt = array([$MY_BESTMOD_PARAM_ESTIMATES])
 	## spectra are folded or not. Before making the actual tmp python code, check the name
 	## of the pts var in the user's demographic model .py file and make sure you place that same
 	## var name in the code to follow:
-	MY_PTS_VAR_NAME="$(grep -h '\[[0-9]*\,[0-9]*' $MY_DADI_MODEL_SCRIPT | head -n1 | sed 's/\=.*//g; s/\ //g')"
+	MY_PTS_VAR_NAME="$(grep -h '\[[0-9]*\,[0-9]*' $MY_DADI_MODEL_SCRIPT | head -n1 | sed 's/\=.*//g; s/\ //g')" ;
 
 echo "
 ## Place all frequency spectra from bootstrapped datsets into 'all_boot' var:
@@ -805,7 +799,7 @@ uncerts_FIM = dadi.Godambe.FIM_uncert(func_ex, $MY_PTS_VAR_NAME, popt, data, mul
 " > all_boot_runFIM.tmp
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runFIM.tmp
-	sed -i '' 's/file(\\/file(/g' ./all_boot_runFIM.tmp
+	sed -i '' 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
 
 ##--ADD ONE MORE SECTION TO SCRIPT HERE (python file) TO PRINT RESULTS TO FILE --##
 echo "
@@ -818,20 +812,20 @@ np.savetxt('uncerts_FIM.tmp', uncerts_FIM, fmt='%2.10f', delimiter=',')
 " > ./printResults.tmp
 	
 ##--Use cat to make final custom FIM analysis script:
-	cat ./py_shebang_header.tmp ./py_preamble.tmp ./popt*tmp ./all_boot_runFIM.tmp ./printResults.tmp > ./customFIM.py
+	cat ./py_shebang_header.tmp ./py_preamble.tmp ./popt*tmp ./all_boot_runFIM.tmp ./printResults.tmp > ./customFIM.py ;
 
 ##--RUN CUSTOM GIM SCRIPT:
 	echo "INFO      | $(date) |          Running uncertainty analysis using the FIM... "
-	python ./customFIM.py
+	python ./customFIM.py ;
 
 ##--Fix output uncerts_GIM.tmp file so that it contains each parameter name followed by its 
 ##--stdev estimate, in tab-separated text file format:
 	if [[ -n $(find . -name "uncerts_FIM.tmp" -type f) ]]; then 
-		grep -h "\=\ params\|params\ \=" ./"$MY_DADI_MODEL_SCRIPT" | head -n1 | sed 's/\ //g; s/\=//g; s/params//g' | perl -pe 's/\t//g' > ./params.tmp.txt
-		perl -p -i -e 's/\,/\n/g' ./params.tmp.txt
-		echo "theta" >> ./params.tmp.txt		## Since multinom=True in dadi.Godambe.GIM_uncert(...) function, there is an extra entry (at end) in the standard deviations (which is too large to make any sense at all) that corresponds to theta, which was not estimated in the model. Of course, the theta stdev is meaningless; but this line adds a label for it to the first column of the results file.
+		grep -h "\=\ params\|params\ \=" ./"$MY_DADI_MODEL_SCRIPT" | head -n1 | sed 's/\ //g; s/\=//g; s/params//g' | perl -pe 's/\t//g' > ./params.tmp.txt ;
+		perl -p -i -e 's/\,/\n/g' ./params.tmp.txt ;
+		echo "theta" >> ./params.tmp.txt ;		## Since multinom=True in dadi.Godambe.GIM_uncert(...) function, there is an extra entry (at end) in the standard deviations (which is too large to make any sense at all) that corresponds to theta, which was not estimated in the model. Of course, the theta stdev is meaningless; but this line adds a label for it to the first column of the results file.
 #		
-		paste ./params.tmp.txt ./uncerts_FIM.tmp > ./uncerts_FIM.txt
+		paste ./params.tmp.txt ./uncerts_FIM.tmp > ./uncerts_FIM.txt ;
 	fi
 
 fi
@@ -848,9 +842,9 @@ echo "INFO      | $(date) | STEP #6: CLEAN UP WORK ENVIRONMENT (TEMPORARY FILES)
 ##--Final cleanup:
 ##--Delete the original .vcf file if user has specified to do so:
 	if [[ "$DELETE_ORIG_VCF" = 0 ]]; then
-		echo ""
+		echo "" ;
 	elif [[ "$DELETE_ORIG_VCF" = 1 ]]; then
-		rm ./"$MY_INPUT_VCF"
+		rm ./"$MY_INPUT_VCF" ;
 	fi
 
 
