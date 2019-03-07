@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRAD2PartitionFinder.sh                                                         #
-  VERSION="v1.2"                                                                         #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.                     #
-# Last update: November 12, 2018                                                         #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -78,7 +78,7 @@ Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.
 Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
 
-if [[ "$1" == "--version" ]]; then
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
@@ -114,11 +114,9 @@ fi
 USER_SPEC_PATH="$1"
 
 echo "
-##########################################################################################
-#                       pyRAD2PartitionFinder v1.2, November 2018                        #
-##########################################################################################
-"
-
+pyRAD2PartitionFinder v1.2.1, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 ######################################## START ###########################################
 echo "INFO      | $(date) |          Setting user-specified path to: "
 echo "$USER_SPEC_PATH "	
@@ -299,7 +297,8 @@ fi
 
 fi
 
-
+echo "------------------------------------------------------------------------------------------
+"
 #
 #
 #
