@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiRunner.sh                                                                    #
-  VERSION="v0.1.1"                                                                       #
+  VERSION="v0.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.                     #
-# Last update: May 16, 2017                                                              #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -184,7 +184,7 @@ USER_SPEC_PATH="$1"
 
 echo "
 ##########################################################################################
-#                             dadiRunner v0.1.1, April 2017                              #
+#                             dadiRunner v0.1.2, March 2019                              #
 ##########################################################################################
 "
 
