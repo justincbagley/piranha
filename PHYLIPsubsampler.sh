@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsubsampler.sh                                                              #
-  VERSION="v1.1"                                                                         #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600                      #
-# Last update: February 19, 2019                                                         #
+# Date: created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -21,7 +21,7 @@
 
 echo "
 ##########################################################################################
-#                          PHYLIPsubsampler v1.1, February 2019                          #
+#                           PHYLIPsubsampler v1.1.1, March 2019                          #
 ##########################################################################################
 "
 
@@ -31,15 +31,16 @@ MY_INPUT_FILE=NULL
 MY_ASSIGNMENT_FILE=assignments.txt
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -i a] [stdin:] <workingDir> 
+USAGE="Usage: $(basename $0) [Help: -h help] [Options: -i a V --version] [stdin:] <workingDir> 
  ## Help:
-  -h   help text (also: -help)
+  -h   help text (also: --help) echo this help text and exit
 
  ## Options:
   -i   inputPhylip (def: NULL) Used in case of subsampling a single input Phylip file; 
        otherwise, left blank when analyzing multiple Phylip files (default)
   -a   assignmentFile (def: $MY_ASSIGNMENT_FILE) Name of assignment file containing four-letter
        population or taxon assignment codes, one per line
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  Takes as input the name of the current working directory, <workingDir>, where there exists
@@ -49,20 +50,17 @@ USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -i a] [stdin:] <working
  to conduct single-tip phylogenetic analyses, for example when (1) estimating 1-tip-per-
  species gene trees for species tree reconstruction, or (2) when you will use the Phylip 
  files to directly estimate the species tree.
- 
- The populations or species are contained in an assignment file, the filename of which is 
+	The populations or species are contained in an assignment file, the filename of which is 
  assed to the program. Sequence names may not include space or underline characters, or 
  there will be issues. _Interleaved Phylip format is not supported._
-
- The -i flag supplies the name of a single input Phylip file in the current <workingDir> for
- analysis. If this flag is not used, then the program will assume that multiple Phylip files
+	The -i flag supplies the name of a single input Phylip file in the current <workingDir> 
+ for analysis. If this flag is not used, then the program will assume that multiple Phylip files
  are present in <workingDir> and will attempt to subsample all of them. This is useful when
  you want to subsample a single Phylip file for single-tip phylogenetic analyses, for example
  during species tree reconstruction.
-
- The -a flag allows users to specify an assignment file. This file must contain a single,
- four-letter population or taxon assignment code on each line, which corresponds to the 
- first four letters of each taxon/sequence label in (each of) the Phylip file(s). In each
+	The -a flag allows users to specify an assignment file. This file must contain a 
+ single, four-letter population or taxon assignment code on each line, which corresponds to  
+ the first four letters of each taxon/sequence label in (each of) the Phylip file(s). In each
  Phylip file, the four-letter code must be followed by a dash (text en dash) character,
  which can be followed by any numeric string. The specificity of this format limits the
  generality of the script, necessitating that the user ensure that all individual sequence/
@@ -86,7 +84,7 @@ USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -i a] [stdin:] <working
  Bagley, J.C. 2019. justincbagley/PIrANHA. GitHub package, Available at: 
 	<http://doi.org/10.5281/zenodo.596766>.
 
-Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600
+Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.
 Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
@@ -95,7 +93,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	exit
 fi
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
@@ -106,7 +104,6 @@ while getopts 'i:a:' opt ; do
 ## Datafile options:
     i) MY_INPUT_FILE=$OPTARG ;;
     a) MY_ASSIGNMENT_FILE=$OPTARG ;;
-
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
        echo "$USAGE" >&2
@@ -121,8 +118,8 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$USAGE"
-  exit 1
+	echo "$USAGE"
+	exit 1
 fi
 USER_SPEC_PATH="$1"
 
@@ -149,6 +146,8 @@ elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
 	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
 		cd ..;
 		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+		echo "INFO      | $(date) |          Setting working directory to:  "
+		echo "$MY_CWD "
 	else
 		MY_CWD=$USER_SPEC_PATH
 		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
@@ -169,19 +168,18 @@ echo "INFO      | $(date) | STEP #2: CONDUCTING FILE PROCESSING. "
 ##--variable $MY_PHYLIP_ALIGNMENTS) within the current working dir.
 if [[ "$MY_INPUT_FILE" = "NULL" ]]; then
 
-MY_PHYLIP_ALIGNMENTS=./*.phy
+MY_PHYLIP_ALIGNMENTS=./*.phy ;
 (
 	for i in $MY_PHYLIP_ALIGNMENTS; do 
-		LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')"
-		echo "$LOCUS_NAME"
+		LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
+		echo "$LOCUS_NAME";
 
 			head -n+1 "$i" > ./head.tmp; 
 
 			count=1
 			while read j; do
-			# echo "$j"
-			grep "$(echo $j)" "$i" | head -n1 > ./ind"$count".tmp;
-			COUNT_PLUS_ONE="$((count++))"
+				grep "$(echo $j)" "$i" | head -n1 > ./ind"$count".tmp;
+				COUNT_PLUS_ONE="$((count++))";
 			done < "$MY_ASSIGNMENT_FILE"
 
 			(
@@ -192,13 +190,13 @@ MY_PHYLIP_ALIGNMENTS=./*.phy
 				done
 			)
 
-			MY_NUMTAX="$(wc -l ./check.tmp | sed 's/\ \.\/.*//g; s/\ //g')"
-			MY_NUMCHAR="$(cat head.tmp | sed 's/^[0-9]*\ //g')"
-			echo "$MY_NUMTAX   $MY_NUMCHAR" > ./new_head.tmp
+			MY_NUMTAX="$(wc -l ./check.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
+			MY_NUMCHAR="$(cat head.tmp | sed 's/^[0-9]*\ //g')";
+			echo "$MY_NUMTAX   $MY_NUMCHAR" > ./new_head.tmp ;
 
-		rm "$i"
+		rm "$i";
 		cat ./new_head.tmp ./ind*.tmp > "$LOCUS_NAME".phy;
-		rm ./*.tmp
+		rm ./*.tmp;
 
 		while read j; do
 			if [[ "${machine}" = "Mac" ]]; then
@@ -230,8 +228,8 @@ if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
 
 (
 	for i in $MY_INPUT_FILE; do 
-		LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')"
-		echo "$LOCUS_NAME"
+		LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
+		echo "$LOCUS_NAME";
 
 			head -n+1 "$i" > ./head.tmp; 
 
@@ -239,7 +237,7 @@ if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
 			while read j; do
 			# echo "$j"
 			grep "$(echo $j)" "$i" | head -n1 > ./ind"$count".tmp;
-			COUNT_PLUS_ONE="$((count++))"
+			COUNT_PLUS_ONE="$((count++))";
 			done < "$MY_ASSIGNMENT_FILE"
 
 			(
@@ -250,13 +248,13 @@ if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
 				done
 			)
 
-			MY_NUMTAX="$(wc -l ./check.tmp | sed 's/\ \.\/.*//g; s/\ //g')"
-			MY_NUMCHAR="$(cat head.tmp | sed 's/^[0-9]*\ //g')"
-			echo "$MY_NUMTAX   $MY_NUMCHAR" > ./new_head.tmp
+			MY_NUMTAX="$(wc -l ./check.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
+			MY_NUMCHAR="$(cat head.tmp | sed 's/^[0-9]*\ //g')";
+			echo "$MY_NUMTAX   $MY_NUMCHAR" > ./new_head.tmp ;
 
-		rm "$i"
+		rm "$i";
 		cat ./new_head.tmp ./ind*.tmp > "$LOCUS_NAME".phy;
-		rm ./*.tmp
+		rm ./*.tmp;
 
 		while read j; do
 			if [[ "${machine}" = "Mac" ]]; then
@@ -280,6 +278,7 @@ if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
 fi
 
 
+echo "INFO      | $(date) | Done."
 echo "INFO      | $(date) | Bye.
 "
 #
