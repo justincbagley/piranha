@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: fastSTRUCTURE.sh                                                                 #
-  VERSION="v1.1.1"                                                                       #
+  VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -25,14 +25,14 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 echo "
-##########################################################################################
-#                          fastSTRUCTURE.sh v1.1.1, March 2019                           #
-##########################################################################################
-"
-
+fastSTRUCTURE.sh v1.1.2, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 ######################################## START ###########################################
-echo "INFO      | $(date) | STEP 1. SETUP: READ USER INPUT, SET VARIABLES. "
-	MY_FASTSTRUCTURE_WKDIR="$(pwd)" ;
+echo "INFO      | $(date) | Step #1: Set up workspace by reading user input, setting environmental variables. "
+	MY_FASTSTRUCTURE_WKDIR="$(pwd -P)" ;
+	MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
+echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "
 
 	read -p "INPUT     | $(date) |         Enter the path to a working copy of fast structure on your machine, \
 e.g. '/Applications/STRUCTURE-fastStructure-e47212f/structure.py' : " fsPATH 
@@ -48,7 +48,7 @@ e.g. '/Applications/STRUCTURE-fastStructure-e47212f/structure.py' : " fsPATH
 	MY_FASTSTRUCTURE_PATH="$(echo $fsPATH)" ;
 
 
-echo "INFO      | $(date) | STEP 2. RUN fastSTRUCTURE ON RANGE OF K SPECIFIED BY USER. "
+echo "INFO      | $(date) | Step #2: Run fastSTRUCTURE on range of K specified by user. "
 echo "INFO      | $(date) |         Modeling K = $lK to $uK clusters in fastSTRUCTURE. "
 
 (
@@ -61,7 +61,7 @@ echo "INFO      | $(date) |         Modeling K = $lK to $uK clusters in fastSTRU
 echo "INFO      | $(date) |         fastSTRUCTURE runs completed. "
 
 
-echo "INFO      | $(date) | STEP 3. MODEL COMPLEXITY. "
+echo "INFO      | $(date) | Step #3: Estimate model complexity. "
 ###### Obtain an estimate of the model complexity for each set of runs (per species):
 	MY_CHOOSEK_PATH="$(echo $fsPATH | sed 's/structure.py//g' | sed 's/$/chooseK.py/g')" ;
 
@@ -71,7 +71,7 @@ echo "INFO      | $(date) |         Finished estimating model complexity. "
 	cat chooseK.out.txt ;
 
 
-echo "INFO      | $(date) | STEP 4. VISUALIZE RESULTS. "
+echo "INFO      | $(date) | Step #4: Visualize results. "
 ###### Use DISTRUCT to create graphical output of results corresponding to the best K value modeled.
 	read -p "INPUT     | $(date) |         Enter the value of K that you want to visualize : " bestK ;
 
@@ -80,8 +80,10 @@ echo "INFO      | $(date) | STEP 4. VISUALIZE RESULTS. "
 	python "$MY_DISTRUCT_PATH" -K "$bestK" --input="$MY_FASTSTRUCTURE_WKDIR/$fsOutput" --output="$fsOutput_distruct.svg" ;
 
 
-echo "INFO      | $(date) | Done!!! fastSTRUCTURE analysis complete."
-echo "Bye.
+#echo "INFO      | $(date) | Done!!! fastSTRUCTURE analysis complete."
+#echo "Bye.
+#"
+echo "------------------------------------------------------------------------------------------
 "
 #
 #
