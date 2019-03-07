@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiPostProc.sh                                                                  #
-  VERSION="v0.1.1"                                                                       #
+  VERSION="v0.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
 # Last update: March 6, 2019                                                             #
@@ -153,7 +153,7 @@ USER_SPEC_PATH="$1"
 
 echo "
 ##########################################################################################
-#                             dadiPostProc v0.1.1, March 2019                            #
+#                             dadiPostProc v0.1.2, March 2019                            #
 ##########################################################################################
 "
 
@@ -168,10 +168,10 @@ echo "$USER_SPEC_PATH "
 
 if [[ "$(find . -type d | wc -l)" = "1" ]]; then
 	MY_MULTIRUN_DIR_SWITCH=FALSE ;
-	## Inside folder corresponding to 1 single run.
+	## Script run inside folder corresponding to 1 single run.
 elif [[ "$(find . -type d | wc -l)" -gt "1" ]]; then
 	MY_MULTIRUN_DIR_SWITCH=TRUE ;
-	## Inside working directory containing multiple sub-folders, assumed to correspond to ∂a∂i run folders (1 per run).
+	## Script run inside working directory containing multiple sub-folders, assumed to correspond to ∂a∂i run folders (1 per run).
 fi
 
 
@@ -181,11 +181,86 @@ echo "INFO      | $(date) |          OPTIMAL THETA ESTIMATE (IF PRESENT) TO A SI
 
 ## if MY_MULTIRUN_DIR_SWITCH=FALSE, ...
 ## DO SINGLE RUN ANALYSIS HERE
+if [[ "$MY_MULTIRUN_DIR_SWITCH" = "FALSE" ]]; then
+
+	MY_SINGLE_DADI_RUN_DIR="$(find . -type d | tail -n1 | sed 's/$/\//g')";
+	i="$MY_SINGLE_DADI_RUN_DIR";
+	cd "$i";
+
+		MY_FOLDER_BASENAME="$(echo ${i} | sed 's/^.\///g; s/\///g')";
+		echo $MY_FOLDER_BASENAME;
+#			
+		### CHECK FOR OUTPUT FILE.
+		if [[ -s $(find . -name "*.out" -type f) ]]; then
+			MY_OUTPUT_FILENAME="$(find . -name "*.out" -type f)";
+			MY_OUTPUT_BASENAME="$(find . -name "*.out" -type f | sed 's/^\.\///g; s/\.out//g')";
+		elif [[ -s $(find . -name "*.out.txt" -type f) ]]; then
+			MY_OUTPUT_FILENAME="$(find . -name "*.out.txt" -type f)";
+			MY_OUTPUT_BASENAME="$(find . -name "*.out.txt" -type f | sed 's/^\.\///g; s/\.out\.txt//g')";
+		fi
+#			
+#
+		### EXTRACT BEST-FIT MODEL PARAMETER ESTIMATES: 
+		grep -n "Best\-fit\ parameters:" $MY_OUTPUT_FILENAME > "${MY_OUTPUT_BASENAME}"_BFP.tmp;
+		##--Get starting line no. for BFPs:
+		MY_BFP_START_LN_NUM="$(sed 's/\:.*$//g' ${MY_OUTPUT_BASENAME}_BFP.tmp)";
+		MY_BFP_CLOSEBRACK_TEST="$(grep -h "\]" ${MY_OUTPUT_BASENAME}_BFP.tmp | wc -l)";
+#
+			if [[ "$MY_BFP_CLOSEBRACK_TEST" = "0" ]]; then
+
+				##--Clean up only to tab-separated BFP estimates:
+				sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
+				sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
+
+			elif [[ "$MY_BFP_CLOSEBRACK_TEST" != "0" ]]; then
+
+				##--Get final line no. for multi-line BFPs:
+				MY_BFP_FINISH_LN_NUM="$(grep -n '\ .*\]' $MY_OUTPUT_FILENAME | sed 's/\:.*$//g' | tail -n1)";
+
+				##--Use sed to extract multi-line BFPs lines to tmp file using line nos:
+				sed -n "$MY_BFP_START_LN_NUM","$MY_BFP_FINISH_LN_NUM"p "$MY_OUTPUT_FILENAME" > ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp;
+
+				##--Convert BFPs to single line with numbers in tab-separated format, and 
+				##--remove "_BFP.tmp" and "_multiline_BFP.tmp" files created above:
+				rm ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
+				perl -pe 's/\n/\ /g; s/^.*\:\ \[\ //g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g; s/\]//g' ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp | perl -pe 's/\t$//g' > ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
+				rm ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp;
+			fi
+#
+#
+		### EXTRACT MAXIMUM COMPOSITE LIKELIHOOD ESTIMATE FOR THE RUN: 
+		grep -h "likelihood\:\ " "$MY_OUTPUT_FILENAME" | sed 's/^.*\:\ //g; s/\ //g' > ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp;
+###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp;
+#
+#
+		### EXTRACT OPTIMAL VALUE OF THETA AS ESTIMATED BASED ON THE RUN: 
+		grep -h "theta\:\ " "$MY_OUTPUT_FILENAME" |  sed 's/^.*\:\ //g; s/\ //g' > ./"${MY_OUTPUT_BASENAME}"_theta.tmp;
+###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_theta.tmp;
+#
+#
+		### PASTE RESULTS IN TMP FILES TOGETHER INTO A SINGLE FILE, THEN COPY RESULTS SUMMARY FOR RUN TO WORKING DIR.
+		paste ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ./"${MY_OUTPUT_BASENAME}"_theta.tmp > ./"${MY_OUTPUT_BASENAME}"_results.txt ;
+###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_results.txt;
+
+		##--Check for "runs_output" output dir and make it if needed; then copy final 
+		##--results summary file with run folder prefix to "runs_output" dir in working 
+		##--dir (one dir up):
+		if [ ! -d "../runs_output" ]; then
+			mkdir ../runs_output/;
+		fi
+#				
+		cp ./"${MY_OUTPUT_BASENAME}"_results.txt ../runs_output/;
+
+		##--Clean up temporary files:
+		rm ./*.tmp;
+	cd ..;
+fi
 
 
-
+######
 ## if MY_MULTIRUN_DIR_SWITCH=TRUE, ...
 ## DO BIG LOOP BELOW:
+if [[ "$MY_MULTIRUN_DIR_SWITCH" = "TRUE" ]]; then
 
 
 ###### Use a big loop through the run sub-folders in pwd to extract and organize output
@@ -289,6 +364,9 @@ echo "INFO      | $(date) |          SAME MODEL, LOOKING FOR SEPARATE M1 (MODEL 
 	cd ./final_output/;
 		cat ./*Summary.txt > All_Models_M"$MY_LOWER_MOD_NUM"_M"$MY_UPPER_MOD_NUM"_resultsSummary.txt ;
 	cd ..;
+
+fi
+######
 
 
 echo "INFO      | $(date) | Done post-processing results from one or multiple ∂a∂i runs using the dadiPostProc utility of PIrANHA. "
