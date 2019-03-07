@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiUncertainty.sh                                                               #
-  VERSION="v0.1.1"                                                                       #
+  VERSION="v0.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: March 6, 2019                                                             #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -169,11 +169,9 @@ fi
 MY_INPUT_VCF="$1"
 
 echo "
-##########################################################################################
-#                          dadiUncertainty v0.1.0, October 2017                          #
-##########################################################################################
-"
-
+dadiUncertainty v0.1.2, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dadiUncertainty analysis... "
 
@@ -848,9 +846,11 @@ echo "INFO      | $(date) | STEP #6: CLEAN UP WORK ENVIRONMENT (TEMPORARY FILES)
 	fi
 
 
-echo "INFO      | $(date) | Done creating bootstrapped SNP datasets and conducting uncertainty analysis in ∂a∂i "
-echo "INFO      | $(date) | using the dadiUncertainty pipeline in PIrANHA." 
-echo "INFO      | $(date) | Bye.
+#echo "INFO      | $(date) | Done creating bootstrapped SNP datasets and conducting uncertainty analysis in ∂a∂i "
+#echo "INFO      | $(date) | using the dadiUncertainty pipeline in PIrANHA." 
+#echo "INFO      | $(date) | Bye.
+#"
+echo "------------------------------------------------------------------------------------------
 "
 #
 #
