@@ -151,7 +151,7 @@ echo "INFO      | $(date) |          3. Extracting subsetModels (selected models
 
 echo "INFO      | $(date) |          4. Making file 'sumstats.txt' with subset summary statistics table...  "
 echo "###################### PartitionFinder Subsets Summary Statistics ########################
-Subset	numCharsets	subsetLength	subsetModel" > table_header.txt ;
+Subset	numCharsets	subsetLength	subsetModel	| partitions" > table_header.txt ;
 paste ./subset_names.txt **/ALL_numCharsets.txt **/ALL_subsetLengths.txt ./subsetModels.txt | column -s $'\t' -t > ./table.txt ;
 cat ./table_header.txt ./table.txt > ./sumstats.txt ;
 rm ./table_header.txt ./table.txt ./subset_names.txt ./subsetModels.txt ;
