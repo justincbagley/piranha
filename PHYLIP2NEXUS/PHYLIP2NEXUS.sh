@@ -41,9 +41,6 @@ USAGE="Usage: $(basename $0) [Help: -h help] [Options: -p f V --version] <inputP
  spaces. Optionally, the user may use the -p and -f flags to read in and process an external
  partitions file containing information on character set partitions for <inputPHYLIP>. This 
  partitions file may be in standard RAxML or NEXUS formats.
-	Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working 
- directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
- High Sierra (v10.13+).
 
  CITATION
  Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
