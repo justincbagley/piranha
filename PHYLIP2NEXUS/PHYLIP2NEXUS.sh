@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  version="v1.1"                                                                         #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Thu, 15 Mar 2018 15:27:49 -0400                      #
-# Last update: March 15, 2018                                                            #
+# Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO NEXUS FORMAT  #
@@ -23,25 +23,23 @@
 MY_PARTITIONS_FILE=NULL
 MY_PARTFILE_FORMAT=raxml
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
 ############ PARSE THE OPTIONS
 while getopts 'p:f:' opt ; do
   case $opt in
-
-## ∂a∂i options:
+## PHYLIP2NEXUS options:
     p) MY_PARTITIONS_FILE=$OPTARG ;;
     f) MY_PARTFILE_FORMAT=$OPTARG ;;
-
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -50,14 +48,14 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
-  exit 1
+	echo "$USAGE"
+	exit 1
 fi
 MY_PHYLIP="$1"
 
 echo "
 ##########################################################################################
-#                             PHYLIP2NEXUS v1.1, March 2018                              #
+#                            PHYLIP2NEXUS v1.1.1, March 2019                             #
 ##########################################################################################
 "
 
@@ -67,20 +65,20 @@ echo "INFO      | $(date) |          Setting user-specified path to: "
 echo "$PWD "	
 echo "INFO      | $(date) |          Input PHYLIP file: $1 "
 echo "INFO      | $(date) |          Examining current directory, setting variables... "
-	MY_WORKING_DIR="$(pwd)"
-	MY_PHYLIP_LENGTH="$(cat $MY_PHYLIP | wc -l | sed 's/(\ )*//g')"
+	MY_WORKING_DIR="$(pwd -P)";
+	MY_PHYLIP_LENGTH="$(cat $MY_PHYLIP | wc -l | sed 's/(\ )*//g')";
 
 	calc () {					## Make the "handy bash function 'calc'" for subsequent use.
-    	bc -l <<< "$@"
+    		bc -l <<< "$@"
 	}
 
-	MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)"
+	MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
 	## This "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines; was going to call it "MY_SEQUENCE_AND_EOF_LINES" but thought that name was too long.
 
-	tail -n$MY_BODY_LENGTH $MY_PHYLIP > sequences.tmp
+	tail -n$MY_BODY_LENGTH $MY_PHYLIP > sequences.tmp ;
 
-	MY_NTAX="$(head -n1 $MY_PHYLIP | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')"
-	MY_NCHAR="$(head -n1 $MY_PHYLIP | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')"
+	MY_NTAX="$(head -n1 $MY_PHYLIP | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
+	MY_NCHAR="$(head -n1 $MY_PHYLIP | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
 
 ###### Make NEXUS format file:
 	echo "INFO      | $(date) |          Making NEXUS-formatted file... "
@@ -97,40 +95,40 @@ END;
 " > NEXUS_bottom.tmp
 
 
-	MY_PHYLIP_BASENAME="$(echo $MY_PHYLIP | sed 's/\.phy//g')"
+	MY_PHYLIP_BASENAME="$(echo $MY_PHYLIP | sed 's/\.phy//g')" ;
 
 if [[ "$MY_PARTITIONS_FILE" = "NULL" ]]; then
 	echo "INFO      | $(date) |          No partitions file detected... "
-	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME".nex
+	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME".nex ;
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml" ]]; then
 	echo "INFO      | $(date) |          Read RAxML-style partitions file. Adding partition information to final NEXUS file... "
 	echo "begin sets;" > ./begin.tmp
-	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp
+	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp ;
 	echo "end;" > ./end.tmp
 #	
 		## OS detection using idea from URL: https://stackoverflow.com/questions/394230/how-to-detect-the-os-from-a-bash-script
 		unamestr="$(uname)"
 		if [[ "$unamestr" == "Darwin" ]]; then
-			sed -i '' $'s/$/\\\n/' ./end.tmp
+			sed -i '' $'s/$/\\\n/' ./end.tmp ;
 		elif [[ "$unamestr" == "Linux" ]]; then
-			sed -i 's/$/\n/' ./end.tmp
+			sed -i 's/$/\n/' ./end.tmp ;
 		fi
 #
-	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./begin.tmp ./NEXUS_charsets.tmp ./end.tmp > ./"$MY_PHYLIP_BASENAME".nex
+	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./begin.tmp ./NEXUS_charsets.tmp ./end.tmp > ./"$MY_PHYLIP_BASENAME".nex ;
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "NEX" ]] || [[ "$MY_PARTFILE_FORMAT" = "nex" ]]; then
 	echo "INFO      | $(date) |          Read NEXUS-style charset file. Adding partition information to final NEXUS file... "
-	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex
+	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex ;
 
 fi
 
 ###### Remove temporary or unnecessary files created above:
 	echo "INFO      | $(date) |          Removing temporary files... "
 	## rm ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp
-	rm ./*.tmp
+	rm ./*.tmp ;
 
-echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment to NEXUS format using PHYLIP2NEXUS.sh." 
+echo "INFO      | $(date) | Done converting PHYLIP-formatted DNA sequence alignment to NEXUS format using PHYLIP2NEXUS.sh." 
 echo "Bye.
 "
 #
