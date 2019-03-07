@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRADLocusVarSites.sh                                                            #
-  VERSION="v0.1.0"                                                                       #
+  VERSION="v0.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400                       #
-# Last update: April 7, 2017                                                             #
+# Date: created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.                      #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -20,19 +20,19 @@
 #                                                                                        #
 ##########################################################################################
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
 
 echo "
 ##########################################################################################
-#                         pyRADLocusVarSites v0.1.0, April 2017                          #
+#                         pyRADLocusVarSites v0.1.1, March 2019                          #
 ##########################################################################################
 "
 ######################################## START ###########################################
 ###### STEP #1: SETUP.
-	MY_PATH=`pwd -P`
+	MY_PATH="$(pwd -P)";
 	CR=$(printf '\r'); 
 	TAB=$(printf '\t');
 	calc () { 
@@ -48,7 +48,7 @@ if [[ "$MY_OUTFILES_DIR_TEST" -eq "outfiles"  ]]; then
 	echo "INFO      | $(date) | Path check PASSED. You're in pyRAD outfiles dir already. "
 else
 	echo "INFO      | $(date) | Path check FAILED. Now attempting to change into pyRAD outfiles dir... "
-	cd ./outfiles
+	cd ./outfiles ;
 fi
 
 ###### STEPS #3 & 4: 3) USE FOR LOOP TO CALCULATE VAR SITE METRICS AND OUTPUT TO FILE, AND THEN 
@@ -60,41 +60,41 @@ fi
 		echo "INFO      | $(date) | Calculating numbers of variable sites (S) and parsimony-informative sites (PIS) for SNP loci... "
 		for i in $(find . -name "*.loci" -type f); do
 			echo "INFO      | $(date) |      $i ";
-			NUM_LINES="$(grep -h '^\/\/' "$i" | wc -l)"
+			NUM_LINES="$(grep -h '^\/\/' "$i" | wc -l)";
 #
-			grep -h "^\/\/" "$i" | sed 's/\ //g; s/^\/\///g' | sed 's/[\*\-\|]*\([0-9]*\)/\1/g; s/\-//g' > "$i"_locusNos.tmp
+			grep -h "^\/\/" "$i" | sed 's/\ //g; s/^\/\///g' | sed 's/[\*\-\|]*\([0-9]*\)/\1/g; s/\-//g' > "$i"_locusNos.tmp ;
 			## for j in $(seq 1 $NUM_LINES); do echo "  " >> "$i"_tabs.tmp; done
-			grep -h "^\/\/" "$i" | sed 's/\ //g; s/\/\///g; s/\|//g; s/[0-9]*//g' > "$i"_varSites.tmp
-			awk '{ print length($0); }' "$i"_varSites.tmp > "$i"_varSites.txt
-			sed 's/\-//g' "$i"_varSites.tmp > "$i"_parsInformSites.tmp
-			awk '{ print length($0); }' "$i"_parsInformSites.tmp > "$i"_parsInformSites.txt
+			grep -h "^\/\/" "$i" | sed 's/\ //g; s/\/\///g; s/\|//g; s/[0-9]*//g' > "$i"_varSites.tmp ;
+			awk '{ print length($0); }' "$i"_varSites.tmp > "$i"_varSites.txt ;
+			sed 's/\-//g' "$i"_varSites.tmp > "$i"_parsInformSites.tmp ;
+			awk '{ print length($0); }' "$i"_parsInformSites.tmp > "$i"_parsInformSites.txt ;
 #
-			paste "$i"_locusNos.tmp "$i"_varSites.txt "$i"_parsInformSites.txt > "$i"_summTable.tmp
+			paste "$i"_locusNos.tmp "$i"_varSites.txt "$i"_parsInformSites.txt > "$i"_summTable.tmp ;
 			echo locus > locus.tmp; echo varSites > varSites.tmp; echo parsInfSites > parsInfSites.tmp;
 #		
 			## OUTPUT S AND PIS ESTIMATES TO FILES.
 			echo "INFO      | $(date) | Writing regular (unsorted) results to summary text files... "
 			## 3-column summary file:
-				paste locus.tmp varSites.tmp parsInfSites.tmp > header.tmp
-				cat header.tmp "$i"_summTable.tmp > "$i"_varSitesSummary.txt
+				paste locus.tmp varSites.tmp parsInfSites.tmp > header.tmp ;
+				cat header.tmp "$i"_summTable.tmp > "$i"_varSitesSummary.txt ;
 			## 2-column var sites (S) file:
-				paste locus.tmp varSites.tmp > Sheader.tmp
-				paste "$i"_locusNos.tmp "$i"_varSites.txt > "$i"_varSitesTable.tmp
-				cat Sheader.tmp "$i"_varSitesTable.tmp > "$i"_S_table.txt
+				paste locus.tmp varSites.tmp > Sheader.tmp ;
+				paste "$i"_locusNos.tmp "$i"_varSites.txt > "$i"_varSitesTable.tmp ;
+				cat Sheader.tmp "$i"_varSitesTable.tmp > "$i"_S_table.txt ;
 			## 2-column parsimony-informative sites (PIS) file:
-				paste locus.tmp parsInfSites.tmp > PISheader.tmp
-				paste "$i"_locusNos.tmp "$i"_parsInformSites.txt > "$i"_parsInfSitesTable.tmp
-				cat PISheader.tmp "$i"_parsInfSitesTable.tmp > "$i"_PIS_table.txt		
+				paste locus.tmp parsInfSites.tmp > PISheader.tmp ;
+				paste "$i"_locusNos.tmp "$i"_parsInformSites.txt > "$i"_parsInfSitesTable.tmp ;
+				cat PISheader.tmp "$i"_parsInfSitesTable.tmp > "$i"_PIS_table.txt ;		
 			## Make ranked/sorted S and PIS table files:
 			echo "INFO      | $(date) | Ranking loci by number of variable and parsimony-informative sites, and writing tables with ranked loci... "
-				sort -nrk2 "$i"_varSitesTable.tmp > Ssorted.tmp
-				cat Sheader.tmp Ssorted.tmp > "$i"_S_table-ranked.txt
-				sort -nrk2 "$i"_parsInfSitesTable.tmp > PISsorted.tmp
-				cat PISheader.tmp PISsorted.tmp > "$i"_PIS_table-ranked.txt
+				sort -nrk2 "$i"_varSitesTable.tmp > Ssorted.tmp ;
+				cat Sheader.tmp Ssorted.tmp > "$i"_S_table-ranked.txt ;
+				sort -nrk2 "$i"_parsInfSitesTable.tmp > PISsorted.tmp ;
+				cat PISheader.tmp PISsorted.tmp > "$i"_PIS_table-ranked.txt ;
 #
-			rm ./*.tmp
-			rm ./"$i"_varSites.txt
-			rm ./"$i"_parsInformSites.txt
+			rm ./*.tmp ;
+			rm ./"$i"_varSites.txt ;
+			rm ./"$i"_parsInformSites.txt ;
 		done
 	)
 
