@@ -26,10 +26,10 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 echo "
-##########################################################################################
-#                         pyRADLocusVarSites v0.1.1, March 2019                          #
-##########################################################################################
-"
+pyRADLocusVarSites v0.1.1, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
+
 ######################################## START ###########################################
 ###### STEP #1: SETUP.
 	MY_PATH="$(pwd -P)";
@@ -99,9 +99,10 @@ fi
 	)
 
 
-echo "INFO      | $(date) | Done calculating numbers of variable sites in pyRAD .loci file(s) and ranking SNP loci by variability. "
-echo "INFO      | $(date) | Bye.
-"
+#echo "INFO      | $(date) | Done calculating numbers of variable sites in pyRAD .loci file(s) and ranking SNP loci by variability. "
+#echo "INFO      | $(date) | Bye.
+#"
+echo "------------------------------------------------------------------------------------------"
 #
 #
 #
