@@ -8,7 +8,7 @@
 # File: treeThinner.sh                                                                   #
   VERSION="v1.0"                                                                         #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600                      #
+# Date: Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.                     #
 # Last update: March 3, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
@@ -19,7 +19,7 @@
 #                                                                                        #
 ##########################################################################################
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
@@ -42,34 +42,34 @@ echo "
 ## back together as a final output .t file that has been "thinned".
 
 ### STEP #1:
-read -p "Please enter the name of your MrBayes .t trees file : " MY_TFILE
-read -p "Please enter the frequency (n) of nth lines that you would like to keep : " NTH_LINES
+read -p "Please enter the name of your MrBayes .t trees file : " MY_TFILE ;
+read -p "Please enter the frequency (n) of nth lines that you would like to keep : " NTH_LINES ;
 
-   calc () {												## Make the "handy bash function 'calc'" for subsequent use.
-      bc -l <<< "$@"
+calc () {
+	bc -l <<< "$@"
 }
-   MY_FIRST_TREELINE=$(awk '/&U/{ print NR}' $MY_TFILE | head -n1)
-   MY_NUM_HEADER_LINES="$(calc $MY_FIRST_TREELINE - 1)"
+   MY_FIRST_TREELINE=$(awk '/&U/{ print NR}' $MY_TFILE | head -n1) ;
+   MY_NUM_HEADER_LINES="$(calc $MY_FIRST_TREELINE - 1)" ;
 
 ### STEP #2:
-   head -n$MY_NUM_HEADER_LINES $MY_TFILE > header.txt
+   head -n$MY_NUM_HEADER_LINES $MY_TFILE > header.txt ;
    ## alternatively, extracting only interior lines: ~$ sed -n <first_line>,<second_line>p filename > newfile
 
 ### STEP #3:
-   grep "&U" $MY_TFILE > trees.txt
-   awk 'NR == 1 || NR % '$NTH_LINES' == 0' ./trees.txt | sed '1d' > thinned_trees.txt
+   grep "&U" $MY_TFILE > trees.txt ;
+   awk 'NR == 1 || NR % '$NTH_LINES' == 0' ./trees.txt | sed '1d' > thinned_trees.txt ;
 
 ### STEP #4:
    echo "END;
 " > ./end.txt
 
-   cat ./header.txt ./thinned_trees.txt ./end.txt > ./nth_line_trees.t
+   cat ./header.txt ./thinned_trees.txt ./end.txt > ./nth_line_trees.t ;
 
 ### CLEANUP.
-   rm ./header.txt
-   rm ./trees.txt
-   rm ./thinned_trees.txt
-   rm ./end.txt 
+   rm ./header.txt ;
+   rm ./trees.txt ;
+   rm ./thinned_trees.txt ;
+   rm ./end.txt ;
 
 #
 #
