@@ -41,7 +41,7 @@ INFO      | Tue Aug 22 18:11:35 EDT 2017 | Bye.
 The 'sumstats.txt' file output by the program is easy to interpret and looks like something like this (i.e. like the best_scheme.txt schemes block, but with new columns containing the summary statistics calculated by PFSubsetSum):
 ```
 ###################### PartitionFinder Subsets Summary Statistics ########################
-Subset	numCharsets	subsetLength	subsetModel
+Subset	numCharsets	subsetLength	subsetModel	| partitions
 p1   16  7579   HKY+G      | 0_10054_01WHISP, 0_10267_01WHISP, 0_11508_01WHISP, 0_14221_01WHISP, 0_1949_01WHISP, 0_6448_02WHISP, 0_6659_01WHISP, 2_2501_01WHISP, 2_2960_02WHISP, 2_3591_03WHISP, 2_3852_01WHISP, 2_6491_01WHISP, 2_8627_01WHISP, 2_8852_01WHISP, 2_9665_01WHISP, CL1077Contig1_02WHISP | 1-437, 438-848, 3646-4111, 14072-14681, 23627-23917, 30328-30922, 31352-31587, 42763-43200, 44122-44689, 45015-45519, 45973-46439, 52533-53048, 55938-56404, 56405-56818, 57723-58164, 58165-58880 | ./analysis/phylofiles/a0677dd7f36fc5c3139676cb0e5cb235.phy
 p2   26  11791  HKY+G      | 0_10307_01WHISP, 0_10706_01WHISP, 0_11270_01WHISP, 0_12190_02WHISP, 0_12329_02WHISP, 0_12745_01WHISP, 0_1347_01WHISP, 0_14122_02WHISP, 0_16889_02WHISP, 0_2433_01_final, 0_8737_01WHISP, 1_1609_01WHISP, 2_2799_03WHISP, 2_3319_01WHISP, 2_3867_02WHISP, 2_4183_01WHISP, 2_5483_02WHISP, 2_9466_01WHISP, CL1524Contig1_03WHISP, CL1634Contig1_03WHISP, CL1659Contig1_02WHISP, CL1692Contig1_05WHISP, CL1694Contig1_02WHISP, CL180Contig1_03WHISP, CL1905Contig1_03WHISP, CL3321Contig1_03WHISP | 849-1197, 1646-2085, 2557-2966, 6108-6517, 7224-7755, 8179-8624, 11664-12065, 13701-14071, 19597-20262, 24426-24855, 35813-36261, 40658-41140, 43201-43657, 44690-45014, 46440-47122, 47621-48059, 48730-49232, 56819-57253, 60288-60736, 61377-61611, 61828-62281, 62584-62976, 62977-63492, 64229-64857, 65764-66240, 69648-70055 | ./analysis/phylofiles/7457b7590e06cbb49b85ba16d16150b4.phy
 p3   4   1724   GTR+I+G    | 0_10602_01WHISP, 0_10754_01WHISP, 0_18439_02WHISP, 0_9457_02WHISP | 1198-1645, 2086-2556, 23370-23626, 38673-39220 | ./analysis/phylofiles/d44d9722ea5ed86e661961ebde89b679.phy
@@ -67,5 +67,5 @@ This output can easily be placed into a summary table in the main text of a manu
 - Lanfear R, Calcott B, Ho SYW, Guindon S (2012) PartitionFinder: combined selection of partitioning schemes and substitution models for phylogenetic analyses. Molecular Biology and Evolution, 29,1695-1701.
 - Lanfear R, Frandsen PB, Wright AM, Senfeld T, Calcott B (2016) PartitionFinder 2: new methods for selecting partitioned models of evolution for molecular and morphological phylogenetic analyses. Molecular Biology and Evolution.
 
-August 26, 2017
-Justin C. Bagley, Richmond, VA, USA
+March 6, 2019
+Justin C. Bagley, St. Louis, MO, USA
