@@ -48,7 +48,7 @@ USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n l u V --version
  remote supercomputer (i.e. following dadiRunner), or your local machine.
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
@@ -98,7 +98,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n l u V -
 								## ranges starting from values other than 1.
 
  CITATION
- Bagley, J.C. 2017. PIrANHA v0.1.4. GitHub repository, Available at: 
+ Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
 	<https://github.com/justincbagley/PIrANHA>.
 
  REFERENCES
