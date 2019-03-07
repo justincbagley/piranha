@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: treeThinner.sh                                                                   #
-  VERSION="v1.0"                                                                         #
+  VERSION="v1.1"                                                                         #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.                     #
 # Last update: March 3, 2019                                                             #
@@ -26,7 +26,7 @@ fi
 
 echo "
 ##########################################################################################
-#                           treeThinner v1.0, November 2016                              #
+#                             treeThinner v1.1, March 2019                               #
 ##########################################################################################
 "
 
