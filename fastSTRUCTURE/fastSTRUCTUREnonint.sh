@@ -46,7 +46,7 @@ echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "
 	MY_FASTSTRUCTURE_PATH="$(echo $fsPATH)" ;
 
 
-echo "INFO      | $(date) | STEP #2. RUN fastSTRUCTURE ON RANGE OF K SPECIFIED BY USER. "
+echo "INFO      | $(date) | Step #2: Run fastSTRUCTURE on range of K values specified by user. "
 echo "INFO      | $(date) |          Modeling K = $lK to $uK clusters in fastSTRUCTURE. "
 
 (
@@ -59,7 +59,7 @@ echo "INFO      | $(date) |          Modeling K = $lK to $uK clusters in fastSTR
 echo "INFO      | $(date) |         fastSTRUCTURE runs completed. "
 
 
-echo "INFO      | $(date) | STEP #3. MODEL COMPLEXITY. "
+echo "INFO      | $(date) | Step #3: Estimate model complexity. "
 ###### Obtain an estimate of the model complexity for each set of runs (per species):
 	MY_CHOOSEK_PATH="$(echo $fsPATH | sed 's/structure.py//g' | sed 's/$/chooseK.py/g')" ;
 
@@ -69,7 +69,7 @@ echo "INFO      | $(date) |         Finished estimating model complexity. "
 	cat chooseK.out.txt ;
 
 
-echo "INFO      | $(date) | STEP #4. VISUALIZE RESULTS. "
+echo "INFO      | $(date) | Step #4: Visualize results. "
 ###### Use DISTRUCT to create graphical output of results corresponding to the best K value modeled.
 	MY_EXTRACTED_BESTK="$(grep -n "complexity" \
 	./chooseK.out.txt | \
