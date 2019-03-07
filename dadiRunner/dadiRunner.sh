@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiRunner.sh                                                                    #
-  VERSION="v0.1.2"                                                                       #
+  VERSION="v0.1.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -44,9 +44,9 @@ USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -i n w v V --versi
  al. 2009) using data from a SNP input file, in ∂a∂i format, on a remote supercomputing 
  cluster. The script is called and gathers information on the current working dir and files
  on the local machine; it is also passed the path to the destination folder, and other details 
- needed for running on the supercomputer, as given in a configuration file, "./dadi_runner.cfg." 
+ needed for running on the supercomputer, as given in a configuration file, './dadi_runner.cfg.' 
  To take full advantage of the script's capacity, user must have installed recently updated 
- ∂a∂i from the developers (v1.7++), as well as the "∂a∂i-mod", or modified v1.6.3 version of
+ ∂a∂i from the developers (v1.7++), as well as the '∂a∂i-mod', or modified v1.6.3 version of
  ∂a∂i from Tine et al. (2014) (available from: https://popgensealab.wordpress.com/dadi-inference/). 
  Requires proper ∂a∂i install (e.g. several dependencies, including Python and 
  several Python packages), as well as paswordless ssh access (see PIrANHA README for 
@@ -84,9 +84,9 @@ VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -i n w v V
  al. 2009) using data from a SNP input file, in ∂a∂i format, on a remote supercomputing 
  cluster. The script is called and gathers information on the current working dir and files
  on the local machine; it is also passed the path to the destination folder, and other details 
- needed for running on the supercomputer, as given in a configuration file, "./dadi_runner.cfg." 
+ needed for running on the supercomputer, as given in a configuration file, './dadi_runner.cfg.' 
  To take full advantage of the script's capacity, user must have installed recently updated 
- ∂a∂i from the developers (v1.7++), as well as the "∂a∂i-mod", or modified v1.6.3 version of
+ ∂a∂i from the developers (v1.7++), as well as the '∂a∂i-mod', or modified v1.6.3 version of
  ∂a∂i from Tine et al. (2014) (available from: https://popgensealab.wordpress.com/dadi-inference/). 
  Requires proper ∂a∂i install (e.g. several dependencies, including Python and 
  several Python packages), as well as paswordless ssh access (see PIrANHA README for 
@@ -113,8 +113,8 @@ VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -i n w v V
  running ∂a∂i v1.6.3 as modified by Tine et al. (2014); as per my Gist linked in the Overview
  section above, this mod version can be installed in a Python virtual environment that you 
  must set up on the supercomputer. I recommend following my instructions and creating a 
- virtualenv named "∂a∂i-mod" for this version. To use ∂a∂i-mod, you must supply a separate 
- "virtualenv.txt" file containing a block of code that loads the corresponding virtual environment 
+ virtualenv named '∂a∂i-mod' for this version. To use ∂a∂i-mod, you must supply a separate 
+ 'virtualenv.txt' file containing a block of code that loads the corresponding virtual environment 
  on your supercomputer account. Code from this file will be added to each shell script (for each 
  independent run), in order tell the supercomputer to enter the ∂a∂i-mod virtual environment 
  prior to passing each .py file to Python. An example virtualenv.txt block is provided.
@@ -183,11 +183,9 @@ fi
 USER_SPEC_PATH="$1"
 
 echo "
-##########################################################################################
-#                             dadiRunner v0.1.2, March 2019                              #
-##########################################################################################
-"
-
+dadiRunner v0.1.3, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dadiRunner pipeline... "
 echo "INFO      | $(date) | STEP #1: SETUP. "
@@ -421,9 +419,11 @@ echo "INFO      | $(date) |          Cleaning up: removing temporary files from 
 	rm ./batch_qsub_bottom.txt ;
 	rm ./dadirunner_batch_qsub.sh ;
 
-echo "INFO      | $(date) | Done organizing and copying SNP data and model files to supercomputer and submitting ∂a∂i "
-echo "INFO      | $(date) | jobs to the queue, using the dadiRunner pipeline. "
-echo "INFO      | $(date) | Bye.
+#echo "INFO      | $(date) | Done organizing and copying SNP data and model files to supercomputer and submitting ∂a∂i "
+#echo "INFO      | $(date) | jobs to the queue, using the dadiRunner pipeline. "
+#echo "INFO      | $(date) | Bye.
+#"
+echo "------------------------------------------------------------------------------------------
 "
 #
 #
