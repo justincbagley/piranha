@@ -98,7 +98,6 @@ echo "INFO      | $(date) |          Setting user-specified path to: "
 echo "$PWD "	
 echo "INFO      | $(date) |          Input PHYLIP file: $1 "
 echo "INFO      | $(date) |          Examining current directory, setting variables... "
-	MY_WORKING_DIR="$(pwd -P)";
 	MY_PHYLIP_LENGTH="$(cat $MY_PHYLIP | wc -l | sed 's/(\ )*//g')";
 
 	calc () {					## Make the "handy bash function 'calc'" for subsequent use.
