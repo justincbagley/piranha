@@ -6,9 +6,9 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiPostProc.sh                                                                  #
-  version="v0.1.0"                                                                       #
+  VERSION="v0.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400                      #
+# Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
 # Last update: February 24, 2019                                                         #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
@@ -27,15 +27,16 @@ MY_LOWER_MOD_NUM=1
 MY_UPPER_MOD_NUM=10
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n l u] [stdin:] <workingDir> 
+USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n l u V --version] [stdin:] <workingDir> 
  ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+  -h   help text (also: --help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
 
  ## Options:
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
   -l   lowerModNum (def: $MY_LOWER_MOD_NUM) lower number in model number range
   -u   upperModNum (def: $MY_UPPER_MOD_NUM) upper number in model number range
+  -V   version (also: --version) echo version and exit
   
  OVERVIEW
  Automates post-processing and organizing results from multiple ∂a∂i (Gutenkunst et al. 2009)
@@ -55,14 +56,14 @@ Usage="Usage: $(basename "$0") [Help: -h help H Help] [Options: -n l u] [stdin:]
  	demographic history of multiple populations from multidimensional SNP frequency data. 
  	PLOS Genetics 5(10): e1000695
 
-Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400
+Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.
 Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
-verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n] [stdin:] <workingDir> 
+VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n l u V --version] [stdin:] <workingDir> 
  ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+  -h   help text (also: --help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
 
  ## Options:
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
@@ -75,8 +76,8 @@ verboseHelp="Usage: $(basename "$0") [Help: -h help H Help] [Options: -i n] [std
  additional details), although this is not required. Expects run results organized into 
  separate sub-folders of current working directory, with sub-folder names containing model
  name. Model names should be of form 'M1' to 'Mx', where x is the number of models. Multiple
- runs (e.g. 10) would have been run on the .py file for each model. Results could be on
- remote supercomputer (i.e. following dadiRunner), or your local machine.
+ runs (e.g. 10) would have been conducted in ∂a∂i on the .py file for each model. Results could 
+ be on remote supercomputer (i.e. following dadiRunner), or your local machine.
 
  DETAILS
  The -n flag sets the number of independent ∂a∂i runs to be submitted to the supercomputer
@@ -109,35 +110,33 @@ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
-	echo "$verboseHelp"
+	echo "$VERBOSE_USAGE"
 	exit
 fi
 
 if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) ${version}";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
 ############ PARSE THE OPTIONS
 while getopts 'n:l:u:' opt ; do
   case $opt in
-
-## ∂a∂i options:
+## ∂a∂i post-processing options:
     n) MY_NUM_INDEP_RUNS=$OPTARG ;;
     l) MY_LOWER_MOD_NUM=$OPTARG ;;
     u) MY_UPPER_MOD_NUM=$OPTARG ;;
-
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
@@ -146,41 +145,31 @@ done
 shift $((OPTIND-1)) 
 # Check for mandatory positional parameters
 if [ $# -lt 1 ]; then
-echo "$Usage"
+echo "$USAGE"
   exit 1
 fi
 USER_SPEC_PATH="$1"
 
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "$USER_SPEC_PATH "	
-
 echo "
 ##########################################################################################
-#                           dadiPostProc v0.1.0, February 2019                           #
+#                             dadiPostProc v0.1.1, March 2019                            #
 ##########################################################################################
 "
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dadiPostProc analysis... "
 echo "INFO      | $(date) | STEP #1: SETUP, AND DETECT ONE OR MULTIPLE ∂a∂i RUN SUB-FOLDERS IN CURRENT DIR. "
-###### Set paths and filetypes as different environmental variables:
-	MY_PATH=`pwd -P`		## This script assumes it is being run in a working dir containing
-							## multiple sub-folders corresponding to individual ∂a∂i runs
-							## from which a single output file having extension ".out" or 
-							## ".out.txt" was created, and to which best-fit parameters, composite
-							## likelihood, and optimal theta values have been written out 
-							## following standard out from the program. Ideally, file/dir structure
-							## will have resulted from running multiple ∂a∂i input files using
-							## the "dadiRunner.sh" script in PIrANHA.
+echo "INFO      | $(date) |          Setting user-specified path to: "
+echo "$USER_SPEC_PATH "	
 	calc () { 
 		bc -l <<< "$@" 
 }
 
 if [[ "$(find . -type d | wc -l)" = "1" ]]; then
-	MY_MULTIRUN_DIR_SWITCH=FALSE
+	MY_MULTIRUN_DIR_SWITCH=FALSE ;
 	## Inside folder corresponding to 1 single run.
 elif [[ "$(find . -type d | wc -l)" -gt "1" ]]; then
-	MY_MULTIRUN_DIR_SWITCH=TRUE
+	MY_MULTIRUN_DIR_SWITCH=TRUE ;
 	## Inside working directory containing multiple sub-folders, assumed to correspond to ∂a∂i run folders (1 per run).
 fi
 
@@ -213,60 +202,60 @@ echo "INFO      | $(date) |          OPTIMAL THETA ESTIMATE (IF PRESENT) TO A SI
 	(
 		for i in ./*/; do
 			cd "$i"; 
-				MY_FOLDER_BASENAME="$(echo ${i} | sed 's/^.\///g; s/\///g')"
-				echo $MY_FOLDER_BASENAME
+				MY_FOLDER_BASENAME="$(echo ${i} | sed 's/^.\///g; s/\///g')";
+				echo $MY_FOLDER_BASENAME;
 #			
 				### CHECK FOR OUTPUT FILE.
 				if [[ -s $(find . -name "*.out" -type f) ]]; then
-					MY_OUTPUT_FILENAME="$(find . -name "*.out" -type f)"
-					MY_OUTPUT_BASENAME="$(find . -name "*.out" -type f | sed 's/^\.\///g; s/\.out//g')"
+					MY_OUTPUT_FILENAME="$(find . -name "*.out" -type f)";
+					MY_OUTPUT_BASENAME="$(find . -name "*.out" -type f | sed 's/^\.\///g; s/\.out//g')";
 				elif [[ -s $(find . -name "*.out.txt" -type f) ]]; then
-					MY_OUTPUT_FILENAME="$(find . -name "*.out.txt" -type f)"
-					MY_OUTPUT_BASENAME="$(find . -name "*.out.txt" -type f | sed 's/^\.\///g; s/\.out\.txt//g')"
+					MY_OUTPUT_FILENAME="$(find . -name "*.out.txt" -type f)";
+					MY_OUTPUT_BASENAME="$(find . -name "*.out.txt" -type f | sed 's/^\.\///g; s/\.out\.txt//g')";
 				fi
 #			
 #
 				### EXTRACT BEST-FIT MODEL PARAMETER ESTIMATES: 
-				grep -n "Best\-fit\ parameters:" $MY_OUTPUT_FILENAME > "${MY_OUTPUT_BASENAME}"_BFP.tmp
+				grep -n "Best\-fit\ parameters:" $MY_OUTPUT_FILENAME > "${MY_OUTPUT_BASENAME}"_BFP.tmp;
 				##--Get starting line no. for BFPs:
-				MY_BFP_START_LN_NUM="$(sed 's/\:.*$//g' ${MY_OUTPUT_BASENAME}_BFP.tmp)"
-				MY_BFP_CLOSEBRACK_TEST="$(grep -h "\]" ${MY_OUTPUT_BASENAME}_BFP.tmp | wc -l)"
+				MY_BFP_START_LN_NUM="$(sed 's/\:.*$//g' ${MY_OUTPUT_BASENAME}_BFP.tmp)";
+				MY_BFP_CLOSEBRACK_TEST="$(grep -h "\]" ${MY_OUTPUT_BASENAME}_BFP.tmp | wc -l)";
 #
 					if [[ "$MY_BFP_CLOSEBRACK_TEST" = "0" ]]; then
 
 						##--Clean up only to tab-separated BFP estimates:
-						sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp
-						sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp
+						sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
+						sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
 
 					elif [[ "$MY_BFP_CLOSEBRACK_TEST" != "0" ]]; then
 
 						##--Get final line no. for multi-line BFPs:
-						MY_BFP_FINISH_LN_NUM="$(grep -n '\ .*\]' $MY_OUTPUT_FILENAME | sed 's/\:.*$//g' | tail -n1)"
+						MY_BFP_FINISH_LN_NUM="$(grep -n '\ .*\]' $MY_OUTPUT_FILENAME | sed 's/\:.*$//g' | tail -n1)";
 
 						##--Use sed to extract multi-line BFPs lines to tmp file using line nos:
-						sed -n "$MY_BFP_START_LN_NUM","$MY_BFP_FINISH_LN_NUM"p "$MY_OUTPUT_FILENAME" > ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp
+						sed -n "$MY_BFP_START_LN_NUM","$MY_BFP_FINISH_LN_NUM"p "$MY_OUTPUT_FILENAME" > ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp;
 
 						##--Convert BFPs to single line with numbers in tab-separated format, and 
 						##--remove "_BFP.tmp" and "_multiline_BFP.tmp" files created above:
-						rm ./"${MY_OUTPUT_BASENAME}"_BFP.tmp
-						perl -pe 's/\n/\ /g; s/^.*\:\ \[\ //g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g; s/\]//g' ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp | perl -pe 's/\t$//g' > ./"${MY_OUTPUT_BASENAME}"_BFP.tmp
-						rm ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp
+						rm ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
+						perl -pe 's/\n/\ /g; s/^.*\:\ \[\ //g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g; s/\]//g' ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp | perl -pe 's/\t$//g' > ./"${MY_OUTPUT_BASENAME}"_BFP.tmp;
+						rm ./"${MY_OUTPUT_BASENAME}"_multiline_BFP.tmp;
 					fi
 #
 #
 				### EXTRACT MAXIMUM COMPOSITE LIKELIHOOD ESTIMATE FOR THE RUN: 
-				grep -h "likelihood\:\ " "$MY_OUTPUT_FILENAME" | sed 's/^.*\:\ //g; s/\ //g' > ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp
-###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp
+				grep -h "likelihood\:\ " "$MY_OUTPUT_FILENAME" | sed 's/^.*\:\ //g; s/\ //g' > ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp;
+###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp;
 #
 #
 				### EXTRACT OPTIMAL VALUE OF THETA AS ESTIMATED BASED ON THE RUN: 
-				grep -h "theta\:\ " "$MY_OUTPUT_FILENAME" |  sed 's/^.*\:\ //g; s/\ //g' > ./"${MY_OUTPUT_BASENAME}"_theta.tmp
-###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_theta.tmp
+				grep -h "theta\:\ " "$MY_OUTPUT_FILENAME" |  sed 's/^.*\:\ //g; s/\ //g' > ./"${MY_OUTPUT_BASENAME}"_theta.tmp;
+###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_theta.tmp;
 #
 #
 				### PASTE RESULTS IN TMP FILES TOGETHER INTO A SINGLE FILE, THEN COPY RESULTS SUMMARY FOR RUN TO WORKING DIR.
-				paste ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ./"${MY_OUTPUT_BASENAME}"_theta.tmp > ./"${MY_OUTPUT_BASENAME}"_results.txt
-###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_results.txt
+				paste ./"${MY_OUTPUT_BASENAME}"_MLCL.tmp ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ./"${MY_OUTPUT_BASENAME}"_theta.tmp > ./"${MY_OUTPUT_BASENAME}"_results.txt ;
+###				perl -pi -e 'chomp if eof' ./"${MY_OUTPUT_BASENAME}"_results.txt;
 
 				##--Check for "runs_output" output dir and make it if needed; then copy final 
 				##--results summary file with run folder prefix to "runs_output" dir in working 
@@ -278,7 +267,7 @@ echo "INFO      | $(date) |          OPTIMAL THETA ESTIMATE (IF PRESENT) TO A SI
 				cp ./"${MY_OUTPUT_BASENAME}"_results.txt ../runs_output/;
 
 				##--Clean up temporary files:
-				rm ./*.tmp
+				rm ./*.tmp;
 			cd ..;
 		done
 	)
@@ -289,15 +278,15 @@ echo "INFO      | $(date) |          SAME MODEL, LOOKING FOR SEPARATE M1 (MODEL 
 ###### Here, recursively cat results from all files with the same model names in their prefixes 
 ##--(cycling through M1 to Mx, where x is the total number of models) into separate summaries 
 ##--for each model (e.g. one file for 10 M1 runs, a second file for 10 M2 runs, and so on).
-	mkdir final_output
+	mkdir final_output/;
 	(
 		for (( j="MY_LOWER_MOD_NUM"; j<="MY_UPPER_MOD_NUM"; j++ )); do
-			cat ./runs_output/*M"$j"*_results.txt >> ./final_output/M"$j"_resultsSummary.txt 
+			cat ./runs_output/*M"$j"*_results.txt >> ./final_output/M"$j"_resultsSummary.txt ;
 		done
 	)
 
 	cd ./final_output/;
-		cat ./*Summary.txt > All_Models_M"$MY_LOWER_MOD_NUM"_M"$MY_UPPER_MOD_NUM"_resultsSummary.txt
+		cat ./*Summary.txt > All_Models_M"$MY_LOWER_MOD_NUM"_M"$MY_UPPER_MOD_NUM"_resultsSummary.txt ;
 	cd ..;
 
 
