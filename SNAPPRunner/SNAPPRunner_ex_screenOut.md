@@ -54,8 +54,7 @@ INFO      | Wed May 10 22:29:06 EDT 2017 | STEP #5: SUBMIT ALL JOBS TO THE QUEUE
 Pseudo-terminal will not be allocated because stdin is not a terminal.
 FSL offers free workflow and code optimization, performance tuning, and more.
 
-Notices:
- * Two-factor authentication [https://marylou.byu.edu/account/authenticate/enroll] now available.
+...
 
 ../SNAPP/new_runs2
 Submitted batch job 16280750
