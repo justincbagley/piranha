@@ -300,7 +300,6 @@ if [[ "$MY_SC_PARTITION" = "NULL" ]] && [[ "$MY_STARTING_SEED" = "NULL" ]]; then
 (
 	for i in $MY_XML_FILES; do
 		mkdir "$(ls ${i} | sed 's/\.xml$//g')" ;
-		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')" ;
 
 echo "#!/bin/bash
 
@@ -341,7 +340,6 @@ elif [[ "$MY_SC_PARTITION" = "NULL" ]] && [[ "$MY_STARTING_SEED" != "NULL" ]]; t
 (
 	for i in $MY_XML_FILES; do
 		mkdir "$(ls ${i} | sed 's/\.xml$//g')";
-		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')";
 
 echo "#!/bin/bash
 
@@ -382,7 +380,6 @@ elif [[ "$MY_SC_PARTITION" != "NULL" ]] && [[ "$MY_STARTING_SEED" = "NULL" ]]; t
 (
 	for i in $MY_XML_FILES; do
 		mkdir "$(ls ${i} | sed 's/\.xml$//g')" ;
-		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')" ;
 
 echo "#!/bin/bash
 
@@ -424,7 +421,6 @@ elif [[ "$MY_SC_PARTITION" != "NULL" ]] && [[ "$MY_STARTING_SEED" != "NULL" ]]; 
 (
 	for i in $MY_XML_FILES; do
 		mkdir "$(ls ${i} | sed 's/\.xml$//g')" ;
-		MY_INPUT_BASENAME="$(ls ${i} | sed 's/^.\///g; s/.py$//g')" ;
 
 echo "#!/bin/bash
 
