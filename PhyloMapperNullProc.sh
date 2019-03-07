@@ -8,7 +8,7 @@
 # File: PhyloMapperNullProc.sh                                                           #
   VERSION="v1.0"                                                                         #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300                      #
+# Date: Created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300.                     #
 # Last update: March 3, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
@@ -19,7 +19,7 @@
 #                                                                                        #
 ##########################################################################################
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
@@ -27,7 +27,8 @@ fi
 echo "
 ##########################################################################################
 #                          PhyloMapperNullProc v1, October 2016                          #
-##########################################################################################"
+##########################################################################################
+"
 
 MY_LOGFILE=$(echo ./*.log)
 echo "INPUT     | $(date) |         Read in the following PhyloMapper log file: $MY_LOGFILE "
