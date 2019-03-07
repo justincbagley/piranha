@@ -188,7 +188,7 @@ echo "Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.  "
 echo "------------------------------------------------------------------------------------------"
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dadiRunner pipeline... "
-echo "INFO      | $(date) | STEP #1: SETUP. "
+echo "INFO      | $(date) | Step #1: Set up workspace. "
 echo "INFO      | $(date) |          Setting up variables, including those specified in the cfg file..."
 ###### Set new path/dir environmental variable to user specified path, then create useful
 ##--shell functions and variables:
@@ -225,8 +225,8 @@ echo "INFO      | $(date) |          Number of .py ∂a∂i input files read: $M
 	awk -F"=" '{print $NF}')";
 
 
-echo "INFO      | $(date) | STEP #2: MAKE 9 COPIES PER INPUT .PY FILE FOR A TOTAL OF $MY_NUM_INDEP_RUNS RUNS OF EACH MODEL or "
-echo "INFO      | $(date) |          .PY USING DIFFERENT RANDOM SEEDS. "
+echo "INFO      | $(date) | Step #2: Make n copies per input .py file for a total OF $MY_NUM_INDEP_RUNS RUNS of each model or "
+echo "INFO      | $(date) |          .py using different random number seeds. "
 echo "INFO      | $(date) |          Looping through original .py's and making 9 copies per file, renaming \
 each copy with an extension of '_#.py'"
 echo "INFO      | $(date) |          where # ranges from 2 - $MY_NUM_INDEP_RUNS. *** IMPORTANT ***: The starting .py files MUST \
@@ -251,8 +251,8 @@ end in 'run.py'."
 	            		## annotated with their run numbers 1 - $MY_NUM_INDEP_RUNS remain.
 
 
-echo "INFO      | $(date) | STEP #3: MAKE DIRECTORIES FOR RUNS AND GENERATE SHELL SCRIPTS UNIQUE TO EACH \
-INPUT FILE FOR DIRECTING EACH RUN; MAKE SCRIPTS SPECIFIC TO ∂a∂i VERSION INDICATED BY USER. "
+echo "INFO      | $(date) | Step #3: Make directories for runs and generate shell scripts unique to each input file for directing \
+each run; make scripts specific to ∂a∂i version indicated by user. "
 ##--Loop through the input .py files and do the following for each file: (A) generate one 
 ##--folder per .py file with the same name as the file, only minus the extension; (B) 
 ##--create a shell script with the name "dadi_pbs.sh" that is specific to the input 
@@ -337,8 +337,8 @@ echo "INFO      | $(date) |          Setup and run check on the number of run fo
 	echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS"
 
 
-echo "INFO      | $(date) | STEP #4: CREATE BATCH SUBMISSION FILE, MOVE ALL RUN FOLDERS CREATED IN PREVIOUS STEP \
-AND SUBMISSION FILE TO SUPERCOMPUTER. "
+echo "INFO      | $(date) | Step #4: Create batch submission file, move all run folders created in previous step \
+and submission file to supercomputer. "
 ##--This step assumes that you have set up passowordless access to your supercomputer
 ##--account (e.g. passwordless ssh access), by creating and organizing appropriate and
 ##--secure public and private ssh keys on your machine and the remote supercomputer (by 
@@ -392,7 +392,7 @@ scp ./dadirunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;
 
 
 
-echo "INFO      | $(date) | STEP #5: SUBMIT ALL JOBS TO THE QUEUE. "
+echo "INFO      | $(date) | Step #5: Submit all jobs to the supercomputere queue. "
 ##--This is the key: using ssh to connect to supercomputer and execute the "dadirunner_batch_qsub.sh"
 ##--submission file created and moved into sc destination folder above. The batch qsub file
 ##--loops through all run folders and submits all jobs/runs (sh scripts in each folder) to the 
@@ -411,7 +411,7 @@ HERE
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting ∂a∂i jobs to queue!!"
 
 
-echo "INFO      | $(date) | STEP #6: CLEANUP: REMOVE UNNECESSARY FILES. "
+echo "INFO      | $(date) | Step #6: Clean up workspace. "
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
 	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".py; done;
 	rm ./batch_qsub_top.txt ;
