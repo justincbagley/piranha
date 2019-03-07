@@ -69,6 +69,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -n l u V -
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
   -l   lowerModNum (def: $MY_LOWER_MOD_NUM) lower number in model number range
   -u   upperModNum (def: $MY_UPPER_MOD_NUM) upper number in model number range
+  -V   version (also: --version) echo version and exit
 
  OVERVIEW
  Automates post-processing and organizing results from multiple ∂a∂i (Gutenkunst et al. 2009)
@@ -119,7 +120,7 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 	exit
 fi
 
-if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
