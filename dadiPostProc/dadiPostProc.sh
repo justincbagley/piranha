@@ -9,9 +9,9 @@
   VERSION="v0.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
-# Last update: February 24, 2019                                                         #
+# Last update: March 6, 2019                                                             #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR POST-PROCESSING OUTPUT FROM ONE OR MULTIPLE ∂a∂i RUNS (IDEALLY RUN    #
