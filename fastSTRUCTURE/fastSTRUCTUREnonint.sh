@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: fastSTRUCTUREnonint.sh                                                           #
-  VERSION="v1.1.1"                                                                       #
+  VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Wed, 27 Jul 2016 00:48:37 -0300                      #
-# Last update: March 6, 2019                                                             #
+# Last update: March 7, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -24,14 +24,14 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 echo "
-##########################################################################################
-#                       fastSTRUCTUREnonint.sh v1.1.1 March 2019                         #
-##########################################################################################
-"
-
+fastSTRUCTUREnonint.sh v1.1.2, March 2019  (part of PIrANHA v0.1.7+)  "
+echo "Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.  "
+echo "------------------------------------------------------------------------------------------"
 ######################################## START ###########################################
-echo "INFO      | $(date) | STEP #1. SETUP: READ USER INPUT, SET VARIABLES. "
-	MY_FASTSTRUCTURE_WKDIR="$(pwd)" ;
+echo "INFO      | $(date) | Step #1: Set up workspace by reading user input, setting environmental variables. "
+	MY_FASTSTRUCTURE_WKDIR="$(pwd -P)" ;
+	MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
+echo "INFO      | $(date) |          Setting working directory to: $MY_PATH "
 
 	fsPATH="/Applications/STRUCTURE-fastStructure-e47212f/structure.py" ;
 
@@ -80,8 +80,10 @@ echo "INFO      | $(date) | STEP #4. VISUALIZE RESULTS. "
 	python "$MY_DISTRUCT_PATH" -K "$MY_EXTRACTED_BESTK" --input="$MY_FASTSTRUCTURE_WKDIR/$fsOutput" --output="$fsOutput"_distruct.svg ;
 	
 
-echo "INFO      | $(date) | Done!!! fastSTRUCTURE analysis complete. "
-echo "Bye.
+#echo "INFO      | $(date) | Done!!! fastSTRUCTURE analysis complete. "
+#echo "Bye.
+#"
+echo "------------------------------------------------------------------------------------------
 "
 #
 #
