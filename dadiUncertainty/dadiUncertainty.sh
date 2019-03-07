@@ -189,7 +189,7 @@ echo "INFO      | $(date) | Starting dadiUncertainty analysis... "
 
 ####### makePerlScripts.sh
 
-echo "INFO      | $(date) | STEP #1: MAKE VCF AND BOOTSTRAP PERL SCRIPTS. "
+echo "INFO      | $(date) | Step #1: Make VCF and boostrap Perl scripts. "
 
 ####### MAKE MIKHAIL MATZ PERL SCRIPTS
 
@@ -429,7 +429,7 @@ EOF
 
 ################# SECTION II. PREP BOOTSTRAPPED SNP DATA FILES & SPECTRA FOR UNCERTAINTY ANALYSIS:
 
-echo "INFO      | $(date) | STEP #2: FIX SCRIPT PERMISSIONS, CONVERT VCF TO DADI AND MAKE FIRST-ROUND BOOTSTRAPPED DATA FILES. "
+echo "INFO      | $(date) | Step #2: Fix script permissions, convert VCF to dadi, and make first-round bootstrapped data files. "
 #######
 ##--Ensure correct execute permissions on shell and perl scripts in current working dir:
 	chmod u+x ./*.sh ./*.pl ;
@@ -444,7 +444,7 @@ echo "INFO      | $(date) | STEP #2: FIX SCRIPT PERMISSIONS, CONVERT VCF TO DADI
 	perl dadiBoot.pl in="$MY_DADI_DATA_FROM_VCF2DADI" ;
 
 
-echo "INFO      | $(date) | STEP #3: FIX BOOTSTRAPPED DATA FILES SO THAT ALL GENE NAMES ARE UNIQUE. "
+echo "INFO      | $(date) | Step #3: Fix bootstrapped data files so that all gene names are unique. "
 ##--Make all Gene names (in 'Gene' column) _unique_ in bootstrapped data files:
 	(
 		for i in ./*dadi.data.boot*; do
@@ -463,8 +463,8 @@ echo "INFO      | $(date) | STEP #3: FIX BOOTSTRAPPED DATA FILES SO THAT ALL GEN
 	)
 
 
-echo "INFO      | $(date) | STEP #4: GENERATE AND USE CUSTOM PYTHON SCRIPTS TO MAKE SITE FREQUENCY SPECTRA "
-echo "INFO      | $(date) |          (.fs FILES) FOR EACH BOOTSTRAPPED DATA FILE. "
+echo "INFO      | $(date) | Step #4: Generate and use custom Python scripts to make site frequency spectra files "
+echo "INFO      | $(date) |          ('.fs' files) for each bootstrapped data file. "
 #######
 ##--Make frequency spectra for all bootstrapped data files:
 
@@ -587,7 +587,7 @@ import json
 
 
 ################# SECTION III. RUN FINAL UNCERTAINTY ANALYSES WITH/WITHOUT BOOTSTRAP .fs FILES:
-echo "INFO      | $(date) | STEP #5: CONDUCT FINAL ∂a∂i UNCERTAINTY ANALYSES AS SPECIFIED BY USER. "
+echo "INFO      | $(date) | Step #5: Conduct final ∂a∂i uncertainty analyses as specified by user. "
 #######
 
 	if [[ "$UNCERT_METHOD_SWITCH" = "1" ]]; then
@@ -832,7 +832,7 @@ fi
 
 ################# 
 
-echo "INFO      | $(date) | STEP #6: CLEAN UP WORK ENVIRONMENT (TEMPORARY FILES). "
+echo "INFO      | $(date) | Step #6: Clean up workspace environment by removing temporary files generated during run. "
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):
 	rm ./*.tmp;
 
