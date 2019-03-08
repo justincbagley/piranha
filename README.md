@@ -28,5 +28,5 @@ The DOI for ```PIrANHA```, via [Zenodo](https://zenodo.org), is as follows:  [![
 
 ## DOCUMENTATION
 
-For additional information on this distribution, including pipelines, installation, capabilities, etc., please see the documentation given in the [PIrANHA wiki!!!](https://github.com/justincbagley/PIrANHA/wiki/1.-Home)
+For additional information on this distribution, including pipelines, installation, capabilities, etc., please see the documentation given in the [PIrANHA wiki!!!](https://github.com/justincbagley/PIrANHA/wiki)
 
