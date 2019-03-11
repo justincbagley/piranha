@@ -1,0 +1,50 @@
+#!/bin/bash
+
+##########################################################################################
+#                         multiPHYLIP2FASTA v1.0, December 2018                          #
+#  SHELL SCRIPT THAT CONVERTS ONE OR MULTIPLE PHYLIP DNA SEQUENCE ALIGNMENTS IN CURRENT  #
+#  DIRECTORY INTO FASTA FILES WHILE DELETING (OR OPTIONALLY KEEPING) THE ORIGINAL FILES  #
+#  Copyright ©2018 Justinc C. Bagley. For further information, see README and license    #
+#  available at https://github.com/justincbagley/Anoura-UCE-Phylogenomics-Project/. Last #
+#  update: December 21, 2018. For questions, please email bagleyj@umsl.edu.              #
+##########################################################################################
+
+############ CREATE USAGE TEXT
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -k keep]
+
+Run normally, in current working dir, without keeping original PHYLIP files:
+./multiPHYLIP2FASTA.sh
+
+Run with 'keep' option using -k or -keep flag, indicating to convert each PHYLIP file to 
+FASTA format, while keeping the original PHYLIP files:
+./multiPHYLIP2FASTA.sh -k
+or
+./multiPHYLIP2FASTA.sh -keep
+
+Dependency: Nayoki Takebayashi's 'phylip2fasta.pl' script, available from the command line.
+This script can be obtained at URL http://raven.wrrb.uaf.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+
+(
+	for i in *.phy; do 
+		MY_BASENAME="$(basename $i .phy)"; 
+#
+		phylip2fasta.pl "$i" > "$MY_BASENAME".fas; 
+#
+		if [[ "$1" !== "-k" ]] || [[ "$1" !== "-keep" ]]; then
+			if [[ -s "$MY_BASENAME".fas  ]]; then 
+				rm "$i"; 
+			fi; 
+		fi
+	done
+)
+
+
+exit 0
+

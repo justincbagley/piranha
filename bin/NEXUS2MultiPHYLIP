@@ -1,0 +1,640 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: NEXUS2MultiPHYLIP.sh                                                             #
+  VERSION="v1.5.2"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
+# Last update: March 11, 2019                                                            #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT SPLITS A SEQUENTIAL NEXUS ALIGNMENT WITH CHARSET INFORMATION INTO    #
+# MULTIPLE PHYLIP-FORMAT ALIGNMENTS, ONE PER GENE/CHARSET, AND REMOVES INDIVIDUALS WITH  #
+# ALL OR MOSTLY MISSING DATA                                                             #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function NEXUS2MultiPHYLIP () {
+
+######################################## START ###########################################
+##########################################################################################
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.5.2 March 2019  (part of PIrANHA v1.0.0) "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+fi
+
+######################################## START ###########################################
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting NEXUS2MultiPHYLIP analysis...  "
+	echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+fi
+############ STEP #1: SET UP FUNCTIONS AND ENVIRONMENTAL VARIABLES AND CHECK MACHINE TYPE.
+MY_WORKING_DIR="$(pwd)"
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo"INFO      | $(date) |          Setting working directory to: $MY_WORKING_DIR "
+fi
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) | Step #2: Run functions to characterize the input NEXUS file and split it into multiple PHYLIP files, one per charset (=one locus or data partition). "
+fi
+
+##################################  characterizeNexus  ###################################
+
+characterizeNexus () {
+
+############ GET NEXUS FILE & DATA CHARACTERISTICS, SAVE INFO TO FILE.
+## Count number of loci present in the NEXUS file, based on number of charsets defined.
+## Also get corrected count starting from 0 for numbering loci below...
+#	MY_NLOCI="$(echo $MY_NEXUS_CHARSETS | wc -l)"
+	MY_NLOCI="$(egrep "charset|CHARSET|Charset" $MY_NEXUS | wc -l)";
+	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)";
+
+## Extract number of taxa from header of NEXUS file:
+	MY_NTAX_NUMCHECK="$(head -n10 $MY_NEXUS | egrep "ntax|NTAX|nTax" | wc -l | sed 's/\ //g' )";
+	if [[ "$MY_NTAX_NUMCHECK" = "1" ]]; then
+		MY_NTAX="$(head -n10 $MY_NEXUS | egrep "ntax|NTAX|nTax" | sed 's/^.*ntax\=//g; s/^.*NTAX\=//g; s/^.*nTax\=//g' | sed 's/\ .*//g')";
+	elif [[ "$MY_NTAX_NUMCHECK" != "1" ]]; then
+		MY_NTAX="$(head -n10 $MY_NEXUS | egrep "ntax|NTAX|nTax" | head -n1 | sed 's/^.*ntax\=//g; s/^.*NTAX\=//g; s/^.*nTax\=//g' | sed 's/\ .*//g')";
+	fi
+
+## This is the base name of the original NEXUS file so that you have it. This WILL work 
+## regardless of whether the NEXUS filename extension is written in lowercase or in all caps, 
+## as ".NEX". This way the extension does not have to be hard coded; all extensions are
+## accommodated by default.
+	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')";
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) |          Input NEXUS filename: $MY_NEXUS "
+	echo "INFO      | $(date) |          Input NEXUS basename: $MY_NEXUS_BASENAME "
+	echo "INFO      | $(date) |          N tip taxa in NEXUS: $MY_NTAX "
+	echo "INFO      | $(date) |          N loci (charsets) in NEXUS: $MY_NLOCI "
+fi
+
+## Get start/end lines for header, data, and charsets, and then send 1) taxa and spaces/tabs
+## before sequences and 2) the DNA sequence matrix isolated by itself to separate files
+## defining $MY_TAXNAMES_FILE and $MY_DNA_FILE, respectively.
+
+	###### START/END LINES
+	# Get final line of NEXUS header:
+	MY_HEADER_ENDLINE="$(grep -n 'matrix\|MATRIX\|Matrix' $MY_NEXUS | sed 's/\:.*//g')";
+	# END line of alignment assuming the following END format (two lines of code to end
+	# alignment matrix):
+	# "
+	#	;
+	#END;
+	# "
+	# and the final line of matrix containing sequence data (by subtraction):
+	MY_ALIGN_ENDLINE="$(grep -n 'end\|END\|End' $MY_NEXUS | head -n1 | sed 's/\:.*//g')";
+	MY_LAST_ALIGN_LINE="$(calc $MY_ALIGN_ENDLINE - 2)";
+	MY_ALIGN_ENDLINE_MINUSONE="$(calc $MY_ALIGN_ENDLINE - 1)";
+	#
+	# Get charset start/end lines:
+	MY_CHARSET_STARTLINE="$(grep -n 'charset\|CHARSET\|Charset' $MY_NEXUS | head -n1 | sed 's/\:.*//g')";
+	#echo "$MY_CHARSET_STARTLINE"
+	MY_CHARSET_STARTLINE_MINUSONE="$(calc $MY_CHARSET_STARTLINE - 1)";
+	#echo "$MY_CHARSET_STARTLINE_MINUSONE"
+	MY_CHARSET_ENDLINE="$(grep -n 'charset\|CHARSET\|Charset' $MY_NEXUS | tail -n1 | sed 's/\:.*//g')";
+	#echo "$MY_CHARSET_ENDLINE"
+	MY_CHARSET_ENDLINE_PLUSONE="$(calc $MY_CHARSET_ENDLINE + 1)";
+	#echo "$MY_CHARSET_ENDLINE_PLUSONE"
+
+	MY_NEXUS_NLINES="$(awk 'END {print NR,"lines"}' $MY_NEXUS | sed 's/\ .*//g')";
+	#echo "$MY_NEXUS_NLINES"
+	MY_NEXUS_EOF_MINUSONE="$(calc $MY_NEXUS_NLINES - 1)";
+	#echo "$MY_NEXUS_EOF_MINUSONE"
+
+	###### MAKE TEMP HEADLESS NEXUS
+	#sed 1,"$MY_HEADER_ENDLINE"d "$MY_NEXUS" > "$MY_NEXUS_BASENAME".headless.tmp
+
+	###### MAKE TEMP HEADLESS NEXUS--W/ ALIGNMENT ONLY, BEFORE ISOLATING TAXA AND SEQS BELOW
+	## Create the headless.tmp file and then check machine type and remove all newlines 
+	## from headless.tmp file with appropriate code by machine type.
+
+	sed '1,'"$MY_HEADER_ENDLINE"'d;'"$MY_ALIGN_ENDLINE_MINUSONE"','"$MY_NEXUS_EOF_MINUSONE"'d' "$MY_NEXUS" > "$MY_NEXUS_BASENAME".headless.tmp ;
+
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' '/^\s*$/d' "$MY_NEXUS_BASENAME".headless.tmp ;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i '/^\s*$/d' "$MY_NEXUS_BASENAME".headless.tmp ;
+		fi
+
+	
+	###### ISOLATE TAXA AND SPACES/TABS
+	sed 's/^\([A-Za-z0-9\-\_]*[ '"$TAB"']*\).*/\1/g' "$MY_NEXUS_BASENAME".headless.tmp > ./"$MY_NEXUS_BASENAME".nexus_taxa_spacetabs.tmp ;
+	MY_TAXNAMES_FILE=./"$MY_NEXUS_BASENAME".nexus_taxa_spacetabs.tmp ;
+
+	###### ISOLATE DNA SEQUENCE MATRIX
+	sed 's/^[A-Za-z0-9\-\_]*[ '"$TAB"']*\(.*\)/\1/g' "$MY_NEXUS_BASENAME".headless.tmp > ./"$MY_NEXUS_BASENAME".sequences.tmp ;
+	MY_DNA_FILE=./"$MY_NEXUS_BASENAME".sequences.tmp ;
+
+	###### GET LOCUS LENGTHS FROM MATRIX
+	## Get lengths of each locus and output to 'locusLengths.txt' file, set to $MY_LOCUS_LENGTHS_FILE
+	## environmental variable. This type of processing uses the character sets in the NEXUS file
+	## rather than the seqline lengths. So, first isolate charsets into separate file.
+	# Isolate charsets:
+	sed '1,'"$MY_CHARSET_STARTLINE_MINUSONE"'d;'"$MY_CHARSET_ENDLINE_PLUSONE"','"$MY_NEXUS_NLINES"'d' "$MY_NEXUS" > "$MY_NEXUS_BASENAME".charsets.tmp ;
+	# 
+	# Get only upper values of charset ranges:
+	sed 's/^.*[CHARSET|charset|Charset].*\=.*\-\(.*\).*\;/\1/g' "$MY_NEXUS_BASENAME".charsets.tmp > "$MY_NEXUS_BASENAME".charset.upper.tmp ;
+	#
+	# Reverse order of charset upper range values:
+	sort -n -r "$MY_NEXUS_BASENAME".charset.upper.tmp > "$MY_NEXUS_BASENAME".charset.upper.rev.tmp ;
+	#
+	# Make special file with subtraction values for calc function:
+	# Almost working...:   awk '{for(i=0;i<2;i++)print}' "$MY_NEXUS_BASENAME".charset.upper.rev.tmp | sed '1d' | awk '{printf "%s", $0; if (getline) print "-" $0; else printf "\n"}' tail -r > "$MY_NEXUS_BASENAME".charset.upper.subtr.tmp
+	# AWESOME one-liner that works:
+	awk '{for(i=0;i<2;i++)print}' "$MY_NEXUS_BASENAME".charset.upper.rev.tmp | sed '1d' | awk '{printf "%s", $0; if (getline) print "-" $0; else printf "\n"}' | tail -r | sed '1s/^\([0-9]*\)/\1\-0/' > "$MY_NEXUS_BASENAME".charset.upper.subtr.tmp ;
+	#
+	# While loop through subtractions to output and save locus lengths to 'locusLengths.txt' file:
+	(
+	while read subtrLine; do
+		MY_LOCUS_LENGTH="$(calc $subtrLine)";
+		echo "$MY_LOCUS_LENGTH" >> ./locusLengths.txt ;
+	done < "$MY_NEXUS_BASENAME".charset.upper.subtr.tmp
+	)	
+	MY_LOCUS_LENGTHS_FILE=./locusLengths.txt ;
+
+}
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "
+### RUNNING characterizeNexus FUNCTION ###
+"
+fi
+
+## DON'T FORGET TO RUN THE FUNCTION!!!
+characterizeNexus
+
+
+
+##################################  alignmentSplitter  ###################################
+
+alignmentSplitter () {
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) |          Checking alignmentSplitter environment... "
+fi
+############ alignmentSplitter STEP #1: SETUP FUNCTIONS AND ENVIRONMENTAL VARIABLES.
+## Done automatically when functions are loaded at top of script from piranha lib/.
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) |          Preparing current working directory for alignmentSplitter... "
+fi
+############ alignmentSplitter STEP #2: CWD PREP.
+## Make a copy of the original DNA sequence file, because the original will be modified
+## below, essentially sequentially deleted as sites are selected for each gene/locus in the
+## charset locusLengths supplied to the program in $MY_LOCUS_LENGTHS_FILE. Well, actually,
+## probably a good idea to copy ALL original input files and data to a little subfolder, 
+## as follows:
+	mkdir orig_input/;
+	echo "$MY_NTAX" > ./orig_input/orig_nTax.txt ;
+	cp "$MY_TAXNAMES_FILE" ./orig_input/ ;
+	cp "$MY_DNA_FILE" ./orig_input/ ;
+	cp "$MY_LOCUS_LENGTHS_FILE" ./orig_input/ ;
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) |          Splitting alignment into multiple PHYLIP files, one per locus in locus lengths file (from charsets). "
+fi
+############ alignmentSplitter STEP #3: SPLIT ALIGNMENT INTO MULTIPLE PHYLIP FILES, ONE PER LOCUS IN LOCUS LENGTHS FILE (FROM CHARSETS).
+## Of course, the locusLengths file has to be made prior to running the script, and at present
+## the script has to be modified to point to this file (see STEP #2 _above_).
+
+mkdir locus_part_files/;
+mkdir phylip_files/;
+count=1;
+(
+	while read line; do 
+
+		## Select characters corresponding to first $line characters of all lines of sequence
+		## file, using custom cut command:
+
+		cut -c-"$line" "$MY_DNA_FILE" > ./locus_part_files/locus"$count".dat ;
+
+		## Paste taxon names and selected characters for locus $count to make a preliminary
+		## alignment file:
+
+		paste "$MY_TAXNAMES_FILE" ./locus_part_files/locus"$count".dat > ./locus_part_files/locus"$count".align ;
+
+		## Make PHYLIP header specific to the locus being analyzed:
+
+		echo "$MY_NTAX  $line" > ./locus_part_files/locus"$count".phy.head ;
+
+		## Create PHYLIP file for locus $count:
+		
+		cat ./locus_part_files/locus"$count".phy.head ./locus_part_files/locus"$count".align > ./phylip_files/locus"$count".phy ;
+
+		## Based on machine type, remove all tab characters inserted during paste above:
+
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' 's/'"$TAB"'//g' ./phylip_files/locus"$count".phy ;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/'"$TAB"'//g' ./phylip_files/locus"$count".phy ;
+		fi
+
+		## Now that we've successfully made the PHYLIP file for locus $count, we can go
+		## ahead and delete the first $line characters from all lines of the original
+		## NOTE: Here, the idea for redirection of stderr to separate file came from 
+		## online resource at URL: https://bash.cyberciti.biz/guide/Redirection_of_standard_error
+	
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' 's/^.\{'"$line"'\}//g' "$MY_DNA_FILE" 2>stderr.log.txt ;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed '' 's/^.\{'"$line"'\}//g' "$MY_DNA_FILE" 2>stderr.log.txt ;
+		fi
+			## NOTE: Could possibly use cut for this. For example, to cut a first locus that
+			## was already processed and was 133 bp in length, you would add +1 to 133 for 
+			## start character to keep, then use the cut command to keep characters 134 onwards,
+			## as follows:
+			##
+			## MY_FIRST_CHAR_KEPT="$(calc $line + 1)"
+			## cut -c "$MY_FIRST_CHAR_KEPT"- "$MY_DNA_FILE" 
+			## 
+			## where the goal is to generalize and automate the following specific example 
+			## code within the present loop: cut -c 134- "$MY_DNA_FILE".
+
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Done processing locus $((count++))... "
+	fi
+
+	done < "$MY_LOCUS_LENGTHS_FILE"
+)
+
+}
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "
+### RUNNING alignmentSplitter FUNCTION ###
+"
+fi
+
+## DON'T FORGET TO RUN THE FUNCTION!!!
+alignmentSplitter
+
+
+
+if [[ "$MY_ANOURA_SWITCH" = "1" ]]; then
+
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Step #3: Make text modifications to fix any errors in PHYLIP files resulting from alignmentSplitter run above. "
+	fi
+	############ STEP #3: MAKE TEXT MODIFICATIONS TO FIX ANY ERRORS IN PHYLIP FILES RESULTING FROM alignmentSplitter ABOVE. 
+	## Conduct text replacements to fix formatting and remove NEXUS 'END' codes if present in the 
+	## phy files. The Acartype fixes are taxon-specific to our Muchhala lab Anoura UCE datasets
+	## and can be ignored or commented out by other users, or for other projects. Removing the
+	## unwanted END; codes is the most important function of this loop.
+	(
+		for i in ./*.phy; do
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i '' 's/Acartype0\ /Acartype\_0\ \ /g' "$i"
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's/Acartype0\ /Acartype\_0\ \ /g' "$i"
+			fi
+	
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i '' 's/Acartype1\ /Acartype\_1\ \ /g' "$i"
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's/Acartype1\ /Acartype\_1\ \ /g' "$i"
+			fi
+	
+			perl -p -i -e 's/^.*END\;.*\n//g' "$i"
+		done
+	)
+
+fi
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_ANOURA_SWITCH" = "0" ]]; then
+	echo "INFO      | $(date) | Step #3: Check for, and remove, individuals with all missing data, and with mostly missing data (only ~5–10 sites total; careful, this is an experimental option!). "
+fi
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_ANOURA_SWITCH" = "1" ]]; then
+	echo "INFO      | $(date) | Step #4: Check for, and remove, individuals with all missing data, and with mostly missing data (only ~5–10 sites total; careful, this is an experimental option!). "
+fi
+############ STEP #4: CHECK FOR, AND REMOVE, INDIVIDUALS WITH ALL MISSING DATA OR MOSTLY MISSING DATA (ONLY ~5-10 SITES). 
+## Here we heck for, and remove, individuals within each gene alignment (phy file) comprised of
+## all missing data (all undetermined or gap sites). Also check for individuals with data 
+## only for a few sites (~5-10 bases) and remove them if found. This removes low information
+## content sequences that will not contribute much if anything positive to downstream 
+## phylogenetic analyses.
+	# Check and remove individuals with all missing data:
+(
+	for i in ./*.phy; do 
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' '/\ [N\-]*$/d' "$i";
+			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
+			sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i '/\ [N\-]*$/d' "$i";
+			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
+			sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+		fi
+	done
+)
+
+if [[ "$2" = "-e"]] || [[ "$2" = "--experiment"]] || [[ "$2" = "--experimental"]] ; then
+	# Check and remove individuals with very few sites at start, finish, or only in middle 
+	# of the alignment (looking to remove indiv's with only 5-10 sites total):
+(
+	for i in ./*.phy; do 
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' '/\ [ACTG]\{5,10\}[N\-]*$/d' "$i";
+			sed -i '' '/\ [N\-]*[ACTG]\{5,10\}$/d' "$i";
+			sed -i '' '/N\{50\}[ACTG]\{5,10\}N\{50\}/d' "$i";
+			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
+			sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i '/\ [ACTG]\{5,10\}[N\-]*$/d' "$i";
+			sed -i '/\ [N\-]*[ACTG]\{5,10\}$/d' "$i";
+			sed -i '/N\{50\}[ACTG]\{5,10\}N\{50\}/d' "$i";
+			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
+			sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+		fi
+	done
+)
+fi
+
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #5: Clean up workspace. "
+	echo "INFO      | $(date) |          Removing temporary files created during run... "
+fi
+############ STEP #5: CLEAN UP WORKING DIRECTORY OF VARIOUS LOCUS FILES GENERATED ABOVE.
+## Remove temporary files generated during characterizeNexus function call above.
+	rm ./*.tmp
+
+echo "----------------------------------------------------------------------------------------------------------"
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_NAME_NCHARS_SWITCH=0
+MY_VERBOSE_OUT_SWITCH=1
+MY_EXPERIMENTAL_SWITCH=0
+MY_ANOURA_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus> [--experimental]
+
+ ${bold}Options:${reset}
+  -v   verbose (def: 0, off; 1, on) specify verbose output to screen (info, stderr, and stdout)
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}Positional parameters:${reset}
+  <inputNexus>     input NEXUS file
+  --experimental   (def: not given) experimental option, causing the resulting PHYLIP 
+                   alignments to be checked and cleaned of individuals/samples comprised 
+                   of mostly missing data
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT takes as input a single sequential (but not interleaved) NEXUS DNA sequence 
+ alignment file containing character sets defining each locus/partition in the dataset. 
+ This input NEXUS file, <inputNexus>, is then processed by using the characterizeNexus 
+ program to gather data and character set information, which are saved and used as input
+ for alignmentSplitter, a program that automates splitting the DNA sequence block into
+ separate PHYLIP-format alignments for each charset/locus. After running alignmentSplitter,
+ a variety of checks and modifications are run on the resulting PHYLIP alignments to 
+ clean them and remove any individuals 1) completely lacking data (composed entirely of
+ undetermined sites) or 2) containing data only for a few sites (~5-10 bases). This removes 
+ sequences that will be uninformative during downstream phylogenetic analyses, or that might
+ cause phylogenetic software such as RAxML (Stamatakis 2014) not to run.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software. Usage is obtained by running the script with the -h flag, and the only option is
+ the -v flag, which if set to 1 causes informative messages, stderr, and stdout to be written
+ to screen. By default, the -v flag is set to 0 for quiet operation. Sequence names may not 
+ include space characters, or there will be issues. 
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
+	large phylogenies. Bioinformatics, 30, 1312-1313.
+
+ Created by Justin Bagley on Sun, February 24, 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+
+############ PARSE THE OPTIONS
+while getopts 'v:-:' opt ; do
+  case $opt in
+## Script options:
+    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+	-) LONG_OPTARG="${OPTARG#*=}"
+         case $OPTARG in
+         experimental) MY_EXPERIMENTAL_SWITCH=1 ;;
+         Anoura) MY_ANOURA_SWITCH=1 ;;
+         esac ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+############ SKIP OVER THE PROCESSED OPTIONS
+shift $((OPTIND-1)) 
+# Check for mandatory positional parameters
+if [ $# -lt 1 ]; then
+	echo "$USAGE"
+	exit 1
+fi
+MY_NEXUS="$1"
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+NEXUS2MultiPHYLIP
+
+# Exit cleanly
+safeExit

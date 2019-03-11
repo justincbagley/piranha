@@ -1,0 +1,303 @@
+#!/bin/sh
+
+##########################################################################################
+#                           dropRandomHap v1.2.2, February 2019                          #
+#  SHELL SCRIPT TO RANDOMLY DROP ONE PHASED HAPLOTYPE (ALLELE) PER PHASED INDIVIDUAL IN  #
+#  EACH OF N PHYLIP GENE ALIGNMENTS IN CURRENT WORKING DIRECTORY, STARTING FROM A TAXON  #
+#  NAMES FILE AND WORKING DIR PATH                                                       #
+#  Copyright ©2019 Justinc C. Bagley. For further information, see README and license    #
+#  available at https://github.com/justincbagley/Anoura-UCE-Phylogenomics-Project/. Last #
+#  update: February 24, 2019. For questions, please email bagleyj@umsl.edu.              #
+##########################################################################################
+
+############ SCRIPT OPTIONS
+MY_OUTPUT_FILE_SWITCH=NULL
+
+############ CREATE USAGE & HELP TEXTS
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -o] [stdin:] <taxonNamesFile> <workingDir> 
+ ## Help:
+  -h   help text (also: -help)
+
+ ## Options:
+  -o   outputFile (def: NULL) send all output (stdout and stderr) to file in workingDir with 
+       this name, for example 'output.txt'.
+
+ OVERVIEW
+ THIS SCRIPT takes as input the name of a <taxonNamesFile> with one tip taxon name per 
+ line, with or without phased haplotype designations of '_0' for first phased haplotype and 
+ '_1' for second phased haplotype (with maximum of two phased haplotypes), as well as the
+ path to the current working directory, <workingDir>. The _0 and _1 phased designations are
+ common to software and pipelines that yield phased multiple sequence alignments. However, 
+ this script was created with pipelines for processing genome-scale target enrichment (e.g. 
+ ultraconserved elements; UCE) or hybrid enrichment data in mind, and has been specifically
+ written and tested to handle phased output from PHYLUCE (Faircloth 2015) and SECAPR (Andermann 
+ et al. 2018). 
+	The <taxonNamesFile> must be a text file ('.txt' extension) with tip name labels for 
+ all taxa present in PHYLIP alignments (e.g. one per gene/locus) in current <workingDir>. 
+ Taxon names also must not have terminated in _0 or _1 prior to phasing (e.g. yielding phased 
+ taxon names ending in '_0_0' or '_0_1' in the alignments). Using <taxonNamesFile> and 
+ <workingDir> path supplied to the program as mandatory inputs, or positional parameters, 
+ the script will 1) check, modify, and randomize the tip taxon names and 2) randomly drop 
+ one phased haplotype (allele) per individual, per gene (i.e. from each PHYLIP alignment), 
+ while making sure to readjust the taxon number entries in the PHYLIP file headers (first
+ entries). By default, stdout and stderr are output to screen; however, the -o flag allows 
+ the user to redirect these to a file with a user-specified name in <workingDir>.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag, and has been 
+ tested on macOS High Sierra (v10.13+) but will work on many earlier versions or Linux. 
+ Phased PHYLIP alignments from other UCE or NGS pipelines may work if they are made to 
+ conform to the expected taxon names format described above. It is important that 
+ PHYLIP filenames and taxon names do not include spaces, or else there will be issues. 
+
+ CITATION
+ Bagley, J.C. 2018. Anoura-UCE-Phylogenomics-Project. GitHub repository, Available at: 
+	<https://github.com/justincbagley/Anoura-UCE-Phylogenomics-Project>.
+
+ REFERENCES
+ Andermann, T., Cano, Á., Zizka, A., Bacon, C., & Antonelli, A. 2018. SECAPR—a bioinformatics 
+	pipeline for the rapid and user-friendly processing of targeted enriched Illumina sequences, 
+	from raw reads to alignments. PeerJ, 6, e5175.
+ Faircloth, B.C. 2015. PHYLUCE is a software package for the analysis of conserved genomic 
+	loci. Bioinformatics, 32(5), 786-788.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+
+############ PARSE THE OPTIONS
+while getopts 'o:' opt ; do
+  case $opt in
+## Datafile options:
+    o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+  esac
+done
+
+############ Skip processed options, check for mandatory positional parameters
+shift $((OPTIND-1)) 
+if [ $# -lt 2 ]; then
+	echo "WARNING!  | $(date) |          Missing one or more mandatory positional parameters. Quitting... "
+	echo "$Usage"
+  exit 1
+fi
+USER_SPEC_TAXNAMES_FILE="$1"
+USER_SPEC_PATH="$2"
+
+
+######################################## START ###########################################
+
+############ OPTIONAL OUTPUT TO FILE
+# exec >> ./output.txt 
+# exec 2>&1
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+#	mkdir output/;
+	exec >> ./"$MY_OUTPUT_FILE_SWITCH"
+	exec 2>&1
+fi
+
+echo "
+##########################################################################################
+#                           dropRandomHap v1.2.2, February 2019                          #
+##########################################################################################
+"
+
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	#MY_CWD=`pwd -P`
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd "$MY_CWD"
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
+
+
+###### SET UP ENVIRONMENT BY CREATING USEFUL VARIABLES AND FUNCTIONS.
+	CR=$(printf '\r')
+	TAB=$(printf '\t')
+	calc () {
+		bc -l <<< "$@"
+}
+
+
+###### PREP TAXON NAMES FILE SO THAT IT CONTAINS ONLY BASENAMES, AND THE BASENAMES ARE 
+###### COMPLETELY RANDOMIZED.
+# Check and if necessary reduce taxon names file to only unique basenames using in-place 
+# search and replacement while accounting for machine type (either macOS or Linux), followed 
+# by a unique sort command and file replacement:
+
+	###### CHECK MACHINE TYPE:
+	unameOut="$(uname -s)"
+	case "${unameOut}" in
+	    Linux*)     machine=Linux;;
+	    Darwin*)    machine=Mac;;
+	    CYGWIN*)    machine=Cygwin;;
+	    MINGW*)     machine=MinGw;;
+	    *)          machine="UNKNOWN:${unameOut}"
+	esac
+
+	# Taxon names check/fix:
+	MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' $USER_SPEC_TAXNAMES_FILE | wc -l | perl -pe 's/\t//g; s/\ //g')"
+	if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
+
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' 's/\_0$//g; s/\_1$//g' "$USER_SPEC_TAXNAMES_FILE" 
+		fi
+
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/\_0$//g; s/\_1$//g' "$USER_SPEC_TAXNAMES_FILE" 
+		fi
+	fi
+
+	# Get unique basenames only and replace file:
+	sort -u "$USER_SPEC_TAXNAMES_FILE" > "$USER_SPEC_TAXNAMES_FILE".tmp
+	mv "$USER_SPEC_TAXNAMES_FILE".tmp "$USER_SPEC_TAXNAMES_FILE"
+	rm ./*.tmp
+
+	
+## Now that you have only unique tip taxon basenames, randomize them by making a shuffle 
+## perl function that shuffles order in a completely random way (idea from URL: 
+## https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel/2153897)
+## and then using that function to randomize the <taxonNamesFile> lines, as follows:
+#	shuffle () {
+#		perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$1"
+#}
+#
+#	MY_TAXNAMES_FILE_BASENAME="$(echo $USER_SPEC_TAXNAMES_FILE | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')"
+#
+#	shuffle "$USER_SPEC_TAXNAMES_FILE" > ./"$MY_TAXNAMES_FILE_BASENAME"_random.txt
+
+## Below is a new function for shuffling taxon names file, assuming it is a text file with 
+## extension '.txt'. During some tests, the previous Perl-based shuffle code performed well
+## with numeric taxon names but did not function properly with alphanumeric taxon names,
+## which are common in phylogenomics. The function, text_shuffle, is as follows:
+text_shuffle () {
+	MY_TAXNAMES_FILE_BASENAME="$(basename $1 .txt)"
+	MY_NUM_LINES="$( wc -l $1 | perl -pe $'s/\t//g; s/\ //g' | sed 's/\(^[0-9]*\).*/\1/g' )"
+(	for i in $(seq 1 "$MY_NUM_LINES"); do echo "$i" >> seq.tmp; done  )
+	perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < seq.tmp > seq.rand.tmp
+	rm ./seq.tmp
+(	
+	while read line; do
+		sed -n ''"$line"'p' "$1" >> ./"$MY_TAXNAMES_FILE_BASENAME"_shuffle.txt
+	done < seq.rand.tmp
+)
+	rm ./seq.rand.tmp
+	#rm "$1"
+}
+
+## DON'T FORGET TO RUN THE FUNCTION!!!
+text_shuffle "$USER_SPEC_TAXNAMES_FILE"
+
+
+###### RANDOMLY DROP ONE PHASED HAPLOTYPE (ALLELE) PER INDIVIDUAL, PER GENE.
+## Now that taxon labels are randomized basenames (minus the _0 and _1 phased haplotype
+## designations) in a list file, we can use a while loop to go through this list, extract each 
+## individual basename, & count the number of instances of that basename in a the PHYLIP file
+## for a given gene at that point of the loop. Then, if the number of instances is one we
+## simply delete the phase designation (_0, or could be _0 or _1??) and keep that individual, 
+## but if the number of instances is 2 (which should be much more common) then we use a sed 
+## command to remove the first instance of the individual which will be randomly 0 or 1 
+## (haplotype 0 or 1) because the <taxonNamesFile> name order is now completely random due 
+## to our shuffle step above! Last, just find the second instance of the current basename (at 
+## a given point in while loop) and remove the phased haplotype designation, which could be 
+## randomly _0 or _1). We do this by creating and executing the dropRandomHap function, as 
+## follows:
+dropRandomHap () {
+(
+	for i in ./*.phy; do
+		echo "###--------------   $i   --------------###"
+		while read j; do
+			MY_TAXON_BASENAME="$(echo $j | sed 's/\_[01]\{1\}$//' | sed 's/\ //g')"
+			MY_N_IND_INSTS="$(grep -n "$MY_TAXON_BASENAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')"
+			echo "$MY_TAXON_BASENAME  $MY_N_IND_INSTS"
+
+			if [[ "$MY_N_IND_INSTS" = "0" ]]; then
+				## If 0 instances, do nothing:
+				echo "."
+
+			elif [[ "$MY_N_IND_INSTS" = "1" ]]; then
+				## If 1 instance of an individual, then it is not phased, so we keep the 
+				## individual (whole line) in $i, but make sure to replace phased hapoltype 
+				## designation (could be _0 or _1??) with spaces:
+#				perl -pi -e 's/$MY_TAXON_BASENAME\_[01]{1}/$MY_TAXON_BASENAME\ \ /' "$i"
+				perl -pi -e 's/$MY_TAXON_BASENAME\_[01]{1}\ /$MY_TAXON_BASENAME\ \ \ /' "$i"
+
+			elif [[ "$MY_N_IND_INSTS" = "2" ]]; then
+				## Remove first instance of phased individual basename by removing complete
+				## line from $i using sed d, and then replace phased haplotype designation 
+				## (_0 or _1) with spaces. 
+				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_BASENAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"
+				echo "$MY_1ST_INST_LINE"
+
+				if [[ "${machine}" = "Mac" ]]; then
+					# Delete nth = $MY_1ST_INST_LINE line of file with sed (=easy!):
+					sed -i '' ''"$MY_1ST_INST_LINE"'d' "$i"
+
+					sed -i '' 's/'"$MY_TAXON_BASENAME"'\_0\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i"
+					sed -i '' 's/'"$MY_TAXON_BASENAME"'\_1\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i"
+				fi
+
+				if [[ "${machine}" = "Linux" ]]; then
+					# Delete nth = $MY_1ST_INST_LINE line of file with sed (=easy!):
+					sed -i ''"$MY_1ST_INST_LINE"'d' "$i"
+
+					sed -i 's/'"$MY_TAXON_BASENAME"'\_0\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i"
+					sed -i 's/'"$MY_TAXON_BASENAME"'\_1\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i"
+				fi
+			fi
+		done < ./"$MY_TAXNAMES_FILE_BASENAME"_shuffle.txt
+
+		## Since we've deleted indiv's, we now have a different number of lines in the file, so 
+		## we can borrow from my existing code above to count lines and fix first entry in PHYLIP 
+		## header to reflect correct number of lines:
+		MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+		MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)"
+
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+		fi
+
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+		fi
+
+	done
+)
+
+}
+
+## DON'T FORGET TO RUN THE FUNCTION!!!
+dropRandomHap
+
+
+
+
+#
+#
+#
+######################################### END ############################################
+
+exit 0
+

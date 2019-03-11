@@ -1,0 +1,280 @@
+#!/bin/sh
+
+##########################################################################################
+# File: taxonCompFilter.sh, v1.0                                                         #
+# Author: Justin C. Bagley                                                               #
+#                                                                                        #
+# Created by Justin Bagley on February 24, 2019, email <bagleyj@umsl.edu>                #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+#                                                                                        #
+# Description: Taxon completeness filter. Starts from a set of PHYLIP gene multiple      #
+# sequence alignments (MSAs) in current working directory and filters out alignments not #
+# meeting a user-specified taxonomic sampling threshold.                                 #
+##########################################################################################
+
+############ SCRIPT OPTIONS
+MY_UNPHASED_SEQS_SWITCH=1
+MY_PHASED_SEQS_SWITCH=0
+MY_OUTPUT_FILE_SWITCH=NULL
+MY_NUM_TAX=NULL
+USER_TAX_COMP_THRESHOLD=0.7
+
+############ CREATE USAGE & HELP TEXTS
+Usage="Usage: $(basename "$0") [Help: -h help] [Options: -upo] [stdin:] -n <numTax> -t <taxCompThresh> <workingDir>
+ ## Help:
+  -h   help text (also: -help)
+
+ ## Options:
+  -u   unphased (def: 1, true; other: 0, false) indicates whether input PHYLIP alignments 
+       contain unphased DNA sequences.
+  -p   phased (def: 0, false; other: 1, true) indicates whether input PHYLIP alignments 
+       contain phased DNA sequences.
+  -o   outputFile (def: NULL) send all output (stdout and stderr) to file in <workingDir> with 
+       this name, for example 'output.txt'.
+
+ ## Mandatory options:
+  -n   numTax (def: NULL) number of tip taxa in the dataset.
+  -t   taxCompThresh (def: 0.7) taxonomic completeness threshold, given as decimal percentage
+       of taxa. Alignments with greater than or equal to this % of taxa are kept.
+
+ OVERVIEW
+ STARTING FROM a current working directory, <workingDir>, containing a set of PHYLIP-
+ formatted multiple sequence alignments (MSAs), this script takes as mandatory input 
+ 
+ - the number of taxa (<numTax>, passed with the -n flag), 
+ - a taxonomic completeness threshold given as a float (decimal) equivalent of percentage 
+   (<taxCompThresh>, passed with -t flag; e.g. 0.75 = 75%), and
+ - the path to the working directory (<workingDir>).
+ 
+ Given these inputs, the script loops through the MSAs and keeps only those alignments 
+ meeting the user-specified taxonomic completeness threshold <taxCompThresh>; alignments that
+ pass this filter are saved to an output subfolder of <workingDir>, while those that fail to
+ pass this filter are simply not included.
+	This script accommodates both unphased and phased MSAs. However, it is expected that 
+ phased MSAs will contain phased haplotype designations of '_0' for first phased haplotype  
+ and '_1' for second phased haplotype (with maximum of two phased haplotypes). The _0 and 
+ _1 phased designations are common to software and pipelines for phasing MSAs. However, 
+ this script was created with pipelines for processing genome-scale target enrichment (e.g. 
+ ultraconserved elements; UCE) or hybrid enrichment data in mind, and has been specifically
+ written and tested to handle phased PHYLIP MSAs output from PHYLUCE (Faircloth 2015) and 
+ SECAPR (Andermann et al. 2018). 
+	Taxon names must not have terminated in _0 or _1 prior to phasing (this would give phased 
+ taxon names ending in '_0_0' or '_0_1' in the alignments, which could cause errors).
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag, and has been 
+ tested on macOS High Sierra (v10.13+) but will work on many earlier versions or Linux. 
+ Phased PHYLIP alignments from other UCE or NGS pipelines may work if they are made to 
+ conform to the expected taxon names formatting described above. PHYLIP filenames and taxon 
+ names should not include spaces, or else there will be issues. 
+
+ CITATION
+ Bagley, J.C. 2018. Anoura-UCE-Phylogenomics-Project. GitHub repository, Available at: 
+	<https://github.com/justincbagley/Anoura-UCE-Phylogenomics-Project>.
+
+ REFERENCES
+ Andermann, T., Cano, Á., Zizka, A., Bacon, C., & Antonelli, A. 2018. SECAPR—a bioinformatics 
+	pipeline for the rapid and user-friendly processing of targeted enriched Illumina sequences, 
+	from raw reads to alignments. PeerJ, 6, e5175.
+ Faircloth, B.C. 2015. PHYLUCE is a software package for the analysis of conserved genomic 
+	loci. Bioinformatics, 32(5), 786-788.
+
+Created by Justin Bagley on February 24, 2019, email <bagleyj@umsl.edu>
+Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+# A likely common usage: ./taxonCompFilter.sh -p 1 [stdin:] -n <numTaxa> -t <taxCompThresh> <workingDir>
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+
+############ PARSE THE OPTIONS
+while getopts 'u:p:o:n:t:' opt ; do
+  case $opt in
+## Datafile options:
+    u) MY_UNPHASED_SEQS_SWITCH=$OPTARG ;;
+    p) MY_PHASED_SEQS_SWITCH=$OPTARG ;;
+    o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
+    n) MY_NUM_TAX=$OPTARG ;;
+    t) USER_TAX_COMP_THRESHOLD=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+  esac
+done
+
+############ Skip processed options, check for mandatory positional parameters
+shift $((OPTIND-1)) 
+if [ $# -lt 1 ]; then
+	echo "WARNING!  | $(date) |          Missing one or more mandatory positional parameters. Quitting... "
+	echo "$Usage"
+  exit 1
+fi
+USER_SPEC_PATH="$1"
+
+
+######################################## START ###########################################
+
+############ OPTIONAL OUTPUT TO FILE
+# exec >> ./output.txt 
+# exec 2>&1
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+#	mkdir output/;
+	exec >> ./"$MY_OUTPUT_FILE_SWITCH"
+	exec 2>&1
+fi
+
+echo "
+##########################################################################################
+#                          taxonCompFilter v1.0, February 2019                           #
+##########################################################################################
+"
+
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	#MY_CWD=`pwd -P`
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd "$MY_CWD"
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
+
+
+###### SET UP ENVIRONMENT BY CREATING USEFUL VARIABLES AND FUNCTIONS.
+echo "INFO      | $(date) |          STEP #1: SET UP ENVIRONMENT. "
+	CR=$(printf '\r')
+	TAB=$(printf '\t')
+	calc () {
+		bc -l <<< "$@"
+}
+
+###### CHECK MACHINE TYPE:
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+
+
+
+###### RUN TAXON COMPLETENESS FILTER.
+echo "INFO      | $(date) |          STEP #2: INTERPRET THRESHOLD CRITERION, AND RUN TAXON COMPLETENESS FILTER (taxCompFilter). "
+echo "INFO      | $(date) |          Checking the following loci: "
+taxonCompFilter () {
+	## Convert user-specified taxonomic completeness threshold from decimal to whole 
+	## number for testing:
+	MY_THRESH_CRIT_RAW="$(calc ${MY_NUM_TAX}*${USER_TAX_COMP_THRESHOLD})"
+	MY_THRESH_CRIT_RAW_FRACTIONAL="$(echo $MY_THRESH_CRIT_RAW | sed 's/.*\.//g')"
+	if [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "5" ]] || [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "50" ]]; then
+		MY_THRESH_CRIT="$(calc $MY_THRESH_CRIT_RAW-0.5 | sed 's/\..*//g')"
+		echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+	else
+		MY_THRESH_CRIT="$(awk  'BEGIN { rounded = sprintf("%.0f", '$MY_NUM_TAX'*'$USER_TAX_COMP_THRESHOLD'); print rounded }')"
+		echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+	fi
+#
+		mkdir filter_"$USER_TAX_COMP_THRESHOLD"/;
+#
+count=1
+(
+	for i in ./*.phy; do
+		## Loop through each MSA; save it into a temporary file msa.tmp or "$MY_PHY_BASENAME".tmp:
+#		echo "INFO      | $(date) |          Count: $((count++)) "
+		echo "INFO      | $(date) |          ###--------------   $((count++)). $i   --------------###"
+		MY_PHY_BASENAME="$(basename $i .phy)"
+		cp "$i" "$MY_PHY_BASENAME".tmp
+#
+		MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' ${MY_PHY_BASENAME}.tmp | sed 's/\ .*//g')"; 
+		MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)"
+#
+		if [[ "${machine}" = "Mac" ]]; then
+			## Remove _[01], spaces after tip taxon names, and all sequences:
+			sed -i '' 's/\ .*//g' "$MY_PHY_BASENAME".tmp
+			sed -i '' 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp
+			sed -i '' '1d' "$MY_PHY_BASENAME".tmp
+		fi
+
+		if [[ "${machine}" = "Linux" ]]; then
+			## Remove _[01], spaces after tip taxon names, and all sequences:
+			sed -i 's/\ .*//g' "$MY_PHY_BASENAME".tmp
+			sed -i 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp
+			sed -i '1d' "$MY_PHY_BASENAME".tmp
+		fi
+#
+		## Count number of nonredundant taxa, our metric for applying the user-specified 
+		## taxonomic completeness threshold:
+		echo "INFO      | $(date) |          Counting nonredundant taxa... "
+		MY_NUM_NONREDUND_TAX="$(sort -u "$MY_PHY_BASENAME".tmp | wc -l | perl -pe 's/\ //g')"
+		echo "INFO      | $(date) |          Num. nonredundant taxa: $MY_NUM_NONREDUND_TAX "
+#
+#		## Convert user-specified taxonomic completeness threshold from decimal to whole 
+#		## number for testing:
+#		MY_THRESH_CRIT_RAW="$(calc ${MY_NUM_TAX}*${USER_TAX_COMP_THRESHOLD})"
+#		MY_THRESH_CRIT_RAW_FRACTIONAL="$(echo $MY_THRESH_CRIT_RAW | sed 's/.*\.//g')"
+#		if [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "5" ]] || [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "50" ]]; then
+#			MY_THRESH_CRIT="$(calc $MY_THRESH_CRIT_RAW-0.5 | sed 's/\..*//g')"
+#			echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+#		else
+#			MY_THRESH_CRIT="$(awk  'BEGIN { rounded = sprintf("%.0f", '$MY_NUM_TAX'*'$USER_TAX_COMP_THRESHOLD'); print rounded }')"
+#			echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+#		fi
+#
+		echo "INFO      | $(date) |          Checking against user-specified criterion... "
+		if [[ "$MY_NUM_NONREDUND_TAX" -ge "$MY_THRESH_CRIT" ]]; then
+			cp "$i" filter_"$USER_TAX_COMP_THRESHOLD"/;
+			echo "INFO      | $(date) |          Kept."
+		else
+			echo "INFO      | $(date) |          Not kept."
+		fi	
+#
+		rm ./*.tmp;	
+#		echo "Count: $((count++)) "
+	done
+)
+
+}
+
+
+## DON'T FORGET TO RUN THE FUNCTION!!!
+taxonCompFilter
+
+
+###### EVALUATE RESULTS AND CLEAN UP THE WORKSPACE AS NEEDED.
+echo "INFO      | $(date) |          STEP #3: SUMMARIZE RESULTS AND CLEAN UP WORKSPACE. "
+
+	cd filter_"$USER_TAX_COMP_THRESHOLD"/;
+	MY_NUM_KEPT_ALIGNS="$(ls . | wc -l)"
+	echo "INFO      | $(date) |          Saved $MY_NUM_KEPT_ALIGNS multiple sequence alignments meeting threshold to filter_${USER_TAX_COMP_THRESHOLD}/ subfolder. "
+
+
+echo "INFO      | $(date) | Done filtering multiple sequence alignments (MSAs) using your threshold criterion of $USER_TAX_COMP_THRESHOLD in taxCompFilter.sh. "
+echo "INFO      | $(date) | Bye.
+"
+#
+#
+#
+######################################### END ############################################
+
+exit 0

@@ -1,0 +1,380 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: makePFSubsetAlignments.sh                                                        #
+  VERSION="v1.1"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Mon, Mar 4 22:00:01 CST 2019.                        #
+# Last update: March 5, 2019                                                             #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT AUTOMATES CONSTRUCTION OF Y MULTIPLE SEQUENCE ALIGNMENTS (MSAs)      #
+# CORRESPONDING TO PARTITIONFINDER SUBSETS, STARTING FROM N LOCUS MSAs (PHYLIP FORMAT)   #
+# AND PARTITIONFINDER RESULTS FILE                                                       #
+#                                                                                        #
+##########################################################################################
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+KEEP_ORIG_PHYLIP_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -k V --version] [stdin:] <workingDir> 
+ ## Help:
+  -h   help text (also: --help) echo this help text and exit
+
+ ## Options:
+  -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
+       analyzed during the run
+  -V   version (also: --version) echo version and exit
+
+ OVERVIEW:
+ SHELL SCRIPT that automates constructing _y_ multiple sequence alignments (MSAs) corresponding
+ to PartitionFinder (v1 or v2) subsets, starting from MSAs for _L_ loci in PHYLIP format and
+ a PartitionFinder output file containing the best scheme (assumed to be named 'best_scheme.txt').
+ The working directory for the analysis, <workingDir>, is a mandatory positional parameter 
+ specified by the user; if different from current directory, then the program will cd to 
+ <workingDir> and run all analyses at the desired location. The <workingDir> must include
+ a) PHYLIP files for each locus/partition supplied to PartitionFinder and b) the 'best_scheme.txt'
+ output file from PartitionFinder, which lists the optimal scheme for how the loci/partitions 
+ should be combined.
+
+Created by Justin Bagley on Mon, Mar 4 22:00:01 CST 2019.
+Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+
+############ PARSE THE OPTIONS
+while getopts 'k:' opt ; do
+  case $opt in
+## Script options:
+    k) KEEP_ORIG_PHYLIP_SWITCH=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$Usage" >&2
+       exit 1 ;;
+  esac
+done
+
+############ SKIP OVER THE PROCESSED OPTIONS
+shift $((OPTIND-1)) 
+# Check for mandatory positional parameters
+if [ $# -lt 1 ]; then
+	echo "WARNING!  | $(date) |          Missing mandatory positional parameter, <workingDir>. Quitting... "
+	echo ""
+	echo "$USAGE"
+  exit 1
+fi
+USER_SPEC_PATH="$1"
+
+
+############ SET AND MOVE INTO WORKING DIRECTORY
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd "$MY_CWD"
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
+
+echo "
+##########################################################################################
+#                       makePFSubsetAlignments.sh v1.1, March 2019                       #
+##########################################################################################
+"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting makePFSubsetAlignments pipeline... "
+echo "INFO      | $(date) | STEP #1: SET UP ENVIRONMENT WITH USEFUL VARIABLES AND FUNCTIONS, AND CHECK MACHINE TYPE. "
+###### SET UP ENVIRONMENT BY CREATING USEFUL VARIABLES AND FUNCTIONS AND CHECKING MACHINE TYPE.
+	CR=$(printf '\r')
+	TAB=$(printf '\t')
+	calc () {
+		bc -l <<< "$@"
+}
+
+echo "INFO      | $(date) |          Checking machine type... "
+###### CHECK MACHINE TYPE:
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+echo "INFO      | $(date) |          Found machine type ${machine}. "
+
+
+echo "INFO      | $(date) |          Making concatenateAlignments function (completeSeqs + concatenateSeqs_mod routines combined into one)... "
+
+	############################ concatenateAlignments.sh ################################
+
+	###### CREATE AND RUN concatenateAlignments FUNCTION (INCLUDES COMPLETESEQS FUNCTION AS WELL AS
+	###### CODE FOR CONCATENATING PHYLIP FILES AS YOU LOOP THROUGH THEM)
+
+	concatenateAlignments () {
+
+	MY_COUNT=1
+	(
+		for i in ./*.phy; do
+	
+			######  completeSeqs  ######
+	
+			cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp
+			j="$i".tmp
+			MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')"
+			echo "INFO      | $(date) |             $i,  $MY_PHYLIP_NCHAR bp "
+
+				while read k; do
+					MY_TAXON_NAME="$(echo $k | sed 's/\ //g')"
+					MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')"
+					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"
+
+					if [[ "$MY_N_IND_INSTS" = "1" ]]; then
+						# extract/copy corresponding sequence from $i and paste it to end of
+						# line with same name ($MY_TAXON_NAME) in tmp file $j:
+						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')"
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j"
+						fi
+
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j"
+						fi
+
+					elif [[ "$MY_N_IND_INSTS" = "0" ]]; then
+						# only add correct # N's (dummy sequence) to end of line with same
+						# name in tmp file $j:
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j"
+						fi
+
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j"
+						fi
+
+					fi				
+				
+				done < "$USER_SPEC_NAMSPACES_FILE"
+
+			# Add header with corrected ntax and nchar information:
+			MY_PHY_NTAX="$(awk 'END {print NR,"lines"}' $j | sed 's/\ .*//g')";
+			echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp
+			# Overwrite original phy file with new phy file:
+			cat ./header.tmp "$j" > "$i"
+
+
+			######  concatenateSeqs_mod  ######
+
+			## On first loop iteration, make concatenated seqs PHYLIP file from complete locus1 
+			## PHYLIP file, then make partitions/charsets files. Specifically, when you make the
+			## files of RAxML partitions, PartitionFinder subsets, and NEXUS charsets, then the
+			## formats are as follows:
+			# raxml format: "DNA, locus1 = 1-607"
+			# PF format: "locus1=1-607;"
+			# NEXUS format: "  charset locus1 = 1-607;" 
+
+			if [[ "$MY_COUNT" = "1" ]]; then
+
+				# Make concatenated seqs file from complete locus1 PHYLIP file, and move original
+				# locus1 PHYLIP file to orig_phylip/ subfolder.
+#				mkdir orig_phylip/;
+				cp "$i" ./concatenated_seqs.phy
+#				cp "$i" ./orig_phylip/;
+				## Remove the original PHYLIP files. Can add an option later to optionally keep these (i.e. by doing the commented out steps of creating orig_phylip/ and moving each $i there.)
+				rm "$i";
+
+			elif [[ "$MY_COUNT" -gt "1" ]]; then
+	
+				# Concatenate $i > 1 PHYLIP sequences to concatenated seqs PHYLIP file
+				while read l; do
+					MY_TAXON_NAME="$(echo $l | sed 's/\ //g')"
+					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"				
+						# extract/copy corresponding sequence from $i and paste it to end of
+						# line with same name ($MY_TAXON_NAME) in tmp file $j:
+						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')"
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy
+						fi
+				done < "$USER_SPEC_NAMSPACES_FILE"
+
+#				cp "$i" ./orig_phylip/;
+				## Remove the original PHYLIP files. Can add an option later to optionally keep these (i.e. by doing the commented out steps of creating orig_phylip/ and moving each $i there.)
+				rm "$i";
+			fi
+
+
+		echo "$((MY_COUNT++))" > MY_COUNT.tmp
+	
+			
+		done
+	)
+	
+}
+	############################# END concatenateSeqs.sh #################################
+
+
+
+echo "INFO      | $(date) | STEP #2: MAKE AND RUN makePFSubsetAlignments FUNCTION ON PHYLIP FILES IN <workingDir>. "
+echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
+
+## Goal is to start from locus (i.e. UCE) PHYLIP alignments in current working directory,
+## <workingDir>, and then to loop through the PartitionFinder-identified partitions and 
+## combine only the UCE loci in a given partition into a multiple sequence alignment for
+## that partition. We do this over all partitions and wind up with one PHYLIP alignment
+## per partition, as well as one FASTA alignment (convert the PHYLIP to FASTA using 
+## PHYLIP2FASTA.sh script that I wrote today, Mar 4, 2019). The FASTA alignments can then
+## be read directly into BEAUti for creating XML input files for BEAST v1.8+ or BEAST2.
+## 
+## Making the alignments complete is done by using the completeSeqs function. Concatenating
+## the complete alignments is accomplished using a modified version of concatenateSeqs, 
+## concatenateSeqs_mod, written specifically for makePFSubsetAlignments.sh and its usage
+## cases.
+
+	############################# makePFSubsetAlignments.sh ##############################
+	
+	makePFSubsetAlignments () {
+
+	echo "INFO      | $(date) |          A. Grepping subsets from 'best_scheme.txt' PartitionFinder output file... "
+	
+	## Grep only the partitions from the PartitionFinder (v1 or v2) "best_scheme.txt" output
+	## file, and place in local temporary file.
+	grep -h "^[0-9]*\ " best_scheme.txt | sed 's/^[0-9]*.*\|\ //g' > ./best_scheme_partitions.txt ;
+	
+	echo "INFO      | $(date) |          B. Loop through partition subset list, making partitions by combining the contained loci... "
+	## Each line is now a partition telling you which loci (original data pieces specified to
+	## PartitionFinder) are grouped into each partition. We can loop through the partitions.tmp
+	## file created above and use the information content on each line to assemble partitions,
+	## preferably from PHYLIP files because they are the simplest format.
+	MY_PARTITION_COUNT=1;
+	(
+		while read line; do 
+			## Get loci in subset/partition "$MY_PARTITION_COUNT":
+			MY_LOCI_THIS_PARTITION="$(echo $line | perl -pe $'s/\,\ /\n/g')"; 
+			echo "INFO      | $(date) |          ###----------   Subset $MY_PARTITION_COUNT  ----------###";
+			echo "INFO      | $(date) |             Subset $MY_PARTITION_COUNT contents: ";
+			echo "INFO      | $(date) |             "$MY_LOCI_THIS_PARTITION;
+			echo "INFO      | $(date) |             Making Subset $MY_PARTITION_COUNT from input PHYLIP files... ";
+	#
+			## Make subfolder for subset of current while loop iteration, move all corresponding loci 
+			## into subfolder:
+			mkdir Subset"$MY_PARTITION_COUNT"/;
+			for l in $MY_LOCI_THIS_PARTITION; do cp "$l".phy Subset"$MY_PARTITION_COUNT"/; done
+	#
+			## Move into subset subfolder, make *_taxon_names_spaces.txt file from taxon names, considering
+			## all and ONLY taxon names in the PHYLIP files in the current subset:
+			cd Subset"$MY_PARTITION_COUNT"/;
+				for m in ./*.phy; do sed '1d' "$m" >> ./headless_cat_phylip.tmp ; done
+				perl -p -i -e 's/\ +.*//g; s/\t.*//g' ./headless_cat_phylip.tmp ;
+				sort -u ./headless_cat_phylip.tmp > ./Subset"$MY_PARTITION_COUNT"_taxon_names.txt ;
+				sed 's/$/\ x/g' ./Subset"$MY_PARTITION_COUNT"_taxon_names.txt | column -t | sed 's/x$//g' > ./Subset"$MY_PARTITION_COUNT"_taxon_names_spaces.txt ;
+		
+				#########################################
+				###### Setup for concatenateAlignments:
+				USER_SPEC_NAMSPACES_FILE=./Subset"$MY_PARTITION_COUNT"_taxon_names_spaces.txt ;
+		
+				###### DON'T FORGET TO RUN THE FUNCTION!
+				concatenateAlignments
+		
+				###### FIX NEW CONCATENATED PHYLIP ALIGNMENT TO HAVE THE CORRECT NCHAR INFORMATION
+						# Add header with corrected ntax and nchar information:
+						cat ./concatenated_seqs.phy | tail -n+2 > ./concatenated_seqs.tmp;
+						MY_CONCAT_PHY_NTAX="$(cat ./concatenated_seqs.phy | tail -n+2 | wc -l | perl -pe 's/\t//g; s/\ //g')";
+						MY_CONCAT_PHY_NCHAR="$(head -n2 ./concatenated_seqs.phy | tail -n1 | perl -pe 's/^[A-Za-z0-9\-\_]*[\ ]*//; s/\ //g; s/$//g; s/\s//g' | wc -c | perl -pe 's/\t//g; s/\ //g')";
+						echo "$MY_CONCAT_PHY_NTAX  $MY_CONCAT_PHY_NCHAR" > ./concat_header.tmp;
+				#		
+						# Overwrite original phy file with new phy file:
+						cat ./concat_header.tmp ./concatenated_seqs.tmp > ./concatenated_seqs.phy;
+	
+				###### CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES AND REORGANIZING THE
+				###### TAXON NAMES FILES INTO THEIR OWN SUBFOLDER. ALSO GIVE THE FINAL 
+				###### CONCATENATED SUBSET ALIGNMENT A NAME REFLECTING THE SUBSET NUMBER.
+					rm ./*.tmp;
+					mkdir taxon_name_files/;
+					mv ./*taxon_names_spaces.txt ./*taxon_names.txt taxon_name_files/;
+					mv ./concatenated_seqs.phy Subset"$MY_PARTITION_COUNT"_concat.phy;
+
+				###### 
+				n=Subset"$MY_PARTITION_COUNT"_concat.phy
+				MY_FINAL_SUBSET_PHY_NCHAR="$(head -n1 $n | perl -pe 's/^[0-9]*\ +//g; s/\ //g')";
+				MY_FINAL_SUBSET_PHY_NTAX="$(awk 'END {print NR,"lines"}' $n | sed 's/\ .*//g')";
+				MY_CORRECTED_FINAL_SUBSET_PHY_NTAX="$(calc $MY_FINAL_SUBSET_PHY_NTAX-1)";
+				
+				#########################################
+			cd ..;
+	#
+			echo "INFO      | $(date) |             Subset $((MY_PARTITION_COUNT++)) completed. "
+			echo "INFO      | $(date) |             Results output to file $n with $MY_FINAL_SUBSET_PHY_NCHAR bp data for $MY_CORRECTED_FINAL_SUBSET_PHY_NTAX tip taxa. "
+			echo "$MY_FINAL_SUBSET_PHY_NTAX" >> ./subset_nTax.list.txt;
+			echo "$MY_FINAL_SUBSET_PHY_NCHAR" >> ./subset_nChar.list.txt;
+	#
+		done < ./best_scheme_partitions.txt
+)
+
+}
+
+## DON'T FORGET TO RUN THE FUNCTION!
+makePFSubsetAlignments
+
+
+echo "INFO      | $(date) | STEP #3: ORGANIZE SUBSETS OUTPUT IN WORKING DIR. "
+############ CLEAN UP WORKING DIR MOVING ALL SUBSET SUBFOLDERS INTO A SINGLE subset_folders/ 
+############ SUBFOLDER IN <workingDIR>, AND BY COPYING ALL FINAL SUBSET ALIGNMENTS INTO A
+############ PHYLIP_subsets/ SUBFOLDER.
+
+	echo "INFO      | $(date) |          Making PHYLIP_subsets/ dir containing all PHYLIP-formatted subset alignments..."
+	mkdir PHYLIP_subsets/;
+	cp ./Subset*/*_concat.phy ./PHYLIP_subsets/;
+
+	echo "INFO      | $(date) |          Making subset_folders/ dir containing all subset subfolders..."
+	mkdir subset_folders/;
+	mv Subset*/ subset_folders/;
+
+
+echo "Done. "
+echo "Bye.
+"
+#
+#
+#
+######################################### END ############################################
+
+exit 0
+

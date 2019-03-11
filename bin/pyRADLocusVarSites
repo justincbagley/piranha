@@ -1,0 +1,302 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: pyRADLocusVarSites.sh                                                            #
+  VERSION="v0.1.2"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.                      #
+# Last update: March 11, 2019                                                            #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# CALCULATES NUMBERS OF VARIABLE SITES AND PARSIMONY-INFORMATIVE (i.e. PHYLOGENETICALLY  #
+# INFORMATIVE SITES) FOR SET OF SNP LOCI IN pyRAD .loci OUTPUT, THEN RANKS LOCI BY       #
+# VARIABILITY                                                                            #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function pyRADLocusVarSites () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | pyRADLocusVarSites, v0.1.2 March 2019  (part of PIrANHA v1.0.0)"
+echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Step #1: Set up and test current working directory. "
+###### STEP #1: SETUP, READ AND CHECK CURRENT WORKING DIRECTORY, INCLUDING DIR TEST FOR 
+###### CORRECT WORKING DIR (PYRAD / IPYRAD OUTFILES/ RUN SUBFOLDER).
+MY_PATH="$(pwd -P)";
+
+##--Test whether current working dir is an "outfiles" sub-folder of a pyRAD assembly run.
+##--If so, move forward with no changes; if not, assume script was run within the main
+##--dir of a pyRAD assembly run, and cd into outfiles folder.
+MY_OUTFILES_DIR_TEST="$(echo $MY_PATH | sed 's/.*\///g')"
+if [[ "$MY_OUTFILES_DIR_TEST" -eq "outfiles"  ]]; then 
+	echo "INFO      | $(date) | Path check PASSED. You're in pyRAD outfiles dir already. "
+else
+	echo "INFO      | $(date) | Path check FAILED. Now attempting to change into pyRAD outfiles dir... "
+	cd ./outfiles ;
+else
+	echo "INFO      | $(date) | Path check FAILED. Please move into the pyRAD / ipyrad ./outfiles/ dir before running. Exiting... "
+	exit ;
+fi
+
+###### STEPS #2 & 3: USE FOR LOOP TO CALCULATE VAR SITE METRICS AND OUTPUT TO FILE, AND THEN 
+## RANK LOCI BY NUMBERS OF VARIABLE AND PARSIMONY-INFORMATIVE SITES.
+##--Assuming outfiles folder as pwd, run for loop to count and print to file the numbers of 
+##--variable sites, and specifically parsimony-informative sites, in each SNP locus of the
+##--.loci file.
+	(
+		echo "INFO      | $(date) | Step #2: Calculate variable site metrics and output to file. "
+		echo "INFO      | $(date) |          Calculating numbers of variable sites (S) and parsimony-informative sites (PIS) for SNP loci... "
+		for i in $(find . -name "*.loci" -type f); do
+			echo "INFO      | $(date) |      $i ";
+			NUM_LINES="$(grep -h '^\/\/' "$i" | wc -l)";
+#
+			grep -h "^\/\/" "$i" | sed 's/\ //g; s/^\/\///g' | sed 's/[\*\-\|]*\([0-9]*\)/\1/g; s/\-//g' > "$i"_locusNos.tmp ;
+			grep -h "^\/\/" "$i" | sed 's/\ //g; s/\/\///g; s/\|//g; s/[0-9]*//g' > "$i"_varSites.tmp ;
+			awk '{ print length($0); }' "$i"_varSites.tmp > "$i"_varSites.txt ;
+			sed 's/\-//g' "$i"_varSites.tmp > "$i"_parsInformSites.tmp ;
+			awk '{ print length($0); }' "$i"_parsInformSites.tmp > "$i"_parsInformSites.txt ;
+#
+			paste "$i"_locusNos.tmp "$i"_varSites.txt "$i"_parsInformSites.txt > "$i"_summTable.tmp ;
+			echo locus > locus.tmp; echo varSites > varSites.tmp; echo parsInfSites > parsInfSites.tmp;
+#		
+			## OUTPUT S AND PIS ESTIMATES TO FILES.
+			echo "INFO      | $(date) |          Writing regular (unsorted) results to summary text files... "
+			## 3-column summary file:
+				paste locus.tmp varSites.tmp parsInfSites.tmp > header.tmp ;
+				cat header.tmp "$i"_summTable.tmp > "$i"_varSitesSummary.txt ;
+
+			## 2-column var sites (S) file:
+				paste locus.tmp varSites.tmp > Sheader.tmp ;
+				paste "$i"_locusNos.tmp "$i"_varSites.txt > "$i"_varSitesTable.tmp ;
+				cat Sheader.tmp "$i"_varSitesTable.tmp > "$i"_S_table.txt ;
+
+			## 2-column parsimony-informative sites (PIS) file:
+				paste locus.tmp parsInfSites.tmp > PISheader.tmp ;
+				paste "$i"_locusNos.tmp "$i"_parsInformSites.txt > "$i"_parsInfSitesTable.tmp ;
+				cat PISheader.tmp "$i"_parsInfSitesTable.tmp > "$i"_PIS_table.txt ;		
+
+			## Make ranked/sorted S and PIS table files:
+			echo "INFO      | $(date) | Step #3: Rank loci by numbers of variable sites. "
+			echo "INFO      | $(date) |          Ranking loci by number of variable and parsimony-informative sites, and writing tables with ranked loci... "
+				sort -nrk2 "$i"_varSitesTable.tmp > Ssorted.tmp ;
+				cat Sheader.tmp Ssorted.tmp > "$i"_S_table-ranked.txt ;
+				sort -nrk2 "$i"_parsInfSitesTable.tmp > PISsorted.tmp ;
+				cat PISheader.tmp PISsorted.tmp > "$i"_PIS_table-ranked.txt ;
+#
+		echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files created during run. "
+		echo "INFO      | $(date) |          Removing temporary files and intermediate text files... "
+			rm ./*.tmp ;
+			rm ./"$i"_varSites.txt ;
+			rm ./"$i"_parsInformSites.txt ;
+		done
+	)
+
+
+#echo "INFO      | $(date) | Done calculating numbers of variable sites in pyRAD .loci file(s) and ranking SNP loci by variability. "
+#echo "INFO      | $(date) | Bye.
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates summarizing the numbers of variable sites (i.e. segregating sites, S)
+ and parsimony-informative sites (PIS) from RAD / GBS loci output by the programs pyRAD or 
+ ipyrad (Eaton 2014; Eaton and Overcast 2016). The program must be run in the ./outfiles/ 
+ subfolder within a pyRAD / ipyrad run directory. Once initiated, the resulting '.loci' file 
+ is read and site metrics are summarized and written to file. The resulting loci are also 
+ ranked according to their S and PIS values. Summary and ranked locus information is output
+ to several files. The script takes no options and runs non-interactively from the UNIX / 
+ LINUX command line (i.e. terminal emulator). 
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 
+ 	Bioinformatics, 30, 1844-1849.
+ Eaton DAR, Overcast I (2016) ipyrad: interactive assembly and analysis of RADseq data sets. 
+ 	Available at: <http://ipyrad.readthedocs.io/>.
+
+ Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.
+ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+pyRADLocusVarSites
+
+# Exit cleanly
+safeExit

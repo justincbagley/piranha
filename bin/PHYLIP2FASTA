@@ -1,0 +1,178 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: PHYLIP2FASTA.sh                                                                  #
+  VERSION="v1.1"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
+# Last update: March 5, 2019                                                             #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT AUTOMATES CONVERTING EACH OF ONE TO MULTIPLE PHYLIP DNA SEQUENCE     #
+# ALIGNMENT FILES INTO FASTA FORMAT                                                      #
+#                                                                                        #
+##########################################################################################
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+INPUT_PHYLIP_FILE=NULL
+MULTIPLE_PHYLIP_SWITCH=1
+KEEP_ORIG_PHYLIP_SWITCH=0
+MY_VERBOSE_OUT_SWITCH=0
+
+USAGE="Usage: $(basename "$0") [Help: -h --help] [Options: -i m k v V --version] [stdin:] <workingDir>
+ ## Help:
+  -h   help text (also: --help) show this help text and exit
+
+ ## Options:
+  -i   inputPHYLIP (def: NULL) individual PHYLIP file, user-specified filename
+  -m   multiPHYLIP (def: 1, turned on; 0, off) multiple PHYLIP files in current <workingDir>
+  -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
+       converted during the run
+  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to 
+       screen (stdout)
+  -V   version (also: --version) echo version and exit
+
+Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.
+Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" = "-V" ]] || [[ "$1" = "--version" ]]; then
+	echo "$(basename $0) $VERSION"
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'i:m:k:v:' opt ; do
+  case $opt in
+## PHYLIP2FASTA options:
+    i) INPUT_PHYLIP_FILE=$OPTARG ;;
+    m) MULTIPLE_PHYLIP_SWITCH=$OPTARG ;;
+    k) KEEP_ORIG_PHYLIP_SWITCH=$OPTARG ;;
+    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+############ SKIP OVER THE PROCESSED OPTIONS
+shift $((OPTIND-1)) 
+# Check for mandatory positional parameters
+if [ $# -lt 1 ]; then
+	echo "$USAGE"
+	exit 1
+fi
+USER_SPEC_PATH="$1"
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "
+##########################################################################################
+#                             PHYLIP2FASTA v1.1, March 2019                              #
+##########################################################################################
+"
+
+######################################## START ###########################################
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting PHYLIP2FASTA pipeline... "
+	echo "INFO      | $(date) | STEP #1: SET UP WORKSPACE BY CREATING USEFUL VARIABLES AND FUNCTIONS, SETTING WORKING DIRECTORY, AND CHECKING MACHINE TYPE. "
+fi
+	CR=$(printf '\r'); 
+	calc () { 
+		bc -l <<< "$@" 
+}
+############ SET AND MOVE INTO WORKING DIRECTORY
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd "$MY_CWD"
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | STEP #2: CONVERT PHYLIP MULTIPLE SEQUENCE ALIGNMENT FILES TO FASTA FORMAT. "
+fi
+###### Convert PHYLIP files to FASTA format:
+
+	if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
+		if [[ -s "$INPUT_PHYLIP_FILE" ]]; then
+			echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE ... ";
+			MY_BASENAME="$(basename $INPUT_PHYLIP_FILE .phy)";
+			sed '1d' "$INPUT_PHYLIP_FILE" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+		else
+			echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in <workingDir>. Quitting... " 
+			exit
+		fi
+	fi
+
+	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+	MY_PHYLIP_COUNT="$(ls -1 *.phy 2>/dev/null | wc -l)";
+		if [[ "$MY_PHYLIP_COUNT" != "0" ]]; then
+		(
+			for i in ./*.phy; do
+				echo "$i";
+				MY_BASENAME="$(basename $i .phy)";
+				sed '1d' "$i" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+			done
+		)
+		fi
+	fi
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | STEP #3: CLEANUP. "
+fi
+###### CLEANUP: Remove PHYLIP files in <workingDir>, conditional upon user request. Also, 
+## if PHYLIP files kept, then organize output FASTAs into one dir, and original PHYLIPs into
+## a separate dir.
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
+		rm ./*.phy;
+	fi
+
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s fasta/ ]] && [[ ! -s phylip/ ]]; then
+		mkdir fasta/;
+		mkdir phylip/;
+		mv ./*.phy ./phylip/;
+		mv ./*.fas ./fasta/;
+	fi
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment(s) to FASTA format using PHYLIP2FASTA.sh." 
+	echo "Bye.
+"
+fi
+#
+#
+#
+######################################### END ############################################
+
+exit 0

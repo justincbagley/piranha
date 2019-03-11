@@ -1,0 +1,273 @@
+#!/bin/sh
+
+##########################################################################################
+#                          concatenateSeqs v1.0, February 2019                           #
+#  SHELL SCRIPT THAT CONVERTS SERIES OF PHYLIP DNA SEQUENCE ALIGNMENTS WITH OR WITHOUT   #
+#  VARYING NUMBERS OF TAXA INTO A SINGLE CONCATENATED PHYLIP ALIGNMENT, & ALSO PRODUCES  #
+#  CHARACTER SUBSET/PARTITION FILES IN RAxML, PartitionFinder, & NEXUS FORMATS, STARTING #
+#  FROM A TAXON NAMES AND SPACES FILE AND WORKING DIR PATH                               #
+#  Copyright (c)2019 Justinc C. Bagley. All rights reserved.                             #
+#  For further information, see README and license available in the GitHub repository    #
+#  https://github.com/justincbagley/Anoura-UCE-Phylogenomics-Project/. Last update:      #
+#  February 24, 2019. For questions, please email bagleyj@umsl.edu.                      #
+##########################################################################################
+
+############ CREATE USAGE & HELP TEXTS
+Usage="Usage: $(basename "$0") [Help: -h help] [stdin:] <inputNameSpacesFile> <workingDir> 
+ ## Help:
+  -h   help text (also: -help)
+
+ OVERVIEW
+ THIS SCRIPT is designed to run in a working directory containing a series of PHYLIP DNA
+ sequence alignments for different genes (e.g. 100s or 1000s of RAD or UCE loci) with the
+ same exact number of taxa, or with varying levels of taxon sampling (completeness; e.g. 
+ with varying numbers of tip taxa sequenced for gene A, gene B, and so on). Given such a 
+ workspace, this script takes as input (1) a 'names and spaces file', <inputNameSpacesFile>, 
+ containing only the names of tip taxa, one per line, as well as spaces extending the total 
+ number of characters to be the same on each line (e.g. 10 or 12 characters including 
+ spaces); and (2) the path to the <workingDir> (for current working dir, use '.'; see 
+ example usage below). When run, the script converts any incomplete PHYLIP alignments into 
+ 'complete' alignments, so that all alignments contain the full number of tip taxa, by 
+ filling in missing taxa and giving them dummy sequences made up entirely of missing data 
+ (coded as NNNs). Both <inputNameSpacesFile> and <workingDir> are mandatory input when
+ calling the program, any incomplete PHYLIP alignment files in <workingDir> are overwritten 
+ with 'complete' alignments, and by default all script output is written to a file named 
+ 'output.txt'.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag, and has been 
+ tested on macOS High Sierra (v10.13+) and Mojave but will work on many earlier versions or
+ Linux (tested on CentOS 6/7). It is assumed that taxon names in the PHYLIP files contain 
+ only alphanumeric characters and no spaces, or else there could be issues. Also, PHYLIP
+ alignment files must have the extension '.phy'.
+
+ USAGE EXAMPLE:
+ To run using current directory as <workingDir> with a names and spaces text file named 
+ 'taxon_name_spaces12.txt' containing each tip taxon name followed by x number of spaces 
+ taking the total character count per line out to 12 characters, you would call the program 
+ as follows ($ is the command prompt):
+
+ $ ./concatenateSeqs.sh taxon_name_spaces12.txt .
+
+ CITATION
+ Bagley, J.C. 2018. Anoura-UCE-Phylogenomics-Project. GitHub repository, Available at: 
+	<https://github.com/justincbagley/Anoura-UCE-Phylogenomics-Project>.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+# Saves all script output to file named 'output.txt'
+exec >> ./output.txt 
+exec 2>&1
+
+############ Check for mandatory positional parameters
+if [ $# -lt 2 ]; then
+	echo "WARNING!  | $(date) |          Missing one or more mandatory positional parameters. Quitting... "
+	echo "$Usage"
+  exit 1
+fi
+USER_SPEC_NAMSPACES_FILE="$1"
+USER_SPEC_PATH="$2"
+
+
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	#MY_CWD=`pwd -P`
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd "$MY_CWD"
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
+
+
+######################################## START ###########################################
+
+###### SET UP ENVIRONMENT BY CREATING USEFUL VARIABLES AND FUNCTIONS AND CHECKING MACHINE TYPE.
+	CR=$(printf '\r')
+	TAB=$(printf '\t')
+	calc () {
+		bc -l <<< "$@"
+}
+
+	###### CHECK MACHINE TYPE:
+	unameOut="$(uname -s)"
+	case "${unameOut}" in
+	    Linux*)     machine=Linux;;
+	    Darwin*)    machine=Mac;;
+	    CYGWIN*)    machine=Cygwin;;
+	    MINGW*)     machine=MinGw;;
+	    *)          machine="UNKNOWN:${unameOut}"
+	esac
+
+
+###### CREATE AND RUN CONCATENATESEQS FUNCTION (INCLUDES COMPLETESEQS FUNCTION AS WELL AS
+###### CODE FOR CONCATENATING PHYLIP FILES AS YOU LOOP THROUGH THEM)
+
+concatenateSeqs () {
+
+count=1
+(
+	for i in ./*.phy; do
+
+		######  completeSeqs  ######
+
+		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp
+		j="$i".tmp
+		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')"
+		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###"
+
+			while read k; do
+				MY_TAXON_NAME="$(echo $k | sed 's/\ //g')"
+				MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')"
+				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"
+				
+				if [[ "$MY_N_IND_INSTS" = "1" ]]; then
+					# extract/copy corresponding sequence from $i and paste it to end of
+					# line with same name ($MY_TAXON_NAME) in tmp file $j:
+					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')"
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j"
+					fi
+
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j"
+					fi
+
+					
+				elif [[ "$MY_N_IND_INSTS" = "0" ]]; then
+					# only add correct # N's (dummy sequence) to end of line with same
+					# name in tmp file $j:
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j"
+					fi
+
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j"
+					fi
+
+				fi				
+				
+			done < "$USER_SPEC_NAMSPACES_FILE"
+
+		# Add header with corrected ntax and nchar information:
+		MY_PHY_NTAX="$(awk 'END {print NR,"lines"}' $j | sed 's/\ .*//g')";
+		echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp
+		# Overwrite original phy file with new phy file:
+		cat ./header.tmp "$j" > "$i"
+
+
+		######  concatenateSeqs  ######
+
+		## On first loop iteration, make concatenated seqs PHYLIP file from complete locus1 
+		## PHYLIP file, then make partitions/charsets files. Specifically, when you make the
+		## files of RAxML partitions, PartitionFinder subsets, and NEXUS charsets, then the
+		## formats are as follows:
+		# raxml format: "DNA, locus1 = 1-607"
+		# PF format: "locus1=1-607;"
+		# NEXUS format: "  charset locus1 = 1-607;" 
+
+		if [[ "$count" = "1" ]]; then
+
+			# Make concatenated seqs file from complete locus1 PHYLIP file, and move original
+			# locus1 PHYLIP file to orig_phylip/ subfolder.
+			mkdir orig_phylip/;
+			cp "$i" ./concatenated_seqs.phy
+			cp "$i" ./orig_phylip/;
+
+			# Make partitions/charsets files with information from locus1...
+			#locus="$(echo $i | perl -pe 's/\.\///g; s/\.[A-Za-z]{3,}$//g')"
+			locus="$(basename $i '.phy')"
+			echo "DNA, ${locus} = 1-${MY_PHYLIP_NCHAR}" >> ./raxml_partitions.part
+			echo "${locus}=1-${MY_PHYLIP_NCHAR};" >> partitionfinder_subsets.txt
+			echo "  charset ${locus} = 1-${MY_PHYLIP_NCHAR};" >> NEXUS_charsets_lowercase.txt
+			echo "  CHARSET ${locus} = 1-${MY_PHYLIP_NCHAR};" >> NEXUS_charsets_uppercase.txt
+
+			MY_PREV_END_RANGE_VAL="$(echo $MY_PHYLIP_NCHAR)"
+
+		elif [[ "$count" -gt "1" ]]; then
+
+			# Concatenate $i > 1 PHYLIP sequences to concatenated seqs PHYLIP file
+			while read l; do
+				MY_TAXON_NAME="$(echo $l | sed 's/\ //g')"
+				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"				
+					# extract/copy corresponding sequence from $i and paste it to end of
+					# line with same name ($MY_TAXON_NAME) in tmp file $j:
+					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')"
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy
+					fi
+
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy
+					fi
+			done < "$USER_SPEC_NAMSPACES_FILE"
+
+			# Add ith locus information to partitions/charsets files...
+			locus="$(basename $i '.phy')"
+			#MY_PREV_NCHAR="$(cat ./previous_nchar.tmp)"
+			MY_NEW_START_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + 1)"
+			MY_NEW_END_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + $MY_PHYLIP_NCHAR)"
+			echo "DNA, ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL}" >> ./raxml_partitions.part
+			echo "${locus}=$MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> partitionfinder_subsets.txt
+			echo "  charset ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_lowercase.txt
+			echo "  CHARSET ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_uppercase.txt
+
+			MY_PREV_END_RANGE_VAL="$(echo $MY_NEW_END_RANGE_VAL)"
+
+			cp "$i" ./orig_phylip/;
+
+		fi
+
+
+	echo "$((count++))" > count.tmp
+
+		
+	done
+)
+
+}
+
+## DON'T FORGET TO RUN THE FUNCTION!
+concatenateSeqs
+
+
+
+###### FIX NEW CONCATENATED PHYLIP ALIGNMENT TO HAVE THE CORRECT NCHAR INFORMATION
+
+		# Add header with corrected ntax and nchar information:
+		cat ./concatenated_seqs.phy | tail -n+2 > ./concatenated_seqs.tmp
+		MY_CONCAT_PHY_NTAX="$(cat ./concatenated_seqs.phy | tail -n+2 | wc -l | perl -pe 's/\t//g; s/\ //g')";
+		MY_CONCAT_PHY_NCHAR="$(head -n2 ./concatenated_seqs.phy | tail -n1 | perl -pe 's/^[A-Za-z0-9\-\_]*[\ ]*//; s/\ //g; s/$//g; s/\s//g' | wc -c | perl -pe 's/\t//g; s/\ //g')"
+		echo "$MY_CONCAT_PHY_NTAX  $MY_CONCAT_PHY_NCHAR" > ./concat_header.tmp
+		
+		# Overwrite original phy file with new phy file:
+		cat ./concat_header.tmp ./concatenated_seqs.tmp > ./concatenated_seqs.phy
+
+
+
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	rm ./*.tmp
+
+
+#
+#
+#
+######################################### END ############################################
+
+exit 0
+

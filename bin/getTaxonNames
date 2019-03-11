@@ -1,0 +1,74 @@
+#!/bin/bash
+
+## USAGE
+## ./getTaxonNames.sh <maxTips>
+
+
+###### CHECK MACHINE TYPE:
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+
+
+######################################## START ###########################################
+
+###### MAKE TAXON NAMES FILE.
+## Read in maximum number of tip taxa, <maxTips>. For unphased data this is n (no. individuals).
+## For phased data, this is 2n if the software previously used to phased the data always outputs
+## two sequences per individual tip taxon (e.g. with _0 and _1 suffixed, phased designations).
+i="$1"
+
+(
+	for j in ./*.phy; do
+
+		MY_NTAX="$(head -n1 $j | perl -pe  's/\ +.*//g')"
+		
+		if [[ "$MY_NTAX" = "$i" ]]; then
+
+			## If correct number of taxa (maxTips), then make the taxon names file and 
+			## use a break to stop the loop before exiting.
+			echo "INFO      | $(date) |          Making taxon names file ... "
+
+			cp "$j" "$i"_taxon_names.txt;
+			perl -p -i -e 's/\ +.*//g' "$i"_taxon_names.txt;
+
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i '' '1d' "$i"_taxon_names.txt;
+			fi
+
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i '1d' "$i"_taxon_names.txt;
+			fi
+
+			break
+
+		elif [[ "$MY_NTAX" != "$i" ]]; then
+
+			## If incorrect number of taxa (not matching maxTips), then continue searching
+			## through the PHYLIP files in current working dir until you find a file 
+			## with 100% taxon sampling.
+			echo "INFO      | $(date) |          Searching ... "
+
+		fi
+
+	done
+)
+
+
+###### MAKE TAXON NAMES SPACES FILE.
+sed 's/$/\ x/g' "$i"_taxon_names.txt | column -t | sed 's/x$//g' > "$i"_taxon_names_spaces.txt
+
+
+
+#
+#
+#
+######################################### END ############################################
+
+exit 0
+

@@ -1,0 +1,190 @@
+#!/bin/sh
+
+##########################################################################################
+# File: renameForStarBeast2.sh                                                           #
+  VERSION="v1.0"                                                                         #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
+# Last update: March 5, 2019                                                             #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT TO RENAME TIP LABLES IN PHYLIP OR FASTA MULTIPLE SEQUENCE ALIGNMENT (MSA) #
+# FILES TO APPEND SPECIES ASSIGNMENTS FOR STARBEAST / STARBEAST2                         #
+#                                                                                        #
+##########################################################################################
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_INPUT_FILE_TYPE=phylip
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [Options: -i V --version] [stdin:] <assignmentFile> <workingDir>
+ ## Help:
+  -h   help text (also: --help) echo this help text and exit
+
+ ## Options:
+  -i   input file type (def: phylip; other: fasta) type of file(s) in <workingDir> that 
+       will be renamed (assumes .phy or .fas extensions for PHYLIP or FASTA format, 
+       respectively)
+  -V   version (also: --version) echo version and exit
+
+ ## Mandatory input:
+  <assignmentFile> ASTRAL-III style assignment file detailing which individual tips correspond
+                   to which species or taxa
+  <workingDir>     Path to working directory; use '.' for current directory and '..' for up
+                   one directory
+
+ INFO
+ For best results, species assignments in assignment file parameter, <assignmentFile>, should 
+ be simple alphanumeric names (e.g. 'unimaculatus') with no spaces, hyphens, underscores, or
+ other nonalphanumeric characters.
+
+ ## Examples:
+  ./renameForStarBeast2.sh -i phylip assignment.txt .
+  ./renameForStarBeast2.sh -i fasta assignment.txt .
+  ./renameForStarBeast2.sh --version
+
+Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
+Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'i:' opt ; do
+  case $opt in
+## Script options:
+    i) MY_INPUT_FILE_TYPE=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+############ SKIP OVER THE PROCESSED OPTIONS
+############ Check for mandatory positional parameters
+shift $((OPTIND-1)) 
+if [ $# -lt 2 ]; then
+	echo "WARNING!  | $(date) |          Missing mandatory positional parameters. Quitting... "
+	echo ""
+	echo "$USAGE"
+  exit 1
+fi
+USER_SPEC_ASSIGNMENT_FILE="$1"
+USER_SPEC_PATH="$2"
+
+############ SET AND MOVE INTO WORKING DIRECTORY
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+		echo "INFO      | $(date) |          Setting working directory to:  "
+		echo "$MY_CWD "
+	else
+		MY_CWD=$USER_SPEC_PATH
+		cd "$MY_CWD"
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
+
+
+######################################## START ###########################################
+
+renameForStarBeast2 () {
+
+## Split input ASTRAL-III-type taxon-assignment file into separate .tmp files for species
+## (*_assign_names.tmp) and individuals or tips (*_assign_tips.tmp)
+echo "INFO      | $(date) |          Splitting up assignment file... "
+perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 1 > ./species_assign_names.tmp
+perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 3- > ./species_assign_tips.tmp
+
+## Count number of species assignments and tips:
+MY_NUM_SPECIES_ASSIGN="$(wc -l ./species_assign_names.tmp | sed 's/\ //g; s/\.\/.*//g')"
+MY_NUM_TIP_INDS="$(perl -pe $'s/\ /\n/g; s/\t/\n/g' ./species_assign_tips.tmp | sort -u | wc -l | sed 's/\ //g; s/\.\/.*//g')"
+
+## Main script loop sets run conditional on input file type:
+if [[ "$MY_INPUT_FILE_TYPE" = "phylip" ]]; then
+echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
+echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
+echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
+echo "INFO      | $(date) |          Renaming PHYLIP MSAs in current working directory... "
+for i in ./*.phy; do
+	echo "INFO      | $(date) |          $i "
+	MY_COUNT=1
+	(
+		while read TIP_NAME; do 
+			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)"; 
+			MY_TIP_NAMES="$TIP_NAME"; 
+	#		
+				for j in $MY_TIP_NAMES; do 
+					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i"; 
+				done; 
+	#
+			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... "; 
+		done < ./species_assign_tips.tmp
+	)
+done
+fi
+
+if [[ "$MY_INPUT_FILE_TYPE" = "fasta" ]]; then
+echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
+echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
+echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
+echo "INFO      | $(date) |          Renaming FASTA MSAs in current working directory... "
+for i in ./*.fas; do
+	echo "INFO      | $(date) |          $i "
+	MY_COUNT=1
+	(
+		while read TIP_NAME; do 
+			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)"; 
+			MY_TIP_NAMES="$TIP_NAME"; 
+	#		
+				for j in $MY_TIP_NAMES; do 
+					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i"; 
+				done; 
+	#
+			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... "; 
+		done < ./species_assign_tips.tmp
+	)
+done
+fi
+
+rm ./species_assign_names.tmp ./species_assign_tips.tmp;
+
+}
+
+## DON'T FORGET TO RUN THE FUNCTION!
+renameForStarBeast2
+
+
+
+#
+#
+#
+######################################### END ############################################
+
+exit 0

@@ -1,0 +1,144 @@
+#!/bin/sh
+
+## makePartitions.sh
+## Justin C. Bagley
+## February 24, 2019
+##
+## Usage: ./makePartitions.sh [stdin:] <workingDir>
+##
+## THIS SCRIPT loops through a set of PHYLIP DNA sequence alignments in <workingDir>
+## (working directory path; mandatory input) and uses their header information to make
+## partitions/charsets files with RAxML partition, PartitionFinder subset, and NEXUS charset
+## formats. Here, the ordering of charsets is equivalent to the alphanumeric order in 
+## which a bash UNIX terminal would read the PHYLIP files (e.g. locus1.phy, locus10.phy, ...,
+## and not locus1.phy, locus2.phy, ...), which is the same order that the ElConcatenero
+## script(s) (https://github.com/ODiogoSilva/ElConcatenero) and my concatenateSeqs.sh script 
+## (in this repository; https://github.com/justincbagley/Anoura-UCE-Phylogenomics-Project/)
+## read and concatenate the PHYLIP alignments. 
+## 
+## This script was written during development of concatenateSeqs.sh, but as a standalone 
+## script it solves the problem of correcting partitions output by ElConcatenero if, upon
+## checking, ElConcatenero has given the correct order of loci but incorrect ranges of 
+## nucleotides for the partitions in its output.
+
+
+# Saves all makePartitions script output to file named 'makePartitions_output.txt'
+exec >> ./makePartitions_output.txt 
+exec 2>&1
+
+############ Check for mandatory positional parameters
+if [ $# -lt 1 ]; then
+	echo "WARNING!  | $(date) |          Missing one or more mandatory positional parameters. Quitting... "
+	echo "INFO      | $(date) |          Usage: $(basename "$0") workingDir "
+  exit 1
+fi
+USER_SPEC_PATH="$1"
+
+
+############ Set <workingDir>
+if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+	#MY_CWD=`pwd -P`
+	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	echo "INFO      | $(date) |          Setting working directory to:  "
+	echo "$MY_CWD "
+elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+		cd ..;
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
+	else
+		MY_CWD=$USER_SPEC_PATH
+		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
+		echo "$MY_CWD "
+		cd "$MY_CWD"
+	fi
+else
+	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	exit 1
+fi
+
+
+######################################## START ###########################################
+
+###### SET UP ENVIRONMENT BY CREATING USEFUL VARIABLES AND FUNCTIONS AND CHECKING MACHINE TYPE.
+	CR=$(printf '\r')
+	TAB=$(printf '\t')
+	calc () {
+		bc -l <<< "$@"
+}
+
+
+
+###### GENERATE AND RUN MAKEPARTITIONS FUNCTION TO MAKE FILES WITH VARIOUS PARTITION/CHARSET
+###### FORMATS
+
+makePartitions () {
+
+count=1
+(
+	for i in ./*.phy; do
+
+		######  makePartitions  ######
+
+		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')"
+		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###"
+
+
+		if [[ "$count" = "1" ]]; then
+
+		## On first loop iteration, make partitions/charsets files including files with
+		## RAxML partitions, PartitionFinder subsets, and NEXUS charsets with the following
+		## formats. Do this by using 1-sequenceLength of 1st locus.
+		# raxml format: "DNA, locus1 = 1-607"
+		# PF format: "locus1=1-607;"
+		# NEXUS format: "  charset locus1 = 1-607;" 
+			locus="$(basename $i '.phy')"
+			echo "DNA, ${locus} = 1-${MY_PHYLIP_NCHAR}" >> ./raxml_partitions.part
+			echo "${locus}=1-${MY_PHYLIP_NCHAR};" >> partitionfinder_subsets.txt
+			echo "  charset ${locus} = 1-${MY_PHYLIP_NCHAR};" >> NEXUS_charsets_lowercase.txt
+			echo "  CHARSET ${locus} = 1-${MY_PHYLIP_NCHAR};" >> NEXUS_charsets_uppercase.txt
+
+			#echo "$MY_PHYLIP_NCHAR" > previous_nchar.tmp
+			MY_PREV_END_RANGE_VAL="$(echo $MY_PHYLIP_NCHAR)"
+
+		elif [[ "$count" -gt "1" ]]; then
+
+		## On second and subsequent loop iterations ($count > 1), add the partitions/charsets
+		## to the partitions/charsets files by making calculations using previous locus 
+		## information and current, ith locus information, as follows:
+			locus="$(basename $i '.phy')"
+			#MY_PREV_NCHAR="$(cat ./previous_nchar.tmp)"
+			MY_NEW_START_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + 1)"
+			MY_NEW_END_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + $MY_PHYLIP_NCHAR)"
+			echo "DNA, ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL}" >> ./raxml_partitions.part
+			echo "${locus}=$MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> partitionfinder_subsets.txt
+			echo "  charset ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_lowercase.txt
+			echo "  CHARSET ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_uppercase.txt
+
+			#echo "$MY_PHYLIP_NCHAR" > previous_nchar.tmp
+			MY_PREV_END_RANGE_VAL="$(echo $MY_NEW_END_RANGE_VAL)"
+
+		fi
+
+	echo "$((count++))" > count.tmp
+		
+	done
+)
+
+}
+
+## DON'T FORGET TO RUN THE FUNCTION!
+makePartitions
+
+
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	rm ./*.tmp
+
+
+#
+#
+#
+######################################### END ############################################
+
+exit 0
+
