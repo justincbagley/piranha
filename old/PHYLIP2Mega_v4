@@ -1,0 +1,424 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: PHYLIP2Mega.sh                                                                   #
+  VERSION="v1.1.1"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
+# Last update: March 11, 2019                                                            #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO MEGA FORMAT   #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function PHYLIP2Mega () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | PHYLIP2Mega, v1.1.1 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting PHYLIP2Mega script... "
+	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful variables and functions, setting working directory, and checking machine type. "
+fi
+
+echoCDWorkingDir
+
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #2: Convert PHYLIP multiple sequence alignment (MSA) file(s) to Mega format. "
+fi
+############ Convert PHYLIP files to FASTA format:
+	if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
+		if [[ ! -s "$INPUT_PHYLIP_FILE" ]]; then
+			MY_INPUT_PHYLIP_FILE="$(echo $INPUT_PHYLIP_FILE | sed 's/\.\///g' | perl -pe 's/\ +//g; s/\-.*//g' )"
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |          Converting $MY_INPUT_PHYLIP_FILE ... ";
+			fi
+			###### Copy PHYLIP to tmp file:
+				cp "$MY_INPUT_PHYLIP_FILE" ./phylip.tmp;
+			
+			###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' '/^[[:space:]]*$/d' ./phylip.tmp;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' ./phylip.tmp;
+				fi
+			
+			###### Get <inputPHYLIP> characteristics:
+				MY_PHYLIP_LENGTH="$(cat ./phylip.tmp | wc -l | sed 's/(\ )*//g')";
+				MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
+				## ^^^ "MY_BODY_LENGTH" is number of lines comprised by sequence and EOF lines.
+			
+				tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
+			
+				MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
+				MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
+			
+			###### Make Mega-formatted file:
+				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) |          Making Mega-formatted file... "
+				fi
+			
+				echo "#Mega
+\!Title $MY_INPUT_PHYLIP_FILE;" > ./Mega_top.tmp;
+			
+				MY_PHYLIP_BASENAME="$(echo $MY_INPUT_PHYLIP_FILE | sed 's/\.phy//g')";
+			
+				perl -p -i -e $'s/^/\n\#/g; s/\ +/\n/g' ./sequences.tmp;
+				
+				cat ./Mega_top.tmp ./sequences.tmp > ./"$MY_PHYLIP_BASENAME".meg ;
+			
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+				fi
+			rm ./*.tmp;
+		else
+			echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $MY_INPUT_PHYLIP_FILE in working directory. Quitting... " 
+			exit
+		fi
+	fi
+	
+	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+		MY_PHYLIP_COUNT="$(ls -1 *.phy 2>/dev/null | wc -l)";
+			if [[ "$MY_PHYLIP_COUNT" != "0" ]]; then
+			(
+				for i in ./*.phy; do
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          $i";
+					fi
+
+					###### Copy PHYLIP to tmp file:
+						cp "$i" ./phylip.tmp;
+					
+					###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' '/^[[:space:]]*$/d' ./phylip.tmp;
+						fi
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i '/^[[:space:]]*$/d' ./phylip.tmp;
+						fi
+					
+					###### Get <inputPHYLIP> characteristics:
+						MY_PHYLIP_LENGTH="$(cat ./phylip.tmp | wc -l | sed 's/(\ )*//g')";
+						MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
+						## ^^^ "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines.
+					
+						tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
+					
+						MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
+						MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
+					
+					###### Make Mega-formatted file:
+						if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+							echo "INFO      | $(date) |          Making Mega-formatted file... "
+						fi
+
+					echo "#Mega
+\!Title $i;" > ./Mega_top.tmp;
+					
+						MY_PHYLIP_BASENAME="$(echo $i | sed 's/\.phy//g')";
+					
+						perl -p -i -e $'s/^/\n\#/g; s/\ +/\n/g' ./sequences.tmp;
+						
+						cat ./Mega_top.tmp ./sequences.tmp > ./"$MY_PHYLIP_BASENAME".meg ;
+					
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+						fi
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+						fi
+					rm ./*.tmp;
+				done
+			)
+			fi
+	fi
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #3: Clean up working directory by removing temporary files etc. "
+fi
+############ CLEANUP: Remove PHYLIP files in working directory, conditional upon user request. Also, 
+## if PHYLIP files kept, then organize output Mega files into one dir, and original PHYLIPs into
+## a separate dir.
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
+		echo "INFO      | $(date) |          Deleting original PHYLIP files... "
+		rm ./*.phy;
+	fi
+
+	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]] && [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s mega/ ]] && [[ ! -s phylip/ ]]; then
+		echo "INFO      | $(date) |          Kept original PHYLIP files. Organizing Mega and PHYLIP files into subfolders... "
+		mkdir mega/;
+		mkdir phylip/;
+		mv ./*.phy ./phylip/;
+		mv ./*.meg ./mega/;
+	fi
+
+
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+#	echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment(s) to Mega format using PHYLIP2Mega.sh." 
+#	echo "Bye.
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+INPUT_PHYLIP_FILE=NULL
+MULTIPLE_PHYLIP_SWITCH=0
+KEEP_ORIG_PHYLIP_SWITCH=0
+MY_VERBOSE_OUT_SWITCH=1
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputPHYLIP (def: NULL) individual PHYLIP file, user-specified filename
+  -m   multiPHYLIP (def: 0, turned on; 1, on) convert multiple PHYLIP files in working dir
+  -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
+       converted during the run
+  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to 
+       screen (stdout)
+  -h   help text (also: --help) show this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates converting one or more multiple sequence alignment (MSA) files in
+ PHYLIP format (Felsenstein 2002) into the correct input format for Mega (Mega v7+ or X; 
+ Kumar et al. 2016, 2018), while saving (-k 1) or writing over (-k 0) the original PHYLIP 
+ files.
+
+ ${bold}Usage examples:${reset}
+    $0 -i ./<inputPHYLIP> -k 1 .   Convert single PHYLIP to Mega, keeping original file
+    $0 -m1 -k 1 .				   Convert multiple PHYLIP files to Mega, keeping original files
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+ Kumar S, Stecher G, Tamura K (2016) MEGA7: molecular evolutionary genetics analysis version 
+	7.0 for bigger datasets. Molecular Biology and Evolution, 33(7), 1870–1874.
+ Kumar S, Stecher G, Li M, Knyaz C, Tamura K. MEGA X (2018) molecular evolutionary genetics 
+	analysis across computing platforms. Molecular Biology and Evolution, 35(6), 1547-1549.
+
+ Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" = "-V" ]] || [[ "$1" = "--version" ]]; then
+	echo "$(basename $0) $VERSION"
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'i:m:k:v:' opt ; do
+  case $opt in
+## PHYLIP2Mega options:
+    i) INPUT_PHYLIP_FILE=$OPTARG ;;
+    m) MULTIPLE_PHYLIP_SWITCH=$OPTARG ;;
+    k) KEEP_ORIG_PHYLIP_SWITCH=$OPTARG ;;
+    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1)) 
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "$USAGE"
+# 	exit 1
+# fi
+# USER_SPEC_PATH="$1"
+
+# Store the remaining part as arguments.
+# args+=("$@")
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+PHYLIP2Mega
+
+# Exit cleanly
+safeExit
+
