@@ -222,9 +222,9 @@ usage() {
       --version     Output version information and exit
 
  ${bold}Usage examples:${reset}
-    $0 -f calcAlignmentPIS --args='-h'      Get help text for calcAlignmentPIS
-    $0 -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
-    $0 -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
+    piranha -f calcAlignmentPIS --args='-h'      Get help text for calcAlignmentPIS
+    piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
+    piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT runs the PIrANHA software package by specifying the <function> to run (-f flag)
