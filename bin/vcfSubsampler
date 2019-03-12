@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: vcfSubsampler.sh                                                                 #
-  VERSION="v0.2.0"                                                                       #
+  VERSION="v0.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: created by Justin Bagley on Thu Sep 28 09:31:25 2017 -0400.                      #
-# Last update: March 9, 2019                                                             #
+# Date: created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.                     #
+# Last update: March 11, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ function vcfSubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | vcfSubsampler, v0.2.0 March 2019  (part of PIrANHA v1.0.0)     "
+echo "INFO      | $(date) | vcfSubsampler, v0.2.1 March 2019  (part of PIrANHA v1.0.0)     "
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -183,12 +183,13 @@ MY_OUTPUT_VCF_FILE=subsample
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputVCFFile>
+USAGE="Usage: $(basename $0) [OPTION]...
 
  This is vcfSubsampler. It uses a list file (snpsFile) to subsample a variant call
  format (VCF) file (<inputVCFFile>) so that it only contains SNPs in the list.
 
  ${bold}Options:${reset}
+  -i   inputVCFFile (def: input.vcf) input VCF file (tested with v4.0+)
   -s   snpsFile (def: $MY_SNPS_FILE) file listing, one per line, names of SNPs that the user
        wishes to keep, corresponding to 'GENE' column of the input .vcf file
   -o   output (def: $MY_OUTPUT_FILE) output vcf file basename (root; not including extension)
@@ -197,11 +198,14 @@ USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputVCFFile>
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
+ ${bold}Usage examples:${reset}
+    piranha -f vcfSubsampler --args='-i <inputVCFFile> -s <snpsFile>'
+
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
- Created by Justin Bagley on Thu Sep 28 09:31:25 2017 -0400.
+ Created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.
  Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
@@ -216,9 +220,10 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 's:o:d:' opt ; do
+while getopts 'i:s:o:d:' opt ; do
   case $opt in
 ## vcfSubsampler options:
+    i) MY_INPUT_VCF=$OPTARG ;;
     s) MY_SNPS_FILE=$OPTARG ;;
     o) MY_OUTPUT_FILE=$OPTARG ;;
     d) DELETE_ORIG_VCF=$OPTARG ;;
@@ -232,15 +237,15 @@ while getopts 's:o:d:' opt ; do
   esac
 done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1))
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-## Make input file a mandatory parameter:
-MY_INPUT_VCF="$1"
+# ############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1))
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "$USAGE"
+# 	exit 1
+# fi
+# ## Make input file a mandatory parameter:
+# MY_INPUT_VCF="$1"
 
 
 # ############# ############# #############
