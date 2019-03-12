@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.4"                                                                         #
+  VERSION="v1.4.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: March 9, 2019                                                             #
+# Last update: March 11, 2019                                                            #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,8 +136,8 @@ function NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.4 March 2019  (part of PIrANHA v1.0.0)   "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.4.1 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -153,53 +153,53 @@ fi
 ## defines and sources $UTILS_LOCATION, $FUNCS_LOCATION, and $VARS_LOCATION.
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #2: Get NEXUS file & data characteristics, convert NEXUS to FASTA format. "
+	echo "INFO      | $(date) | Step #2: Get NEXUS file and data characteristics, convert NEXUS to FASTA format. "
 fi
 ############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
 ##--Extract charset info from sets block at end of NEXUS file:
 	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" $MY_NEXUS | \
 	awk -F"=" '{print $NF}' | sed 's/\;/\,/g' | \
 	awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}' | \
-	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')"
+	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')" ;
 
 ##--Count number of loci present in the NEXUS file, based on number of charsets defined.
 ##--Also get corrected count starting from 0 for numbering loci below...
-	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)"
-	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)"
+	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)" ;
+	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)" ;
 
 ##--This is the base name of the original nexus file, so you have it. This WILL work regardless
 ##--of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
-	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')"
+	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')" ;
 
 ##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
 	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
-		rm ./"$MY_NEXUS_BASENAME".fasta
+		rm ./"$MY_NEXUS_BASENAME".fasta ;
 	fi
-	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta
-	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')"
+	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta ;
+	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')" ;
 
 ##--Convert data file from fasta to PHYLIP format using Nayoki Takebayashi fasta2phylip.pl
 ##--Perl script (must be available from CLI):
 	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 
 		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy
+			rm ./"$MY_NEXUS_BASENAME".phy ;
 		fi
-		fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
+		fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy ;
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 
 		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy
+			rm ./"$MY_NEXUS_BASENAME".phy ;
 		fi
-		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
+		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy ;
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 
 		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy
+			rm ./"$MY_NEXUS_BASENAME".phy ;
 		fi
-		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy
+		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy ;
 
 	fi
 
@@ -213,36 +213,36 @@ fi
 
 	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]]; then
 
-		perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy
+		perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy ;
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -le "9" ]]; then
 
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "9" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{9})[A-Za-z\_0-9\-\ ]{1}(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{9})[A-Za-z\_0-9\-\ ]{1}(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "8" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{8})[A-Za-z\_0-9\-\ ]{2}(.*)/$1\ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{8})[A-Za-z\_0-9\-\ ]{2}(.*)/$1\ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "7" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{7})[A-Za-z\_0-9\-\ ]{3}(.*)/$1\ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{7})[A-Za-z\_0-9\-\ ]{3}(.*)/$1\ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "6" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{6})[A-Za-z\_0-9\-\ ]{4}(.*)/$1\ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{6})[A-Za-z\_0-9\-\ ]{4}(.*)/$1\ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "5" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{5})[A-Za-z\_0-9\-\ ]{5}(.*)/$1\ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{5})[A-Za-z\_0-9\-\ ]{5}(.*)/$1\ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "4" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{4})[A-Za-z\_0-9\-\ ]{6}(.*)/$1\ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{4})[A-Za-z\_0-9\-\ ]{6}(.*)/$1\ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "3" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{3})[A-Za-z\_0-9\-\ ]{7}(.*)/$1\ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{3})[A-Za-z\_0-9\-\ ]{7}(.*)/$1\ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "2" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{2})[A-Za-z\_0-9\-\ ]{8}(.*)/$1\ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{2})[A-Za-z\_0-9\-\ ]{8}(.*)/$1\ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 		if [[ "$MY_NAME_NCHARS_SWITCH" = "1" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{1})[A-Za-z\_0-9\-\ ]{9}(.*)/$1\ \ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy
+			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{1})[A-Za-z\_0-9\-\ ]{9}(.*)/$1\ \ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
 		fi
 
 	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -gt "9" ]]; then
@@ -291,6 +291,7 @@ fi
 #	echo "INFO      | $(date) | Bye.
 #"
 #fi
+
 echo "----------------------------------------------------------------------------------------------------------"
 
 ##########################################################################################
@@ -302,15 +303,17 @@ echo "--------------------------------------------------------------------------
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
+MY_NEXUS=NULL
 MY_NAME_NCHARS_SWITCH=0
 MY_VERBOSE_OUT_SWITCH=0
 MY_KEEP_FASTA_SWITCH=0
 MY_OVERWRITE_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus>
+USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
+  -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
   -c   nameChars (def: 10-character names) number of characters to which tip taxon names
        should be shortened, allowing integer values ranging 1-9
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
@@ -326,12 +329,17 @@ USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus>
  ${bold}OVERVIEW${reset}
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein
  2002). Sequence names may include alphanumeric, hyphen, and underscore characters but no
- spaces (or else there will be issues). By default, program runs quietly with no ouput to
+ spaces, or else there will be issues. By default, program runs quietly with no ouput to
  screen or stderr or stdout files; however, -v option causes verbose run information to be
  output to screen (stdout).
 	Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working
  directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
  High Sierra (v10.13+).
+
+ ${bold}Usage examples:${reset}
+    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1 -k 1'  Run on user NEXUS while echoing output to 
+     										   				  	screen and keeping intermediate FASTA files
+    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1 -k 1'  	Same as above, but with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
@@ -345,9 +353,10 @@ USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus>
  Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus>
+VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
+  -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
   -c   nameChars (def: 10-character names) number of characters to which tip taxon names
        should be shortened, allowing integer values ranging 1-9
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
@@ -363,14 +372,18 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus>
  ${bold}OVERVIEW${reset}
  Reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein
  2002). Sequence names may include alphanumeric, hyphen, and underscore characters but no
- spaces (or else there will be issues). By default, program runs quietly with no ouput to
- screen or stderr or stdout files; however, -v option causes verbose run information to be
+ spaces, or else there will be issues. By default, program runs quietly with no ouput to
+ screen or standard output files; however, -v option causes verbose run information to be
  output to screen (stdout).
 	Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working
  directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
  High Sierra (v10.13+).
 
  ${bold}DETAILS${reset}
+ The -i flag specifies the name of the input NEXUS file, which should be a standard NEXUS
+ DNA sequence data file in sequential format (sequences on one line per individual/taxon).
+ This flag is mandatory.
+
  The -c flag specifies an integer number of character to shorten tip taxon names to, for
  example, such that a value of 9 will reduce all tip taxon names to 9 alphanumeric
  characters followed by a space by taking the first 9 characters of the names (for a 10-
@@ -393,6 +406,11 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus>
  Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working
  directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
  High Sierra (v10.13+).
+
+ ${bold}Usage examples:${reset}
+    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1 -k 1'  Run on user NEXUS while echoing output to 
+     										   				  	screen and keeping intermediate FASTA files
+    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1 -k 1'  	Same as above, but with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
@@ -422,9 +440,10 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 'c:v:k:o:' opt ; do
+while getopts 'i:c:v:k:o:' opt ; do
   case $opt in
 ## NEXUS2PHYLIP options:
+    i) MY_NEXUS=$OPTARG ;;
     c) MY_NAME_NCHARS_SWITCH=$OPTARG ;;
     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
     k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
@@ -439,14 +458,14 @@ while getopts 'c:v:k:o:' opt ; do
   esac
 done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1))
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-MY_NEXUS="$1"
+# ############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1))
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "$USAGE"
+# 	exit 1
+# fi
+# MY_NEXUS="$1"
 
 
 # ############# ############# #############

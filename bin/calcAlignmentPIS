@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: calcAlignmentPIS.sh                                                              #
-  VERSION="v1.4"                                                                         #
+  VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
 # Last update: March 11, 2019                                                            #
@@ -136,7 +136,7 @@ function calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | calcAlignmentPIS, v1.4 March 2019  (part of PIrANHA v1.0.0)    "
+echo "INFO      | $(date) | calcAlignmentPIS, v1.4.0 March 2019  (part of PIrANHA v1.0.0)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -327,6 +327,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  PIS values to be saved using the -t flag. For example, '-t 150' sets N=150 and the program
  will keep the 150 FASTA alignments with the most PIS. The N alignments will be copied to a
  subfolder named 'pis_threshold_alignments/'.
+
+ ${bold}Usage examples:${reset}
+    piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
+    piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:

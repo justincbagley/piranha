@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2FASTA.sh                                                                  #
-  VERSION="v1.1"                                                                         #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: March 5, 2019                                                             #
+# Last update: March 11, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -19,6 +19,205 @@
 #                                                                                        #
 ##########################################################################################
 
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function PHYLIP2FASTA () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.1.1 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting PHYLIP2FASTA pipeline... "
+	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful environmental variables and functions, setting working directory, and checking machine type. "
+fi
+############ SET WORKING DIRECTORY
+## Nothing to do for working dir because script executes in current working dir (of execution/
+## sourcing). Only set to run in current working dir, and echo cwd to screen:
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #2: Convert PHYLIP multiple sequence alignment (MSA) files to FASTA format. "
+fi
+###### Convert PHYLIP files to FASTA format:
+
+	if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
+		if [[ -s "$INPUT_PHYLIP_FILE" ]]; then
+			echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE ... ";
+			MY_BASENAME="$(basename $INPUT_PHYLIP_FILE .phy)";
+			sed '1d' "$INPUT_PHYLIP_FILE" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+		else
+			echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
+			exit
+		fi
+	fi
+
+	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+	MY_PHYLIP_COUNT="$(ls -1 *.phy 2>/dev/null | wc -l)";
+		if [[ "$MY_PHYLIP_COUNT" != "0" ]]; then
+		(
+			for i in ./*.phy; do
+				echo "$i";
+				MY_BASENAME="$(basename $i .phy)";
+				sed '1d' "$i" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+			done
+		)
+		fi
+	fi
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files and removing temporary files per user request. "
+fi
+###### CLEANUP: Remove PHYLIP files in <workingDir>, conditional upon user request. Also, 
+## if PHYLIP files kept, then organize output FASTAs into one dir, and original PHYLIPs into
+## a separate dir.
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
+		rm ./*.phy;
+	fi
+
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s fasta/ ]] && [[ ! -s phylip/ ]]; then
+		mkdir fasta/;
+		mkdir phylip/;
+		mv ./*.phy ./phylip/;
+		mv ./*.fas ./fasta/;
+	fi
+
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+#	echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment(s) to FASTA format using PHYLIP2FASTA.sh." 
+#	echo "Bye.
+#"
+#fi
+
+echo "----------------------------------------------------------------------------------------------------------"
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 INPUT_PHYLIP_FILE=NULL
@@ -26,21 +225,31 @@ MULTIPLE_PHYLIP_SWITCH=1
 KEEP_ORIG_PHYLIP_SWITCH=0
 MY_VERBOSE_OUT_SWITCH=0
 
-USAGE="Usage: $(basename "$0") [Help: -h --help] [Options: -i m k v V --version] [stdin:] <workingDir>
- ## Help:
-  -h   help text (also: --help) show this help text and exit
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
 
- ## Options:
+ ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) individual PHYLIP file, user-specified filename
-  -m   multiPHYLIP (def: 1, turned on; 0, off) multiple PHYLIP files in current <workingDir>
+  -m   multiPHYLIP (def: 1, turned on; 0, off) run on multiple PHYLIP files in current <workingDir>
   -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
        converted during the run
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to 
        screen (stdout)
+  -h   help text (also: --help) show this help text and exit
   -V   version (also: --version) echo version and exit
 
-Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.
-Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ ${bold}Usage examples:${reset}
+    piranha -f PHYLIP2FASTA --args='-i <inputPHYLIP> -k 1'  Run PHYLIP2FASTA on user file and keep
+     													 	intermediate FASTAs
+    piranha -f PHYLIP2FASTA -a '-i <inputPHYLIP> -k 1'  	Same as above, but passing arguments 
+    													    with -a flag
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
@@ -71,108 +280,48 @@ while getopts 'i:m:k:v:' opt ; do
   esac
 done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-USER_SPEC_PATH="$1"
+# ############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1)) 
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "$USAGE"
+# 	exit 1
+# fi
+# USER_SPEC_PATH="$1"
 
 
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "
-##########################################################################################
-#                             PHYLIP2FASTA v1.1, March 2019                              #
-##########################################################################################
-"
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
 
-######################################## START ###########################################
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Starting PHYLIP2FASTA pipeline... "
-	echo "INFO      | $(date) | STEP #1: SET UP WORKSPACE BY CREATING USEFUL VARIABLES AND FUNCTIONS, SETTING WORKING DIRECTORY, AND CHECKING MACHINE TYPE. "
-fi
-	CR=$(printf '\r'); 
-	calc () { 
-		bc -l <<< "$@" 
-}
-############ SET AND MOVE INTO WORKING DIRECTORY
-############ Set <workingDir>
-if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
-	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
-	echo "INFO      | $(date) |          Setting working directory to:  "
-	echo "$MY_CWD "
-elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
-	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
-		cd ..;
-		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
-	else
-		MY_CWD=$USER_SPEC_PATH
-		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
-		echo "$MY_CWD "
-		cd "$MY_CWD"
-	fi
-else
-	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
-	exit 1
-fi
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
 
+# Set IFS to preferred implementation
+IFS=$'\n\t'
 
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | STEP #2: CONVERT PHYLIP MULTIPLE SEQUENCE ALIGNMENT FILES TO FASTA FORMAT. "
-fi
-###### Convert PHYLIP files to FASTA format:
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
 
-	if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
-		if [[ -s "$INPUT_PHYLIP_FILE" ]]; then
-			echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE ... ";
-			MY_BASENAME="$(basename $INPUT_PHYLIP_FILE .phy)";
-			sed '1d' "$INPUT_PHYLIP_FILE" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
-		else
-			echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in <workingDir>. Quitting... " 
-			exit
-		fi
-	fi
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
 
-	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
-	MY_PHYLIP_COUNT="$(ls -1 *.phy 2>/dev/null | wc -l)";
-		if [[ "$MY_PHYLIP_COUNT" != "0" ]]; then
-		(
-			for i in ./*.phy; do
-				echo "$i";
-				MY_BASENAME="$(basename $i .phy)";
-				sed '1d' "$i" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
-			done
-		)
-		fi
-	fi
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
 
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | STEP #3: CLEANUP. "
-fi
-###### CLEANUP: Remove PHYLIP files in <workingDir>, conditional upon user request. Also, 
-## if PHYLIP files kept, then organize output FASTAs into one dir, and original PHYLIPs into
-## a separate dir.
-	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
-		rm ./*.phy;
-	fi
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
 
-	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s fasta/ ]] && [[ ! -s phylip/ ]]; then
-		mkdir fasta/;
-		mkdir phylip/;
-		mv ./*.phy ./phylip/;
-		mv ./*.fas ./fasta/;
-	fi
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
 
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment(s) to FASTA format using PHYLIP2FASTA.sh." 
-	echo "Bye.
-"
-fi
-#
-#
-#
-######################################### END ############################################
+# Run the script
+PHYLIP2FASTA
 
-exit 0
+# Exit cleanly
+safeExit

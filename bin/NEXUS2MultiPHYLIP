@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2MultiPHYLIP.sh                                                             #
-  VERSION="v1.5.2"                                                                       #
+  VERSION="v1.5.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
 # Last update: March 11, 2019                                                            #
@@ -138,7 +138,7 @@ function NEXUS2MultiPHYLIP () {
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.5.2 March 2019  (part of PIrANHA v1.0.0) "
+echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.5.3 March 2019  (part of PIrANHA v1.0.0) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 fi
@@ -467,9 +467,11 @@ fi
 	done
 )
 
-if [[ "$2" = "-e"]] || [[ "$2" = "--experiment"]] || [[ "$2" = "--experimental"]] ; then
-	# Check and remove individuals with very few sites at start, finish, or only in middle 
-	# of the alignment (looking to remove indiv's with only 5-10 sites total):
+#if [[ "$2" = "-e"]] || [[ "$2" = "--experiment"]] || [[ "$2" = "--experimental"]] ; then
+if [[ "$MY_EXPERIMENTAL_SWITCH" = "1" ]]; then
+# Experimental option to heck and remove individuals with very few sites at start, finish, 
+# or only in middle of the alignment (looking to remove indiv's with only 5-10 sites total
+# but could change this to a range of 5-20):
 (
 	for i in ./*.phy; do 
 		if [[ "${machine}" = "Mac" ]]; then
@@ -513,42 +515,47 @@ echo "--------------------------------------------------------------------------
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-MY_NAME_NCHARS_SWITCH=0
+MY_NEXUS=NULL
 MY_VERBOSE_OUT_SWITCH=1
 MY_EXPERIMENTAL_SWITCH=0
 MY_ANOURA_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <inputNexus> [--experimental]
+USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
+  -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
   -v   verbose (def: 0, off; 1, on) specify verbose output to screen (info, stderr, and stdout)
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
-
- ${bold}Positional parameters:${reset}
-  <inputNexus>     input NEXUS file
   --experimental   (def: not given) experimental option, causing the resulting PHYLIP 
                    alignments to be checked and cleaned of individuals/samples comprised 
-                   of mostly missing data
+                   of mostly missing data. May give erroneous results.
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT takes as input a single sequential (but not interleaved) NEXUS DNA sequence 
+ THIS SCRIPT takes as input a single sequential (non-interleaved) NEXUS DNA sequence 
  alignment file containing character sets defining each locus/partition in the dataset. 
- This input NEXUS file, <inputNexus>, is then processed by using the characterizeNexus 
- program to gather data and character set information, which are saved and used as input
+ The input file, <inputNexus>, is then processed by using the characterizeNexus program to
+ gather information on the sequence data and character sets, which is saved and used as input
  for alignmentSplitter, a program that automates splitting the DNA sequence block into
  separate PHYLIP-format alignments for each charset/locus. After running alignmentSplitter,
  a variety of checks and modifications are run on the resulting PHYLIP alignments to 
- clean them and remove any individuals 1) completely lacking data (composed entirely of
- undetermined sites) or 2) containing data only for a few sites (~5-10 bases). This removes 
+ clean them and remove any individuals completely lacking data (composed entirely of
+ undetermined sites). An *experimental* option (--experimental flag) exists that also tries 
+ to remove individuals that only containin data for a few sites (~5-10 bases). This removes 
  sequences that will be uninformative during downstream phylogenetic analyses, or that might
- cause phylogenetic software such as RAxML (Stamatakis 2014) not to run.
+ cause phylogenetic software such as RAxML (Stamatakis 2014) not to run. However, this 
+ option is under development and may currently give erroneous results.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
- software. Usage is obtained by running the script with the -h flag, and the only option is
- the -v flag, which if set to 1 causes informative messages, stderr, and stdout to be written
- to screen. By default, the -v flag is set to 0 for quiet operation. Sequence names may not 
- include space characters, or there will be issues. 
+ software. Usage is obtained by running the script with the -h flag, and the only option 
+ other than the input (-i) flag is the -v flag, which if set to 1 causes informative messages, 
+ stderr, and stdout to be written to screen. By default, the -v flag is set to 0 for quiet 
+ operation. Sequence ID names may not include spaces, or there will be issues. 
+
+ ${bold}Usage examples:${reset}
+    piranha -f NEXUS2MultiPHYLIP --args='-i <inputNEXUS> -v 1'  Run on user NEXUS while printing
+     										   			  	    text output to screen
+    piranha -f NEXUS2MultiPHYLIP -a '-i <inputNEXUS> -v 1'    Same as above, but with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
@@ -574,9 +581,10 @@ fi
 
 
 ############ PARSE THE OPTIONS
-while getopts 'v:-:' opt ; do
+while getopts 'i:v:-:' opt ; do
   case $opt in
 ## Script options:
+    i) MY_NEXUS=$OPTARG ;;
     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
 	-) LONG_OPTARG="${OPTARG#*=}"
          case $OPTARG in
@@ -593,14 +601,14 @@ while getopts 'v:-:' opt ; do
   esac
 done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-MY_NEXUS="$1"
+# ############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1)) 
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "$USAGE"
+# 	exit 1
+# fi
+# MY_NEXUS="$1"
 
 
 # ############# ############# #############

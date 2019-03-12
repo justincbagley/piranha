@@ -6,136 +6,153 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2PFSubsets.sh                                                              #
-  VERSION="v1.0"                                                                         #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.                        #
-# Last update: March 5, 2019                                                             #
+# Last update: March 11, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES CONSTRUCTION OF Y MULTIPLE SEQUENCE ALIGNMENTS (MSAs)      #
-# CORRESPONDING TO PARTITIONFINDER SUBSETS, STARTING FROM N LOCUS MSAs (PHYLIP FORMAT)   #
-# AND PARTITIONFINDER RESULTS FILE                                                       #
+# CORRESPONDING TO PARTITIONFINDER SUBSETS, STARTING FROM N PHYLIP-FORMAT PER-LOCUS MSAs #
+# AND A PARTITIONFINDER RESULTS FILE                                                     #
 #                                                                                        #
 ##########################################################################################
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-KEEP_ORIG_PHYLIP_SWITCH=0
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [Help: -h help] [Options: -k V --version] [stdin:] <workingDir> 
- ## Help:
-  -h   help text (also: --help) echo this help text and exit
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
 
- ## Options:
-  -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
-       analyzed during the run
-  -V   version (also: --version) echo version and exit
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
- OVERVIEW:
- SHELL SCRIPT that automates constructing _y_ multiple sequence alignments (MSAs) corresponding
- to PartitionFinder (v1 or v2) subsets, starting from MSAs for _L_ loci in PHYLIP format and
- a PartitionFinder output file containing the best scheme (assumed to be named 'best_scheme.txt').
- The working directory for the analysis, <workingDir>, is a mandatory positional parameter 
- specified by the user; if different from current directory, then the program will cd to 
- <workingDir> and run all analyses at the desired location. The <workingDir> must include
- a) PHYLIP files for each locus/partition supplied to PartitionFinder and b) the 'best_scheme.txt'
- output file from PartitionFinder, which lists the optimal scheme for how the loci/partitions 
- should be combined.
-
-Created by Justin Bagley on Mon, Mar 4 22:00:01 CST 2019.
-Copyright (c) 2019 Justin C. Bagley. All rights reserved.
-"
-
-if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
-	echo "$USAGE"
-	exit
-fi
-
-if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
-	exit
-fi
-
-
-############ PARSE THE OPTIONS
-while getopts 'k:' opt ; do
-  case $opt in
-## Script options:
-    k) KEEP_ORIG_PHYLIP_SWITCH=$OPTARG ;;
-
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
-       exit 1 ;;
-  esac
-done
-
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "WARNING!  | $(date) |          Missing mandatory positional parameter, <workingDir>. Quitting... "
-	echo ""
-	echo "$USAGE"
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
   exit 1
 fi
-USER_SPEC_PATH="$1"
 
-echo "
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function PHYLIP2PFSubsets () {
+
+######################################## START ###########################################
 ##########################################################################################
-#                          PHYLIP2PFSubsets.sh v1.0, March 2019                          #
-##########################################################################################
-"
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | PHYLIP2PFSubsets, v1.0.1 March 2019  (part of PIrANHA v1.0.0)  "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting PHYLIP2PFSubsets pipeline... "
-echo "INFO      | $(date) | STEP #1: SET UP ENVIRONMENT WITH USEFUL VARIABLES AND FUNCTIONS, AND CHECK MACHINE TYPE. "
-###### SET UP ENVIRONMENT BY CREATING USEFUL VARIABLES AND FUNCTIONS AND CHECKING MACHINE TYPE.
-	CR=$(printf '\r')
-	TAB=$(printf '\t')
-	calc () {
-		bc -l <<< "$@"
-}
+echo "INFO      | $(date) | Step #1: Set up workspace with useful environmental variables and functions, and check machine type. "
+############ SET WORKING DIRECTORY
+## Nothing to do for working dir because script executes in current working dir (of execution/
+## sourcing). Only set to run in current working dir, and echo cwd to screen:
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
 
-############ SET AND MOVE INTO WORKING DIRECTORY
-############ Set <workingDir>
-if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
-	MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
-	echo "INFO      | $(date) |          Setting working directory to:  "
-	echo "$MY_CWD "
-elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
-	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
-		cd ..;
-		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
-	else
-		MY_CWD=$USER_SPEC_PATH
-		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
-		echo "$MY_CWD "
-		cd "$MY_CWD"
-	fi
-else
-	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
-	exit 1
-fi
-
-
-echo "INFO      | $(date) |          Checking machine type... "
-###### CHECK MACHINE TYPE:
-unameOut="$(uname -s)"
-case "${unameOut}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    *)          machine="UNKNOWN:${unameOut}"
-esac
-echo "INFO      | $(date) |          Found machine type ${machine}. "
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) |          Making concatenateAlignments function (completeSeqs + concatenateSeqs_mod routines combined into one)... "
@@ -153,37 +170,37 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 	
 			######  completeSeqs  ######
 	
-			cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp
-			j="$i".tmp
-			MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')"
+			cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
+			j="$i".tmp ;
+			MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')";
 			echo "INFO      | $(date) |             $i,  $MY_PHYLIP_NCHAR bp "
 
 				while read k; do
-					MY_TAXON_NAME="$(echo $k | sed 's/\ //g')"
-					MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')"
-					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"
+					MY_TAXON_NAME="$(echo $k | sed 's/\ //g')";
+					MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')";
+					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')";
 
 					if [[ "$MY_N_IND_INSTS" = "1" ]]; then
 						# extract/copy corresponding sequence from $i and paste it to end of
 						# line with same name ($MY_TAXON_NAME) in tmp file $j:
-						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')"
+						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')";
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j"
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
 						fi
 
 						if [[ "${machine}" = "Linux" ]]; then
-							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j"
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
 						fi
 
 					elif [[ "$MY_N_IND_INSTS" = "0" ]]; then
 						# only add correct # N's (dummy sequence) to end of line with same
 						# name in tmp file $j:
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j"
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
 						fi
 
 						if [[ "${machine}" = "Linux" ]]; then
-							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j"
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
 						fi
 
 					fi				
@@ -192,9 +209,9 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 
 			# Add header with corrected ntax and nchar information:
 			MY_PHY_NTAX="$(awk 'END {print NR,"lines"}' $j | sed 's/\ .*//g')";
-			echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp
+			echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp ;
 			# Overwrite original phy file with new phy file:
-			cat ./header.tmp "$j" > "$i"
+			cat ./header.tmp "$j" > "$i" ;
 
 
 			######  concatenateSeqs_mod  ######
@@ -212,47 +229,47 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 				# Make concatenated seqs file from complete locus1 PHYLIP file, and move original
 				# locus1 PHYLIP file to orig_phylip/ subfolder.
 #				mkdir orig_phylip/;
-				cp "$i" ./concatenated_seqs.phy
-#				cp "$i" ./orig_phylip/;
+				cp "$i" ./concatenated_seqs.phy ;
+#				cp "$i" ./orig_phylip/ ;
 				## Remove the original PHYLIP files. Can add an option later to optionally keep these (i.e. by doing the commented out steps of creating orig_phylip/ and moving each $i there.)
-				rm "$i";
+				rm "$i" ;
 
 			elif [[ "$MY_COUNT" -gt "1" ]]; then
 	
 				# Concatenate $i > 1 PHYLIP sequences to concatenated seqs PHYLIP file
 				while read l; do
-					MY_TAXON_NAME="$(echo $l | sed 's/\ //g')"
-					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"				
+					MY_TAXON_NAME="$(echo $l | sed 's/\ //g')";
+					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')";
 						# extract/copy corresponding sequence from $i and paste it to end of
 						# line with same name ($MY_TAXON_NAME) in tmp file $j:
-						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')"
+						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')";
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy
+							sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then
-							sed -i '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy
+							sed -i '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
 						fi
 				done < "$USER_SPEC_NAMSPACES_FILE"
 
-#				cp "$i" ./orig_phylip/;
+#				cp "$i" ./orig_phylip/ ;
 				## Remove the original PHYLIP files. Can add an option later to optionally keep these (i.e. by doing the commented out steps of creating orig_phylip/ and moving each $i there.)
-				rm "$i";
+				rm "$i" ;
 			fi
 
 
-		echo "$((MY_COUNT++))" > MY_COUNT.tmp
+		echo "$((MY_COUNT++))" > MY_COUNT.tmp ;
 	
 			
 		done
 	)
 	
 }
-	############################# END concatenateSeqs.sh #################################
+	############################# END concatenateAlignments.sh #################################
 
 
 
-echo "INFO      | $(date) | STEP #2: MAKE AND RUN makePFSubsetAlignments FUNCTION ON PHYLIP FILES IN <workingDir>. "
+echo "INFO      | $(date) | Step #2: Make and run makePFSubsetAlignments function on PHYLIP files in current working directory. "
 echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 
 ## Goal is to start from locus (i.e. UCE) PHYLIP alignments in current working directory,
@@ -290,7 +307,7 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 			MY_LOCI_THIS_PARTITION="$(echo $line | perl -pe $'s/\,\ /\n/g')"; 
 			echo "INFO      | $(date) |          ###----------   Subset $MY_PARTITION_COUNT  ----------###";
 			echo "INFO      | $(date) |             Subset $MY_PARTITION_COUNT contents: ";
-			echo "INFO      | $(date) |             "$MY_LOCI_THIS_PARTITION;
+			echo "INFO      | $(date) |             $MY_LOCI_THIS_PARTITION";
 			echo "INFO      | $(date) |             Making Subset $MY_PARTITION_COUNT from input PHYLIP files... ";
 	#
 			## Make subfolder for subset of current while loop iteration, move all corresponding loci 
@@ -355,7 +372,8 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 makePFSubsetAlignments
 
 
-echo "INFO      | $(date) | STEP #3: ORGANIZE SUBSETS OUTPUT IN WORKING DIR. "
+
+echo "INFO      | $(date) | Step #3: Organize subsets output in working dir. "
 ############ CLEAN UP WORKING DIR MOVING ALL SUBSET SUBFOLDERS INTO A SINGLE subset_folders/ 
 ############ SUBFOLDER IN <workingDIR>, AND BY COPYING ALL FINAL SUBSET ALIGNMENTS INTO A
 ############ PHYLIP_subsets/ SUBFOLDER.
@@ -369,7 +387,7 @@ echo "INFO      | $(date) | STEP #3: ORGANIZE SUBSETS OUTPUT IN WORKING DIR. "
 	mv Subset*/ subset_folders/;
 
 
-echo "INFO      | $(date) | STEP #4: CONVERT PHYLIP SUBSET FILES TO FASTA FORMAT. "
+echo "INFO      | $(date) | Step #4: Convert PHYLIP subset files to FASTA format. "
 
 	########################### PHYLIP2FASTA.sh (modified) ###############################
 	cd PHYLIP_subsets/;
@@ -385,21 +403,128 @@ echo "INFO      | $(date) | STEP #4: CONVERT PHYLIP SUBSET FILES TO FASTA FORMAT
 		)
 		fi
 
-		mkdir ../FASTA_subsets/;
-		mv ./*.fas ../FASTA_subsets/;
+		mkdir ../FASTA_subsets/ ;
+		mv ./*.fas ../FASTA_subsets/ ;
 
 	cd ..;
 	######################### END PHYLIP2FASTA.sh (modified) #############################
 
 
 
-echo "INFO      | $(date) |          Done making PartitionFinder-identified subset alignments from input partition PHYLIP files using PHYLIP2PFSubsets.sh. "
-echo "INFO      | $(date) |          Bye.
-"
-#
-#
-#
+#echo "INFO      | $(date) |          Done making PartitionFinder-identified subset alignments from input partition PHYLIP files using PHYLIP2PFSubsets.sh. "
+#echo "INFO      | $(date) |          Bye.
+#"
+echo "----------------------------------------------------------------------------------------------------------"
+
+echo "output file(s): Subset folders from the analysis are located in subset_folders/."
+echo "                PHYLIP-formatted subset alignments are located in PHYLIP_subsets/."
+echo "                FASTA-formatted subset alignments are located in FASTA_subsets/."
+
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
 
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+KEEP_ORIG_PHYLIP_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
+       analyzed during the run
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ SHELL SCRIPT that automates constructing _y_ multiple sequence alignments (MSAs) corresponding
+ to PartitionFinder (v1 or v2) subsets, starting from MSAs for _L_ loci in PHYLIP format and
+ a PartitionFinder output file containing the best scheme (assumed to be named 'best_scheme.txt').
+ The working directory for the analysis, <workingDir>, is a mandatory positional parameter 
+ specified by the user; if different from current directory, then the program will cd to 
+ <workingDir> and run all analyses at the desired location. The <workingDir> must include
+ a) PHYLIP files for each locus/partition supplied to PartitionFinder and b) the 'best_scheme.txt'
+ output file from PartitionFinder, which lists the optimal scheme for how the loci/partitions 
+ should be combined.
+
+ Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+
+############ PARSE THE OPTIONS
+while getopts 'k:' opt ; do
+  case $opt in
+## Script options:
+    k) KEEP_ORIG_PHYLIP_SWITCH=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+# ############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1)) 
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "WARNING!  | $(date) |          Missing mandatory positional parameter, <workingDir>. Quitting... "
+# 	echo ""
+# 	echo "$USAGE"
+#   exit 1
+# fi
+# USER_SPEC_PATH="$1"
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+PHYLIP2PFSubsets
+
+# Exit cleanly
+safeExit
