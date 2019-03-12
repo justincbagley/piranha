@@ -17,7 +17,7 @@
 ##########################################################################################
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [stdin:] <inputNameSpacesFile> <workingDir> 
+Usage="Usage: $(basename $0) [Help: -h help] [stdin:] <inputNameSpacesFile> <workingDir> 
  ## Help:
   -h   help text (also: -help)
 
@@ -76,6 +76,11 @@ if [ $# -lt 2 ]; then
 fi
 USER_SPEC_NAMSPACES_FILE="$1"
 USER_SPEC_PATH="$2"
+
+
+
+
+
 
 
 ############ Set <workingDir>

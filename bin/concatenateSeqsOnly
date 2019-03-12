@@ -12,7 +12,7 @@
 ##########################################################################################
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [stdin:] <inputNameSpacesFile> <workingDir> 
+Usage="Usage: $(basename $0) [Help: -h help] [stdin:] <inputNameSpacesFile> <workingDir> 
  ## Help:
   -h   help text (also: -help)
 
@@ -263,10 +263,4 @@ concatenateSeqs
 	rm ./*.tmp
 
 
-#
-#
-#
-######################################### END ############################################
-
-exit 0
 

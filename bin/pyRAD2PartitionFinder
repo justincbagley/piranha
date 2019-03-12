@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRAD2PartitionFinder.sh                                                         #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.                     #
-# Last update: March 11, 2019                                                            #
+# Last update: March 12, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,16 +136,23 @@ function pyRAD2PartitionFinder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.1 March 2019  (part of PIrANHA v1.0.0) "
+echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.2 March 2019  (part of PIrANHA v1.0.0) "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Step #1: Set up workspace. "
-#echo "INFO      | $(date) |          Setting user-specified path to: "
-#echo "$USER_SPEC_PATH "	
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+## Nothing to do for working dir because script executes in current working dir (of execution/
+## sourcing). Only set to run in current working dir, and echo cwd to screen:
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-# This function checks and echoes $USER_SPEC_PATH.
+MY_WORKING_DIR="$(pwd -P)";
+
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
 
 echo "INFO      | $(date) | Step #2: Modify pyRAD / ipyrad data file for PartitionFinder. "
 ############ STEP #2: MODIFY pyRAD DATAFILE FOR PartitionFinder
@@ -351,7 +358,7 @@ MY_PF_MODSEL=BIC
 MY_SEARCH_ALGORITHM=rcluster
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <workingDir>
+USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: 0, .phy file in pwd; also takes name of .phy file in pwd, or absolute 
@@ -374,7 +381,7 @@ USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <workingDir>
  starting from the PHYLIP DNA sequence alignment file ('.phy') and partitions ('.partitions') 
  file output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016). Script expects to be 
  run from a working directory containing minimally one each of the two file types mentioned 
- above, plus the script. The only dependencies are Python 2.7/3++ and PartitionFinder. 
+ above. The only dependencies are Python 2.7/3++ and PartitionFinder (v1.1.1 or v2.1.1+). 
 	For the -s flag, options are 'greedy', 'rcluster', and 'hcluster'. For less than 100 loci, 
  use the greedy algorithm. The rcluster and hcluster algorithms were developed in Lanfear et al. 
  (2014) for use with genome-scale datasets (reduced-genome, ddRADseq, GBS, and multilocus seq 
@@ -435,15 +442,14 @@ while getopts 'i:r:v:p:P:e:m:s:' opt ; do
   esac
 done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-USER_SPEC_PATH="$1"
-
+# ############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1)) 
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "$USAGE"
+# 	exit 1
+# fi
+# USER_SPEC_PATH="$1"
 
 
 # ############# ############# #############

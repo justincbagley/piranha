@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsubsampler.sh                                                              #
-  VERSION="v1.1.2"                                                                       #
+  VERSION="v1.1.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: March 11, 2019                                                            #
+# Last update: March 12, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,21 +136,19 @@ function PHYLIPsubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.2 March 2019  (part of PIrANHA v1.0.0)  "
+echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.3 March 2019  (part of PIrANHA v1.0.0)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
+echo "INFO      | $(date) | Starting PHYLIPSubsampler analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
-############ I. SET UP WORKSPACE AND CHECK MACHINE TYPE.
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 ## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only echo cwd to screen:
-#MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
-#echo "INFO      | $(date) |          Current directory: $MY_PATH "
-
-echo "INFO      | $(date) | Starting phylipSubsampler analysis... "
-echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+## sourcing). Only set to run in current working dir, and echo cwd to screen:
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
+MY_WORKING_DIR="$(pwd -P)";
 
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
@@ -158,11 +156,10 @@ checkMachineType
 
 
 ###### FILE PROCESSING
-echo "INFO      | $(date) | Step #2: Conduct main PHYLIP file processing. "
-
-##--If MY_INPUT_FILE is 'NULL' (not given or changed by user), then use MY_ASSIGNMENT_FILE
-##--that is read in and conduct subsampling as usual on all PHYLIP alignments (i.e. in
-##--variable $MY_PHYLIP_ALIGNMENTS) within the current working dir.
+echo "INFO      | $(date) | Step #2: Conduct main PHYLIP file processing steps. "
+## If MY_INPUT_FILE is 'NULL' (not given or changed by user), then use MY_ASSIGNMENT_FILE
+## that is read in and conduct subsampling as usual on all PHYLIP alignments (i.e. in
+## variable $MY_PHYLIP_ALIGNMENTS) within the current working dir.
 if [[ "$MY_INPUT_FILE" = "NULL" ]]; then
 
 MY_PHYLIP_ALIGNMENTS=./*.phy ;
@@ -218,9 +215,9 @@ fi
 
 
 
-##--If MY_INPUT_FILE is given or changed by user (not NULL), then use MY_ASSIGNMENT_FILE
-##--that is read in and conduct subsampling only on the alignment in $MY_INPUT_FILE, 
-##--which must be within the current working dir. This analysis will only subset one file.
+## If MY_INPUT_FILE is given or changed by user (not NULL), then use MY_ASSIGNMENT_FILE
+## that is read in and conduct subsampling only on the alignment in $MY_INPUT_FILE, 
+## which must be within the current working dir. This analysis will only subset one file.
 if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
 
 (
@@ -294,7 +291,7 @@ MY_INPUT_FILE=NULL
 MY_ASSIGNMENT_FILE=assignments.txt
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <workingDir>
+USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) Used in case of subsampling a single input PHYLIP file; 
@@ -304,23 +301,26 @@ USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <workingDir>
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
- OVERVIEW
- Takes as input the name of current working directory, <workingDir>, where there exists a
- single sequential PHYLIP (Felsenstein 2002) file or multiple sequential PHYLIP files that
- you wish to subsample, keeping one random (first) sequence per population or species. This 
- is very useful when you want to subsample one or more datasets in order to conduct single-tip 
+ ${bold}OVERVIEW${reset}
+ THE SCRIPT runs in the current working directory, <workingDir>, where there exists one
+ sequential PHYLIP (Felsenstein 2002) file or multiple sequential PHYLIP files that you 
+ want to subsample, keeping one random (first) sequence per population or species. This 
+ is very useful when you need to subsample one or more datasets to conduct single-tip 
  phylogenetic analyses, for example when (1) estimating 1-tip-per-species gene trees for 
  species tree reconstruction, or (2) when you will use the PHYLIP files to directly estimate 
- the species tree. In the first case, with one input PHYLIP file, you must use -i <filename.phy>.
+ the species tree. In the first case, with one input PHYLIP file, you must use -i <inputPHYLIP>.
 	The populations or species are contained in an assignment file, the filename of which is 
- assed to the program. Sequence names may not include space or underline characters, or 
+ passed to the program. Sequence names may not include space or underline characters, or 
  there will be issues. _Interleaved PHYLIP format is not supported._
-	The -i flag supplies the name of a single input PHYLIP file in the current <workingDir> 
+
+ ${bold}DETAILS${reset}
+ The -i flag supplies the name of a single input PHYLIP file in the current <workingDir> 
  for analysis. If this flag is not used, then the program will assume that multiple PHYLIP files
  are present in <workingDir> and will attempt to subsample all of them. This is useful when
  you want to subsample a single PHYLIP file for single-tip phylogenetic analyses, for example
  during species tree reconstruction.
-	The -a flag allows users to specify an assignment file. This file must contain a 
+ 
+ The -a flag allows users to specify an assignment file. This file must contain a 
  single, four-letter population or taxon assignment code on each line, which corresponds to  
  the first four letters of each taxon/sequence label in (each of) the PHYLIP file(s). In each
  PHYLIP file, the four-letter code must be followed by a dash (text en dash) character,
@@ -333,7 +333,7 @@ USAGE="Usage: $(basename $0) [OPTION]... [stdin:] <workingDir>
  expected if no assignment file is specified using the -a flag.
 
  ${bold}Usage examples:${reset}
-    $0 -a species.txt .     With user-specified assignment file 'species.txt'.
+    piranha -f PHYLIPsubsampler --args='-a species.txt'    Run with user-specified assignment file 'species.txt'
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
@@ -373,14 +373,14 @@ while getopts 'i:a:' opt ; do
   esac
 done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-USER_SPEC_PATH="$1"
+# ############ SKIP OVER THE PROCESSED OPTIONS
+# shift $((OPTIND-1)) 
+# # Check for mandatory positional parameters
+# if [ $# -lt 1 ]; then
+# 	echo "$USAGE"
+# 	exit 1
+# fi
+# USER_SPEC_PATH="$1"
 
 
 # ############# ############# #############
