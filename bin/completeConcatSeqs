@@ -2,20 +2,22 @@
 
 ##########################################################################################
 #  __  o  __   __   __  |__   __                                                         #
-# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: concatenateSeqs.sh                                                               #
+# File: completeConcatSeqs.sh                                                            #
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.                       #
-# Last update: March 13, 2019                                                            #
+# Date: Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.                       #
+# Last update: March 12, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT THAT CONVERTS SERIES OF PHYLIP DNA SEQUENCE ALIGNMENTS WITH EQUAL TAXON   #
-# SAMPLING INTO A SINGLE CONCATENATED PHYLIP ALIGNMENT                                   #
+# SHELL SCRIPT THAT CONVERTS SERIES OF PHYLIP DNA SEQUENCE ALIGNMENTS (WITH OR WITHOUT   #
+# VARYING NUMBERS OF TAXA) INTO A SINGLE CONCATENATED PHYLIP ALIGNMENT WITH COMPLETE     #
+# TAXON SAMPLING; ALSO MAKES CHARACTER SUBSET/PARTITION FILES IN RAxML, PartitionFinder  #
+# AND NEXUS FORMATS FOR THE RESULTING ALIGNMENT                                          #
 #                                                                                        #
 ##########################################################################################
 
@@ -129,22 +131,19 @@ gemDependencies=()
 
 
 
-
-function concatenateSeqs () {
+function completeConcatSeqs () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | concatenateSeqs, v1.0.0 March 2019  (part of PIrANHA v1.0.0)   "
+echo "INFO      | $(date) | completeConcatSeqs, v1.0.0 March 2019  (part of PIrANHA v1.0.0)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Starting concatenateSeqs analysis... "
-	echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
-fi
+echo "INFO      | $(date) | Starting completeConcatSeqs analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
@@ -164,30 +163,70 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 		echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 	fi
 elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
-	exec >> ./concatenateSeqs_output.txt ;
+	exec >> ./completeConcatSeqs_output.txt ;
 	exec 2>&1 ;
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./concatenateSeqs_output.txt ... "
+		echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./completeConcatSeqs_output.txt ... "
 	fi
 fi
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #2: Run main concatenateSeqs analysis. "
+	echo "INFO      | $(date) | Step #3: Run completeConcatSeqs (including completeSeqs and concatenateSeqs routines) on PHYLIP alignments in current working dir. "
 fi
-
-
 count=1
 (
 	for i in ./*.phy; do
- 
-		######  concatenateSeqs  ######
 
- 		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
- 		j="$i".tmp ;
- 		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
- 		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###"
+		######  completeSeqs  ######
+
+		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
+		j="$i".tmp ;
+		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
+		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
+
+			while read k; do
+				MY_TAXON_NAME="$(echo $k | sed 's/\ //g')" ;
+				MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')" ;
+				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;
+				
+				if [[ "$MY_N_IND_INSTS" = "1" ]]; then
+					# extract/copy corresponding sequence from $i and paste it to end of
+					# line with same name ($MY_TAXON_NAME) in tmp file $j:
+					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+					fi
+
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+					fi
+
+					
+				elif [[ "$MY_N_IND_INSTS" = "0" ]]; then
+					# only add correct # N's (dummy sequence) to end of line with same
+					# name in tmp file $j:
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+					fi
+
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+					fi
+
+				fi				
+				
+			done < "$USER_SPEC_NAMSPACES_FILE"
+
+		# Add header with corrected ntax and nchar information:
+		MY_PHY_NTAX="$(awk 'END {print NR,"lines"}' $j | sed 's/\ .*//g')" ;
+		echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp ;
+		# Overwrite original phy file with new phy file:
+		cat ./header.tmp "$j" > "$i" ;
+
+
+		######  concatenateSeqs  ######
 
 		## On first loop iteration, make concatenated seqs PHYLIP file from complete locus1 
 		## PHYLIP file, then make partitions/charsets files. Specifically, when you make the
@@ -205,23 +244,47 @@ count=1
 			cp "$i" ./concatenated_seqs.phy ;
 			cp "$i" ./orig_phylip/ ;
 
+			# Make partitions/charsets files with information from locus1...
+			#locus="$(echo $i | perl -pe 's/\.\///g; s/\.[A-Za-z]{3,}$//g')"
+			locus="$(basename $i '.phy')" ;
+			echo "DNA, ${locus} = 1-${MY_PHYLIP_NCHAR}" >> ./raxml_partitions.part ;
+			echo "${locus}=1-${MY_PHYLIP_NCHAR};" >> partitionfinder_subsets.txt ;
+			echo "  charset ${locus} = 1-${MY_PHYLIP_NCHAR};" >> NEXUS_charsets_lowercase.txt ;
+			echo "  CHARSET ${locus} = 1-${MY_PHYLIP_NCHAR};" >> NEXUS_charsets_uppercase.txt ;
+
+			MY_PREV_END_RANGE_VAL="$(echo $MY_PHYLIP_NCHAR)" ;
+
 		elif [[ "$count" -gt "1" ]]; then
 
 			# Concatenate $i > 1 PHYLIP sequences to concatenated seqs PHYLIP file
-			while read l; do
-				MY_TAXON_NAME="$(echo $l | sed 's/\ //g')" ;
-				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"	 ;			
-					# extract/copy corresponding sequence from $i and paste it to end of
-					# line with same name ($MY_TAXON_NAME) in tmp file $j:
-					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
-					if [[ "${machine}" = "Mac" ]]; then
-						sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
-					fi
+			(
+				while read l; do
+					MY_TAXON_NAME="$(echo $l | sed 's/\ //g')" ;
+					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;				
+						# extract/copy corresponding sequence from $i and paste it to end of
+						# line with same name ($MY_TAXON_NAME) in tmp file $j:
+						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
+						fi
+	
+				done < "$USER_SPEC_NAMSPACES_FILE"
+			)
+			# Add ith locus information to partitions/charsets files...
+			locus="$(basename $i '.phy')" ;
+			#MY_PREV_NCHAR="$(cat ./previous_nchar.tmp)" ;
+			MY_NEW_START_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + 1)" ;
+			MY_NEW_END_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + $MY_PHYLIP_NCHAR)" ;
+			echo "DNA, ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL}" >> ./raxml_partitions.part ;
+			echo "${locus}=$MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> partitionfinder_subsets.txt ;
+			echo "  charset ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_lowercase.txt ;
+			echo "  CHARSET ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_uppercase.txt ;
 
-					if [[ "${machine}" = "Linux" ]]; then
-						sed -i '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
-					fi
-			done < "$USER_SPEC_NAMSPACES_FILE"
+			MY_PREV_END_RANGE_VAL="$(echo $MY_NEW_END_RANGE_VAL)" ;
 
 			cp "$i" ./orig_phylip/ ;
 
@@ -233,8 +296,6 @@ count=1
 		
 	done
 )
-
-
 
 
 ###### FIX NEW CONCATENATED PHYLIP ALIGNMENT TO HAVE THE CORRECT NCHAR INFORMATION
@@ -249,9 +310,8 @@ count=1
 		cat ./concat_header.tmp ./concatenated_seqs.tmp > ./concatenated_seqs.phy ;
 
 
-
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
+	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
 	echo "INFO      | $(date) |          Deleting temporary files... "
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
@@ -259,6 +319,7 @@ fi
 	rm ./*.tmp ;
 
 echo "----------------------------------------------------------------------------------------------------------"
+
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "output file(s): ./concatenated_seqs.phy "
 fi
@@ -290,56 +351,89 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT runs in a working directory containing a series of PHYLIP (Felsenstein 2002)
- DNA sequence alignments for different genes (e.g. 100s or 1000s of RAD or UCE loci) each
- having the same number of taxa, or taxon sampling. Given such a workspace, the script 
- takes as input a 'names and spaces file', <inputNameSpacesFile>, containing the names of
- tip taxa, one per line, as well as spaces extending the total number of characters to be
- the same on each line (e.g. 10 or 12 characters including spaces), passed using the -t
- flag. When run, the script concatenates the PHYLIP alignments together. The ordering of 
- the gene alignments is equal to the alphanumeric order in which bash or UNIX terminal would 
- read the PHYLIP files (e.g. locus1.phy, locus10.phy, ..., and not locus1.phy, locus2.phy, 
- ...). 
-	By default all script output is written to a file named 'concatenateSeqs_output.txt'. 
- The user may optionally specify verbose output (-v 1) or a desired output file name (using
- the -o flag).Taxon names in the PHYLIP files should contain only alphanumeric characters and 
- no spaces, or else there could be issues. Also, PHYLIP alignment files must have the extension 
- '.phy'.
+ DNA sequence alignments for different genes (e.g. 100s or 1000s of RAD or UCE loci) with 
+ varying levels of taxon sampling (completeness), such that out of the total number of tip 
+ taxa, some were sequenced for gene A, and possibly the same or a varying number of tip 
+ taxa were sequenced for gene B, and so on. Given such a workspace, this script takes as 
+ input a 'names and spaces file', <taxonNamesSpaces>, containing the names of tip taxa,
+ one per line, as well as spaces extending the total number of characters to be the same
+ on each line (e.g. 10 or 12 characters including spaces), passed using the -t flag. The 
+ script (1) converts the PHYLIP alignments into 'complete' alignments, each containing the 
+ full number of tip taxa, by filling in missing taxa with dummy sequences comprised entirely 
+ of missing data (coded as NNNs) in the alignment, and (2) concatenates all of the alignments 
+ into a single PHYLIP alignment named 'concatenated_seqs.phy'.
+	When calling the program, <taxonNamesSpaces> is a mandatory option, PHYLIP alignment 
+ files in working dir are overwritten with 'complete' alignments, and by default all script 
+ output is written to a file named 'completeConcatSeqs_output.txt'. The user may optionally 
+ specify verbose output (-v 1) or an output file name (-o flag). Taxon names in the PHYLIP 
+ files should contain only alphanumeric characters and no spaces, or else there could be 
+ issues. Also, PHYLIP alignment files must have the extension '.phy'.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
  Linux (tested on CentOS 6/7). Besides standard UNIX/Linux command line tools, the only other 
  dependency is Perl (v5+), which is usually already installed on mac and Linux distributions.
 
+
  ${bold}Usage examples:${reset}
  To run in current directory with a names and spaces file named 'taxon_name_spaces12.txt' 
  containing each tip taxon name followed by x spaces taking the total character count per 
- line out to 12 characters, you would call the program using PIrANHA, as follows:
+ line out to 12 characters, with verbose output, you would call the program using PIrANHA, 
+ as follows:
 
-    piranha -f concatenateSeqs --args='-t taxon_name_spaces12.txt'
+    piranha -f completeConcatSeqs --args='-t taxon_name_spaces12.txt -v 1'
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
- Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.
+ Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
-	exit
+	exit ;
 fi
 
-# Saves all script output to file named 'output.txt'
-exec >> ./output.txt 
-exec 2>&1
-
-############ Check for mandatory positional parameters
-if [ $# -lt 2 ]; then
-	echo "WARNING!  | $(date) |          Missing one or more mandatory positional parameters. Quitting... "
-	echo "$USAGE"
-  exit 1
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION"
+	exit ;
 fi
-USER_SPEC_NAMSPACES_FILE="$1"
-USER_SPEC_PATH="$2"
 
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+completeConcatSeqs
+
+# Exit cleanly
+safeExit

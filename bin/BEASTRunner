@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEASTRunner.sh                                                                   #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -17,6 +17,141 @@
 # SHELL SCRIPT FOR AUTOMATING RUNNING BEAST ON A REMOTE SUPERCOMPUTING CLUSTER           #
 #                                                                                        #
 ##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function BEASTRunner () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | BEASTRunner, v1.4.0 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting BEASTRunner pipeline... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -398,11 +533,11 @@ echo "INFO      | $(date) |          Cleaning up: removing temporary files from 
 	rm ./batch_qsub_bottom.txt;
 	rm ./beastrunner_batch_qsub.sh;
 
-echo "INFO      | $(date) |          Bye.
-"
-#
-#
-#
-######################################### END ############################################
+#echo "INFO      | $(date) |          Bye.
+#"
 
-exit 0
+
+
+BEASTRunner
+
+

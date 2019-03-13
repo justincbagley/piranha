@@ -1,11 +1,15 @@
 #!/bin/sh
 
 ##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
 # File: renameForStarBEAST2.sh                                                           #
-  VERSION="v1.2.0"                                                                       #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
-# Last update: March 12, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -132,19 +136,15 @@ function renameForStarBEAST2 () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameForStarBEAST2, v1.2.0 March 2019  (part of PIrANHA v1.0.0)"
+echo "INFO      | $(date) | renameForStarBEAST2, v1.2.1 March 2019  (part of PIrANHA v1.0.0)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Set to run in current working dir, and echo cwd to screen:
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-MY_WORKING_DIR="$(pwd -P)";
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -177,10 +177,10 @@ for i in ./*.phy; do
 			MY_TIP_NAMES="$TIP_NAME"; 
 	
 				for j in $MY_TIP_NAMES; do 
-					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i"; 
+					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
 				done; 
 
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... "; 
+			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
 		done < ./species_assign_tips.tmp
 	)
 done
@@ -197,14 +197,14 @@ for i in ./*.fas; do
 	MY_COUNT=1
 	(
 		while read TIP_NAME; do 
-			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)"; 
-			MY_TIP_NAMES="$TIP_NAME"; 
+			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)" ; 
+			MY_TIP_NAMES="$TIP_NAME" ; 
 	
 				for j in $MY_TIP_NAMES; do 
-					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i"; 
+					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
 				done; 
 
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... "; 
+			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
 		done < ./species_assign_tips.tmp
 	)
 done
@@ -212,9 +212,11 @@ fi
 
 echo "INFO      | $(date) | Step #4: Clean up workspace by deleting temporary files created during run. "
 echo "INFO      | $(date) |          Removing temporary files... "
-rm ./species_assign_names.tmp ./species_assign_tips.tmp;
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	rm ./species_assign_names.tmp ./species_assign_tips.tmp ;
 
 echo "----------------------------------------------------------------------------------------------------------"
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -232,21 +234,26 @@ USER_SPEC_ASSIGNMENT_FILE=assignment.txt
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -f   input file type (def: phylip; other: fasta) type of file(s) in <workingDir> that 
-       will be renamed (assumes .phy or .fas extensions for PHYLIP or FASTA format, 
+  -f   input file type (def: phylip; other: fasta) type of file(s) in current directory
+       to be renamed (assumes '.phy' or '.fas' extensions for PHYLIP or FASTA format files, 
        respectively)
   -a   assignmentFile (def: assignment.txt) ASTRAL-III style assignment file detailing which
        individual tips correspond to which species or taxa
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
- ${bold}INFO${reset}
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT renames tip taxa in all PHYLIP or FASTA DNA sequence alignments in the current
+ working directory, so that the taxon names are suitable for assigning species in BEAUti
+ v2.4+ (part of BEAST v2.4+; Bouckaert et al. 2014) for StarBEAST2 (Ogilvie et al. 2017). 
  For best results, species assignments in the assignment file should be given as simple
  alphanumeric names with no spaces, hyphens, underscores, or nonalphanumeric characters
  (e.g. the assignment 'unimaculatus' gave no errors in testing).
 
  ${bold}Usage examples:${reset}
-    piranha -f renameForStarBEAST2.sh --args='-f phylip -a assignment.txt'
+ Call the program using PIrANHA, as follows:
+
+    piranha -f renameForStarBEAST2 --args='-f phylip -a assignment.txt'
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
@@ -282,17 +289,8 @@ while getopts 'f:a:' opt ; do
   esac
 done
 
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# ############ Check for mandatory positional parameters
-# shift $((OPTIND-1)) 
-# if [ $# -lt 2 ]; then
-# 	echo "WARNING!  | $(date) |          Missing mandatory positional parameters. Quitting... "
-# 	echo ""
-# 	echo "$USAGE"
-#   exit 1
-# fi
-# USER_SPEC_ASSIGNMENT_FILE="$1"
-# USER_SPEC_PATH="$2"
+# Store the remaining part as arguments.
+# args+=("$@")
 
 
 # ############# ############# #############

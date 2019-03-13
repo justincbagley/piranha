@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.                        #
-# Last update: March 11, 2019                                                            #
+# Last update: March 12, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -144,12 +144,9 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting PHYLIP2PFSubsets pipeline... "
 echo "INFO      | $(date) | Step #1: Set up workspace with useful environmental variables and functions, and check machine type. "
-############ SET WORKING DIRECTORY
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only set to run in current working dir, and echo cwd to screen:
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -416,9 +413,10 @@ echo "INFO      | $(date) | Step #4: Convert PHYLIP subset files to FASTA format
 #"
 echo "----------------------------------------------------------------------------------------------------------"
 
-echo "output file(s): Subset folders from the analysis are located in subset_folders/."
-echo "                PHYLIP-formatted subset alignments are located in PHYLIP_subsets/."
-echo "                FASTA-formatted subset alignments are located in FASTA_subsets/."
+echo "output file(s)/folder(s): Subset folders from the analysis are located in subset_folders/."
+echo "                          PHYLIP-formatted subset alignments are located in PHYLIP_subsets/."
+echo "                          FASTA-formatted subset alignments are located in FASTA_subsets/."
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -444,12 +442,16 @@ USAGE="Usage: $(basename $0) [OPTION]...
  SHELL SCRIPT that automates constructing _y_ multiple sequence alignments (MSAs) corresponding
  to PartitionFinder (v1 or v2) subsets, starting from MSAs for _L_ loci in PHYLIP format and
  a PartitionFinder output file containing the best scheme (assumed to be named 'best_scheme.txt').
- The working directory for the analysis, <workingDir>, is a mandatory positional parameter 
- specified by the user; if different from current directory, then the program will cd to 
- <workingDir> and run all analyses at the desired location. The <workingDir> must include
- a) PHYLIP files for each locus/partition supplied to PartitionFinder and b) the 'best_scheme.txt'
- output file from PartitionFinder, which lists the optimal scheme for how the loci/partitions 
- should be combined.
+ This script runs in the current working directory, <workingDir>, which we assume includes
+ (1) PHYLIP files for each locus/partition supplied to PartitionFinder and (2) the 'best_scheme.txt'
+ output file from the corresponding PartitionFinder run, which lists the optimal scheme for 
+ how the loci/partitions should be combined. Sequence names should include alphanumeric, hyphen, 
+ and underscore characters but no spaces, or else there could be issues. Also, PHYLIP alignment 
+ files must have the extension '.phy'.
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
 
  Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
@@ -469,7 +471,7 @@ fi
 ############ PARSE THE OPTIONS
 while getopts 'k:' opt ; do
   case $opt in
-## Script options:
+## PHYLIP2PFSubsets options:
     k) KEEP_ORIG_PHYLIP_SWITCH=$OPTARG ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
@@ -481,16 +483,8 @@ while getopts 'k:' opt ; do
   esac
 done
 
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# shift $((OPTIND-1)) 
-# # Check for mandatory positional parameters
-# if [ $# -lt 1 ]; then
-# 	echo "WARNING!  | $(date) |          Missing mandatory positional parameter, <workingDir>. Quitting... "
-# 	echo ""
-# 	echo "$USAGE"
-#   exit 1
-# fi
-# USER_SPEC_PATH="$1"
+# Store the remaining part as arguments.
+# args+=("$@")
 
 
 # ############# ############# #############

@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: March 11, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,36 +146,31 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 ############ OPTIONAL OUTPUT TO FILE
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-	mkdir output/;
-	exec >> ./output/"$MY_OUTPUT_FILE_SWITCH"
+	exec >> ./"$MY_OUTPUT_FILE_SWITCH"
 	exec 2>&1
 #
-	echo "INFO      | $(date) | Output file switch activated. Logging all output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
 fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting FASTA2PHYLIP... "
 	echo "INFO      | $(date) | Step #1: Set up workspace by defining useful environmental variables and functions, and check machine type. "
 fi
-############ SET WORKING DIRECTORY
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only set to run in current working dir, and echo cwd to screen:
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ## Organize working directory structure:
 	if [[ ! -s ./output/ ]]; then
-		mkdir output/;
+		mkdir output/ ;
 	fi
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "1" ]] && [[ ! -s ./orig_fasta_files/ ]] && [[ ! -s ./phylip_files/ ]]; then
-		mkdir orig_fasta_files/;
-		mkdir phylip_files/;
+		mkdir orig_fasta_files/ ;
+		mkdir phylip_files/ ;
 	fi
-
 
 
 ############ STEP #2: CONVERT ALL FASTA FILES IN CWD TO PHYLIP AND SAVE FASTA ORDER AND CHARACTERISTICS.
@@ -559,6 +554,8 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 )
 
 
+mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
+
 
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 #echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from input sequential FASTA file $MY_FASTA. "
@@ -567,6 +564,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 #fi
 
 echo "----------------------------------------------------------------------------------------------------------"
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -587,7 +585,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Options:${reset}
   -k   keepFASTA (def: 0, off; 1, on) whether or not to keep modified, intermediate FASTA
        files that replace the original FASTAs
-  -o   outputFile (def: NULL) send screen output to file in workingDir with user-specified 
+  -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
        name, for example 'output.txt'
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
        screen (stdout)
@@ -596,21 +594,20 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -V   version (also: --version) echo version and exit
 
  ${bold}OVERVIEW${reset}
- Reads in all FASTA DNA sequence alignment files in current working directory, <workingDir>, 
- and converts them to PHYLIP ('.phy') format (Felsenstein 2002). Each FASTA file must be 
- sequential in format (i.e. with each sequence on one or multiple contiguous lines) but 
- individual sequences may be hard wrapped across multiple lines (e.g. using line breaking 
- to limit sequence text to 60-90 nucleotide characters per line), or not (e.g. with one 
- sequence per line). Tip taxon names may include alphanumeric, hyphen, and underscore 
- characters but no spaces or pound signs (#), or else there could be issues. Whereas filename 
- extensions '.fasta', '.fas', or '.fa' are preferred, the program also accommodates uppercase 
- versions of these extensions. 
-	The input working dir path, <workingDir>, is a mandatory positional parameter. An option
- (-k 1) is available that allows keeping the original FASTA files. By default, program runs  
- quietly with limited stdout or stderr output to screen (only filenames); however, -v option 
- causes verbose run information to be output to screen for each FASTA file (warning: highly 
- redundant), and by setting the -o flag users can send output to file with a user-specified
- filename.
+ Reads in all FASTA DNA sequence alignment files in current directory and converts them 
+ to PHYLIP ('.phy') format (Felsenstein 2002). Each FASTA file must be sequential in format, 
+ with each sequence on one or multiple contiguous lines, but individual sequences may be 
+ hard wrapped across multiple lines (e.g. using line breaking to limit sequence text to 
+ 60-90 nucleotide characters per line), or not (e.g. with one sequence per line). Tip taxon 
+ names may include alphanumeric, hyphen, and underscore characters but no spaces or pound 
+ signs (#), or else there could be issues. Whereas filename extensions '.fasta', '.fas', or 
+ '.fa' are preferred, the program also accommodates uppercase versions of these extensions
+ for FASTA files. 
+	An option (-k 1) is available that allows keeping original FASTA files. By default, the
+ program runs quietly with limited stdout or stderr output to screen (only filenames); however, 
+ the -v option causes verbose run information to be redirected to screen for each FASTA file 
+ (warning: highly redundant), and by setting the -o flag users can send output to a file 
+ with the user's preferred filename, saved in ./output/.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
  tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many earlier versions 
@@ -638,7 +635,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Options:${reset}
   -k   keepFASTA (def: 0, off; 1, on) whether or not to keep modified, intermediate FASTA
        files that replace the original FASTAs
-  -o   outputFile (def: NULL) send screen output to file in workingDir with user-specified 
+  -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
        name, for example 'output.txt'
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
        screen (stdout)
@@ -647,21 +644,20 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
   -V   version (also: --version) echo version and exit
 
  ${bold}OVERVIEW${reset}
- Reads in all FASTA DNA sequence alignment files in current working directory, <workingDir>, 
- and converts them to PHYLIP ('.phy') format (Felsenstein 2002). Each FASTA file must be 
- a sequential FASTA (i.e. with each sequence on one or multiple contiguous lines) but 
- individual sequences may be hard wrapped across multiple lines (e.g. using line breaking 
- to limit sequence text to 60-90 nucleotide characters per line), or not (e.g. with one 
- sequence per line). Tip taxon names may include alphanumeric, hyphen, and underscore 
- characters but no spaces or pound signs (#), or else there will be issues. Whereas filename 
- extensions '.fasta', '.fas', or '.fa' are preferred, the program also accommodates uppercase 
- versions of these extensions. 
-	The input working dir path, <workingDir>, is a mandatory positional parameter. An option
- (-k 1) is available that allows keeping the original FASTA files. By default, program runs  
- quietly with limited stdout or stderr output to screen (only filenames); however, -v option 
- causes verbose run information to be output to screen for each FASTA file (warning: highly 
- redundant), and by setting the -o flag users can send output to file with a user-specified
- filename.
+ Reads in all FASTA DNA sequence alignment files in current directory and converts them 
+ to PHYLIP ('.phy') format (Felsenstein 2002). Each FASTA file must be sequential in format, 
+ with each sequence on one or multiple contiguous lines, but individual sequences may be 
+ hard wrapped across multiple lines (e.g. using line breaking to limit sequence text to 
+ 60-90 nucleotide characters per line), or not (e.g. with one sequence per line). Tip taxon 
+ names may include alphanumeric, hyphen, and underscore characters but no spaces or pound 
+ signs (#), or else there could be issues. Whereas filename extensions '.fasta', '.fas', or 
+ '.fa' are preferred, the program also accommodates uppercase versions of these extensions
+ for FASTA files. 
+	An option (-k 1) is available that allows keeping original FASTA files. By default, the
+ program runs quietly with limited stdout or stderr output to screen (only filenames); however, 
+ the -v option causes verbose run information to be redirected to screen for each FASTA file 
+ (warning: highly redundant), and by setting the -o flag users can send output to a file 
+ with the user's preferred filename, saved in ./output/.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
  tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many earlier versions 
@@ -675,7 +671,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  in phylip_files/ subfolder.
  
  When called, the -o flag causes all output (stdout and stderr) to be redirected to a file 
- in <workignDir> with name specified by the user. <outputFile> name is NULL by default; thus,
+ in ./output/ with name specified by the user. <outputFile> name is NULL by default; thus,
  if not called, then output will be written to screen.
 
  Setting the -v flag to 1 turns on verbose mode, causing verbose run information to be 
@@ -730,15 +726,6 @@ while getopts 'k:o:v:' opt ; do
        exit 1 ;;
   esac
 done
-
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# shift $((OPTIND-1)) 
-# # Check for mandatory positional parameters
-# if [ $# -lt 1 ]; then
-# echo "$Usage"
-#   exit 1
-# fi
-# USER_SPEC_PATH="$1"
 
 
 # ############# ############# #############

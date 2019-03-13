@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEAST_PSPrepper.sh                                                               #
-  VERSION="v0.1.2"                                                                       #
+  VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -19,135 +19,140 @@
 #                                                                                        #
 ##########################################################################################
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-CHAIN_LENGTH=100000
-ALPHA_VALUE=0.3
-ROOT_DIR=/tmp
-BURN_IN_PERCENT=50
-PRE_BURN_IN=100000
-DELETE_OLDLOGS=true
-NUM_PS_STEPS=10
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename $0) [Help: -h help] [Options: -l a r b p d n V --version] [stdin:] <inputXMLFile>
- ## Help:
-  -h   help text (also: -help) echo this help text and exit
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
 
- ## Options:
-  -l   chainLength (length of MCMC chin for each path sampling step; default=100000)
-  -a   alpha (shape parameter of the Beta distribution; default=0.3)
-  -r   rootdir (absolute path to root directory where files for each step will be kept; default=/tmp)
-  -b   burnInPercentage (percent of samples discarded as burnin; default=50, same as in BEAST)
-  -p   preBurnin (number of samples discarded from first step of analysis; default=100000)
-  -d   deleteOldLogs (logical variable specifying whether or not to delete previous logs that 
-       may be present in the rootdir)
-  -n   nrOfSteps (total number of path sampling steps for analysis)
-  -V   version (also: --version) echo version and exit
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
- OVERVIEW
- This script works by (STEP #1) setting up user options/input, and then (STEP #2) using a 
- function to go through the XML file or files (should be the only XMLs in working dir) and 
- edit them for path sampling. For downstream processing and queuing, XML files should end
- in 'run.xml' (e.g. 'ULN_PS100_run.xml').
-	The script expects as <inputXMLFile> one of the following: (i) one XML file, created and
- formatted for BEAST v2++ using BEAUti v2++ (e.g. latest release is v2.4.5), and present in
- the current working directory (pwd); or (ii) the code 'multiXML', which tells the script
- to use a loop to process multiple XML input files present in the current working directory. 
- Regarding other inputs/flags, the rootdir variable requires an absolute path, with opening 
- and closing forward slashes. If no rootdir is passed using the -r flag, then the user will
- be asked (yes/no) if the default '/tmp' path is acceptable. If no, then the user will be 
- prompted to provide a rootdir path on their local machine or supercomputing account, and 
- if nothing is provided then rootdir will be left at '/tmp'.
-	Option defaults for path sampling parameters may or may not be ideal for your purposes. 
- For example, many more than 10 steps will likely be required to obtain good path sampling
- results, especially for larger or more complex data files. The author has found that setting 
- chainLength to 1 million and setting the nrOfSteps parameter to 100 has produced good results 
- for a range of XMLs he uses in his research (e.g. Bagley et al. 2016). Also, by default, the 
- alpha parameter used to space out the path sampling steps is set to 0.3, a value that Xie 
- et al. (2011) found to be near optimal for simulated data and a phylogenetic example, and
- thus suggested was 'generally optimal'. However, recent papers have published analyses using
- alpha values as high as 0.4. The new -a flag lets the user change this value in the XMLs.
-
- CITATION
- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
-	<https://github.com/justincbagley/PIrANHA>.
-
- REFERENCES
- Bagley JC, Matamoros W, McMahan C, Chakrabarty P, Johnson JB (2016) Phylogeography and 
- 	species delimitation in convict cichlids (Cichlidae: Amatitlania): implications for 
- 	taxonomy and Plio–Pleistocene evolutionary history in Central America. Biological Journal
-  	of the Linnean Society. Early View on BJLS website. doi: 10.1111/bij.12845.
-
- Xie W, Lewis PO, Fan Y, Kuo L, Chen MH. 2011. Improving marginal likelihood estimation for 
- 	Bayesian phylogenetic model selection. Systematic Biology 60: 150–160.
-
-Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.
-Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
-"
-
-if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
-	exit
-fi
-
-if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
-	exit
-fi
-
-############ PARSE THE OPTIONS
-while getopts 'l:a:r:b:p:d:n:' opt ; do
-  case $opt in
-## Path sampling options:
-    l) CHAIN_LENGTH=$OPTARG ;;
-    a) ALPHA_VALUE=$OPTARG ;;
-    r) ROOT_DIR=$OPTARG ;;
-    b) BURN_IN_PERCENT=$OPTARG ;;
-    p) PRE_BURN_IN=$OPTARG ;;
-    d) DELETE_OLDLOGS=$OPTARG ;;
-    n) NUM_PS_STEPS=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
-       exit 1 ;;
-  esac
-done
-
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-echo "$Usage"
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
   exit 1
 fi
-USER_SPEC_PATH="$1"
 
 
-echo "
-##########################################################################################
-#                           BEAST_PSPrepper v0.1.2, March 2019                           #
-##########################################################################################
-"
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function BEAST_PSPrepper () {
+
 ######################################## START ###########################################
-echo "INFO      | $(date) | Starting BEAST_PSPrepper pipeline... "
-echo "INFO      | $(date) | STEP #1: SETUP. "
+##########################################################################################
 
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "$USER_SPEC_PATH "	
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | BEAST_PSPrepper, v1.0.0 March 2019  (part of PIrANHA v1.0.0)   "
+echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
 
-## Make input file, <inputXMLFile>, a mandatory parameter:
-	MY_INPUTXMLFILE_VAR="$1"
-## Prep useful stuff:
-	CR=$(printf '\r')
-	calc () {
-	   	bc -l <<< "$@"
-	}
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting BEAST_PSPrepper analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
-##--PRE-EMPTIVELY FIX issues with echoing shell text containing dollar signs and minus signs
+
+
+## PRE-EMPTIVELY FIX issues with echoing shell text containing dollar signs and minus signs
 ## (i.e. within the run element tmp file created in the editXMLFiles function below):
 	RUNELEM_DIR_VAR=$(echo "\$(dir)");
 	RUNELEM_CP_FLAG=$(echo "-cp");
@@ -187,7 +192,7 @@ echo "INFO      | $(date) | STEP #2: MAKE AND RUN FUNCTION TO EDIT XML FILES SO 
 	editXMLFiles () {
 	count=0
 
-	MY_XML_FILES=./*.xml;		## Assign multiple BEAST XML input file(s) in run directory to variable using extension with wildcard.
+	MY_XML_FILES=./*.xml ;		## Assign multiple BEAST XML input file(s) in run directory to variable using extension with wildcard.
 
 		(
 			for i in $MY_XML_FILES; do
@@ -226,7 +231,7 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 		)
 }
 
-##--Don't forget to run the function!
+## Don't forget to run the function!
 editXMLFiles
 
 
@@ -271,7 +276,7 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
   
 }
 
-##--Don't forget to run the function!
+## Don't forget to run the function!
 editXMLFiles
 
 
@@ -282,12 +287,160 @@ editXMLFiles
 
 fi
 
-echo "INFO      | $(date) | Finished prepping XML files for path sampling analyses in BEAST PathSampler using BEAST_PSPrepper.sh!!"
-echo "INFO      | $(date) | Bye.
-"
-#
-#
-#
+#echo "INFO      | $(date) | Finished prepping XML files for path sampling analyses in BEAST PathSampler using BEAST_PSPrepper.sh!!"
+#echo "INFO      | $(date) | Bye.
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+CHAIN_LENGTH=100000
+ALPHA_VALUE=0.3
+ROOT_DIR=/tmp
+BURN_IN_PERCENT=50
+PRE_BURN_IN=100000
+DELETE_OLDLOGS=true
+NUM_PS_STEPS=10
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputXMLFile (def: NULL) input XML file for BEAST
+  -l   chainLength (def: 100000) length of MCMC chin for each path sampling step
+  -a   alpha (shape parameter of the Beta distribution; default=0.3)
+  -r   rootdir (def: /tmp) absolute path to root directory where files for each step will be kept
+  -b   burnInPercentage (def: 50, same as in BEAST) percent of samples discarded as burnin
+  -p   preBurnin (def: 100000) number of samples discarded from first step of analysis
+  -d   deleteOldLogs (def: true) logical variable specifying whether or not to delete previous 
+       logs that may be present in the rootdir
+  -n   nrOfSteps (def: 10) total number of path sampling steps for analysis
+  -h   help text (also: -help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ OVERVIEW
+ This script works by (Step #1) setting up user options/input, and then (Step #2) using a 
+ function to go through the XML file or files (should be the only XMLs in working dir) and 
+ edit them for path sampling. For downstream processing and queuing, XML files should end
+ in 'run.xml' (e.g. 'ULN_PS100_run.xml').
+	The script expects as <inputXMLFile> one of the following: (i) one XML file, created and
+ formatted for BEAST v2++ using BEAUti v2++ (e.g. latest release is v2.4.5), and present in
+ the current working directory (pwd); or (ii) the code 'multiXML', which tells the script
+ to use a loop to process multiple XML input files present in the current working directory. 
+ Regarding other inputs/flags, the rootdir variable requires an absolute path, with opening 
+ and closing forward slashes. If no rootdir is passed using the -r flag, then the user will
+ be asked (yes/no) if the default '/tmp' path is acceptable. If no, then the user will be 
+ prompted to provide a rootdir path on their local machine or supercomputing account, and 
+ if nothing is provided then rootdir will be left at '/tmp'.
+	Option defaults for path sampling parameters may or may not be ideal for your purposes. 
+ For example, many more than 10 steps will likely be required to obtain good path sampling
+ results, especially for larger or more complex data files. The author has found that setting 
+ chainLength to 1 million and setting the nrOfSteps parameter to 100 has produced good results 
+ for a range of XMLs he uses in his research (e.g. Bagley et al. 2016). Also, by default, the 
+ alpha parameter used to space out the path sampling steps is set to 0.3, a value that Xie 
+ et al. (2011) found to be near optimal for simulated data and a phylogenetic example, and
+ thus suggested was 'generally optimal'. However, recent papers have published analyses using
+ alpha values as high as 0.4. The new -a flag lets the user change this value in the XMLs.
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f BEAST_PSPrepper
+    piranha -f BEAST_PSPrepper --args='-h'
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Bagley, J.C., Matamoros, W., McMahan, C., Chakrabarty, P., Johnson, J.B. 2016. Phylogeography and 
+ 	species delimitation in convict cichlids (Cichlidae: Amatitlania): implications for 
+ 	taxonomy and Plio–Pleistocene evolutionary history in Central America. Biological Journal
+  	of the Linnean Society. Early View on BJLS website. doi: 10.1111/bij.12845.
+ Xie, W., Lewis, P.O., Fan, Y., Kuo, L., Chen, M.H. 2011. Improving marginal likelihood estimation for 
+ 	Bayesian phylogenetic model selection. Systematic Biology, 60, 150–160.
+
+ Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.
+ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'i:l:a:r:b:p:d:n:' opt ; do
+  case $opt in
+## BEAST Path sampling options:
+    i) MY_INPUTXMLFILE_VAR=$OPTARG ;;
+    l) CHAIN_LENGTH=$OPTARG ;;
+    a) ALPHA_VALUE=$OPTARG ;;
+    r) ROOT_DIR=$OPTARG ;;
+    b) BURN_IN_PERCENT=$OPTARG ;;
+    p) PRE_BURN_IN=$OPTARG ;;
+    d) DELETE_OLDLOGS=$OPTARG ;;
+    n) NUM_PS_STEPS=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+# Store the remaining part as arguments.
+# args+=("$@")
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+BEAST_PSPrepper
+
+# Exit cleanly
+safeExit

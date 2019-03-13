@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.4.1"                                                                       #
+  VERSION="v1.4.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: March 11, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,8 +136,8 @@ function NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.4.1 March 2019  (part of PIrANHA v1.0.0)      "
-echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.4.2 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -148,7 +148,6 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #1: Set up workspace."
 fi
 ############ STEP #1: SETUP FUNCTIONS AND ENVIRONMENTAL VARIABLES
-###### Set filetypes as different variables:
 ## Setting up workspace is now accomplished by new standard code at start of script that
 ## defines and sources $UTILS_LOCATION, $FUNCS_LOCATION, and $VARS_LOCATION.
 
@@ -293,6 +292,7 @@ fi
 #fi
 
 echo "----------------------------------------------------------------------------------------------------------"
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -332,11 +332,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
  spaces, or else there will be issues. By default, program runs quietly with no ouput to
  screen or stderr or stdout files; however, -v option causes verbose run information to be
  output to screen (stdout).
-	Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working
- directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
- High Sierra (v10.13+).
+	The Naoki Takebayashi 'fasta2phylip.pl' Perl script distributed with PIrANHA must be in 
+ working directory or available from command line (in your path). The only other dependency 
+ is Perl (v5+), which is usually already installed on mac and Linux distributions. Tested 
+ with Perl v5.1+ on macOS High Sierra (v10.13+).
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1 -k 1'  Run on user NEXUS while echoing output to 
      										   				  	screen and keeping intermediate FASTA files
     piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1 -k 1'  	Same as above, but with -a flag
@@ -375,9 +378,10 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  spaces, or else there will be issues. By default, program runs quietly with no ouput to
  screen or standard output files; however, -v option causes verbose run information to be
  output to screen (stdout).
-	Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working
- directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
- High Sierra (v10.13+).
+	The Naoki Takebayashi 'fasta2phylip.pl' Perl script distributed with PIrANHA must be in 
+ working directory or available from command line (in your path). The only other dependency 
+ is Perl (v5+), which is usually already installed on mac and Linux distributions. Tested 
+ with Perl v5.1+ on macOS High Sierra (v10.13+).
 
  ${bold}DETAILS${reset}
  The -i flag specifies the name of the input NEXUS file, which should be a standard NEXUS
@@ -408,6 +412,8 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  High Sierra (v10.13+).
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1 -k 1'  Run on user NEXUS while echoing output to 
      										   				  	screen and keeping intermediate FASTA files
     piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1 -k 1'  	Same as above, but with -a flag
@@ -458,14 +464,8 @@ while getopts 'i:c:v:k:o:' opt ; do
   esac
 done
 
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# shift $((OPTIND-1))
-# # Check for mandatory positional parameters
-# if [ $# -lt 1 ]; then
-# 	echo "$USAGE"
-# 	exit 1
-# fi
-# MY_NEXUS="$1"
+# Store the remaining part as arguments.
+# args+=("$@")
 
 
 # ############# ############# #############

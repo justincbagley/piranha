@@ -143,13 +143,9 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ I. SET UP WORKSPACE AND CHECK MACHINE TYPE.
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only echo cwd to screen:
 MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
 echo "INFO      | $(date) |          Current directory: $MY_PATH "
-
 echoCDWorkingDir
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -329,6 +325,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  subfolder named 'pis_threshold_alignments/'.
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
