@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MrBayesPostProc.sh                                                               #
-  version="v1.4"                                                                         #
+  version="v1.6.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: March 6, 2019                                                             #
+# Last update: March 14, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -18,138 +18,223 @@
 #                                                                                        #
 ##########################################################################################
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_RELBURNIN_FRAC=0.25
-MY_SS_ANALYSIS_SWITCH=0
-MY_SS_NGEN=250000
-MY_SS_DIAGNFREQ=2500
-MY_TEMP_FILE_SWITCH=1
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename $0) [Help: -h help] [Options: -b s g d t V --version] [stdin:] <workingDir> 
- ## Help:
-  -h   help text (also: -help)
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
 
- ## Options:
-  -b   relBurninFrac (def: $MY_RELBURNIN_FRAC) fraction of trees to discard as 'burn-in'
-  -s   SS (def: 0, no stepping-stone (SS) analysis conducted; 1, run SS analysis) allows
-       calling stepping-stone analysis starting from NEXUS in current <workingDir>
-  -g   SSnGen (def: $MY_SS_NGEN) if 1 for SS above, allows specifying the number of total 
-       SS sampling iterations (uses default number of steps, 50; total iterations will 
-       be split over 50 steps) 
-  -d   SSDiagFreq (def: $MY_SS_DIAGNFREQ) if 1 for SS above, this specifies the diagnosis 
-       (logging) frequency for parameters during SS analysis, in number of generations
-  -t   deleteTemp (def: 1, delete temporary files; 0, do not delete temporary files) calling
-       0 will keep temporary files created during the run for later inspection 
-  -V   version (also: --version) echo version and exit
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
- OVERVIEW
- Runs a simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012)
- run, whose output files are assumed to be in the current working directory. This script preps 
- the output files in pwd, and then summarizes trees and their posterior probabilities (sumt), 
- and parameters of the specified model (sump) using MrBayes. Options are provided for specifying 
- the burnin fraction, and for calling stepping-stone analysis (Xie et al. 2011; Baele et al.
- 2012) to robustly estimate the log marginal likelihood of the model/analysis, whose details 
- must be provided in a MrBayes block at the end of the input NEXUS file in the current dir.
-
- CITATION
- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
-	<http://github.com/justincbagley/PIrANHA>.
-
- REFERENCES
- Baele G, Lemey P, Bedford T, Rambaut A, Suchard MA, Alekseyenko AV (2012) Improving the 
-    accuracy of demographic and molecular clock model comparison while accommodating 
-    phylogenetic uncertainty. Molecular Biology and Evolution, 29, 2157-2167.
- Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, et al. (2012) MrBayes v. 3.2: 
-    efficient Bayesian phylogenetic inference and model choice across a large model space. 
-    Systematic Biology, 61, 539-542. 
- Xie W, Lewis PO, Fan Y, Kuo L, Chen MH (2011) Improving marginal likelihood estimation for 
-    Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
-
-Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.
-Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
-"
-
-if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
-	exit
-fi
-
-if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
-	exit
-fi
-
-############ PARSE THE OPTIONS
-while getopts 'b:s:g:d:t:' opt ; do
-  case $opt in
-## MrBayesPostProc options:
-    b) MY_RELBURNIN_FRAC=$OPTARG ;;
-    s) MY_SS_ANALYSIS_SWITCH=$OPTARG ;;
-    g) MY_SS_NGEN=$OPTARG ;;
-    d) MY_SS_DIAGNFREQ=$OPTARG ;;
-    t) MY_TEMP_FILE_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
-       exit 1 ;;
-  esac
-done
-
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-echo "$Usage"
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
   exit 1
 fi
-USER_SPEC_PATH="$1"
 
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "$USER_SPEC_PATH "	
 
-echo "
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+###### GOAL: Prep files and then Summarize trees, their posterior probabilities, and their errors using MrBayes.
+
+function MrBayesPostProc () {
+
+######################################## START ###########################################
 ##########################################################################################
-#                            MrBayesPostProc v1.5, March 2019                            #
-##########################################################################################
-"
 
-###### Prep files and then Summarize trees, their posterior probabilities, and their errors using MrBayes.
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | MrBayesPostProc, v1.6.0 March 2019  (part of PIrANHA v1.0.0)   "
+echo "INFO      | $(date) | Copyright (c) 2017–2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
 
-echo "INFO      | $(date) | STEP #1: SETUP VARIABLES. "
-##--Make the "handy bash function 'calc'" for subsequent use.
-	calc () {
-	   	bc -l <<< "$@"
-	}
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting MrBayesPostProc analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+echo "INFO      | $(date) | Step #2: Fix NEXUS filenames, check whether MrBayes is installed, and attempt to set name or path to MrBayes executable. "
+	## First, fix NEXUS filename extensions to conform to the standard ('.nex') expected by
+	## the script. For now, this only handles the cases of the '.NEX' extension and the
+	## '.nexus' extension, fixing both of these.
+	
 	if [[ -s "$(NEX_FILES=./*.NEX; echo $NEX_FILES | head -n1)" ]]; then 
-        echo "INFO      | $(date) |          Fixing NEXUS filename... "
+        echo "INFO      | $(date) |          Fixing NEXUS filename(s)... "
     (
         for file in *.NEX; do
             mv "$file" "`basename "$file" .NEX`.nex" ;
         done
     )
 	fi
-
+	if [[ -s "$(NEX_FILES=./*.nexus; echo $NEX_FILES | head -n1)" ]]; then 
+        echo "INFO      | $(date) |          Fixing NEXUS filename(s)... "
+    (
+        for file in *.nexus; do
+            mv "$file" "`basename "$file" .nexus`.nex" ;
+        done
+    )
+	fi
 
 	## This script was written to expect only a single NEXUS file in pwd; however, users 
 	## will probably from time to time mistakenly run the script on a directory with 
 	## multiple NEXUS files. Here, we can account for this by taking the first .nex file
 	## found in the directory, by using the following line instead of MY_NEXUS=./*.nex 
 	## (which would only work with 1 file). $MY_MRBAYES_FILENAME is the name of the output
-	## of the run, which will be the root/prefix of each output file. The mb path is self
-	## explanatory.
+	## of the run, which will be the root/prefix of each output file. 
+
 	if [[ -s "$(nex_FILES=./*.nex; echo $nex_FILES | head -n1 | sed 's/\ .*//g')" ]]; then 
 		MY_NEXUS="$(ls ./*.nex | head -n1 | sed 's/\ //g')";
 	fi
 	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.*://p' | sed 's/\.mcmc$//g')";
-	MY_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | awk -F"=" '{print $NF}')";
 
 
-echo "INFO      | $(date) | STEP #2: REMOVE MRBAYES BLOCK FROM NEXUS FILE. "
+	## In addition to fixing NEXUS filenames and getting only one NEXUS file for use, another
+	## requirement for running this program is having the MrBayes executable name that is 
+	## available from the command line, or having the path to the MrBayes executable. In
+	## previous versions of this program, I had the user add the appropriate path to a 
+	## variable named 'mb_path' in a configuration file named 'mrbayes_post_proc.cfg' in 
+	## the run directory. I think grepped the path from the configuration file as follows:
+	#
+	#	MY_LOC_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | awk -F"=" '{print $NF}')";
+	#
+	## This simply is not acceptable in a generalized software program that we want anyone
+	## to be able to use, and to use efficiently. I decided to scrap the configuration file,
+	## give the user the option to pass the executable name or path using a new option (-p flag).
+	## If user does not pass a value with the -p flag, then I will attempt to determine whether
+	## MrBayes is available as 'mb' or 'mrbayes' during the MrBayes software check below.
+
+if [[ "$MY_LOC_SC_MB_PATH" != "NULL" ]]; then
+		echo "INFO      | $(date) |          <MrBayesPath> parameter is _not_ null. Checking user-specified MrBayes executable name or path on your system..."
+		MY_MRBAYES_EXECUT_CHECK="$(which $(echo $MY_LOC_SC_MB_PATH))"
+		if [[ -s "$MY_MRBAYES_EXECUT_CHECK" ]]; then
+			echo "INFO      | $(date) |          Check passed. MrBayes is installed on your machine..."
+		fi
+fi
+if [[ "$MY_LOC_SC_MB_PATH" = "NULL" ]]; then
+		echo "INFO      | $(date) |          <MrBayesPath> parameter is null. Attempting to determine MrBayes executable name or path on your system..."
+		MY_MRBAYES_EXECUT_CHECK1="$(which mb)";
+		MY_MRBAYES_EXECUT_CHECK2="$(which mrbayes)";
+		if [[ -s "$MY_MRBAYES_EXECUT_CHECK1" ]] || [[ -s "$MY_MRBAYES_EXECUT_CHECK2"  ]]; then 
+			echo "INFO      | $(date) |          Check passed. MrBayes is installed on your machine..."
+			if [[ -s "$MY_MRBAYES_EXECUT_CHECK1" ]]; then
+				MY_LOC_SC_MB_PATH="$(which mb)";
+			fi
+			if [[ -s "$MY_MRBAYES_EXECUT_CHECK2" ]]; then 
+				MY_LOC_SC_MB_PATH="$(which mrbayes)";
+			fi
+			echo "INFO      | $(date) |          <MrBayesPath> parameter was set to: ${MY_LOC_SC_MB_PATH} "
+		else
+			echo "WARNING!  | $(date) |          Check FAILED. MrBayes is apparently _not_ installed on your machine..."
+			echo "INFO      | $(date) |          Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
+			echo "INFO      | $(date) |          Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
+			echo "INFO      | $(date) |          if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
+			echo "ERROR     | $(date) |          Quitting..."
+			exit 1 ;
+		fi
+fi
+
+
+echo "INFO      | $(date) | Step #3: Remove MrBayes block from NEXUS file. "
+
 	MY_MRBAYES_BLOCK_START="$(grep -n "BEGIN MrBayes\|Begin MrBayes\|BEGIN mrbayes\|Begin mrbayes\|begin mrbayes" $MY_NEXUS | sed 's/\:.*//; s/\ //g')";
 	if [[ "$MY_MRBAYES_BLOCK_START" -gt "0" ]] || [[ -s "$MY_MRBAYES_BLOCK_START" ]]; then
 		MY_HEADSTOP="$(calc $MY_MRBAYES_BLOCK_START-1)";
@@ -160,8 +245,10 @@ echo "INFO      | $(date) | STEP #2: REMOVE MRBAYES BLOCK FROM NEXUS FILE. "
 	fi	
 
 
-echo "INFO      | $(date) | STEP #3: CREATE BATCH FILE TO RUN IN MRBAYES. "
+echo "INFO      | $(date) | Step #4: Create batch file to run in MrBayes. "
+
 echo "INFO      | $(date) |          Making batch file... "
+
 echo "set autoclose=yes nowarn=yes
 execute simple.nex
 sumt Filename=${MY_MRBAYES_FILENAME} relburnin=yes burninfrac=${MY_RELBURNIN_FRAC}
@@ -170,35 +257,36 @@ quit" > ./batch.txt
 
 ##--Flow control. Check to make sure MrBayes batch file was successfully created.
     if [[ -f ./batch.txt ]]; then
-        echo "INFO      | $(date) |          MrBayes batch file ('batch.txt') successfully created. "
+        echo "INFO      | $(date) |          MrBayes batch file ('batch.txt') was successfully created. "
     else
-        echo "WARNING!  | $(date) |          Something went wrong. MrBayes batch file ('batch.txt') not created. Exiting... "
-        exit
+        echo "WARNING!  | $(date) |          Something went wrong. MrBayes batch file ('batch.txt') not created. Quitting... "
+        exit 1 ;
     fi
 
 
-echo "INFO      | $(date) | STEP #4: SUMMARIZE RUN AND COMPUTE CONSENSUS TREE IN MRBAYES. "
+echo "INFO      | $(date) | Step #5: Summarize run and compute consensus tree in MrBayes. "
 ##--This calls the commands in the batch.txt file to run within MrBayes, opening the 
 ##--simplified nexus file and creating summaries of the tree and run parameters as wellas
 ##--computing a majority-rule consensus tree with Bayesian posterior probabilities 
 ##--annotated along each node.
 
-    $MY_SC_MB_PATH  < ./batch.txt > Mrbayes_sumtp_log.txt &		## Use batch to run MrBayes.
+    $MY_LOC_SC_MB_PATH  < ./batch.txt > Mrbayes_sumtp_log.txt &		## Use batch to run MrBayes.
 
 
 
+#####
 if [[ "$MY_SS_ANALYSIS_SWITCH" -eq "1" ]]; then
-echo "INFO      | $(date) | STEP #5: CONDUCT STEPPING-STONE ANALYSIS TO ESTIMATE LOG MARGINAL LIKELIHOOD OF THE MODEL. "
+echo "INFO      | $(date) | Step #6: Conduct stepping-stone analysis to estimate log marginal likelihood of the model. "
 
 echo "set autoclose=yes nowarn=yes
 execute ./simple.nex
 ss ngen=${MY_SS_NGEN} diagnfreq=${MY_SS_DIAGNFREQ}
 quit" > ./SS_batch.txt
 
-	$MY_SC_MB_PATH  < ./SS_batch.txt > Mrbayes_SS_log.txt &		## Use SS_batch to run SS analysis in MrBayes.
+	$MY_LOC_SC_MB_PATH  < ./SS_batch.txt > Mrbayes_SS_log.txt &		## Use SS_batch to run SS analysis in MrBayes.
 
 
-echo "INFO      | $(date) | STEP #6: CLEANUP FILES. "
+echo "INFO      | $(date) | Step #7: Clean up files in working dir. "
 ## If user desires, remove temporary files created above.
 	if [[ "$MY_TEMP_FILE_SWITCH" -eq "1" ]]; then
 		if [[ -f ./batch.txt ]]; then rm ./batch.txt; fi
@@ -207,9 +295,10 @@ echo "INFO      | $(date) | STEP #6: CLEANUP FILES. "
 	fi
 
 fi
+#####
 
 
-echo "INFO      | $(date) | STEP #5: CLEANUP FILES. "
+echo "INFO      | $(date) | Step #6: Clean up files in working dir. "
 ## If user desires, remove temporary files created above.
 	if [[ "$MY_TEMP_FILE_SWITCH" -eq "1" ]]; then
 		if [[ -f ./batch.txt ]]; then rm ./batch.txt; fi
@@ -218,12 +307,163 @@ echo "INFO      | $(date) | STEP #5: CLEANUP FILES. "
 	fi
 
 
-echo "INFO      | $(date) | Done with post-processing of MrBayes results using MrBayesPostProc. "
-echo "INFO      | $(date) | Bye. 
-"
-#
-#
-#
+#echo "INFO      | $(date) | Done with post-processing of MrBayes results using MrBayesPostProc. "
+#echo "INFO      | $(date) | Bye. 
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+if [[ "$MY_SS_ANALYSIS_SWITCH" -eq "1" ]]; then
+	echo "output file(s): ./Mrbayes_sumtp_log.txt  "
+	echo "                ./Mrbayes_SS_log.txt "
+	echo "                ./*.con.tre "
+	echo "                ./*.parts "
+	echo "                ./*.trprobs "
+	echo "                ./*.tstat "
+	echo "                ./*.vstat "
+else
+	echo "output file(s): ./Mrbayes_sumtp_log.txt  "
+	echo "                ./*.con.tre "
+	echo "                ./*.parts "
+	echo "                ./*.trprobs "
+	echo "                ./*.tstat "
+	echo "                ./*.vstat "
+fi
+echo ""
+
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_LOC_SC_MB_PATH=NULL
+MY_RELBURNIN_FRAC=0.25
+MY_SS_ANALYSIS_SWITCH=0
+MY_SS_NGEN=250000
+MY_SS_DIAGNFREQ=2500
+MY_TEMP_FILE_SWITCH=1
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -p   MrBayesPath (def: NULL) takes name of MrBayes v3.2+ executable as available from the 
+       user's command line, or the absolute path to a working MrBayes executable
+  -b   relBurninFrac (def: $MY_RELBURNIN_FRAC) fraction of trees to discard as 'burn-in'
+  -s   SS (def: 0, no stepping-stone (SS) analysis conducted; 1, run SS analysis) allows
+       calling stepping-stone analysis starting from NEXUS in current <workingDir>
+  -g   SSnGen (def: $MY_SS_NGEN) if 1 for SS above, allows specifying the number of total 
+       SS sampling iterations (uses default number of steps, 50; total iterations will 
+       be split over 50 steps) 
+  -d   SSDiagFreq (def: $MY_SS_DIAGNFREQ) if 1 for SS above, this specifies the diagnosis 
+       (logging) frequency for parameters during SS analysis, in number of generations
+  -t   deleteTemp (def: 1, delete temporary files; 0, do not delete temporary files) calling
+       0 will keep temporary files created during the run for later inspection 
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ Runs a simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012)
+ run, whose output files are assumed to be in the current working directory. This script preps 
+ the output files in pwd, and then summarizes trees and their posterior probabilities (sumt), 
+ and parameters of the specified model (sump), using MrBayes. Options are provided for specifying 
+ the burnin fraction, and for calling stepping-stone analysis (Xie et al. 2011; Baele et al.
+ 2012) to robustly estimate the log marginal likelihood of the model/analysis, whose details 
+ must be provided in a MrBayes block at the end of the input NEXUS file in the current dir.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). The key dependency is MrBayes v3.2+, so the program checks
+ whether MrBayes is installed and available from the command line, and will print messages 
+ and quit if MrBayes is not found. The user can pre-emptively solve this problem by passing
+ the program the name or absolute path to a working MrBayes executable using the -p flag (e.g.
+ on the author's machine, MrBayes is available as simply 'mb', so I add '-p mb' to my call 
+ to MrBayesPostProc).
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Baele, G., Lemey, P., Bedford, T., Rambaut, A., Suchard, M.A., Alekseyenko, A.V. 2012. 
+	Improving the accuracy of demographic and molecular clock model comparison while accommodating 
+    phylogenetic uncertainty. Molecular Biology and Evolution, 29, 2157-2167.
+ Ronquist, F., Teslenko, M., van der Mark, P., Ayres, D., Darling, A., et al. 2012. MrBayes 
+	v. 3.2: efficient Bayesian phylogenetic inference and model choice across a large model 
+	space. Systematic Biology, 61, 539-542. 
+ Xie, W., Lewis, P.O., Fan, Y., Kuo, L., Chen, M.H. 2011. Improving marginal likelihood estimation 
+    for Bayesian phylogenetic model selection. Systematic Biology, 60, 150-160.
+
+ Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.
+ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'p:b:s:g:d:t:' opt ; do
+  case $opt in
+## MrBayesPostProc options:
+    p) MY_LOC_SC_MB_PATH=$OPTARG ;;
+    b) MY_RELBURNIN_FRAC=$OPTARG ;;
+    s) MY_SS_ANALYSIS_SWITCH=$OPTARG ;;
+    g) MY_SS_NGEN=$OPTARG ;;
+    d) MY_SS_DIAGNFREQ=$OPTARG ;;
+    t) MY_TEMP_FILE_SWITCH=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+MrBayesPostProc
+
+# Exit cleanly
+safeExit
