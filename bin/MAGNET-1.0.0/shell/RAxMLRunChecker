@@ -5,17 +5,17 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: fastSTRUCTURE.sh                                                                 #
-  VERSION="v1.1.2"                                                                       #
+# File: RAxMLRunChecker.sh                                                               #
+  VERSION="v1.3.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.                     #
-# Last update: March 11, 2019                                                            #
-# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Date: Created by Justin Bagley on/before November 29, 2018.                            #
+# Last update: March 14, 2019                                                            #
+# Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# INTERACTIVE SHELL SCRIPT FOR RUNNING fastSTRUCTURE (Raj et al. 2014) ON BIALLELIC SNP  #
-# DATASETS                                                                               #
+# SHELL SCRIPT THAT COUNTS NUMBER OF LOCI/PARTITIONS WITH COMPLETED RAxML RUNS DURING    #
+# OR AFTER A RUN OF THE MAGNET PIPELINE, AND COLLATES RUN INFORMATION                    #
 #                                                                                        #
 ##########################################################################################
 
@@ -130,60 +130,115 @@ gemDependencies=()
 
 
 
-function fastSTRUCTURE () {
+function RAxMLRunChecker () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | fastSTRUCTURE, v1.1.2 March 2019  (part of PIrANHA v1.0.0)     "
-echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | RAxMLRunChecker, v1.3.0 March 2019  (part of PIrANHA v1.0.0)   "
+echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Step #1: Setup. Read user input, set environmental variables. "
-	MY_FASTSTRUCTURE_WKDIR="$(pwd -P)" ;
-	MY_FASTSTRUCTURE_PATH="$(echo $FASTSTRUCTURE_PATH)" ;
-	RUN_SEED=$RANDOM
+echo "INFO      | $(date) | Starting RAxMLRunChecker pipeline... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ I. SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
-echo "INFO      | $(date) | Step #2: Run fastSTRUCTURE on range of K specified by user. "
-echo "INFO      | $(date) |          Modeling K = $LOWER_K_VAL to $UPPER_K_VAL clusters in fastSTRUCTURE. "
 
+############ II. RUN RAXML RUN CHECKER
+echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current directory (assumed to be a MAGNET run folder). "
+
+	echo "INFO      | $(date) |          Estimating numbers (no.) of loci and RAxML runs... "
+	MY_N_LOCI_FOLD="$(ls -d ./locus*/ | wc -l | sed 's/^[\ ]*//g')"
+	MY_N_COMPLETED="$(ls ./locus*/RAxML_info.raxml_out | wc -l | sed 's/^[\ ]*//g')"
+	MY_N_REMAINING="$(calc $MY_N_LOCI_FOLD - $MY_N_COMPLETED)"
+
+	echo "INFO      | $(date) |          Total no. RAxML runs: $TAB$TAB$MY_N_LOCI_FOLD "
+	echo "INFO      | $(date) |          No. completed RAxML runs: $TAB$MY_N_COMPLETED "
+	echo "INFO      | $(date) |          No. remaining RAxML runs:    $TAB$MY_N_REMAINING "
+
+	if [[ -s ./completed_run_info.tmp ]]; then
+		rm ./completed_run_info.tmp;
+	fi
+	if [[ -s ./completed_run_info.txt ]]; then
+		rm ./completed_run_info.txt;
+	fi
+	if [[ -s ./remaining_run_info.tmp ]]; then
+		rm ./remaining_run_info.tmp;
+	fi
+	if [[ -s ./remaining_run_info.txt ]]; then
+		rm ./remaining_run_info.txt;
+	fi
+
+	echo "INFO      | $(date) |          Saving RAxML run info to file... "
+
+	count=1
+	echo "INFO      | $(date) |          ...  $count / $MY_N_LOCI_FOLD ..."
 (
-	for (( i=$LOWER_K_VAL; i<=$UPPER_K_VAL; i++ )); do
-		echo "$i";
-		python "$MY_FASTSTRUCTURE_PATH" -K "$i" --input="$MY_FASTSTRUCTURE_WKDIR/$FASTSTRUCTURE_INPUT" --output="$FASTSTRUCTURE_OUTPUT" --format=str --full --seed="$RUN_SEED" ;
+	for i in ./locus*/; do 
+		MY_LOCUS="$(echo $i | sed 's/\.\///g; s/\///g; s/\ //g')"; 
+		MY_COUNT_HUND_CHECK="$(calc $count / 100 | sed 's/^[0-9]*\.//g; s/^[0]\{1\}//g')"
+		if [[ "$MY_COUNT_HUND_CHECK" -eq "0" ]]; then
+			echo "INFO      | $(date) |          ...  $count / $MY_N_LOCI_FOLD ..."
+		fi
+		if [[ "$count" -eq "$MY_N_LOCI_FOLD" ]]; then
+			echo "INFO      | $(date) |          ...  $MY_N_LOCI_FOLD / $MY_N_LOCI_FOLD ..."
+		fi
+		cd "$i"; 
+			if [[ -s RAxML_bipartitions.raxml_out ]]; then 
+
+				MY_ALIGN_PATT="$(grep -h '^Alignment\ Patterns\:\ ' ./RAxML_info.raxml_out | sed 's/^.*\:\ //g')";
+				MY_SUBST_MODEL="$(grep -h '^Substitution\ Matrix\:\ ' ./RAxML_info.raxml_out | sed 's/^.*\:\ //g')";
+				MY_OPTIM_LIKE="$(grep -h 'Final\ ML\ Optimization\ Likelihood\:\ ' ./RAxML_info.raxml_out | sed 's/^.*\:\ //g')";
+				MY_ML_RUN_TIME="$(grep -h 'Overall\ execution\ time\ ' ./RAxML_info.raxml_out | sed 's/^Overall\ execution\ time\ [A-Za-z\ ]*\:\ //g; s/or\ .*//g')";
+				
+				echo "$count$TAB$MY_LOCUS$TAB$MY_ALIGN_PATT$TAB$MY_SUBST_MODEL$TAB$MY_OPTIM_LIKE$TAB$MY_ML_RUN_TIME$TAB complete" >> ../completed_run_info.tmp; 
+			fi
+			if [[ ! -s RAxML_bipartitions.raxml_out ]]; then 
+				
+				echo "$count$TAB$MY_LOCUS$TAB$MY_ALIGN_PATT$TAB$MY_SUBST_MODEL$TAB incomplete" >> ../remaining_run_info.tmp; 
+				
+			fi
+		cd ..; 
+		echo "$((count++))" > ./count.tmp ;
 	done
 )
 
-echo "INFO      | $(date) |          fastSTRUCTURE runs completed. "
+
+	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Likelihood$TAB ML Run Time$TAB Status" > ./header.tmp;
+	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Status" > ./rem_header.tmp;
+	cat ./header.tmp ./completed_run_info.tmp > ./completed_run_info.txt;
+	cat ./rem_header.tmp ./remaining_run_info.tmp > ./remaining_run_info.txt;
 
 
-echo "INFO      | $(date) | Step #3: Estimate model complexity. "
-###### Obtain an estimate of the model complexity for each set of runs (per species):
-	MY_CHOOSEK_PATH="$(echo $FASTSTRUCTURE_PATH | sed 's/structure.py//g' | sed 's/$/chooseK.py/g')" ;
-
-	python "$MY_CHOOSEK_PATH" --input="$FASTSTRUCTURE_OUTPUT" > chooseK.out.txt ;
-
-echo "INFO      | $(date) |          Finished estimating model complexity. "
-	cat chooseK.out.txt ;
-
-
-echo "INFO      | $(date) | Step #4: Visualize results. "
-###### Use DISTRUCT to create graphical output of results corresponding to the best K value modeled.
-	read -p "INPUT     | $(date) |          Enter the value of K that you want to visualize : " bestK ;
-
-	MY_DISTRUCT_PATH="$(echo $FASTSTRUCTURE_PATH | sed 's/structure.py//g' | sed 's/$/distruct.py/g')" ;
-
-	python "$MY_DISTRUCT_PATH" -K "$bestK" --input="$MY_FASTSTRUCTURE_WKDIR/$FASTSTRUCTURE_OUTPUT" --output="$FASTSTRUCTURE_OUTPUT_distruct.svg" ;
+	echo "INFO      | $(date) |          Editing final RAxML run information files... "
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' 's/\ //g' ./completed_run_info.txt;
+			sed -i '' 's/\ //g' ./remaining_run_info.txt;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/\ //g' ./completed_run_info.txt;
+			sed -i 's/\ //g' ./remaining_run_info.txt;
+		fi
 
 
-#echo "INFO      | $(date) | Done!!! fastSTRUCTURE analysis complete."
-#echo "Bye.
-#"
+############ III. CLEAN UP WORKSPACE BY REMOVING TEMPORARY FILES.
+echo "INFO      | $(date) | Step #3: Clean up workspace. "
+echo "INFO      | $(date) |          Cleaning up workspace by removing temporary files generated during run... "
+
+	rm ./*.tmp ;
 
 echo "----------------------------------------------------------------------------------------------------------"
+echo "output file(s): ./completed_run_info.txt "
+echo "                ./remaining_run_info.txt "
 echo ""
+
 
 ##########################################################################################
 ######################################### END ############################################
@@ -194,43 +249,46 @@ echo ""
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-# USER_SPEC_PATH=.
-FASTSTRUCTURE_PATH=/Applications/STRUCTURE-fastStructure-e47212f/structure.py
-FASTSTRUCTURE_INPUT=NULL
-LOWER_K_VAL=1
-UPPER_K_VAL=10
-FASTSTRUCTURE_OUTPUT=fS_out_simple
+# None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -p   fsPath (def: /Applications/STRUCTURE-fastStructure-e47212f/structure.py) path to
-       main fastSTRUCTURE Python script (assuming macOS, typical install location; change
-       this option if you have a different install location)
-  -i   fsInput (def: NULL) basename of fastSTRUCTURE input file in STRUCTURE format; typically
-       <basename>.str is the input file and the input is <basename> without the extension
-  -l   lowerK (def: 1, other: lK) lower K value to be modeled in fastSTRUCTURE
-  -u   upperK (def: 10, other: uK) upper K value to be modeled in fastSTRUCTURE
-  -o   fsOutput (def: fS_out_simple) basename for fastSTRUCTURE output files
   -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version and exit
+  -V   version (also: --version) echo version of this script and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT automates running fastSTRUCTURE v1.0 (Raj et al. 2014) on a STRUCTURE-formatted
- input file of genetic data. Assumes that you have installed fastSTRUCTURE and its dependencies,
- including Python, and automatically generates random number seeds.
+ THIS SCRIPT was designed to run in a current working directory where the MAGNET pipeline
+ in PIrANHA v1.0.0 (Bagley 2019) is being run, or has completed a run, to estimate maximum-
+ likelihood (ML) gene trees in RAxML v8+ (Stamatakis 2014) for a set of loci from DNA 
+ sequence data. Given such a workspace, this script counts the number of loci or data 
+ partitions (each assigned a separate RAxML run in MAGNET) with completed RAxML runs and 
+ collates run information. Output files include a summary of completed runs and a summary 
+ of ongoing runs.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). There are no other dependencies.
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f RAxMLRunChecker  			    Run the software
+    piranha -f RAxMLRunChecker --args='-h'      Print this help text
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
- Raj, A., Stephens, M., Pritchard, J.K. 2014. fastSTRUCTURE: variational inference of population 
-	structure in large SNP data sets. Genetics, 197, 573–589.
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+ Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
+	large phylogenies. Bioinformatics, 30, 1312-1313.
 
- Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+ Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
@@ -242,25 +300,6 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
-
-############ PARSE THE OPTIONS
-while getopts 'p:i:l:u:o:' opt ; do
-  case $opt in
-## fastSTRUCTURE options:
-    p) FASTSTRUCTURE_PATH=$OPTARG ;;
-    i) FASTSTRUCTURE_INPUT=$OPTARG ;;
-    l) LOWER_K_VAL=$OPTARG ;;
-    u) UPPER_K_VAL=$OPTARG ;;
-    o) FASTSTRUCTURE_OUTPUT=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
 
 
 # ############# ############# #############
@@ -294,7 +333,7 @@ set -o pipefail
 # checkDependencies
 
 # Run the script
-fastSTRUCTURE
+RAxMLRunChecker
 
 # Exit cleanly
 safeExit

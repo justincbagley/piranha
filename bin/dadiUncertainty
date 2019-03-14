@@ -307,9 +307,16 @@ close O;
 
 EOF
 
-	sed -i '' 's/\\quote/\"/g' ./vcf2dadi.pl ;
-	sed -i '' $'s/\TAB/\t/g' ./vcf2dadi.pl ;
-	sed -i '' 's/^\\//g' ./vcf2dadi.pl ;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/\\quote/\"/g' ./vcf2dadi.pl ;
+		sed -i '' $'s/\TAB/\t/g' ./vcf2dadi.pl ;
+		sed -i '' 's/^\\//g' ./vcf2dadi.pl ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\\quote/\"/g' ./vcf2dadi.pl ;
+		sed -i $'s/\TAB/\t/g' ./vcf2dadi.pl ;
+		sed -i 's/^\\//g' ./vcf2dadi.pl ;
+	fi
 
 
 
@@ -386,13 +393,24 @@ print \quoteboot \$b\n\quote;
 
 EOF
 
-	sed -i '' 's/\\quote/\"/g' ./dadiBoot.pl ;
-	sed -i '' "s/\\singlequote/'/g" ./dadiBoot.pl ;
-	sed -i '' $'s/\TAB/\t/g' ./dadiBoot.pl ;
-	sed -i '' 's/^\\//g' ./dadiBoot.pl ;
-	perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
-	sed -i '' 's/\;\\/\;/g' ./dadiBoot.pl ;
-	perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
+	if [[ "${machine}" = "Mac" ]]; then			
+		sed -i '' 's/\\quote/\"/g' ./dadiBoot.pl ;
+		sed -i '' "s/\\singlequote/'/g" ./dadiBoot.pl ;
+		sed -i '' $'s/\TAB/\t/g' ./dadiBoot.pl ;
+		sed -i '' 's/^\\//g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
+		sed -i '' 's/\;\\/\;/g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\\quote/\"/g' ./dadiBoot.pl ;
+		sed -i "s/\\singlequote/'/g" ./dadiBoot.pl ;
+		sed -i $'s/\TAB/\t/g' ./dadiBoot.pl ;
+		sed -i 's/^\\//g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
+		sed -i 's/\;\\/\;/g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
+	fi
 
 
 ################# SECTION II. PREP BOOTSTRAPPED SNP DATA FILES & SPECTRA FOR UNCERTAINTY ANALYSIS:
@@ -474,15 +492,28 @@ for i in range(1,$MY_NUM_BOOT_DATASETS_PLUSONE):
 
 ##--Fix "\quote" in ./scriptMaker.py by adding in real double quote, '\"'; fix \TAB by adding in 
 ##--real tab, '\t'. Do this using in-place sed editing (-i flag):
-	sed -i '' 's/\\quote/\"/g' ./scriptMaker.py ;
-	sed -i '' $'s/\TAB/\t/g' ./scriptMaker.py ;
-	sed -i '' 's/^\\//g' ./scriptMaker.py ;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/\\quote/\"/g' ./scriptMaker.py ;
+		sed -i '' $'s/\TAB/\t/g' ./scriptMaker.py ;
+		sed -i '' 's/^\\//g' ./scriptMaker.py ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\\quote/\"/g' ./scriptMaker.py ;
+		sed -i $'s/\TAB/\t/g' ./scriptMaker.py ;
+		sed -i 's/^\\//g' ./scriptMaker.py ;
+	fi
 
 
 ################# B. DRAFT CUSTOM makeBootFS PYTHON SCRIPT THAT WILL ACTUALLY MAKE THE BOOTSTRAP FS FILES:
 ##--Make first-draft makeBootFS python script:
 	python ./scriptMaker.py >> ./makeBootFS.py.tmp ;
-	sed -i '' '/error.*$/d' ./makeBootFS.py.tmp ;
+
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' '/error.*$/d' ./makeBootFS.py.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i '/error.*$/d' ./makeBootFS.py.tmp ;
+	fi
 
 ##--Make python header for final python file:
 echo "
@@ -599,7 +630,13 @@ echo "
 
 ###  GIM ANALYSIS  ###
 " > py_shebang_header.tmp
-sed -i '' '1d' ./py_shebang_header.tmp  ;
+
+if [[ "${machine}" = "Mac" ]]; then
+	sed -i '' '1d' ./py_shebang_header.tmp  ;
+fi
+if [[ "${machine}" = "Linux" ]]; then
+	sed -i '1d' ./py_shebang_header.tmp  ;
+fi
 
 	##--Automatically detect whether spectra are folded (no outgroup) or not folded (polarized,
 	##--that is, having the ancestral state known, because an outgroup was available to determine
@@ -651,7 +688,12 @@ uncerts_GIM = dadi.Godambe.GIM_uncert(func_ex, $MY_PTS_VAR_NAME, all_boot, popt,
 " > all_boot_runGIM.tmp
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runGIM.tmp
-	sed -i '' 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+	fi
 
 ##--ADD ONE MORE SECTION TO SCRIPT HERE (python file) TO PRINT RESULTS TO FILE --##
 echo "
@@ -714,7 +756,13 @@ echo "
 
 ###  FIM ANALYSIS  ###
 " > py_shebang_header.tmp
-sed -i '' '1d' ./py_shebang_header.tmp  ;
+
+if [[ "${machine}" = "Mac" ]]; then
+	sed -i '' '1d' ./py_shebang_header.tmp  ;	
+fi
+if [[ "${machine}" = "Linux" ]]; then
+	sed -i '1d' ./py_shebang_header.tmp  ;	
+fi
 
 	##--Automatically detect whether spectra are folded (no outgroup) or not folded (polarized,
 	##--that is, having the ancestral state known, because an outgroup was available to determine
@@ -765,7 +813,12 @@ uncerts_FIM = dadi.Godambe.FIM_uncert(func_ex, $MY_PTS_VAR_NAME, popt, data, mul
 " > all_boot_runFIM.tmp
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runFIM.tmp
-	sed -i '' 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+	fi
 
 ##--ADD ONE MORE SECTION TO SCRIPT HERE (python file) TO PRINT RESULTS TO FILE --##
 echo "
@@ -911,7 +964,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	
     piranha -f dadiUncertainty --args='-a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 1 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf'
  
-	## Same as above, except specifying the FIM method for unlinked SNPs:
+	Same as above, except specifying the FIM method for unlinked SNPs:
  
     piranha -f dadiUncertainty --args='-a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 2 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf'
  

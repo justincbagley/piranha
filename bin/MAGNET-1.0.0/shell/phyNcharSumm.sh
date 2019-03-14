@@ -5,17 +5,17 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: fastSTRUCTURE.sh                                                                 #
-  VERSION="v1.1.2"                                                                       #
+# File: phyNcharSumm.sh                                                                  #
+  VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.                     #
-# Last update: March 11, 2019                                                            #
+# Date: Created by Justin Bagley on November 9, 2016.                                    #
+# Last update: March 14, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# INTERACTIVE SHELL SCRIPT FOR RUNNING fastSTRUCTURE (Raj et al. 2014) ON BIALLELIC SNP  #
-# DATASETS                                                                               #
+# SHELL SCRIPT THAT SUMMARIZES THE NUMBER OF CHARACTERS IN EACH OF N PHYLIP DNA SEQUENCE #
+# ALIGNMENTS IN CURRENT WORKING DIRECTORY AND SAVES THIS INFORMATION TO FILE             #
 #                                                                                        #
 ##########################################################################################
 
@@ -130,60 +130,47 @@ gemDependencies=()
 
 
 
-function fastSTRUCTURE () {
+function phyNcharSumm () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | fastSTRUCTURE, v1.1.2 March 2019  (part of PIrANHA v1.0.0)     "
+echo "INFO      | $(date) | phyNcharSumm, v1.0.0 March 2019  (part of PIrANHA v1.0.0)      "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Step #1: Setup. Read user input, set environmental variables. "
-	MY_FASTSTRUCTURE_WKDIR="$(pwd -P)" ;
-	MY_FASTSTRUCTURE_PATH="$(echo $FASTSTRUCTURE_PATH)" ;
-	RUN_SEED=$RANDOM
+echo "INFO      | $(date) | Starting phyNcharSumm... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
-echo "INFO      | $(date) | Step #2: Run fastSTRUCTURE on range of K specified by user. "
-echo "INFO      | $(date) |          Modeling K = $LOWER_K_VAL to $UPPER_K_VAL clusters in fastSTRUCTURE. "
 
+echo "INFO      | $(date) | Step #2: Summarize number of characters in each PHYLIP DNA sequence alignment in current directory. "
+###### Starting from a folder containing multiple PHYLIP alignment files (e.g. as generated
+## by MAGNET.sh for indiv. SNP loci), this script uses a for loop to echo all alignment
+## names (containing locus or taxon information) to file, and then echoes the number of 
+## characters (Nchar) recursively to a file named "nchar.txt" in the working directory.
+
+echo "INFO      | $(date) |          Saving number of characters for each alignment in file named './nchar.txt'. "
 (
-	for (( i=$LOWER_K_VAL; i<=$UPPER_K_VAL; i++ )); do
-		echo "$i";
-		python "$MY_FASTSTRUCTURE_PATH" -K "$i" --input="$MY_FASTSTRUCTURE_WKDIR/$FASTSTRUCTURE_INPUT" --output="$FASTSTRUCTURE_OUTPUT" --format=str --full --seed="$RUN_SEED" ;
-	done
+	for i in ./*.phy; do 
+		echo "$i" >> ./phyalign_names.txt; 
+		echo "$(head -n1 $i | awk -F"[0-9]*\ " '{print $NF}')" >> ./nchar.txt; 
+	done;
 )
 
-echo "INFO      | $(date) |          fastSTRUCTURE runs completed. "
-
-
-echo "INFO      | $(date) | Step #3: Estimate model complexity. "
-###### Obtain an estimate of the model complexity for each set of runs (per species):
-	MY_CHOOSEK_PATH="$(echo $FASTSTRUCTURE_PATH | sed 's/structure.py//g' | sed 's/$/chooseK.py/g')" ;
-
-	python "$MY_CHOOSEK_PATH" --input="$FASTSTRUCTURE_OUTPUT" > chooseK.out.txt ;
-
-echo "INFO      | $(date) |          Finished estimating model complexity. "
-	cat chooseK.out.txt ;
-
-
-echo "INFO      | $(date) | Step #4: Visualize results. "
-###### Use DISTRUCT to create graphical output of results corresponding to the best K value modeled.
-	read -p "INPUT     | $(date) |          Enter the value of K that you want to visualize : " bestK ;
-
-	MY_DISTRUCT_PATH="$(echo $FASTSTRUCTURE_PATH | sed 's/structure.py//g' | sed 's/$/distruct.py/g')" ;
-
-	python "$MY_DISTRUCT_PATH" -K "$bestK" --input="$MY_FASTSTRUCTURE_WKDIR/$FASTSTRUCTURE_OUTPUT" --output="$FASTSTRUCTURE_OUTPUT_distruct.svg" ;
-
-
-#echo "INFO      | $(date) | Done!!! fastSTRUCTURE analysis complete."
-#echo "Bye.
-#"
+## I would like to build on this by calculating statistics from the nchar list from within
+## the shell.
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
+
 
 ##########################################################################################
 ######################################### END ############################################
@@ -194,73 +181,12 @@ echo ""
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-# USER_SPEC_PATH=.
-FASTSTRUCTURE_PATH=/Applications/STRUCTURE-fastStructure-e47212f/structure.py
-FASTSTRUCTURE_INPUT=NULL
-LOWER_K_VAL=1
-UPPER_K_VAL=10
-FASTSTRUCTURE_OUTPUT=fS_out_simple
-
-############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
-
- ${bold}Options:${reset}
-  -p   fsPath (def: /Applications/STRUCTURE-fastStructure-e47212f/structure.py) path to
-       main fastSTRUCTURE Python script (assuming macOS, typical install location; change
-       this option if you have a different install location)
-  -i   fsInput (def: NULL) basename of fastSTRUCTURE input file in STRUCTURE format; typically
-       <basename>.str is the input file and the input is <basename> without the extension
-  -l   lowerK (def: 1, other: lK) lower K value to be modeled in fastSTRUCTURE
-  -u   upperK (def: 10, other: uK) upper K value to be modeled in fastSTRUCTURE
-  -o   fsOutput (def: fS_out_simple) basename for fastSTRUCTURE output files
-  -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version and exit
-
- ${bold}OVERVIEW${reset}
- THIS SCRIPT automates running fastSTRUCTURE v1.0 (Raj et al. 2014) on a STRUCTURE-formatted
- input file of genetic data. Assumes that you have installed fastSTRUCTURE and its dependencies,
- including Python, and automatically generates random number seeds.
-
- ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
-
- ${bold}REFERENCES${reset}
- Raj, A., Stephens, M., Pritchard, J.K. 2014. fastSTRUCTURE: variational inference of population 
-	structure in large SNP data sets. Genetics, 197, 573–589.
-
- Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
-"
-
-if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
-	echo "$USAGE"
-	exit
-fi
+# None at this time.
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
-
-############ PARSE THE OPTIONS
-while getopts 'p:i:l:u:o:' opt ; do
-  case $opt in
-## fastSTRUCTURE options:
-    p) FASTSTRUCTURE_PATH=$OPTARG ;;
-    i) FASTSTRUCTURE_INPUT=$OPTARG ;;
-    l) LOWER_K_VAL=$OPTARG ;;
-    u) UPPER_K_VAL=$OPTARG ;;
-    o) FASTSTRUCTURE_OUTPUT=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
 
 
 # ############# ############# #############
@@ -294,7 +220,7 @@ set -o pipefail
 # checkDependencies
 
 # Run the script
-fastSTRUCTURE
+phyNcharSumm
 
 # Exit cleanly
 safeExit

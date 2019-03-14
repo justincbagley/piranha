@@ -152,11 +152,9 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 if [[ "$(find . -type d | wc -l)" = "1" ]]; then
-	MY_MULTIRUN_DIR_SWITCH=FALSE ;
-	## Script run in directory with one subfolder, assumed to correspond to a single ∂a∂i run.
+	MY_MULTIRUN_DIR_SWITCH=FALSE ;		## Script run in directory with one subfolder, assumed to correspond to a single ∂a∂i run.
 elif [[ "$(find . -type d | wc -l)" -gt "1" ]]; then
-	MY_MULTIRUN_DIR_SWITCH=TRUE ;
-	## Script run in directory containing multiple subfolders, assumed to correspond to multiple ∂a∂i runs (1 per run).
+	MY_MULTIRUN_DIR_SWITCH=TRUE ;		## Script run in directory containing multiple subfolders, assumed to correspond to multiple ∂a∂i runs (1 per run).
 fi
 
 
@@ -194,8 +192,14 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "FALSE" ]]; then
 			if [[ "$MY_BFP_CLOSEBRACK_TEST" = "0" ]]; then
 
 				## Clean up only to tab-separated BFP estimates:
-				sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
-				sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+					sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+					sed -i 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+				fi
 
 			elif [[ "$MY_BFP_CLOSEBRACK_TEST" != "0" ]]; then
 
@@ -285,8 +289,14 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "TRUE" ]]; then
 					if [[ "$MY_BFP_CLOSEBRACK_TEST" = "0" ]]; then
 
 						## Clean up only to tab-separated BFP estimates:
-						sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
-						sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+							sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+						fi
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+							sed -i 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+						fi
 
 					elif [[ "$MY_BFP_CLOSEBRACK_TEST" != "0" ]]; then
 

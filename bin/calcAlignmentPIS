@@ -9,7 +9,7 @@
   VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: March 11, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,10 +141,10 @@ echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights rese
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
+echo "INFO      | $(date) | Starting calcAlignmentPIS pipeline... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
-############ I. SET UP WORKSPACE AND CHECK MACHINE TYPE.
-MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
-echo "INFO      | $(date) |          Current directory: $MY_PATH "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
