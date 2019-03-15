@@ -5,7 +5,7 @@
 
 ## PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
 
-This is a very minor update to the pre-release version that includes edits to the README and index.html files, and that adds this slightly updated changeLog.md file back into the repository. Other changes include removing `bin/trash` function due to conflicts with `/usr/local/bin/trash` symlink belonging to trash on macOS, which caused homebrew install to fail. After fixing this, I have also now created a successful homebrew tap for PIrANHA that is working with this release (more info soon, to be added to the README). 
+This is a minor update to the pre-release version that includes edits to the README and index.html files, and that adds this slightly updated changeLog.md file back into the repository. Other changes include removing `bin/trash` function due to conflicts with `/usr/local/bin/trash` symlink belonging to trash on macOS, which caused homebrew install to fail. After fixing this, I have also now created a successful homebrew tap for PIrANHA that is working with this release (more info soon, to be added to the README). 
 
 ## PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
 
