@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: March 13, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ function MAGNET () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MAGNET, v1.0.0 March 2019  (part of PIrANHA v1.0.0)            "
+echo "INFO      | $(date) | MAGNET, v1.0.0 March 2019  (part of PIrANHA v0.2-alpha.1c)     "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -986,8 +986,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
      											    	  HKY85 substitution model for all loci    
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Gronau, I., Hubisz, M.J., Gulko, B., Danko, C.G., Siepel, A. 2011. Bayesian inference of 
@@ -1102,8 +1102,8 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
      											    	  HKY85 substitution model for all loci    
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Gronau, I., Hubisz, M.J., Gulko, B., Danko, C.G., Siepel, A. 2011. Bayesian inference of 

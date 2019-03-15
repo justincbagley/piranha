@@ -258,8 +258,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f pyRADLocusVarSites
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 

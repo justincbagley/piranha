@@ -5,6 +5,8 @@
 #
 # VERSION 1.0.0
 #
+# Author: Nate Landau
+#
 # This script sources my collection of scripting utilities making
 # it possible to source this one script and gain access to a
 # complete collection of functions, variables, and other options.

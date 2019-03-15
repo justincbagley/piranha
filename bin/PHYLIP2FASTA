@@ -9,7 +9,7 @@
   VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: March 13, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ function PHYLIP2FASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2FASTA, v1.1.2 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.1.2 March 2019  (in PIrANHA v0.2-alpha.1c)    "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -260,8 +260,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     													    with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.

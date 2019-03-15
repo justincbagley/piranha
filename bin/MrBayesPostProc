@@ -9,7 +9,7 @@
   version="v1.6.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: March 14, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ function MrBayesPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MrBayesPostProc, v1.6.0 March 2019  (part of PIrANHA v1.0.0)   "
+echo "INFO      | $(date) | MrBayesPostProc, v1.6.0 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2017–2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -384,8 +384,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  to MrBayesPostProc).
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Baele, G., Lemey, P., Bedford, T., Rambaut, A., Suchard, M.A., Alekseyenko, A.V. 2012. 

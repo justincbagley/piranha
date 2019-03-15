@@ -137,7 +137,7 @@ function RAxMLRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RAxMLRunner, v1.4.1 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | RAxMLRunner, v1.4.1 March 2019  (part of PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -316,8 +316,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f RAxMLRunner --args='-h'      Print this help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of 

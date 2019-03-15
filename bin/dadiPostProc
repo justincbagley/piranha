@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
-# Last update: March 13, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ function dadiPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiPostProc, v1.0.0 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | dadiPostProc, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)    "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -393,7 +393,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -u   upperModNum (def: $MY_UPPER_MOD_NUM) upper number in model number range
   -h   help text (also: --help) echo this help text and exit
   -H   verbose help text (also: -Help) echo verbose help text and exit
-  -V   version (also: --version) echo version and exit
+  -V   version (also: --version) echo version of this script and exit
   
  ${bold}OVERVIEW${reset}
  Automates post-processing and organizing results from multiple ∂a∂i (Gutenkunst et al. 2009)
@@ -413,8 +413,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
 														ranges starting from values other than 1
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Gutenkunst, R.N., Hernandez, R.D., Williamson, S.H., Bustamante, C.D. 2009. Inferring the  
@@ -434,7 +434,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
   -u   upperModNum (def: $MY_UPPER_MOD_NUM) upper number in model number range
   -h   help text (also: --help) echo this help text and exit
   -H   verbose help text (also: -Help) echo verbose help text and exit
-  -V   version (also: --version) echo version and exit
+  -V   version (also: --version) echo version of this script and exit
   
  ${bold}OVERVIEW${reset}
  Automates post-processing and organizing results from multiple ∂a∂i (Gutenkunst et al. 2009)
@@ -465,8 +465,8 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
 														ranges starting from values other than 1
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Gutenkunst, R.N., Hernandez, R.D., Williamson, S.H., Bustamante, C.D. 2009. Inferring the  

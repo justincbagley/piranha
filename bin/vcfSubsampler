@@ -202,8 +202,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f vcfSubsampler --args='-i <inputVCFFile> -s <snpsFile>'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.
  Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.

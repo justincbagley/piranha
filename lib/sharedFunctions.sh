@@ -10,7 +10,7 @@
 #                         by Nate Landau, from a forked version of his shell-scripts repository,
 #                         which he last had as v1.4.9 (see below))
 #
-# Pre-PIrANHA / Phylos, version updates by Nate Landau:
+# Pre-PIrANHA version updates by Nate Landau:
 # * 2015-01-02 - v1.0.0   - First Creation
 # * 2015-04-16 - v1.2.0   - Added 'checkDependencies' and 'pauseScript'
 # * 2016-01-10 - v1.3.0   - Added 'join' function

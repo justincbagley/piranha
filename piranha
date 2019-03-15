@@ -222,7 +222,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v1.0.0.
+ This is the main script for PIrANHA v0.2-alpha.1c.
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
@@ -238,22 +238,23 @@ usage() {
   -h, --help        Display this help and exit
       --version     Output version information and exit
 
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT is the 'master' script that runs the PIrANHA software package by specifying the 
+ <function> to be run (-f flag) and any arguments to pass to that function (-a flag). If no
+ functions are given, then the program prints the help text and exits.
+	Functions are located in PIrANHA repository's bin/ folder. For detailed information on
+ the capabilities of PIrANHA, please refer to documentation posted on the PIrANHA
+ Wiki (https://github.com/justincbagley/piranha/wiki) or the PIrANHA website
+ (https://justinbagley.org/piranha/) for further information.
+
  ${bold}Usage examples:${reset}
     piranha -f calcAlignmentPIS --args='-h'      Get help text for calcAlignmentPIS
     piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
- ${bold}OVERVIEW${reset}
- THIS SCRIPT runs the PIrANHA software package by specifying the <function> to run (-f flag)
- and any arguments to pass to that function (-a flag). [In prep. ... ].
-	Functions are located in PIrANHA repository's bin/ folder. For detailed information on
- the capabilities of PIrANHA, please refer to documentation posted on the PIrANHA-1.0
- Wiki (https://github.com/justincbagley/PIrANHA-1.0/wiki) or the PIrANHA-1.0 website
- (https://justinbagley.org/PIrANHA-1.0/) for further information.
-
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA-1.0>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.

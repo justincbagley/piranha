@@ -9,7 +9,7 @@
   VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.                       #
-# Last update: March 13, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ function Mega2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | Mega2PHYLIP, v1.0.2 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | Mega2PHYLIP, v1.0.2 March 2019  (part of PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -363,7 +363,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to 
        screen (stdout)
   -h   help text (also: --help) show this help text and exit
-  -V   version (also: --version) echo version and exit
+  -V   version (also: --version) echo version of this script and exit
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates converting one or more multiple sequence alignment (MSA) files in
@@ -377,8 +377,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f Mega2PHYLIP --args='-m1 -k 1'				   Convert multiple Mega files to PHYLIP, keeping original files
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
@@ -459,4 +459,3 @@ Mega2PHYLIP
 
 # Exit cleanly
 safeExit
-

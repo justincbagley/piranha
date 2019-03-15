@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.                     #
-# Last update: March 13, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ function BEASTReset () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTReset, v1.0.0 March 2019  (part of PIrANHA v1.0.0)        "
+echo "INFO      | $(date) | BEASTReset, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)      "
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -152,10 +152,86 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
+echo "INFO      | $(date) | Step #2: Run BEASTReset with slightly different options, depending on whether machine is mac or Linux. "
+
+if [[ "${machine}" = "Mac" ]]; then
+
+####### CASE 1: LOCAL MACHINE - ONLY FIX SUBMISSION SCRIPTS BY CHANGING RANDOM SEEDS:
+
+####### RUN LOCALLY:
+(
+	cat "$MY_RERUN_DIR_LIST" | while read i; do 
+		cd "$i"; 
+		echo "$i"; 
+			j=./"$MY_RUN_SCRIPT" ;
+			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
+			echo "$MY_RANDOM_SEED" 
+			sed -i '' "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j" ; 
+		cd ..; 
+	done
+)
+
+fi
+
+## Example of the line above, as bash one-liner, using a specific $MY_RERUN_DIR_LIST list file name:
+## (
+## cat newseed_redo_dir_list_mycompu.txt | while read i; do cd "$i";  echo "$i";  j=./beast_pbs.sh; MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')";  echo $MY_RANDOM_SEED;  sed -i '' "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j";  cd ..;  done
+## )
 
 
+####### CASE 2: SUPERCOMPUTER ENVIRONMENT - FIX SUBMISSION SCRIPTS AND RUN THEM ON THE SUPERCOMPUTER,
+####### EXPECTING DIFFERENT INPUT FILENAMES/FORMATS VARYING BY MANAGEMENT SYSTEM (PBS or SLURM):
 
-##################################### BEASTReset.sh ######################################
+if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "PBS" ]]; then
+
+####### RUN ON LINUX SUPERCOMPUTER WITH TORQUE/PBS MANAGER:
+(
+	cat "$MY_RERUN_DIR_LIST" | while read i; do 
+		cd "$i"; 
+		echo "$i"; 
+			j=./"$MY_RUN_SCRIPT" ;
+			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
+			echo "$MY_RANDOM_SEED"
+			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
+
+			qsub ./"$MY_RUN_SCRIPT"
+
+		cd ..; 
+	done
+)
+
+fi
+
+
+if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "SLURM" ]]; then
+
+####### RUN ON LINUX SUPERCOMPUTER WITH SLURM MANAGER:
+(
+	cat "$MY_RERUN_DIR_LIST" | while read i; do 
+		cd "$i"; 
+		echo "$i"; 
+			j=./"$MY_RUN_SCRIPT" ;
+			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
+			echo "$MY_RANDOM_SEED" 
+			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
+
+			sbatch ./"$MY_RUN_SCRIPT"
+
+		cd ..; 
+	done
+)
+
+fi
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -164,19 +240,18 @@ MY_RUN_SCRIPT=beast_pbs.sh
 MY_SC_MANAGEMENT_SYS=PBS
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename $0) [Help: -h help] [Options: -i s m V --version] [stdin:] <workingDir>
- ## Help:
-  -h   help text (also: -help)
-  -H   verbose help text (also: -Help)
+USAGE="Usage: $(basename $0) [OPTION]...
 
- ## Options:
+ ${bold}Options:${reset}
   -i   rerunList (def: $MY_RERUN_DIR_LIST) name of BEAST run sub-folders that need to be reset/rerun
   -s   scriptName (def: $MY_RUN_SCRIPT) name of shell/bash run submission script (must be the
        same for all runs, or entered with wildcards to accommodate all names used, e.g. 'beast*.sh')
   -m   manager (def: $MY_SC_MANAGEMENT_SYS; other: SLURM) name of scheduling and resource manager system on the 
        supercomputer
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
 
- OVERVIEW
+ ${bold}OVERVIEW${reset}
  THI SCRIPT expects to start from a set of BEAST run sub-folders in the current working 
  directory. Each sub-folder will correspond to a run that has been (or will be) submitted 
  to a remote supercomputing cluster with a Linux operating system, and either a TORQUE/PBS 
@@ -209,20 +284,27 @@ Usage="Usage: $(basename $0) [Help: -h help] [Options: -i s m V --version] [stdi
  part of the PIrANHA software repository (Bagley 2019). See the BEASTReset and PIrANHA 
  README files for additional information.
 
- CITATION
- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
-	<http://github.com/justincbagley/PIrANHA>.
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+ 
+    piranha -f BEASTReset			   Run in current working directory
+    piranha -f BEASTReset --args='-i <rerunList> -s <scriptName>'	Run with options
+    piranha -f BEASTReset --args='-h'	  Print help text and exit
 
- REFERENCES
- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
-	<http://github.com/justincbagley/PIrANHA>.
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
-Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.
-Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ ${bold}REFERENCES${reset}
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.
+ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
@@ -234,156 +316,54 @@ fi
 ############ PARSE THE OPTIONS
 while getopts 'i:s:m:' opt ; do
   case $opt in
-
-## RAxML and datafile options:
+## BEASTReset options:
     i) MY_RERUN_DIR_LIST=$OPTARG ;;
     s) MY_RUN_SCRIPT=$OPTARG ;;
     m) MY_SC_MANAGEMENT_SYS=$OPTARG ;;
 
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-echo "$Usage"
-  exit 1
-fi
-USER_SPEC_PATH="$1"		## Name of working dir for run is a mandatory positional parameter.
 
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "$USER_SPEC_PATH "	
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
 
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
 
-echo "
-##########################################################################################
-#                             BEASTReset v0.1.2, March 2019                              #
-##########################################################################################
-"
+# Set IFS to preferred implementation
+IFS=$'\n\t'
 
-######################################## START ###########################################
-echo "INFO      | $(date) | Starting BEASTReset script... "
-echo "INFO      | $(date) | STEP #1: SETUP. "
-###### Set new path/dir environmental variable to user specified path, then create useful
-##--shell functions and variables:
-############ SET AND MOVE INTO WORKING DIRECTORY
-############ Set <workingDir>
-if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
-	MY_PATH="$(pwd -P | perl -pe 's/\\//g')"
-	echo "INFO      | $(date) |          Setting working directory to:  "
-	echo "$MY_PATH "
-elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
-	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
-		cd ..;
-			MY_PATH="$(pwd -P | perl -pe 's/\\//g')"
-			echo "INFO      | $(date) |          Setting working directory to:  "
-			echo "$MY_PATH "
-	else
-		MY_PATH=$USER_SPEC_PATH
-		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
-		echo "$MY_PATH "
-		cd "$MY_PATH"
-	fi
-else
-	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
-	exit 1
-fi
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
 
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
 
-####### CHECK MACHINE TYPE
-##--This idea and code came from the following URL (Lines 87-95 code is reused here): 
-##--https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux 
-unameOut="$(uname -s)"
-case "${unameOut}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    *)          machine="UNKNOWN:${unameOut}"
-esac
-echo ${machine}
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
 
-if [[ "${machine}" = "Mac" ]]; then
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
 
-####### CASE 1: LOCAL MACHINE - ONLY FIX SUBMISSION SCRIPTS BY CHANGING RANDOM SEEDS:
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
 
-####### RUN LOCALLY:
-(
-	cat "$MY_RERUN_DIR_LIST" | while read i; do 
-		cd "$i"; 
-		echo "$i"; 
-			j=./"$MY_RUN_SCRIPT"
-			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
-			echo "$MY_RANDOM_SEED"; 
-			sed -i '' "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
-		cd ..; 
-	done
-)
-
-fi
-
-## Example of the line above, as bash one-liner, using a specific $MY_RERUN_DIR_LIST list file name:
-## (
-## cat newseed_redo_dir_list_mycompu.txt | while read i; do cd "$i";  echo "$i";  j=./beast_pbs.sh; MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')";  echo $MY_RANDOM_SEED;  sed -i '' "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j";  cd ..;  done
-## )
-
-
-####### CASE 2: SUPERCOMPUTER ENVIRONMENT - FIX SUBMISSION SCRIPTS AND RUN THEM ON THE SUPERCOMPUTER,
-####### EXPECTING DIFFERENT INPUT FILENAMES/FORMATS VARYING BY MANAGEMENT SYSTEM (PBS or SLURM):
-
-if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "PBS" ]]; then
-
-####### RUN ON LINUX SUPERCOMPUTER WITH TORQUE/PBS MANAGER:
-(
-	cat "$MY_RERUN_DIR_LIST" | while read i; do 
-		cd "$i"; 
-		echo "$i"; 
-			j=./"$MY_RUN_SCRIPT"
-			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
-			echo "$MY_RANDOM_SEED"; 
-			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
-
-			qsub ./"$MY_RUN_SCRIPT"
-
-		cd ..; 
-	done
-)
-
-fi
-
-
-if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "SLURM" ]]; then
-
-####### RUN ON LINUX SUPERCOMPUTER WITH SLURM MANAGER:
-(
-	cat "$MY_RERUN_DIR_LIST" | while read i; do 
-		cd "$i"; 
-		echo "$i"; 
-			j=./"$MY_RUN_SCRIPT"
-			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
-			echo "$MY_RANDOM_SEED"; 
-			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
-
-			sbatch ./"$MY_RUN_SCRIPT"
-
-		cd ..; 
-	done
-)
-
-fi
-
-
-
-
-
-
-
+# Run the script
 BEASTReset
+
+# Exit cleanly
+safeExit

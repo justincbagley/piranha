@@ -136,7 +136,7 @@ function BEAST_PSPrepper () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEAST_PSPrepper, v1.0.0 March 2019  (part of PIrANHA v1.0.0)   "
+echo "INFO      | $(date) | BEAST_PSPrepper, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)   "
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -358,8 +358,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEAST_PSPrepper --args='-h'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Bagley, J.C., Matamoros, W., McMahan, C., Chakrabarty, P., Johnson, J.B. 2016. Phylogeography and 

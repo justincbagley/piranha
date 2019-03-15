@@ -256,8 +256,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f renameForStarBEAST2 --args='-f phylip -a assignment.txt'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.

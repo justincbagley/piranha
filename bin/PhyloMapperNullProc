@@ -220,8 +220,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f PhyloMapperNullProc --args='-h'		Print the help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. (2019) PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Lemmon, A.R., Lemmon, E.M. 2008. A likelihood framework for estimating phylogeographic 

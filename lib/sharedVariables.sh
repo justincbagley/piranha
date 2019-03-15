@@ -10,7 +10,7 @@
 #                         by Nate Landau, from a forked version of his shell-scripts repository,
 #                         which he last had as v1.0.3, last updated 2016-01-13 (see below))
 #
-# Pre-PIrANHA / Phylos, version updates by Nate Landau:
+# Pre-PIrANHA version updates by Nate Landau:
 # * 2015-01-02 - v1.0.0 - First Creation
 # * 2015-08-05 - v1.0.1 - Now has $hourstamp (10:34:40 PM)
 # * 2016-01-10 - v1.0.2 - Now has $longdate and set LC_ALL=C to all dates

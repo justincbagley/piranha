@@ -137,7 +137,7 @@ function MLEResultsProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MLEResultsProc, v1.4.0 March 2019  (part of PIrANHA v1.0.0)    "
+echo "INFO      | $(date) | MLEResultsProc, v1.4.0 March 2019  (part of PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -337,8 +337,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f MLEResultsProc --args='-h'      Print this help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.
  Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.

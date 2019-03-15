@@ -136,7 +136,7 @@ function calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | calcAlignmentPIS, v1.4.0 March 2019  (part of PIrANHA v1.0.0)  "
+echo "INFO      | $(date) | calcAlignmentPIS, v1.4.0 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -311,7 +311,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
        that subsets alignments to a threshold number, N, with the most parsimony-informative
        sites (PIS). Takes integer values of N > 0.
   -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version and exit
+  -V   version (also: --version) echo version of this script and exit
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates calculating the number of parsimony-informative sites (PIS) for each
@@ -331,8 +331,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Heibl C. 2008 onwards. PHYLOCH: R language tree plotting tools and interfaces to diverse
