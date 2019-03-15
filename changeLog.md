@@ -3,6 +3,10 @@
 ### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
+### PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
+
+This is a very minor update to the pre-release version that includes edits to the README and index.html files, and that adds this slightly updated changeLog.md file back into the repository. I have now created a successful homebrew tap for PIrANHA that is working with this release (more info soon).
+
 ### PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
 
 This is a very minor update to the pre-release version removing some PHYLIP and FASTA DNA sequence alignments that I had previously included in the repo for my own testing purposes, and updating README and index.html files.
