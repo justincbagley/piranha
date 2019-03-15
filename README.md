@@ -83,21 +83,6 @@ Directory tree...
 │   ├── raxml_runner.cfg
 │   ├── snapp_runner.cfg
 │   └── .gitignore
-├── doc
-│   ├── README.md
-│   ├── BEASTPostProc_README.md
-│   ├── BEASTReset_README.md
-│   ├── BEASTRunner_README.md
-│   ├── ExaBayesPostProc_README.md
-│   ├── MLEResultsProc_README.md
-│   ├── MrBayesPostProc_README.md
-│   └── ...
-├── examples
-│   ├── BEAST_PathSampling
-│   ├── SNAPPRunner
-│   ├── dadiRunner
-│   ├── dadiUncertainty
-│   └── pyRADLocusVarSites
 └── tmp
     └── .gitignore
 ```
