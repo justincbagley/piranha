@@ -6,13 +6,13 @@ Shell script pipeline for inferring ML gene trees for many loci (e.g. genomic RA
 
 ## LICENSE
 
-All code within the PIrANHA repository, including MAGNET v1.0.0 pipeline code, is available "AS IS" under a generous GNU license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA repository, including MAGNET v1.0.0 pipeline code, is available "AS IS" under a 3-clause BSD license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
 If you use scripts from this repository as part of your published research, then I require you to cite the PIrANHA repository and/or MAGNET package as follows (also see DOI information below):
 
-  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
+  Bagley, J.C. 2019. PIrANHA v0.2-alpha.1b. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA/.
   
   Bagley, J.C. 2019. MAGNET v1.0.0. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
@@ -277,5 +277,5 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 - Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
 
 
-March 13, 2019
+March 15, 2019
 Justin C. Bagley, St. Louis, MO, USA
