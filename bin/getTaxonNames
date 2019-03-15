@@ -1,27 +1,165 @@
 #!/bin/bash
 
-## USAGE
-## ./getTaxonNames.sh <maxTips>
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: getTaxonNames.sh                                                                 #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Wed, Mar 13 17:17:41 CDT 2019.                       #
+# Last update: March 15, 2019                                                            #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# EXTRACTS TIP TAXON NAMES FROM SEQUENCES IN ONE OR MULTIPLE PHYLIP DNA SEQUENCE         #
+# ALIGNMENTS IN CURRENT DIRECTORY, USING INFORMATION ON MAXIMUM TAXON SAMPLING LEVEL     #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
 
 
-###### CHECK MACHINE TYPE:
-unameOut="$(uname -s)"
-case "${unameOut}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    *)          machine="UNKNOWN:${unameOut}"
-esac
+# Source shared functions and variables
+# -----------------------------------
 
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function getTaxonNames () {
 
 ######################################## START ###########################################
+##########################################################################################
 
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | getTaxonNames, v1.0.0 March 2019  (part of PIrANHA v1.0.0)     "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting getTaxonNames analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+echo "INFO      | $(date) | Step #2: Make taxon names file based on alignment with the maximum number of tip taxa (must exist in cwd). "
 ###### MAKE TAXON NAMES FILE.
-## Read in maximum number of tip taxa, <maxTips>. For unphased data this is n (no. individuals).
+## Read in maximum number of tip taxa, <numTips>. For unphased data this is n (no. individuals).
 ## For phased data, this is 2n if the software previously used to phased the data always outputs
 ## two sequences per individual tip taxon (e.g. with _0 and _1 suffixed, phased designations).
-i="$1"
+
+if [[ "$MY_N_MAX_TIP_TAXA" != "NULL" ]]; then
+	i="$MY_N_MAX_TIP_TAXA"
+fi
 
 (
 	for j in ./*.phy; do
@@ -64,11 +202,115 @@ i="$1"
 sed 's/$/\ x/g' "$i"_taxon_names.txt | column -t | sed 's/x$//g' > "$i"_taxon_names_spaces.txt
 
 
+echo "----------------------------------------------------------------------------------------------------------"
+echo "output file(s): ./${i}_taxon_names.txt"
+echo ""
 
-#
-#
-#
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
 
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_N_MAX_TIP_TAXA=NULL
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -n   numTips (def: NULL) mandatory input, maximum number of tip taxa in dataset
+  -h   help text (also: -help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS PROGRAM extracts tip taxon names from sequences in one or multiple PHYLIP (Felsenstein 
+ 2002) DNA sequence alignments in the current working directory, using information provided
+ by the user on the maximum number of tip taxa, <numTips>, i.e. the maximum sampling level 
+ present in any of the PHYLIP files. The maximum number of tips is passed to the program using 
+ the -n flag. For unphased data, <numTips> is simply n, the number of individuals that were 
+ sequenced. But for phased data, <numTips> will be 2n if the software previously used to phase 
+ the data output two sequences per individual tip taxon (e.g. with _0 and _1 suffixed, phased 
+ designations). 
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). There are no other dependencies.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f getTaxonNames --args='-n 80'    Run program with the maximum <numTips> set to 80
+    piranha -f getTaxonNames --args='-h'      Print this help text
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ Created by Justin Bagley on Wed, Mar 13 17:17:41 CDT 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'n:' opt ; do
+  case $opt in
+## getTaxonNames options:
+    n) MY_N_MAX_TIP_TAXA=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+getTaxonNames
+
+# Exit cleanly
+safeExit

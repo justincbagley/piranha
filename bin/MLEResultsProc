@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MLEResultsProc.sh                                                                #
-  VERSION="v1.3"                                                                         #
+  VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -19,43 +19,164 @@
 #                                                                                        #
 ##########################################################################################
 
-if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
-	exit
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
 fi
 
-echo "
-##########################################################################################
-#                            MLEResultsProc v1.3, March 2019                             #
-##########################################################################################
-"
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+2LOGEB10_RSCRIPT_LOCATION="${SCRIPT_PATH}/2logeB10.R" # Update this path to find the 2logeB10.R Rscript.
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function MLEResultsProc () {
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | STEP #1: SETUP. "
-	MY_BEAST_OUTPUT_FILES=*.out
+##########################################################################################
 
-echo "INFO      | $(date) | STEP #2: CHECK BEAST VERSION (DETECT AND ACCOMODATE RESULTS FILES FROM BEAST1 OR BEAST2). "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | MLEResultsProc, v1.4.0 March 2019  (part of PIrANHA v1.0.0)    "
+echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting MLEResultsProc pipeline... "
+echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and read beast .out files into environmental variable. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+	MY_BEAST_OUTPUT_FILES=*.out ;
+
+echo "INFO      | $(date) | Step #2: Check BEAST version, in order to detect and accommodate results files from BEAST v1 versus BEAST2. "
 ## CHECK BEAST VERSION. 
-##--Conditional on the following check, we will run one of two different versions of 
-##--MLEResultsProc on the current working dir--one specific to the format of output (.out)
-##--files from BEAST v1, and one specific to the format of .out files from BEAST v2.
+## Conditional on the following check, we will run one of two different versions of 
+## MLEResultsProc on the current working dir--one specific to the format of output (.out)
+## files from BEAST v1, and one specific to the format of .out files from BEAST v2.
 (	
 	for i in $MY_BEAST_OUTPUT_FILES; do 
 		echo "$i" > file.tmp; 
 	break; 
 	done	
 )
-	y="$(cat file.tmp)"
+	y="$(cat file.tmp)";
 
-	MY_BEAST1_VER_CHECK="$(grep -h 'BEAST\ v1' $y | wc -l)"
-	MY_BEAST1_VER_CHECK2="$(grep -h 'log\ marginal\ likelihood' $y | wc -l)"
+	MY_BEAST1_VER_CHECK="$(grep -h 'BEAST\ v1' $y | wc -l)";
+	MY_BEAST1_VER_CHECK2="$(grep -h 'log\ marginal\ likelihood' $y | wc -l)";
 
-	MY_BEAST2_VER_CHECK="$(grep -h 'BEAST\ v2' $y | wc -l)"
-	MY_BEAST2_VER_CHECK2="$(grep -h 'marginal\ L\ estimate' $y | wc -l)"
+	MY_BEAST2_VER_CHECK="$(grep -h 'BEAST\ v2' $y | wc -l)";
+	MY_BEAST2_VER_CHECK2="$(grep -h 'marginal\ L\ estimate' $y | wc -l)";
 
-	rm ./file.tmp
+	rm ./file.tmp ;
 
-echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
+
+echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files in current directory. "
 
 ################################## extractB1Results.sh ###################################
 
@@ -68,24 +189,24 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 	(
 		for i in $MY_BEAST_OUTPUT_FILES; do 
 			echo "$i"
-			echo "$(basename $i)" > "${i}"_filename.tmp
+			echo "$(basename $i)" > "${i}"_filename.tmp ;
 #
 				grep -n "log marginal likelihood (using path sampling) from pathLikelihood.delta =" ${i} | \
-				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp
+				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp ;
 	
 				grep -n "log marginal likelihood (using stepping stone sampling) from pathLikelihood.delta =" ${i} | \
-				awk -F"= " '{print $NF}' > "${i}"_SSMLEs.tmp
+				awk -F"= " '{print $NF}' > "${i}"_SSMLEs.tmp ;
 #
-				MY_PS_RESULT="$(head -n1 ${i}_PSMLEs.tmp)"
-				MY_SS_RESULT="$(head -n1 ${i}_SSMLEs.tmp)"
+				MY_PS_RESULT="$(head -n1 ${i}_PSMLEs.tmp)";
+				MY_SS_RESULT="$(head -n1 ${i}_SSMLEs.tmp)";
 #
-			echo "${i}"_filename.tmp "$MY_PS_RESULT" "$MY_SS_RESULT" >> data.tmp
+			echo "${i}"_filename.tmp "$MY_PS_RESULT" "$MY_SS_RESULT" >> data.tmp ;
 		done
 	)
 
-	rm ./*_filename.tmp
-	rm ./*_PSMLEs.tmp
-	rm ./*_SSMLEs.tmp
+	rm ./*_filename.tmp ;
+	rm ./*_PSMLEs.tmp ;
+	rm ./*_SSMLEs.tmp ;
 
 }
 
@@ -100,7 +221,7 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 	(
 		for i in $MY_BEAST_OUTPUT_FILES; do 
 			echo "$i"
-			echo "$(basename $i)" > "${i}"_filename.tmp
+			echo "$(basename $i)" > "${i}"_filename.tmp ;
 #
 				grep -n "marginal L estimate =" ${i} | \
 				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp ;
@@ -129,9 +250,9 @@ echo "INFO      | $(date) | STEP #3: EXTRACT MLE RESULTS FROM OUTPUT FILES. "
 
 
 
-##--Don't forget to run the (single) appropriate function! If output files from BEAST1 *and*
-##--BEAST2 runs are present in current working directory (=NOT ALLOWED!), then the BEAST1 
-##--results will simply be overwritten. 
+## Don't forget to run the (single) appropriate function! If output files from BEAST1 *and*
+## BEAST2 runs are present in current working directory (=NOT ALLOWED!), then the BEAST1 
+## results will simply be overwritten. 
 if [[ "$MY_BEAST1_VER_CHECK" -gt "0" ]] || [[ "$MY_BEAST1_VER_CHECK2" -gt "0" ]]; then
 	echo "INFO      | $(date) |          BEAST v1+ output files detected; conducting post-processing accordingly... "
 	echo "INFO      | $(date) |          Extracting MLE results from the following output files: "
@@ -145,7 +266,7 @@ fi
 
 
 
-echo "INFO      | $(date) | STEP #4: ARRANGE MLE RESULTS IN TAB-DELIMITED FILE WITH HEADER. "
+echo "INFO      | $(date) | Step #4: Arrange MLE results in tab-delimited file with header. "
 	echo "INFO      | $(date) |          Placing results into 'MLE.output.txt' in current working directory. "
 	echo "File	PS_MLE	SS_MLE" > header.txt ;	## Make header row. Change these codes as needed.
 	cat header.txt data.tmp | sed 's/\_filename.tmp//g; s/\ /	/g' > MLE.output.txt ;
@@ -155,23 +276,117 @@ echo "INFO      | $(date) | STEP #4: ARRANGE MLE RESULTS IN TAB-DELIMITED FILE W
 	rm data.tmp ;
 
 
-echo "INFO      | $(date) | STEP #5: LOAD MLE RESULTS INTO R AND COMPUTE BAYES FACTOR TABLES. "
-##--We do this in an R script that I wrote named "2logeB10.R" that we simply call here. 
-##--Note this script needs to be either in the working directory or the user's path.
+echo "INFO      | $(date) | Step #5: Load MLE results into R and compute Bayes factor tables. "
+## We do this in an R script that I wrote named "2logeB10.R" that we simply call here. 
+## This script is distributed with PIrANHA and, like all other functions including MLEResultsProc,
+## it is in the bin/ folder of the distro. Here we account for different distro locations on
+## different (users') machines by calling from ${2LOGEB10_RSCRIPT_LOCATION} defined at the 
+## top of this script (line 56).
 
 	echo "INFO      | $(date) |          Calculating Bayes factors in R using '2logeB10.R' script... "
-	R CMD BATCH 2logeB10.R
+	R CMD BATCH "${2LOGEB10_RSCRIPT_LOCATION}"
 
 if [[ -s ./2logeB10.Rout  ]] && [[ "$(wc -c 2logeB10.Rout | perl -pe 's/\ +([0-9]{4}).*$/$1/g')" -gt "3960" ]]; then
 	echo "INFO      | $(date) |          R calculations complete. "
 fi
 
-echo "INFO      | $(date) | Done summarizing marginal-likelihood estimation results in BEAST using MLEResultsProc. "
-echo "INFO      | $(date) | Bye.
-"
-#
-#
-#
+#echo "INFO      | $(date) | Done summarizing marginal-likelihood estimation results in BEAST using MLEResultsProc. "
+#echo "INFO      | $(date) | Bye.
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+# None at this time.
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -h   help text (also: -help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates post-processing of marginal likelihood estimation results from 
+ running path sampling (ps) or stepping-stone (ss) sampling analyses on different models in
+ BEAST. The program runs in current working directory containing BEAST output files, i.e.
+ within a single run folder containing results from a single MLE BEAST run. After attempting 
+ to identify the BEAST version used for the analysis from user's files, the program extracts 
+ MLE results from BEAST output files in current directory. The MLE results are processed and
+ output to a file named 'MLE.output.txt', and then they are read into R, where a custom
+ Rscript computes Bayes factors for the models.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). The main dependencies are R (v3.3+) and Perl (v5+), the later
+ of which is usually already installed on most mac and Linux distributions. 
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f MLEResultsProc			   Run with program defaults in current directory
+    piranha -f MLEResultsProc --args='-h'      Print this help text
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.
+ Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+MLEResultsProc
+
+# Exit cleanly
+safeExit

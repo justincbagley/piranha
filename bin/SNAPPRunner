@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: SNAPPRunner.sh                                                                   #
-  VERSION="v1.2.0"                                                                       #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.                     #
-# Last update: March 14, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -52,6 +52,7 @@ else
   exit 1
 fi
 
+CONFIG_FILE_LOCATION="${SCRIPT_PATH}/../etc/snapp_runner.cfg" # Update this path to find the snapp_runner.cfg file.
 
 # trapCleanup Function
 # -----------------------------------
@@ -135,7 +136,7 @@ function calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | SNAPPRunner, v1.2.0 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | SNAPPRunner, v1.2.1 March 2019  (part of PIrANHA v1.0.0)       "
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -148,6 +149,27 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+## TODO: Try to make this more straightforward to run by considering alleviating the need
+## for a configuration file. It would be better to pull all options from the configuration
+## file into options that the user can call when running the script. That way, external 
+## files are not needed.
+## ...
+## FOR NOW... we start by checking for the .cfg file. If not found, we add the default to 
+## the cwd and message user to fill it out before running again.
+
+echo "INFO      | $(date) |          Checking for 'snapp_runner.cfg' configuration file... "
+if [[ -f ./snapp_runner.cfg ]]; then 
+	echo "INFO      | $(date) |          Configuration file check passed. Moving forward with .cfg file in current directory... "
+elif [[ ! -f ./snapp_runner.cfg ]]; then 
+	echo "WARNING!  | $(date) |          Configuration file check FAILED. Copying default .cfg file into current directory... "
+	cp "$CONFIG_FILE_LOCATION" . ;
+	echo "INFO      | $(date) |          Please edit the default 'snapp_runner.cfg' configuration file just added so that \
+it includes all pertinent information (first 3 variables) before rerunning SNAPPRunner from this directory. "
+	echo "INFO      | $(date) |          Quitting... "
+	safeExit ;
+fi
 
 
 echo "INFO      | $(date) |          Setting up variables, including those specified in the .cfg file..."
@@ -499,34 +521,39 @@ USAGE="Usage: $(basename $0) [OPTION]...
  THIS SCRIPT automates conducting multiple runs of SNAPP (Bryant et al. 2012; part of BEAST2, 
  Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster 
  that uses SLURM resource management with PBS wrappers, or a PBS resource management system.
- 
- The code starts from a single working directory on the user's local machine, which contains
- one or multiple XML input files with extension '*run.xml' (where * is any set of 
- alphanumeric characters separated possibly by underscores but no spaces). These files are 
- identified and run through the SNAPPRunner pipeline, which involves five steps, as follows: 
- 1) set up the workspace; 2) copy each XML file n times to create n+1 separate run XML files; 
- 3) make directories for 1 run per XML (nRuns) and create a shell script with the name 
- 'snapp_sbatch.sh' that is specific to the input and can be used to submit job to supercomputer 
- and move this PBS shell script into the corresponding folder; 4) create a batch submission 
- file (PBS format) and move it and all run folders to the desired working directory on the 
- supercomputer; 5) execute the batch submission file on the supercomputer so that all jobs 
- are submitted to the supercomputer queue.
-
- Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
- by SNAPPRunner.sh is fed to the program by culling the data from an external configuration 
- file, named 'snapp_runner.cfg'. There are six entries that users can supply in this file. 
- However, three of these are essential for running SNAPP using the SNAPPRunner script, 
- including: ssh user account info, the path to the parent directory for SNAPP runs on the 
- supercomputer, the user's email address, and the absolute path to the beast.jar file on 
- the supercomputer that you wish to use. Users must fill this information in and save 
- a new version of the .cfg file in the working directory on their local machine prior to 
- calling the program. Only then can the user call the program by opening a terminal window, 
- typing './SNAPPRunner.sh', and pressing return.
- 
- It is assumed that BEAST2 (e.g. 2.4.2++) is installed on the supercomputer, and that the user 
+	The code starts from the current working directory on the user's machine, which contains
+ one or multiple XML input files with extension '*run.xml' (where * is any set of alphanumeric
+ characters separated possibly by underscores but no spaces). These files are identified and
+ run through the SNAPPRunner pipeline, which involves five steps, as follows: (1) set up the 
+ workspace; (2) copy each XML file n times to create n+1 separate run XML files; (3) make 
+ directories for 1 run per XML, <nRuns>, and create shell script with the name 'snapp_sbatch.sh' 
+ that is specific to the input and can be used to submit job to supercomputer and move this 
+ PBS shell script into the corresponding folder; (4) create a batch submission file (PBS 
+ format) and move it and all run folders to the desired working directory on the supercomputer; 
+ and (5) execute the batch submission file on the supercomputer so that all jobs are submitted 
+ to the supercomputer queue.
+	Like other functions of PIrANHA that automate running software on external machines, some 
+ information used by SNAPPRunner is extracted from an external configuration file named
+ 'snapp_runner.cfg'. There are six entries that users can supply in this file. However, three 
+ of these are essential for running SNAPP with the SNAPPRunner function, including: ssh user 
+ account information, the path to the parent directory for SNAPP runs on the supercomputer, 
+ the user's email address, and the absolute path to the beast.jar file on the supercomputer 
+ that you wish to use. Users must fill this information in and save a new version of the .cfg 
+ file in the working directory on their local machine prior to calling the program. Only then 
+ can the user call the program using PIrANHA (see usage examples below).
+	It is assumed that BEAST2 (e.g. 2.4.2++) is installed on the supercomputer, and that user
  can provide absolute paths to the BEAST jar file in the cfg file. Last testing was conducted
  using BEAST v2.4.5. Check for BEAST2 updates at BEAST2.org.
 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f SNAPPRunner                 Run program with the defaults and parameters 
+     								  	   extracted from the configuration file
+    piranha -f SNAPPRunner --args='-h'      Print this help text
+    piranha -f SNAPPRunner --args='-n 10'    Pass argument that increases the number of runs to 10
+    piranha -f SNAPPRunner --args='-n 10 -w 24:00:00 -m 2048M'      Also increase the default walltime and memory (RAM) settings
+	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
@@ -564,33 +591,29 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  THIS SCRIPT automates conducting multiple runs of SNAPP (Bryant et al. 2012; part of BEAST2, 
  Drummond et al. 2012; Bouckaert et al. 2014) XML input files on a remote supercomputing cluster 
  that uses SLURM resource management with PBS wrappers, or a PBS resource management system.
- 
- The code starts from a single working directory on the user's local machine, which contains
- one or multiple XML input files with extension '*run.xml' (where * is any set of 
- alphanumeric characters separated possibly by underscores but no spaces). These files are 
- identified and run through the SNAPPRunner pipeline, which involves five steps, as follows: 
- 1) set up the workspace; 2) copy each XML file n times to create n+1 separate run XML files; 
- 3) make directories for 1 run per XML (nRuns) and create a shell script with the name 
- 'snapp_sbatch.sh' that is specific to the input and can be used to submit job to supercomputer 
- and move this PBS shell script into the corresponding folder; 4) create a batch submission 
- file (PBS format) and move it and all run folders to the desired working directory on the 
- supercomputer; 5) execute the batch submission file on the supercomputer so that all jobs 
- are submitted to the supercomputer queue.
-
- Like other software programs such as BPP, G-PhoCS, and GARLI, some information that is used
- by SNAPPRunner.sh is fed to the program by culling the data from an external configuration 
- file, named 'snapp_runner.cfg'. There are six entries that users can supply in this file. 
- However, three of these are essential for running SNAPP using the SNAPPRunner script, 
- including: ssh user account info, the path to the parent directory for SNAPP runs on the 
- supercomputer, the user's email address, and the absolute path to the beast.jar file on 
- the supercomputer that you wish to use. Users must fill this information in and save 
- a new version of the .cfg file in the working directory on their local machine prior to 
- calling the program. Only then can the user call the program by opening a terminal window, 
- typing './SNAPPRunner.sh', and pressing return.
- 
- It is assumed that BEAST2 (e.g. 2.4.2++) is installed on the supercomputer, and that the user 
+	The code starts from the current working directory on the user's machine, which contains
+ one or multiple XML input files with extension '*run.xml' (where * is any set of alphanumeric
+ characters separated possibly by underscores but no spaces). These files are identified and
+ run through the SNAPPRunner pipeline, which involves five steps, as follows: (1) set up the 
+ workspace; (2) copy each XML file n times to create n+1 separate run XML files; (3) make 
+ directories for 1 run per XML, <nRuns>, and create shell script with the name 'snapp_sbatch.sh' 
+ that is specific to the input and can be used to submit job to supercomputer and move this 
+ PBS shell script into the corresponding folder; (4) create a batch submission file (PBS 
+ format) and move it and all run folders to the desired working directory on the supercomputer; 
+ and (5) execute the batch submission file on the supercomputer so that all jobs are submitted 
+ to the supercomputer queue.
+	Like other functions of PIrANHA that automate running software on external machines, some 
+ information used by SNAPPRunner is extracted from an external configuration file named
+ 'snapp_runner.cfg'. There are six entries that users can supply in this file. However, three 
+ of these are essential for running SNAPP with the SNAPPRunner function, including: ssh user 
+ account information, the path to the parent directory for SNAPP runs on the supercomputer, 
+ the user's email address, and the absolute path to the beast.jar file on the supercomputer 
+ that you wish to use. Users must fill this information in and save a new version of the .cfg 
+ file in the working directory on their local machine prior to calling the program. Only then 
+ can the user call the program using PIrANHA (see usage examples below).
+	It is assumed that BEAST2 (e.g. 2.4.2++) is installed on the supercomputer, and that user
  can provide absolute paths to the BEAST jar file in the cfg file. Last testing was conducted
- using BEAST v2.4.5. Check for BEAST2 updates at <http://BEAST2.org>.
+ using BEAST v2.4.5. Check for BEAST2 updates at BEAST2.org.
 
  ${bold}DETAILS${reset}
  The -n flag sets the number of independent SNAPP runs to be submitted to the supercomputer
@@ -606,13 +629,15 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  SNAPP run. The default (5120 megabytes, or ~5 gigabytes) is around five times the typical
  default value of 1024M (~1 GB). Suggested values in MB units: 1024M, 2048M, 3072M, 4096M, 
  or 5120M, or in terms of GB units: 1G, 2G, 3G, 4G, 5G.
- 
-		## Usage examples: 
-		$0 .
-		$0 -n 5 .
-		$0 -n 20 .				## Ex.: changing number of runs.
-		$0 -n 20 -w 24:00:00 .		## Ex.: changing run walltime.
-		$0 -n 20 -w 24:00:00 -m 2048M .	## Ex.: changing memory (RAM) allocation.
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f SNAPPRunner                 Run program with the defaults and parameters 
+     								  	   extracted from the configuration file
+    piranha -f SNAPPRunner --args='-h'      Print this help text
+    piranha -f SNAPPRunner --args='-n 10'    Pass argument that increases the number of runs to 10
+    piranha -f SNAPPRunner --args='-n 10 -w 24:00:00 -m 2048M'      Also increase the default walltime and memory (RAM) settings
 	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
