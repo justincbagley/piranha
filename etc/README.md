@@ -1,17 +1,30 @@
-This directory contains the configuration files needed for the scripts and functions within this repository.
+# etc
 
-# pushover.cfg
-Configuration file to use the [Pushover][1] notification function in Phylos scripts
+As is typical of UNIX/Linux distributions and software, this etc/ directory contains the configuration files needed for the scripts and functions within this repository.
 
-Steps to create:
-1. Got etc/ from Nate Landau shell-scripts repository fork.
-2. Had to create a [Pushover][1] account and create a Pushover application, to get token / API.
-3. Renamed `pushover.cfg.sample` to `pushover.cfg`
-4. Added my user API key and my Phylos application API token / key to this file.
+## snapp_runner.cfg
+This is the default configuration file for the SNAPPRunner function, with six variables.
 
-When Phylos is ready to ship to any/all public users, don't forget to make install or startup script that will query user for their Pushover API key and replace a dummy var here with their key. 
+## beast_runner_default.cfg
+This is the default configuration file for the BEASTRunner function, with seven variables.
 
-*Don't make repo public containing your personal Pushover user API key!!!*
+## dadi_runner_default.cfg
+This is the default configuration file for the dadiRunner function, with six variables.
 
+## mrbayes_post_proc.cfg
+This is the default configuration file for the MrBayesPostProc function, with two variables. It may not be necessary anymore (check).
+
+## raxml_runner.cfg
+This is the default configuration file for the RAxMLRunner function, with four variables.
+
+## pushover.cfg.sample
+To use the [Pushover][1] notification function in your scripts take the following steps.
+
+1. If you haven't done so already, create a [Pushover][1] account and create a Pushover application.
+2. Rename `pushover.cfg.sample` to `pushover.cfg`
+3. Add your user API key and your application API key to this file.
+
+If you don't want to pay for the Pushover service, then consider using the [Pullover][2] client for Linux or Mac.
 
 [1]: https://pushover.net
+[2]: https://github.com/cgrossde/Pullover

@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: March 8, 2019                                                             #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -138,13 +138,13 @@ function piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.0, March 2019  (main script for PIrANHA v0.1.7+)  "
+piranha v1.0.0, March 2019  (main script for PIrANHA v1.0.0)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ -z "$FUNCTION_TO_RUN" ]] && [[ -z "$FUNCTION_ARGUMENTS" ]]; then
-  usage;
-  safeExit;
+  usage ;
+  safeExit ;
 fi
 
 if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
@@ -167,7 +167,7 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 		if [[ "$F_LIMIT" != "unlimited" ]]; then
 			N_LIMIT=$(( $NumInd * 10 ));
 				if [[ "$F_LIMIT" -lt "$N_LIMIT" ]]; then
-					ulimit -n $N_LIMIT;
+					ulimit -n $N_LIMIT ;
 			fi
 		fi
 	fi
@@ -181,12 +181,29 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 	## $MY_EXECUTION_PATH:
 	## if test, then this $MY_EXECUTION_PATH should be: /Users/justinbagley/GitHub/PIrANHA-1.0/bin/test
 
-	if [[ -z "$FUNCTION_ARGUMENTS" ]]; then
+	## First two conditionals below: cases where function run is not MAGNET.
+	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
 		echo "INFO      | $(date) |          Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	fi
 
-	if [[ ! -z "$FUNCTION_ARGUMENTS" ]]; then
+	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
+		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
+		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
+	fi
+
+	## Next two conditionals below: cases where function run _is_ MAGNET. Need these cases
+	## because MAGNET comes with PIrANHA in its own subfolder with its own file structure,
+	## so we need to add the subfolder name (which will vary as MAGNET is updated in the 
+	## future) to the execution path, $MY_EXECUTION_PATH.
+	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.0.0/${FUNCTION_TO_RUN})"
+		echo "INFO      | $(date) |          Executing function without additional arguments..."
+		"$MY_EXECUTION_PATH" ;
+	fi
+
+	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.0.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	fi

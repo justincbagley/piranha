@@ -20,7 +20,7 @@ MY_NUM_TAX=NULL
 USER_TAX_COMP_THRESHOLD=0.7
 
 ############ CREATE USAGE & HELP TEXTS
-Usage="Usage: $(basename "$0") [Help: -h help] [Options: -upo] [stdin:] -n <numTax> -t <taxCompThresh> <workingDir>
+Usage="Usage: $(basename $0) [Help: -h help] [Options: -upo] [stdin:] -n <numTax> -t <taxCompThresh> <workingDir>
  ## Help:
   -h   help text (also: -help)
 

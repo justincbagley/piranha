@@ -145,11 +145,8 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting PHYLIP2PFSubsets pipeline... "
 echo "INFO      | $(date) | Step #1: Set up workspace with useful environmental variables and functions, and check machine type. "
 ############ SET WORKING DIRECTORY
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only set to run in current working dir, and echo cwd to screen:
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -300,6 +297,7 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 	## PartitionFinder) are grouped into each partition. We can loop through the partitions.tmp
 	## file created above and use the information content on each line to assemble partitions,
 	## preferably from PHYLIP files because they are the simplest format.
+
 	MY_PARTITION_COUNT=1;
 	(
 		while read line; do 
@@ -349,7 +347,7 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 					mv ./concatenated_seqs.phy Subset"$MY_PARTITION_COUNT"_concat.phy;
 
 				###### 
-				n=Subset"$MY_PARTITION_COUNT"_concat.phy
+				n=Subset"$MY_PARTITION_COUNT"_concat.phy ;
 				MY_FINAL_SUBSET_PHY_NCHAR="$(head -n1 $n | perl -pe 's/^[0-9]*\ +//g; s/\ //g')";
 				MY_FINAL_SUBSET_PHY_NTAX="$(awk 'END {print NR,"lines"}' $n | sed 's/\ .*//g')";
 				MY_CORRECTED_FINAL_SUBSET_PHY_NTAX="$(calc $MY_FINAL_SUBSET_PHY_NTAX-1)";
@@ -380,11 +378,11 @@ echo "INFO      | $(date) | Step #3: Organize subsets output in working dir. "
 
 	echo "INFO      | $(date) |          Making PHYLIP_subsets/ dir containing all PHYLIP-formatted subset alignments..."
 	mkdir PHYLIP_subsets/;
-	cp ./Subset*/*_concat.phy ./PHYLIP_subsets/;
+	cp ./Subset*/*_concat.phy ./PHYLIP_subsets/ ;
 
 	echo "INFO      | $(date) |          Making subset_folders/ dir containing all subset subfolders..."
-	mkdir subset_folders/;
-	mv Subset*/ subset_folders/;
+	mkdir subset_folders/ ;
+	mv Subset*/ subset_folders/ ;
 
 
 echo "INFO      | $(date) | Step #4: Convert PHYLIP subset files to FASTA format. "
@@ -414,11 +412,12 @@ echo "INFO      | $(date) | Step #4: Convert PHYLIP subset files to FASTA format
 #echo "INFO      | $(date) |          Done making PartitionFinder-identified subset alignments from input partition PHYLIP files using PHYLIP2PFSubsets.sh. "
 #echo "INFO      | $(date) |          Bye.
 #"
-echo "----------------------------------------------------------------------------------------------------------"
 
+echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s): Subset folders from the analysis are located in subset_folders/."
 echo "                PHYLIP-formatted subset alignments are located in PHYLIP_subsets/."
 echo "                FASTA-formatted subset alignments are located in FASTA_subsets/."
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -480,17 +479,6 @@ while getopts 'k:' opt ; do
        exit 1 ;;
   esac
 done
-
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# shift $((OPTIND-1)) 
-# # Check for mandatory positional parameters
-# if [ $# -lt 1 ]; then
-# 	echo "WARNING!  | $(date) |          Missing mandatory positional parameter, <workingDir>. Quitting... "
-# 	echo ""
-# 	echo "$USAGE"
-#   exit 1
-# fi
-# USER_SPEC_PATH="$1"
 
 
 # ############# ############# #############

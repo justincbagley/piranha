@@ -6,35 +6,167 @@
 # |                                                                                      #
 #                                                                                        #
 # File: ExaBayesPostProc.sh                                                              #
-  VERSION="1.2"                                                                          #
+  VERSION="1.3.0"                                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:28:02 -0300.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 12, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT       #
-# FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)            #
+# SHELL SCRIPT THAT AUTOMATES READING AND CONDUCTING POST-PROCESSING OF PHYLOGENETIC     #
+# RESULTS FROM EXABAYES                                                                  #
 #                                                                                        #
 ##########################################################################################
 
-if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
-	exit
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
 fi
 
-echo "
-##########################################################################################
-#                           ExaBayesPostProc v1.2, March 2019                            #
-##########################################################################################
-"
 
-echo "INFO      | $(date) | STEP #1: CALL PROGRAMS TO DO ExaBayes POST-PROCESSING. "
-	MY_EXABAYES_TREEFILES=./ExaBayes_topologies.*	## Assign "topologies" files in current directory to variable.
-	MY_EXABAYES_PARAMFILES=./ExaBayes_parameters.*	## Assign "parameters" files in current directory to variable.
+# Source shared functions and variables
+# -----------------------------------
 
-###### RUN SUMMARY: coming soon...
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function ExaBayesPostProc () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | ExaBayesPostProc, v1.3.0 March 2019  (part of PIrANHA v1.0.0)  "
+echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+## Nothing to do for working dir because script executes in current working dir (of execution/
+## sourcing). Only set to run in current working dir, and echo cwd to screen:
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+MY_WORKING_DIR="$(pwd -P)";
+
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+echo "INFO      | $(date) | Step #2: Read output file names and call programs needed to conduct ExaBayes post-processing. "
+
+### TODO: Add a check on whether or not the ExaBayes program and its utilities programs
+### are actually installed and available from the command line. If so, fine; if not available,
+### then add code to download and install them.
+
+echo "INFO      | $(date) |          A. Read ExaBayes results files into environmental variables... "
+MY_EXABAYES_TREEFILES=./ExaBayes_topologies.*	## Assign "topologies" files in current directory to variable.
+MY_EXABAYES_PARAMFILES=./ExaBayes_parameters.*	## Assign "parameters" files in current directory to variable.
+
+
+echo "INFO      | $(date) |          B. Conduct ExaBayes run summary... "
+###### RUN SUMMARY:
 
 echo "INFO      | $(date) |         TREE SUMMARY: "
 echo "INFO      | $(date) |         Getting 50% percentile credible set of trees from ExaBayes analysis... "
@@ -45,6 +177,7 @@ echo "INFO      | $(date) |         Getting 50% percentile credible set of trees
 	done
 )
 
+echo "INFO      | $(date) |          Getting bipartitions, plus branch lengths and ESS scores for all bipartitions, of ExaBayes trees... "
 ###### Get bipartitions, plus branch lengths & ESS scores for all bipartitions, of ExaBayes trees:
 (
 	for i in $MY_EXABAYES_TREEFILES; do 
@@ -53,8 +186,10 @@ echo "INFO      | $(date) |         Getting 50% percentile credible set of trees
 	done
 )
 
+echo "INFO      | $(date) |          C. Conduct parameters summary... "
 ###### PARAMETERS SUMMARY: 
 ###### Summarize parameters of each run using postProcParam utility:
+echo "INFO      | $(date) |          Summarizing parameters of each ExaBayes run in current working directory using postProcParam utility... "
 (
 	for j in $MY_EXABAYES_PARAMFILES; do 				## This looks in the current directory for tree files output by ExaBayes to use as input files for the following operations.
 		echo "$j";
@@ -62,26 +197,35 @@ echo "INFO      | $(date) |         Getting 50% percentile credible set of trees
 	done
 )
 
-echo "INFO      | $(date) | STEP #2: REFORMAT (FOR) & PROCESS ExaBayes OUTPUT FILES IN MrBayes. "
+echo "INFO      | $(date) | Step #3: Reformat ExaBayes output files and conduct additional file processing in MrBayes v3.2+. "
 (
 	for k in ./ExaBayes_topologies.*; do 
 		echo "$k";
-		sed 's/.{.}//g' ${k} > ${k}_1.tmp ;
-			sed 's/:0.0;/;/g' ${k}_1.tmp > ${k}.t ;
+		sed 's/.{.}//g' "${k}" > "${k}"_1.tmp ;
+			sed 's/:0.0;/;/g' "${k}"_1.tmp > "${k}".t ;
 	done
 )
 
+### TODO: Add an option that reads in the number of runs and creates or sets the following loop 
+### accordingly (so that if -n 2 , then the loop goes through the first two lines, through
+### .run2.t, and if -n3, then the loop goes through .run3.t, etc.)
 (
 	for l in *.t; do
-		mv $l ${l/.0.t/.run1.t} ;
-		mv $l ${l/.1.t/.run2.t} ;
-	#	mv $l ${l/.2.t/.run2.t}	;					## __UNCOMMENT THESE NEXT LINES AS NEEDED__, according to number of tree files you are starting with, by uncommenting 1 line for each subsequent tree file beyond two runs.
-	#	mv $l ${l/.3.t/.run2.t} ;
-	#	mv $l ${l/.4.t/.run2.t} ;
+		mv "$l" ${l/.0.t/.run1.t} ;
+		mv "$l" ${l/.1.t/.run2.t} ;
+	#	mv "$l" ${l/.2.t/.run2.t} ;					## __UNCOMMENT THESE NEXT LINES AS NEEDED__, according to number of tree files you are starting with, by uncommenting 1 line for each subsequent tree file beyond two runs.
+	#	mv "$l" ${l/.3.t/.run2.t} ;
+	#	mv "$l" ${l/.4.t/.run2.t} ;
 	done
 )
 
-###### Prep files and then Summarize trees, their posterior probabilities, and their errors using MrBayes.
+echo "INFO      | $(date) | Step #4: Prep files and then summarize trees, their posterior probabilities, and their errors using MrBayes v3.2+. "
+###### Prep files and then summarize trees, their posterior probabilities, and their errors using MrBayes.
+
+### TODO: Add an option to read in the user's NEXUS file that corresponds to the ExaBayes run. This 
+### way, the user can write code to run the ExaBayesPostProc script on multiple runs, run folders,
+### or even results of multiple runs in same folder...
+
 	MY_NEXUS=./*.nex
 	MY_NEXUS_FILENAME="$(echo ./*.nex | sed -n 's/.\///p')";		## Assumes only one NEXUS file in working directory corresponding to ExaBayes run input file.
 	MY_MRBAYES_FILENAME="$(ls | sed -n 's/\.0$//p' | grep -n "topologies" | sed -n 's/.://p')";
@@ -94,19 +238,65 @@ sumt Filename=${MY_MRBAYES_FILENAME} relburnin=yes burninfrac= 0.25
 quit" > ./batch.txt
 
 	
-	mb <./batch.txt > Mrbayes_sumt_log.txt &		## Use batch to run MrBayes.
+	mb <./batch.txt > Mrbayes_sumt_log.txt &
+	## The '&' calls a batch run of mrbayes on the batch file we created above. What a nice and convenient way to do things. :)
+
+echo "INFO      | $(date) | Step #5: Clean up workspace by deleting temporary files generated during run. "
+echo "INFO      | $(date) |          Removing temporary files... "
+	
+	rm *_1.tmp batch.txt ;
 
 
-echo "INFO      | $(date) | STEP #3: CLEANUP FILES. "
-	rm *_1.tmp batch.txt ;							## Remove temporary files created above.
+#echo "INFO      | $(date) | Done post-processing ExaBayes results. "
+#echo "INFO      | $(date) | Bye. 
+#"
 
+echo "----------------------------------------------------------------------------------------------------------"
 
-echo "INFO      | $(date) | Done post-processing ExaBayes results. "
-echo "INFO      | $(date) | Bye. 
-"
-#
-#
-#
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
+
+
+
+############ SCRIPT OPTIONS
+## None at this time. TODO: Add options if you are serious about using this yourself, or
+## about having other people actually use this script/function in PIrANHA.
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+ExaBayesPostProc
+
+# Exit cleanly
+safeExit
