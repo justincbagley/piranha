@@ -5,17 +5,17 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: renameForStarBEAST2.sh                                                           #
-  VERSION="v1.2.1"                                                                       #
+# File: phyNcharSumm.sh                                                                  #
+  VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
-# Last update: March 13, 2019                                                            #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Date: Created by Justin Bagley on November 9, 2016.                                    #
+# Last update: March 14, 2019                                                            #
+# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT TO RENAME TIP LABLES IN PHYLIP OR FASTA MULTIPLE SEQUENCE ALIGNMENT (MSA) #
-# FILES TO APPEND SPECIES ASSIGNMENTS FOR STARBEAST / STARBEAST2                         #
+# SHELL SCRIPT THAT SUMMARIZES THE NUMBER OF CHARACTERS IN EACH OF N PHYLIP DNA SEQUENCE #
+# ALIGNMENTS IN CURRENT WORKING DIRECTORY AND SAVES THIS INFORMATION TO FILE             #
 #                                                                                        #
 ##########################################################################################
 
@@ -130,17 +130,18 @@ gemDependencies=()
 
 
 
-function renameForStarBEAST2 () {
+function phyNcharSumm () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameForStarBEAST2, v1.2.1 March 2019  (part of PIrANHA v1.0.0)"
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | phyNcharSumm, v1.0.0 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
+echo "INFO      | $(date) | Starting phyNcharSumm... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -150,73 +151,26 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-echo "INFO      | $(date) | Step #2: Read and process ASTRAL-III style taxon-assignment file. "
-## Split input ASTRAL-III-type taxon-assignment file into separate .tmp files for species
-## (*_assign_names.tmp) and individuals or tips (*_assign_tips.tmp)
-echo "INFO      | $(date) |          Splitting up assignment file... "
-perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 1 > ./species_assign_names.tmp
-perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 3- > ./species_assign_tips.tmp
+echo "INFO      | $(date) | Step #2: Summarize number of characters in each PHYLIP DNA sequence alignment in current directory. "
+###### Starting from a folder containing multiple PHYLIP alignment files (e.g. as generated
+## by MAGNET.sh for indiv. SNP loci), this script uses a for loop to echo all alignment
+## names (containing locus or taxon information) to file, and then echoes the number of 
+## characters (Nchar) recursively to a file named "nchar.txt" in the working directory.
 
-## Count number of species assignments and tips:
-MY_NUM_SPECIES_ASSIGN="$(wc -l ./species_assign_names.tmp | sed 's/\ //g; s/\.\/.*//g')"
-MY_NUM_TIP_INDS="$(perl -pe $'s/\ /\n/g; s/\t/\n/g' ./species_assign_tips.tmp | sort -u | wc -l | sed 's/\ //g; s/\.\/.*//g')"
+echo "INFO      | $(date) |          Saving number of characters for each alignment in file named './nchar.txt'. "
+(
+	for i in ./*.phy; do 
+		echo "$i" >> ./phyalign_names.txt; 
+		echo "$(head -n1 $i | awk -F"[0-9]*\ " '{print $NF}')" >> ./nchar.txt; 
+	done;
+)
 
-echo "INFO      | $(date) | Step #3: Run main parts of script that conduct renaming. "
-## Main script loop sets run conditional on input file type:
-if [[ "$MY_INPUT_FILE_TYPE" = "phylip" ]]; then
-echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
-echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
-echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
-echo "INFO      | $(date) |          Renaming PHYLIP MSAs in current working directory... "
-for i in ./*.phy; do
-	echo "INFO      | $(date) |          $i "
-	MY_COUNT=1
-	(
-		while read TIP_NAME; do 
-			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)"; 
-			MY_TIP_NAMES="$TIP_NAME"; 
-	
-				for j in $MY_TIP_NAMES; do 
-					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
-				done; 
-
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
-		done < ./species_assign_tips.tmp
-	)
-done
-fi
-
-if [[ "$MY_INPUT_FILE_TYPE" = "fasta" ]]; then
-echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
-echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
-echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
-echo "INFO      | $(date) |          Renaming FASTA MSAs in current working directory... "
-
-for i in ./*.fas; do
-	echo "INFO      | $(date) |          $i "
-	MY_COUNT=1
-	(
-		while read TIP_NAME; do 
-			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)" ; 
-			MY_TIP_NAMES="$TIP_NAME" ; 
-	
-				for j in $MY_TIP_NAMES; do 
-					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
-				done; 
-
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
-		done < ./species_assign_tips.tmp
-	)
-done
-fi
-
-echo "INFO      | $(date) | Step #4: Clean up workspace by deleting temporary files created during run. "
-echo "INFO      | $(date) |          Removing temporary files... "
-############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-	rm ./species_assign_names.tmp ./species_assign_tips.tmp ;
+## I would like to build on this by calculating statistics from the nchar list from within
+## the shell.
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
+
 
 ##########################################################################################
 ######################################### END ############################################
@@ -227,70 +181,12 @@ echo ""
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-MY_INPUT_FILE_TYPE=phylip
-USER_SPEC_ASSIGNMENT_FILE=assignment.txt
-
-############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
-
- ${bold}Options:${reset}
-  -f   input file type (def: phylip; other: fasta) type of file(s) in current directory
-       to be renamed (assumes '.phy' or '.fas' extensions for PHYLIP or FASTA format files, 
-       respectively)
-  -a   assignmentFile (def: assignment.txt) ASTRAL-III style assignment file detailing which
-       individual tips correspond to which species or taxa
-  -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version and exit
-
- ${bold}OVERVIEW${reset}
- THIS SCRIPT renames tip taxa in all PHYLIP or FASTA DNA sequence alignments in the current
- working directory, so that the taxon names are suitable for assigning species in BEAUti
- v2.4+ (part of BEAST v2.4+; Bouckaert et al. 2014) for StarBEAST2 (Ogilvie et al. 2017). 
- For best results, species assignments in the assignment file should be given as simple
- alphanumeric names with no spaces, hyphens, underscores, or nonalphanumeric characters
- (e.g. the assignment 'unimaculatus' gave no errors in testing).
-
- ${bold}Usage examples:${reset}
- Call the program using PIrANHA, as follows:
-
-    piranha -f renameForStarBEAST2 --args='-f phylip -a assignment.txt'
-
- ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
-
- Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
-"
-
-if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
-	echo "$USAGE"
-	exit
-fi
+# None at this time.
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
-
-############ PARSE THE OPTIONS
-while getopts 'f:a:' opt ; do
-  case $opt in
-## renameForStarBEAST2 options:
-    f) MY_INPUT_FILE_TYPE=$OPTARG ;;
-    a) USER_SPEC_ASSIGNMENT_FILE=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
-
-# Store the remaining part as arguments.
-# args+=("$@")
 
 
 # ############# ############# #############
@@ -324,7 +220,7 @@ set -o pipefail
 # checkDependencies
 
 # Run the script
-renameForStarBEAST2
+phyNcharSumm
 
 # Exit cleanly
 safeExit

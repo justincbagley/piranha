@@ -9,7 +9,7 @@
   VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: March 11, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,15 +141,11 @@ echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights rese
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
+echo "INFO      | $(date) | Starting calcAlignmentPIS pipeline... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
-############ I. SET UP WORKSPACE AND CHECK MACHINE TYPE.
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only echo cwd to screen:
-MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
-echo "INFO      | $(date) |          Current directory: $MY_PATH "
-
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -329,6 +325,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  subfolder named 'pis_threshold_alignments/'.
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 

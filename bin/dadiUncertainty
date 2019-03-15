@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiUncertainty.sh                                                               #
-  VERSION="v0.1.1"                                                                       #
+  VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: March 6, 2019                                                             #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -20,178 +20,144 @@
 #                                                                                        #
 ##########################################################################################
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_INPUT_VCF=input.vcf
-MY_ASSIGNMENT_FILE=assignments.txt
-MY_POP_IDS=\'name1\',\'name2\',\'name3\'		## SWWP LCPorder IDs: 'LP','core','periphery'
-My_PROJECTION_VALUES=val1,val2,val3				## SWWP LCPorder projs: 98,46,156
-MY_NUM_BOOT_DATASETS=100
-UNCERT_METHOD_SWITCH=1
-MY_DADI_MODEL_SCRIPT=model.py
-MY_BESTMOD_PARAM_ESTIMATES=0.1,0.1,0.1,0.1,0.1,0.1
-DELETE_ORIG_VCF=0
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [Help: -h help] [Options: -a i p n m s e d V --version] [stdin:] <inputVCFFile>
- ## Help:
-  -h   help text (also: --help) echo this help text and exit
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
 
- ## Options:
-  -a   assignmentFile (def: $MY_ASSIGNMENT_FILE) Name of population/species assignment file,
-       a plain text file with one sample name and its corresponding population/species 
-       assignment codes on each line
-  -i   popIDs (def: $MY_POP_IDS) comma-separated string of population IDs 
-       to be passed to ∂a∂i. Each ID (up to 3) must be enclosed by a single quote that is 
-       commented out using a backslash, and be comma-separated
-  -p   projections (def: $My_PROJECTION_VALUES) comma-separated string of projection values to
-       be passed to ∂a∂i
-  -n   numBootstraps (def: $MY_NUM_BOOT_DATASETS) Number of bootstrapped SNP datasets to create
-  -m   method (def: 1=GIM; other: 2=FIM) perform uncertainty analysis using either the Godambe
-       Information Matrix (GIM) or the Fisher Information Matrix (FIM)
-  -s   modelScript (def: $MY_DADI_MODEL_SCRIPT) Name of ∂a∂i demographic model Python script that original
-       model run relied on
-  -e   paramEstimates (def: $MY_BESTMOD_PARAM_ESTIMATES) comma-separated string of best parameter
-       estimates from original model run (beforehand)
-  -d   deleteOrig (def: 0=no; other: 1=yes) specifies whether or not to delete the original
-       input .vcf file
-  -V   version (also: --version) echo version and exit
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
- OVERVIEW
- THIS SCRIPT automates conducting uncertainty analysis in ∂a∂i v1.7+ (Gutenkunst et al. 
- 2009), in order to obtain parameter standard deviation estimates that can be converted by
- the user into lower and upper 95% confidence intervals (CIs) for each parameter in a given
- demographic model, which has already been run (to estimate best-fit parameters, best-
- supported model out of suite of candidate models, etc.). The script starts from a working
- directory containing the following: (1) the original VCF file containing SNP data that were
- analyzed in the original model (run beforehand); (2) a population assignment file, assigning
- each individual in the VCF file to population/species; (3) the original python file corres-
- ponding to the ∂a∂i model being evaluated; (4) the site frequency spectrum file used during
- the original model analysis; and (5) this script, with correct permissions set.
-	From the above starting conditions, dadiUncertainty.sh will automate file preparation 
- and processing, as well as either one or both of the following uncertainty analyses described
- in the ∂a∂i user manual: (A) uncertainty estimation using the Godambe Information Matrix 
- (GIM), in which case the user must specify the number of bootstrapped datasets that the 
- analysis should be based on; or (B) uncertainty estimation using a Fisher Information Matrix
- (FIM), in which case no bootstrap files will be generated or used. It will generally be 
- more appropriate for the user to run a GIM analysis, as in most cases it will be more 
- realistic for SNP data to assume that they possess at least _some degree_ of linkage
- disequilibrium (e.g. created by physical proximity, or by gene flow). However, if the user
- has some _a priori_ reason to believe that their SNPs are unlinked, then a FIM analysis
- may be justified.
-	In the case of a GIM analysis, the software will output a 'bootstrap_data' folder
- with the bootstrapped datasets, an 'bootstrap_fs' folder of frequency spectrum files 
- (corresponding 1-to-1 to the bootstrapped datasets), and an 'uncerts_GIM.txt' output file 
- containing the GIM-based standard deviations. In the case of FIM analysis, the software will 
- output only a single 'uncerts_FIM.txt' file containing the FIM-based standard deviations. 
-	For additional details about GIM and FIM analyses, see the ∂a∂i user's manual as well 
- as the paper by Coffman et al. (2015).
- 
-		## Usage examples: 
-		##--Example from 'real' analysis of a three-population southwestern white pine dataset
-		##--containing a downsample of 6330 SNPs (1 per ddRAD-seq contig), in which 250 bootstrapped
-		##--datasets are generated and analyzed using the GIM approach. _NOTE: '\' indicates that a
-		##--command carries over to the next line. When this is the case, all lines separated by this
-		##--character would actually be run from the command line as a single string/line._
-
-		./dadiUncertainty.sh -a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 \\
-		-n 250 -m 1 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,\\
-		4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf
- 
-		## Same as above, except specifying the FIM method for unlinked SNPs:
- 
-		./dadiUncertainty.sh -a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 \\
-		-n 250 -m 2 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,\\
-		4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf
- 
- CITATION
- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub package, Available at: 
-	<http://github.com/justincbagley/PIrANHA>.
- or
- Bagley, J.C. 2019. PIrANHA v0.1.7. [Data set] Zenodo, Available at: 
-	<http://doi.org/10.5281/zenodo.596766>.
- or
- Bagley, J.C. 2019. justincbagley/PIrANHA. GitHub package, Available at: 
-	<http://doi.org/10.5281/zenodo.596766>.
-
- REFERENCES
- Coffman AJ, Hsieh PH, Gravel S, Gutenkunst RN (2015) Computationally efficient composite 
-    likelihood statistics for demographic inference. Molecular Biology and Evolution, 33(2), 
-    591-593.
- Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
- 	demographic history of multiple populations from multidimensional SNP frequency data. 
- 	PLoS Genetics, 5(10), e1000695.
-
-Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.
-Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
-"
-
-if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$USAGE"
-	exit
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
 fi
 
-if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
-	exit
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'a:i:p:n:m:s:e:d:' opt ; do
-  case $opt in
-## dadiUncertainty options:
-    a) MY_ASSIGNMENT_FILE=$OPTARG ;;
-    i) MY_POP_IDS=$OPTARG ;;
-    p) My_PROJECTION_VALUES=$OPTARG ;;
-    n) MY_NUM_BOOT_DATASETS=$OPTARG ;;
-    m) UNCERT_METHOD_SWITCH=$OPTARG ;;
-    s) MY_DADI_MODEL_SCRIPT=$OPTARG ;;
-    e) MY_BESTMOD_PARAM_ESTIMATES=$OPTARG ;;
-    d) DELETE_ORIG_VCF=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-## Make input file a mandatory parameter:
-MY_INPUT_VCF="$1"
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
 
-echo "
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function dadiUncertainty () {
+
+######################################## START ###########################################
 ##########################################################################################
-#                          dadiUncertainty v0.1.0, October 2017                          #
-##########################################################################################
-"
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | dadiUncertainty, v1.0.0 March 2019  (part of PIrANHA v1.0.0)   "
+echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dadiUncertainty analysis... "
-
-###### Set paths and filetypes as different variables:
-	MY_WORKING_DIR="$(pwd -P)"
-	echo "INFO      | $(date) | Setting working directory to: "
-	echo "$MY_WORKING_DIR "	
-	TAB=$(printf '\t');
-	calc () {
-		bc -l <<< "$@" 
-	}
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+MY_WORKING_DIR="$(pwd -P)";  	## Keep, this is used a few places below.
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 ################# SECTION I. PREP BOOTSTRAPPED SNP DATA FILES, AND FREQUENCY SPECTRA FOR UNCERTAINTY ANALYSIS:
 
 ####### makePerlScripts.sh
 
-echo "INFO      | $(date) | STEP #1: MAKE VCF AND BOOTSTRAP PERL SCRIPTS. "
+echo "INFO      | $(date) | Step #2: Make VCF and bootstrap Perl scripts. "
 
 ####### MAKE MIKHAIL MATZ PERL SCRIPTS
 
@@ -341,9 +307,16 @@ close O;
 
 EOF
 
-	sed -i '' 's/\\quote/\"/g' ./vcf2dadi.pl
-	sed -i '' $'s/\TAB/\t/g' ./vcf2dadi.pl
-	sed -i '' 's/^\\//g' ./vcf2dadi.pl
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/\\quote/\"/g' ./vcf2dadi.pl ;
+		sed -i '' $'s/\TAB/\t/g' ./vcf2dadi.pl ;
+		sed -i '' 's/^\\//g' ./vcf2dadi.pl ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\\quote/\"/g' ./vcf2dadi.pl ;
+		sed -i $'s/\TAB/\t/g' ./vcf2dadi.pl ;
+		sed -i 's/^\\//g' ./vcf2dadi.pl ;
+	fi
 
 
 
@@ -420,18 +393,29 @@ print \quoteboot \$b\n\quote;
 
 EOF
 
-	sed -i '' 's/\\quote/\"/g' ./dadiBoot.pl ;
-	sed -i '' "s/\\singlequote/'/g" ./dadiBoot.pl ;
-	sed -i '' $'s/\TAB/\t/g' ./dadiBoot.pl ;
-	sed -i '' 's/^\\//g' ./dadiBoot.pl ;
-	perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
-	sed -i '' 's/\;\\/\;/g' ./dadiBoot.pl ;
-	perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
+	if [[ "${machine}" = "Mac" ]]; then			
+		sed -i '' 's/\\quote/\"/g' ./dadiBoot.pl ;
+		sed -i '' "s/\\singlequote/'/g" ./dadiBoot.pl ;
+		sed -i '' $'s/\TAB/\t/g' ./dadiBoot.pl ;
+		sed -i '' 's/^\\//g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
+		sed -i '' 's/\;\\/\;/g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\\quote/\"/g' ./dadiBoot.pl ;
+		sed -i "s/\\singlequote/'/g" ./dadiBoot.pl ;
+		sed -i $'s/\TAB/\t/g' ./dadiBoot.pl ;
+		sed -i 's/^\\//g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
+		sed -i 's/\;\\/\;/g' ./dadiBoot.pl ;
+		perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
+	fi
 
 
 ################# SECTION II. PREP BOOTSTRAPPED SNP DATA FILES & SPECTRA FOR UNCERTAINTY ANALYSIS:
 
-echo "INFO      | $(date) | STEP #2: FIX SCRIPT PERMISSIONS, CONVERT VCF TO DADI AND MAKE FIRST-ROUND BOOTSTRAPPED DATA FILES. "
+echo "INFO      | $(date) | Step #3: Fix script permissions, convert VCF to ∂a∂i and make first-round bootstrapped data files. "
 #######
 ##--Ensure correct execute permissions on shell and perl scripts in current working dir:
 	chmod u+x ./*.sh ./*.pl ;
@@ -446,7 +430,7 @@ echo "INFO      | $(date) | STEP #2: FIX SCRIPT PERMISSIONS, CONVERT VCF TO DADI
 	perl dadiBoot.pl in="$MY_DADI_DATA_FROM_VCF2DADI" ;
 
 
-echo "INFO      | $(date) | STEP #3: FIX BOOTSTRAPPED DATA FILES SO THAT ALL GENE NAMES ARE UNIQUE. "
+echo "INFO      | $(date) | Step #4: Fix bootstrapped data files so that all gene names are unique. "
 ##--Make all Gene names (in 'Gene' column) _unique_ in bootstrapped data files:
 	(
 		for i in ./*dadi.data.boot*; do
@@ -465,8 +449,8 @@ echo "INFO      | $(date) | STEP #3: FIX BOOTSTRAPPED DATA FILES SO THAT ALL GEN
 	)
 
 
-echo "INFO      | $(date) | STEP #4: GENERATE AND USE CUSTOM PYTHON SCRIPTS TO MAKE SITE FREQUENCY SPECTRA "
-echo "INFO      | $(date) |          (.fs FILES) FOR EACH BOOTSTRAPPED DATA FILE. "
+echo "INFO      | $(date) | Step #5: Generate and use custom Python scripts to make site frequency spectra (.fs files) "
+echo "INFO      | $(date) |          for each bootstrapped data file. "
 #######
 ##--Make frequency spectra for all bootstrapped data files:
 
@@ -508,15 +492,28 @@ for i in range(1,$MY_NUM_BOOT_DATASETS_PLUSONE):
 
 ##--Fix "\quote" in ./scriptMaker.py by adding in real double quote, '\"'; fix \TAB by adding in 
 ##--real tab, '\t'. Do this using in-place sed editing (-i flag):
-	sed -i '' 's/\\quote/\"/g' ./scriptMaker.py;
-	sed -i '' $'s/\TAB/\t/g' ./scriptMaker.py;
-	sed -i '' 's/^\\//g' ./scriptMaker.py;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/\\quote/\"/g' ./scriptMaker.py ;
+		sed -i '' $'s/\TAB/\t/g' ./scriptMaker.py ;
+		sed -i '' 's/^\\//g' ./scriptMaker.py ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\\quote/\"/g' ./scriptMaker.py ;
+		sed -i $'s/\TAB/\t/g' ./scriptMaker.py ;
+		sed -i 's/^\\//g' ./scriptMaker.py ;
+	fi
 
 
 ################# B. DRAFT CUSTOM makeBootFS PYTHON SCRIPT THAT WILL ACTUALLY MAKE THE BOOTSTRAP FS FILES:
 ##--Make first-draft makeBootFS python script:
-	python ./scriptMaker.py >> ./makeBootFS.py.tmp;
-	sed -i '' '/error.*$/d' ./makeBootFS.py.tmp;
+	python ./scriptMaker.py >> ./makeBootFS.py.tmp ;
+
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' '/error.*$/d' ./makeBootFS.py.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i '/error.*$/d' ./makeBootFS.py.tmp ;
+	fi
 
 ##--Make python header for final python file:
 echo "
@@ -533,13 +530,13 @@ import json
 
 ##--Make final makeBootFS.py python script that, when called, will use ∂a∂i to create a data 
 ##--dictionary and make the fs for each bootstrapped dataset: 
-	cat ./py_header.tmp ./makeBootFS.py.tmp > ./makeBootFS.py;
+	cat ./py_header.tmp ./makeBootFS.py.tmp > ./makeBootFS.py ;
 
 
 ################# C. MAKE SITE FREQUENCY SPECTRA (.fs) FILES FOR ALL BOOTSTRAPPED DATASETS USING makeBootFS.py:
 ##--Call final makeBootFS.py python script to make all of the .fs files for the bootstrapped
 ##--datasets:
-	python ./makeBootFS.py;
+	python ./makeBootFS.py ;
 
 
 ################# D. FIX NAMES OF SITE FREQUENCY SPECTRA TO BE FROM 00.fs TO y.fs, WHERE y IS THE TOTAL NUMBER
@@ -589,7 +586,7 @@ import json
 
 
 ################# SECTION III. RUN FINAL UNCERTAINTY ANALYSES WITH/WITHOUT BOOTSTRAP .fs FILES:
-echo "INFO      | $(date) | STEP #5: CONDUCT FINAL ∂a∂i UNCERTAINTY ANALYSES AS SPECIFIED BY USER. "
+echo "INFO      | $(date) | Step #6: Conduct final ∂a∂i uncertainty analyses as specified by user! "
 #######
 
 	if [[ "$UNCERT_METHOD_SWITCH" = "1" ]]; then
@@ -633,7 +630,13 @@ echo "
 
 ###  GIM ANALYSIS  ###
 " > py_shebang_header.tmp
-sed -i '' '1d' ./py_shebang_header.tmp  ;
+
+if [[ "${machine}" = "Mac" ]]; then
+	sed -i '' '1d' ./py_shebang_header.tmp  ;
+fi
+if [[ "${machine}" = "Linux" ]]; then
+	sed -i '1d' ./py_shebang_header.tmp  ;
+fi
 
 	##--Automatically detect whether spectra are folded (no outgroup) or not folded (polarized,
 	##--that is, having the ancestral state known, because an outgroup was available to determine
@@ -685,7 +688,12 @@ uncerts_GIM = dadi.Godambe.GIM_uncert(func_ex, $MY_PTS_VAR_NAME, all_boot, popt,
 " > all_boot_runGIM.tmp
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runGIM.tmp
-	sed -i '' 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+	fi
 
 ##--ADD ONE MORE SECTION TO SCRIPT HERE (python file) TO PRINT RESULTS TO FILE --##
 echo "
@@ -748,7 +756,13 @@ echo "
 
 ###  FIM ANALYSIS  ###
 " > py_shebang_header.tmp
-sed -i '' '1d' ./py_shebang_header.tmp  ;
+
+if [[ "${machine}" = "Mac" ]]; then
+	sed -i '' '1d' ./py_shebang_header.tmp  ;	
+fi
+if [[ "${machine}" = "Linux" ]]; then
+	sed -i '1d' ./py_shebang_header.tmp  ;	
+fi
 
 	##--Automatically detect whether spectra are folded (no outgroup) or not folded (polarized,
 	##--that is, having the ancestral state known, because an outgroup was available to determine
@@ -799,7 +813,12 @@ uncerts_FIM = dadi.Godambe.FIM_uncert(func_ex, $MY_PTS_VAR_NAME, popt, data, mul
 " > all_boot_runFIM.tmp
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runFIM.tmp
-	sed -i '' 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+	fi
 
 ##--ADD ONE MORE SECTION TO SCRIPT HERE (python file) TO PRINT RESULTS TO FILE --##
 echo "
@@ -834,9 +853,11 @@ fi
 
 ################# 
 
-echo "INFO      | $(date) | STEP #6: CLEAN UP WORK ENVIRONMENT (TEMPORARY FILES). "
+echo "INFO      | $(date) | Step #7: Clean up workspace by removing temporary files generated during run. "
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):
-	rm ./*.tmp;
+echo "INFO      | $(date) |          Removing temporary files... "
+
+	rm ./*.tmp ;
 
 
 ##--Final cleanup:
@@ -848,13 +869,190 @@ echo "INFO      | $(date) | STEP #6: CLEAN UP WORK ENVIRONMENT (TEMPORARY FILES)
 	fi
 
 
-echo "INFO      | $(date) | Done creating bootstrapped SNP datasets and conducting uncertainty analysis in ∂a∂i "
-echo "INFO      | $(date) | using the dadiUncertainty pipeline in PIrANHA." 
-echo "INFO      | $(date) | Bye.
-"
-#
-#
-#
+#echo "INFO      | $(date) | Done creating bootstrapped SNP datasets and conducting uncertainty analysis in ∂a∂i "
+#echo "INFO      | $(date) | using the dadiUncertainty pipeline in PIrANHA." 
+#echo "INFO      | $(date) | Bye.
+#"
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_INPUT_VCF=input.vcf
+MY_ASSIGNMENT_FILE=assignments.txt
+MY_POP_IDS=\'name1\',\'name2\',\'name3\'		## SWWP LCPorder IDs: 'LP','core','periphery'
+My_PROJECTION_VALUES=val1,val2,val3				## SWWP LCPorder projs: 98,46,156
+MY_NUM_BOOT_DATASETS=100
+UNCERT_METHOD_SWITCH=1
+MY_DADI_MODEL_SCRIPT=model.py
+MY_BESTMOD_PARAM_ESTIMATES=0.1,0.1,0.1,0.1,0.1,0.1
+DELETE_ORIG_VCF=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -v   inputVCFFile (def: input.vcf) input VCF file for run
+  -a   assignmentFile (def: $MY_ASSIGNMENT_FILE) Name of population/species assignment file,
+       a plain text file with one sample name and its corresponding population/species 
+       assignment codes on each line
+  -i   popIDs (def: $MY_POP_IDS) comma-separated string of population IDs 
+       to be passed to ∂a∂i. Each ID (up to 3) must be enclosed by a single quote that is 
+       commented out using a backslash, and be comma-separated
+  -p   projections (def: $My_PROJECTION_VALUES) comma-separated string of projection values to
+       be passed to ∂a∂i
+  -n   numBootstraps (def: $MY_NUM_BOOT_DATASETS) Number of bootstrapped SNP datasets to create
+  -m   method (def: 1=GIM; other: 2=FIM) perform uncertainty analysis using either the Godambe
+       Information Matrix (GIM) or the Fisher Information Matrix (FIM)
+  -s   modelScript (def: $MY_DADI_MODEL_SCRIPT) Name of ∂a∂i demographic model Python script that original
+       model run relied on
+  -e   paramEstimates (def: $MY_BESTMOD_PARAM_ESTIMATES) comma-separated string of best parameter
+       estimates from original model run (beforehand)
+  -d   deleteOrig (def: 0=no; other: 1=yes) specifies whether or not to delete the original
+       input .vcf file
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates conducting uncertainty analysis in ∂a∂i v1.7+ (Gutenkunst et al. 
+ 2009), in order to obtain parameter standard deviation estimates that can be converted by
+ the user into lower and upper 95% confidence intervals (CIs) for each parameter in a given
+ demographic model, which has already been run (to estimate best-fit parameters, best-
+ supported model out of suite of candidate models, etc.). The script starts from a working
+ directory containing the following: (1) the original VCF file containing SNP data that were
+ analyzed in the original model (run beforehand); (2) a population assignment file, assigning
+ each individual in the VCF file to population/species; (3) the original python file corres-
+ ponding to the ∂a∂i model being evaluated; (4) the site frequency spectrum file used during
+ the original model analysis; and (5) this script, with correct permissions set.
+	From the above starting conditions, dadiUncertainty.sh will automate file preparation 
+ and processing, as well as either one or both of the following uncertainty analyses described
+ in the ∂a∂i user manual: (A) uncertainty estimation using the Godambe Information Matrix 
+ (GIM), in which case the user must specify the number of bootstrapped datasets that the 
+ analysis should be based on; or (B) uncertainty estimation using a Fisher Information Matrix
+ (FIM), in which case no bootstrap files will be generated or used. It will generally be 
+ more appropriate for the user to run a GIM analysis, as in most cases it will be more 
+ realistic for SNP data to assume that they possess at least _some degree_ of linkage
+ disequilibrium (e.g. created by physical proximity, or by gene flow). However, if the user
+ has some _a priori_ reason to believe that their SNPs are unlinked, then a FIM analysis
+ may be justified.
+	In the case of a GIM analysis, the software will output a 'bootstrap_data' folder
+ with the bootstrapped datasets, an 'bootstrap_fs' folder of frequency spectrum files 
+ (corresponding 1-to-1 to the bootstrapped datasets), and an 'uncerts_GIM.txt' output file 
+ containing the GIM-based standard deviations. In the case of FIM analysis, the software will 
+ output only a single 'uncerts_FIM.txt' file containing the FIM-based standard deviations. 
+	For additional details about GIM and FIM analyses, see the ∂a∂i user's manual as well 
+ as the paper by Coffman et al. (2015).
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f dadiUncertainty
+    piranha -f dadiUncertainty --args='-h'
+    piranha -f dadiUncertainty --args='-V'
+
+	Example from 'real' analysis of a three-population southwestern white pine dataset
+	containing a downsample of 6330 SNPs (1 per ddRAD-seq contig), in which 250 bootstrapped
+	datasets are generated and analyzed using the GIM approach. 
+	
+    piranha -f dadiUncertainty --args='-a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 1 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf'
+ 
+	Same as above, except specifying the FIM method for unlinked SNPs:
+ 
+    piranha -f dadiUncertainty --args='-a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 2 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf'
+ 
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Coffman, A.J., Hsieh, P.H., Gravel, S., Gutenkunst, R.N. 2015. Computationally efficient  
+    composite likelihood statistics for demographic inference. Molecular Biology and Evolution, 
+    33(2), 591–593.
+ Gutenkunst, R.N., Hernandez, R.D., Williamson, S.H., Bustamante, C.D. 2009. Inferring the  
+ 	joint demographic history of multiple populations from multidimensional SNP frequency
+ 	data. PLOS Genetics, 5(10), e1000695.
+
+ Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.
+ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'v:a:i:p:n:m:s:e:d:' opt ; do
+  case $opt in
+## dadiUncertainty options:
+    v) MY_INPUT_VCF=$OPTARG ;;
+    a) MY_ASSIGNMENT_FILE=$OPTARG ;;
+    i) MY_POP_IDS=$OPTARG ;;
+    p) My_PROJECTION_VALUES=$OPTARG ;;
+    n) MY_NUM_BOOT_DATASETS=$OPTARG ;;
+    m) UNCERT_METHOD_SWITCH=$OPTARG ;;
+    s) MY_DADI_MODEL_SCRIPT=$OPTARG ;;
+    e) MY_BESTMOD_PARAM_ESTIMATES=$OPTARG ;;
+    d) DELETE_ORIG_VCF=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+# Store the remaining part as arguments.
+# args+=("$@")
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+dadiUncertainty
+
+# Exit cleanly
+safeExit

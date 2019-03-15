@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiRunner.sh                                                                    #
-  VERSION="v0.1.2"                                                                       #
+  VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.                     #
-# Last update: March 6, 2019                                                             #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -18,200 +18,139 @@
 #                                                                                        #
 ##########################################################################################
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_SNP_DATA_FILE=dadiIn
-MY_NUM_INDEP_RUNS=10
-MY_SC_WALLTIME=48:00:00
-MY_DADI_VERSION_SWITCH=0
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -i n w v V --version] [stdin:] <workingDir> 
- ## Help:
-  -h   help text (also: --help) echo this help text and exit
-  -H   verbose help text (also: -Help) echo verbose help text and exit
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
 
- ## Options:
-  -i   SNPInput (def: $MY_SNP_DATA_FILE) SNP data input file
-  -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
-  -w   walltime (def: $MY_SC_WALLTIME) wall time (run time; hours:minutes:seconds) passed to 
-       supercomputer 
-  -v   dadiVersion (def: 0, ∂a∂i v1.7++; 1, ∂a∂i-mod v1.6.3 from Tine et al. 2014) version of 
-       ∂a∂i for which to prepare and run shell scripts/files for runs
-  
- OVERVIEW
- Automates organizing and running one or more demographic models in ∂a∂i (Gutenkunst et 
- al. 2009) using data from a SNP input file, in ∂a∂i format, on a remote supercomputing 
- cluster. The script is called and gathers information on the current working dir and files
- on the local machine; it is also passed the path to the destination folder, and other details 
- needed for running on the supercomputer, as given in a configuration file, "./dadi_runner.cfg." 
- To take full advantage of the script's capacity, user must have installed recently updated 
- ∂a∂i from the developers (v1.7++), as well as the "∂a∂i-mod", or modified v1.6.3 version of
- ∂a∂i from Tine et al. (2014) (available from: https://popgensealab.wordpress.com/dadi-inference/). 
- Requires proper ∂a∂i install (e.g. several dependencies, including Python and 
- several Python packages), as well as paswordless ssh access (see PIrANHA README for 
- additional details). I have generated a guide to installing and using the ∂a∂i-mod version,
- which is available as a Gist from my GitHub account available at the following URL:
- https://gist.github.com/justincbagley/ecab6c39b62f89458b8ed3fab98fbeb2.
- 
- CITATION
- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
-	<http://github.com/justincbagley/RAPFX>.
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
- REFERENCES
- Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
- 	demographic history of multiple populations from multidimensional SNP frequency data. 
- 	PLOS Genetics 5(10): e1000695.
-
-Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.
-Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
-"
-
-VERBOSE_USAGE="Usage: $(basename $0) [Help: -h help H Help] [Options: -i n w v V --version] [stdin:] <workingDir> 
- ## Help:
-  -h   help text (also: --help) echo this help text and exit
-  -H   verbose help text (also: -Help) echo verbose help text and exit
-
- ## Options:
-  -i   SNPInput (def: $MY_SNP_DATA_FILE) SNP data input file
-  -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
-  -w   walltime (def: $MY_SC_WALLTIME) wall time (run time in hours:minutes:seconds) passed to supercomputer 
-  -v   dadiVersion (def: 0, ∂a∂i v1.7++; 1, ∂a∂i-mod v1.6.3 from Tine et al. 2014) version of 
-       ∂a∂i for which to prepare and run shell scripts/files for runs
-
- OVERVIEW
- Automates organizing and running one or more demographic models in ∂a∂i (Gutenkunst et 
- al. 2009) using data from a SNP input file, in ∂a∂i format, on a remote supercomputing 
- cluster. The script is called and gathers information on the current working dir and files
- on the local machine; it is also passed the path to the destination folder, and other details 
- needed for running on the supercomputer, as given in a configuration file, "./dadi_runner.cfg." 
- To take full advantage of the script's capacity, user must have installed recently updated 
- ∂a∂i from the developers (v1.7++), as well as the "∂a∂i-mod", or modified v1.6.3 version of
- ∂a∂i from Tine et al. (2014) (available from: https://popgensealab.wordpress.com/dadi-inference/). 
- Requires proper ∂a∂i install (e.g. several dependencies, including Python and 
- several Python packages), as well as paswordless ssh access (see PIrANHA README for 
- additional details). I have generated a guide to installing and using the ∂a∂i-mod version,
- which is available as a Gist from my GitHub account available at the following URL:
- https://gist.github.com/justincbagley/ecab6c39b62f89458b8ed3fab98fbeb2.
-
- DETAILS
- The -i flag sets the name of the SNP data input file copied into each run folder and 
- later passed to ∂a∂i by a shell script. The default name is 'dadiIn', with no extension.
-
- The -n flag sets the number of independent ∂a∂i runs to be submitted to the supercomputer
- for each model specified in a .py file in the current working directory. The default is 10
- runs.
-
- The -w flag passes the expected amount of time for each ∂a∂i run to the supercomputer
- management software, in hours:minutes:seconds (00:00:00) format. If your supercomputer does 
- not use this format, or does not have a walltime requirement, then you will need to modify 
- the shell scripts for each run and re-run them without specifying a walltime.
- 
- The -v flag allows users to specify using one of two different versions of ∂a∂i. The default
- value of 0 runs ∂a∂i input .py files normally, in the regular environment, and thus will draw
- on the most recent ∂a∂i version installed on the supercomputer. However, a 1 option allows 
- running ∂a∂i v1.6.3 as modified by Tine et al. (2014); as per my Gist linked in the Overview
- section above, this mod version can be installed in a Python virtual environment that you 
- must set up on the supercomputer. I recommend following my instructions and creating a 
- virtualenv named "∂a∂i-mod" for this version. To use ∂a∂i-mod, you must supply a separate 
- "virtualenv.txt" file containing a block of code that loads the corresponding virtual environment 
- on your supercomputer account. Code from this file will be added to each shell script (for each 
- independent run), in order tell the supercomputer to enter the ∂a∂i-mod virtual environment 
- prior to passing each .py file to Python. An example virtualenv.txt block is provided.
- 
-		## Usage examples: 
-		$0 .
-		$0 -n 5 .
-		$0 -i <SNPInput filename> .
-		$0 -i <SNPInput filename> -n 20 .			## Ex.: changing no. independent runs.
-		$0 -i <SNPInput filename> -v 1 .			## Ex.: changing to ∂a∂i-mod version (requires virtualenv.txt file).
-		$0 -i <SNPInput filename> -n 20 -w 24:00:00 .	## Ex.: changing run walltime.
-	
- CITATION
- Bagley, J.C. 2019. PIrANHA v0.1.7. GitHub repository, Available at: 
-	<http://github.com/justincbagley/RAPFX>.
-
- REFERENCES
- Gutenkunst RN, Hernandez RD, Williamson SH, Bustamante CD (2009) Inferring the joint 
- 	demographic history of multiple populations from multidimensional SNP frequency data. 
- 	PLOS Genetics 5(10): e1000695.
-
-Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.
-Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
-"
-
-if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$USAGE"
-	exit
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
 fi
 
-if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
-	echo "$VERBOSE_USAGE"
-	exit
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
 fi
 
-if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
-	exit
-fi
 
-############ PARSE THE OPTIONS
-while getopts 'i:n:w:v:' opt ; do
-  case $opt in
-## ∂a∂i options:
-    i) MY_SNP_DATA_FILE=$OPTARG ;;
-    n) MY_NUM_INDEP_RUNS=$OPTARG ;;
-    w) MY_SC_WALLTIME=$OPTARG ;;
-    v) MY_DADI_VERSION_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
 
-############ SKIP OVER THE PROCESSED OPTIONS
-shift $((OPTIND-1)) 
-# Check for mandatory positional parameters
-if [ $# -lt 1 ]; then
-	echo "$USAGE"
-	exit 1
-fi
-USER_SPEC_PATH="$1"
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
 
-echo "
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+function dadiRunner () {
+
+######################################## START ###########################################
 ##########################################################################################
-#                             dadiRunner v0.1.2, March 2019                              #
-##########################################################################################
-"
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | dadiRunner, v1.0.0 March 2019  (part of PIrANHA v1.0.0)        "
+echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dadiRunner pipeline... "
-echo "INFO      | $(date) | STEP #1: SETUP. "
+echo "INFO      | $(date) | Step #1: Set up workspace, read configuration information, and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
 echo "INFO      | $(date) |          Setting up variables, including those specified in the cfg file..."
-###### Set new path/dir environmental variable to user specified path, then create useful
-##--shell functions and variables:
-if [[ "$USER_SPEC_PATH" = "$(echo $(pwd))" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
-	MY_WD_PATH="$(pwd -P)";
-	echo "INFO      | $(date) |          Setting working directory to: $MY_WD_PATH "
-elif [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
-	cd ..;
-	MY_WD_PATH="$(pwd -P)";
-	echo "INFO      | $(date) |          Setting working directory to: $MY_WD_PATH "
-elif [[ "$USER_SPEC_PATH" != "$(echo $(pwd))" ]]; then
-	MY_WD_PATH=$USER_SPEC_PATH;
-	cd "$MY_WD_PATH";
-	echo "INFO      | $(date) |          Setting working directory to: $MY_WD_PATH "	
-else
-	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
-	exit
-fi
-	calc () { 
-		bc -l <<< "$@" 
-}
 	MY_INPUT_PY_FILES=./*.py;
 	MY_NUM_PY_FILES="$(ls . | grep "\.py$" | wc -l)";
 echo "INFO      | $(date) |          Number of .py ∂a∂i input files read: $MY_NUM_PY_FILES"	## Check number of input files read into program.
@@ -227,9 +166,9 @@ echo "INFO      | $(date) |          Number of .py ∂a∂i input files read: $M
 	awk -F"=" '{print $NF}')";
 
 
-echo "INFO      | $(date) | STEP #2: MAKE 9 COPIES PER INPUT .PY FILE FOR A TOTAL OF $MY_NUM_INDEP_RUNS RUNS OF EACH MODEL or "
-echo "INFO      | $(date) |          .PY USING DIFFERENT RANDOM SEEDS. "
-echo "INFO      | $(date) |          Looping through original .py's and making 9 copies per file, renaming \
+echo "INFO      | $(date) | Step #2: Make n copies per input .py file for a total of $MY_NUM_INDEP_RUNS runs of each model (= "
+echo "INFO      | $(date) |          .py file) using different random seeds. "
+echo "INFO      | $(date) |          Looping through original .py's and making n copies per file, renaming \
 each copy with an extension of '_#.py'"
 echo "INFO      | $(date) |          where # ranges from 2 - $MY_NUM_INDEP_RUNS. *** IMPORTANT ***: The starting .py files MUST \
 end in 'run.py'."
@@ -253,8 +192,8 @@ end in 'run.py'."
 	            		## annotated with their run numbers 1 - $MY_NUM_INDEP_RUNS remain.
 
 
-echo "INFO      | $(date) | STEP #3: MAKE DIRECTORIES FOR RUNS AND GENERATE SHELL SCRIPTS UNIQUE TO EACH \
-INPUT FILE FOR DIRECTING EACH RUN; MAKE SCRIPTS SPECIFIC TO ∂a∂i VERSION INDICATED BY USER. "
+echo "INFO      | $(date) | Step #3: Make directories for runs and generate shell scripts unique to each input file for directing \
+runs; make scripts specific to ∂a∂i version indicated by user. "
 ##--Loop through the input .py files and do the following for each file: (A) generate one 
 ##--folder per .py file with the same name as the file, only minus the extension; (B) 
 ##--create a shell script with the name "dadi_pbs.sh" that is specific to the input 
@@ -339,8 +278,7 @@ echo "INFO      | $(date) |          Setup and run check on the number of run fo
 	echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS"
 
 
-echo "INFO      | $(date) | STEP #4: CREATE BATCH SUBMISSION FILE, MOVE ALL RUN FOLDERS CREATED IN PREVIOUS STEP \
-AND SUBMISSION FILE TO SUPERCOMPUTER. "
+echo "INFO      | $(date) | Step #4: Create batch submission file, move all run folders and submission files to supercomputer. "
 ##--This step assumes that you have set up passowordless access to your supercomputer
 ##--account (e.g. passwordless ssh access), by creating and organizing appropriate and
 ##--secure public and private ssh keys on your machine and the remote supercomputer (by 
@@ -394,7 +332,7 @@ scp ./dadirunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;
 
 
 
-echo "INFO      | $(date) | STEP #5: SUBMIT ALL JOBS TO THE QUEUE. "
+echo "INFO      | $(date) | Step #5: Submit all jobs to the queue. "
 ##--This is the key: using ssh to connect to supercomputer and execute the "dadirunner_batch_qsub.sh"
 ##--submission file created and moved into sc destination folder above. The batch qsub file
 ##--loops through all run folders and submits all jobs/runs (sh scripts in each folder) to the 
@@ -413,7 +351,7 @@ HERE
 echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting ∂a∂i jobs to queue!!"
 
 
-echo "INFO      | $(date) | STEP #6: CLEANUP: REMOVE UNNECESSARY FILES. "
+echo "INFO      | $(date) | Step #6: Clean up workspace by removing unnecessary files generated during run. "
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
 	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".py; done;
 	rm ./batch_qsub_top.txt ;
@@ -421,13 +359,225 @@ echo "INFO      | $(date) |          Cleaning up: removing temporary files from 
 	rm ./batch_qsub_bottom.txt ;
 	rm ./dadirunner_batch_qsub.sh ;
 
-echo "INFO      | $(date) | Done organizing and copying SNP data and model files to supercomputer and submitting ∂a∂i "
-echo "INFO      | $(date) | jobs to the queue, using the dadiRunner pipeline. "
-echo "INFO      | $(date) | Bye.
-"
-#
-#
-#
+#echo "INFO      | $(date) | Done organizing and copying SNP data and model files to supercomputer and submitting ∂a∂i "
+#echo "INFO      | $(date) | jobs to the queue, using the dadiRunner pipeline. "
+#echo "INFO      | $(date) | Bye.
+#"
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+
+##########################################################################################
 ######################################### END ############################################
 
-exit 0
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_SNP_DATA_FILE=dadiIn
+MY_NUM_INDEP_RUNS=10
+MY_SC_WALLTIME=48:00:00
+MY_DADI_VERSION_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   SNPInput (def: $MY_SNP_DATA_FILE) SNP data input file
+  -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
+  -w   walltime (def: $MY_SC_WALLTIME) wall time (run time; hours:minutes:seconds) passed to 
+       supercomputer 
+  -h   help text (also: --help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
+  -v   dadiVersion (def: 0, ∂a∂i v1.7++; 1, ∂a∂i-mod v1.6.3 from Tine et al. 2014) version of 
+       ∂a∂i for which to prepare and run shell scripts/files for runs
+  -V   version (also: --version) echo version of this script and exit
+  
+ ${bold}OVERVIEW${reset}
+ Automates organizing and running one or more demographic models in ∂a∂i (Gutenkunst et 
+ al. 2009) using data from a SNP input file, in ∂a∂i format, on a remote supercomputing 
+ cluster. The script is called and gathers information on the current working dir and files
+ on the local machine; it is also passed the path to the destination folder, and other details 
+ needed for running on the supercomputer, as given in a configuration file, './dadi_runner.cfg.' 
+ To take full advantage of the script's capacity, user must have installed recently updated 
+ ∂a∂i from the developers (v1.7++), as well as the '∂a∂i-mod', or modified v1.6.3 version of
+ ∂a∂i from Tine et al. (2014) (available from: https://popgensealab.wordpress.com/dadi-inference/). 
+ Requires proper ∂a∂i install (e.g. several dependencies, including Python and 
+ several Python packages), as well as paswordless ssh access (see PIrANHA README for 
+ additional details). I have generated a guide to installing and using the ∂a∂i-mod version,
+ which is available as a Gist from my GitHub account available at the following URL:
+ https://gist.github.com/justincbagley/ecab6c39b62f89458b8ed3fab98fbeb2.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f dadiRunner
+    piranha -f dadiRunner --args='-n 5'
+    piranha -f dadiRunner --args='-i <SNPInput>'
+    piranha -f dadiRunner --args='-i <SNPInput> -n 20'					Changing no. of independent runs.
+    piranha -f dadiRunner --args='-i <SNPInput> -v 1'					Changing to ∂a∂i-mod version (requires virtualenv.txt file).
+    piranha -f dadiRunner --args='-i <SNPInput> -n 20 -w 24:00:00'		Changing run walltime.
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Gutenkunst, R.N., Hernandez, R.D., Williamson, S.H., Bustamante, C.D. 2009. Inferring the  
+ 	joint demographic history of multiple populations from multidimensional SNP frequency
+ 	data. PLOS Genetics, 5(10), e1000695.
+
+ Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.
+ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+"
+
+VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   SNPInput (def: $MY_SNP_DATA_FILE) SNP data input file
+  -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
+  -w   walltime (def: $MY_SC_WALLTIME) wall time (run time; hours:minutes:seconds) passed to 
+       supercomputer 
+  -h   help text (also: --help) echo this help text and exit
+  -H   verbose help text (also: -Help) echo verbose help text and exit
+  -v   dadiVersion (def: 0, ∂a∂i v1.7++; 1, ∂a∂i-mod v1.6.3 from Tine et al. 2014) version of 
+       ∂a∂i for which to prepare and run shell scripts/files for runs
+  -V   version (also: --version) echo version of this script and exit
+  
+ ${bold}OVERVIEW${reset}
+ Automates organizing and running one or more demographic models in ∂a∂i (Gutenkunst et 
+ al. 2009) using data from a SNP input file, in ∂a∂i format, on a remote supercomputing 
+ cluster. The script is called and gathers information on the current working dir and files
+ on the local machine; it is also passed the path to the destination folder, and other details 
+ needed for running on the supercomputer, as given in a configuration file, './dadi_runner.cfg.' 
+ To take full advantage of the script's capacity, user must have installed recently updated 
+ ∂a∂i from the developers (v1.7++), as well as the '∂a∂i-mod', or modified v1.6.3 version of
+ ∂a∂i from Tine et al. (2014) (available from: https://popgensealab.wordpress.com/dadi-inference/). 
+ Requires proper ∂a∂i install (e.g. several dependencies, including Python and 
+ several Python packages), as well as paswordless ssh access (see PIrANHA README for 
+ additional details). I have generated a guide to installing and using the ∂a∂i-mod version,
+ which is available as a Gist from my GitHub account available at the following URL:
+ https://gist.github.com/justincbagley/ecab6c39b62f89458b8ed3fab98fbeb2.
+
+ ${bold}DETAILS${reset}
+ The -i flag sets the name of the SNP data input file copied into each run folder and 
+ later passed to ∂a∂i by a shell script. The default name is 'dadiIn', with no extension.
+
+ The -n flag sets the number of independent ∂a∂i runs to be submitted to the supercomputer
+ for each model specified in a .py file in the current working directory. The default is 10
+ runs.
+
+ The -w flag passes the expected amount of time for each ∂a∂i run to the supercomputer
+ management software, in hours:minutes:seconds (00:00:00) format. If your supercomputer does 
+ not use this format, or does not have a walltime requirement, then you will need to modify 
+ the shell scripts for each run and re-run them without specifying a walltime.
+ 
+ The -v flag allows users to specify using one of two different versions of ∂a∂i. The default
+ value of 0 runs ∂a∂i input .py files normally, in the regular environment, and thus will draw
+ on the most recent ∂a∂i version installed on the supercomputer. However, a 1 option allows 
+ running ∂a∂i v1.6.3 as modified by Tine et al. (2014); as per my Gist linked in the Overview
+ section above, this mod version can be installed in a Python virtual environment that you 
+ must set up on the supercomputer. I recommend following my instructions and creating a 
+ virtualenv named '∂a∂i-mod' for this version. To use ∂a∂i-mod, you must supply a separate 
+ 'virtualenv.txt' file containing a block of code that loads the corresponding virtual environment 
+ on your supercomputer account. Code from this file will be added to each shell script (for each 
+ independent run), in order tell the supercomputer to enter the ∂a∂i-mod virtual environment 
+ prior to passing each .py file to Python. An example virtualenv.txt block is provided.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f dadiRunner
+    piranha -f dadiRunner --args='-n 5'
+    piranha -f dadiRunner --args='-i <SNPInput>'
+    piranha -f dadiRunner --args='-i <SNPInput> -n 20'					Changing no. of independent runs.
+    piranha -f dadiRunner --args='-i <SNPInput> -v 1'					Changing to ∂a∂i-mod version (requires virtualenv.txt file).
+    piranha -f dadiRunner --args='-i <SNPInput> -n 20 -w 24:00:00'		Changing run walltime.
+	
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Gutenkunst, R.N., Hernandez, R.D., Williamson, S.H., Bustamante, C.D. 2009. Inferring the  
+ 	joint demographic history of multiple populations from multidimensional SNP frequency
+ 	data. PLOS Genetics, 5(10), e1000695.
+
+ Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.
+ Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
+	echo "$VERBOSE_USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'i:n:w:v:' opt ; do
+  case $opt in
+## ∂a∂i runner options:
+    i) MY_SNP_DATA_FILE=$OPTARG ;;
+    n) MY_NUM_INDEP_RUNS=$OPTARG ;;
+    w) MY_SC_WALLTIME=$OPTARG ;;
+    v) MY_DADI_VERSION_SWITCH=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+# Store the remaining part as arguments.
+# args+=("$@")
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+dadiRunner
+
+# Exit cleanly
+safeExit

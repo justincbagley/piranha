@@ -5,17 +5,17 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: renameForStarBEAST2.sh                                                           #
-  VERSION="v1.2.1"                                                                       #
+# File: getBootTrees.sh                                                                  #
+  VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
+# Date: Created by Justin Bagley on/before August 20, 2017.                              #
 # Last update: March 13, 2019                                                            #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT TO RENAME TIP LABLES IN PHYLIP OR FASTA MULTIPLE SEQUENCE ALIGNMENT (MSA) #
-# FILES TO APPEND SPECIES ASSIGNMENTS FOR STARBEAST / STARBEAST2                         #
+# SHELL SCRIPT THAT AUTOMATES ORGANIZING BOOTSTRAP TREES OUTPUT BY RAxML RUNS CONDUCTED  #
+# IN CURRENT WORKING DIRECTORY USING MAGNET                                              #
 #                                                                                        #
 ##########################################################################################
 
@@ -29,7 +29,7 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # not be found.
 # -----------------------------------
 
-UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+UTILS_LOCATION="${SCRIPT_PATH}/../../../lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
   source "${UTILS_LOCATION}"
@@ -42,8 +42,8 @@ fi
 # Source shared functions and variables
 # -----------------------------------
 
-FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
-VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+FUNCS_LOCATION="${SCRIPT_PATH}/../../../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../../../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
 if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
   source "${FUNCS_LOCATION}" ;
@@ -130,17 +130,18 @@ gemDependencies=()
 
 
 
-function renameForStarBEAST2 () {
+function getBootTrees () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameForStarBEAST2, v1.2.1 March 2019  (part of PIrANHA v1.0.0)"
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | getBootTrees, v1.0.0 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
+echo "INFO      | $(date) | Starting getBootTrees script... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -150,73 +151,54 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-echo "INFO      | $(date) | Step #2: Read and process ASTRAL-III style taxon-assignment file. "
-## Split input ASTRAL-III-type taxon-assignment file into separate .tmp files for species
-## (*_assign_names.tmp) and individuals or tips (*_assign_tips.tmp)
-echo "INFO      | $(date) |          Splitting up assignment file... "
-perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 1 > ./species_assign_names.tmp
-perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 3- > ./species_assign_tips.tmp
+echo "INFO      | $(date) | Step #2: Run main getBootTrees script. "
+echo "INFO      | $(date) |          Organizing bootstrap trees and making final output file containing all trees... "
+echo "INFO      | $(date) |          Making list of ML bootstrap trees generated by RAxML... "
 
-## Count number of species assignments and tips:
-MY_NUM_SPECIES_ASSIGN="$(wc -l ./species_assign_names.tmp | sed 's/\ //g; s/\.\/.*//g')"
-MY_NUM_TIP_INDS="$(perl -pe $'s/\ /\n/g; s/\t/\n/g' ./species_assign_tips.tmp | sort -u | wc -l | sed 's/\ //g; s/\.\/.*//g')"
+	ls **/RAxML_bootstrap.raxml_out > bootTrees.list;
 
-echo "INFO      | $(date) | Step #3: Run main parts of script that conduct renaming. "
-## Main script loop sets run conditional on input file type:
-if [[ "$MY_INPUT_FILE_TYPE" = "phylip" ]]; then
-echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
-echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
-echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
-echo "INFO      | $(date) |          Renaming PHYLIP MSAs in current working directory... "
-for i in ./*.phy; do
-	echo "INFO      | $(date) |          $i "
-	MY_COUNT=1
+	##--Assign bootstrap tree list to variable
+	MY_BOOT_TREE_LIST="$(cat ./bootTrees.list)";
+
+	############ ORGANIZE BOOTSTRAP TREES INTO ONE LOCATION
+	##--Place all inferred bootstrap tree files into a single "bootstrap_trees" folder in 
+	##--working directory. However, all the boot tree files have the same name. So, in order
+	##--to do this, we have to give each boot tree file a name that matches the corresponding
+	##--run folder, i.e. locus. We can rename each file right after downloading it.
+
+	mkdir ./bootstrap_trees/ ;
+
+	echo "INFO      | $(date) |          Copying *ALL* ML bootstrap trees to 'bootstrap_trees' folder in current directory for post-processing..."
 	(
-		while read TIP_NAME; do 
-			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)"; 
-			MY_TIP_NAMES="$TIP_NAME"; 
-	
-				for j in $MY_TIP_NAMES; do 
-					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
-				done; 
-
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
-		done < ./species_assign_tips.tmp
+		for j in ${MY_BOOT_TREE_LIST}; do
+			echo "$j";
+			cp "$j" ./bootstrap_trees/ ;
+			MY_LOCUS_NAME="$(echo $j | sed 's/\/[A-Za-z.\_\-]*//g')";
+			cp ./bootstrap_trees/RAxML_bootstrap.raxml_out ./bootstrap_trees/"$MY_LOCUS_NAME"_RAxML_boot.tre ;
+			rm ./bootstrap_trees/RAxML_bootstrap.raxml_out ;
+		done
 	)
-done
-fi
 
-if [[ "$MY_INPUT_FILE_TYPE" = "fasta" ]]; then
-echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
-echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
-echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
-echo "INFO      | $(date) |          Renaming FASTA MSAs in current working directory... "
-
-for i in ./*.fas; do
-	echo "INFO      | $(date) |          $i "
-	MY_COUNT=1
+	echo "INFO      | $(date) |          Making final output file containing best ML trees from all runs/loci..."
 	(
-		while read TIP_NAME; do 
-			MY_SPECIES="$(sed -n ${MY_COUNT}p ./species_assign_names.tmp)" ; 
-			MY_TIP_NAMES="$TIP_NAME" ; 
-	
-				for j in $MY_TIP_NAMES; do 
-					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
-				done; 
-
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
-		done < ./species_assign_tips.tmp
+		for k in ./bootstrap_trees/*; do
+			echo "$k";
+			cat "$k" >> ./boottrees.tre ;
+		done
 	)
-done
-fi
 
-echo "INFO      | $(date) | Step #4: Clean up workspace by deleting temporary files created during run. "
-echo "INFO      | $(date) |          Removing temporary files... "
-############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-	rm ./species_assign_names.tmp ./species_assign_tips.tmp ;
-
+	echo "INFO      | $(date) |          Making final list of ML bootstrap trees in bootstrap_trees directory..."
+	ls ./bootstrap_trees/*.tre > final_bootTrees.list ;
+ 
+#echo "INFO      | $(date) | Done collating ML bootstrap trees from all RAxML runs (independent sub-folders of pwd) run using getBootTrees.sh."
+#echo "INFO      | $(date) | Bye.
+#"
 echo "----------------------------------------------------------------------------------------------------------"
+echo "output file(s)/folder(s): ./boottrees.tre "
+echo "                          ./final_bootTrees.list "
+echo "                          ./bootstrap_trees/ "
 echo ""
+
 
 ##########################################################################################
 ######################################### END ############################################
@@ -227,39 +209,48 @@ echo ""
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-MY_INPUT_FILE_TYPE=phylip
-USER_SPEC_ASSIGNMENT_FILE=assignment.txt
+# None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -f   input file type (def: phylip; other: fasta) type of file(s) in current directory
-       to be renamed (assumes '.phy' or '.fas' extensions for PHYLIP or FASTA format files, 
-       respectively)
-  -a   assignmentFile (def: assignment.txt) ASTRAL-III style assignment file detailing which
-       individual tips correspond to which species or taxa
   -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version and exit
+  -V   version (also: --version) echo version of this script and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT renames tip taxa in all PHYLIP or FASTA DNA sequence alignments in the current
- working directory, so that the taxon names are suitable for assigning species in BEAUti
- v2.4+ (part of BEAST v2.4+; Bouckaert et al. 2014) for StarBEAST2 (Ogilvie et al. 2017). 
- For best results, species assignments in the assignment file should be given as simple
- alphanumeric names with no spaces, hyphens, underscores, or nonalphanumeric characters
- (e.g. the assignment 'unimaculatus' gave no errors in testing).
+ THIS SCRIPT was designed to run in a current working directory where the MAGNET pipeline
+ in PIrANHA v1.0.0 (Bagley 2019) has been run to estimate maximum-likelihood (ML) gene trees 
+ in RAxML v8+ (Stamatakis 2014) for a set of loci from DNA sequence data. Given such a 
+ workspace, this script organizes the bootstrap trees resulting from all RAxML runs, in
+ subfolders of the current directory. The getBootTrees function is already run during the
+ MAGNET pipeline, by default, so users will likely not need to run getBootTrees from this
+ standalone function. However, this function may be useful in summarizing bootstrap trees 
+ from a set of RAxML subfolders when MAGNET has not been run. For example, if you wrote your
+ own code to run RAxML in multiple subfolders of a given directory, then you could use 
+ getBootTrees to summarize the bootstrap trees and quit.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). There are no other dependencies.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f renameForStarBEAST2 --args='-f phylip -a assignment.txt'
+    piranha -f getBootTrees  			    Run the software
+    piranha -f getBootTrees --args='-h'      Print this help text
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
- Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
+ ${bold}REFERENCES${reset}
+ Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
+	<https://github.com/justincbagley/PIrANHA>.
+ Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
+	large phylogenies. Bioinformatics, 30, 1312-1313.
+
+ Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
@@ -272,25 +263,6 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
-
-############ PARSE THE OPTIONS
-while getopts 'f:a:' opt ; do
-  case $opt in
-## renameForStarBEAST2 options:
-    f) MY_INPUT_FILE_TYPE=$OPTARG ;;
-    a) USER_SPEC_ASSIGNMENT_FILE=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
-
-# Store the remaining part as arguments.
-# args+=("$@")
 
 
 # ############# ############# #############
@@ -324,7 +296,7 @@ set -o pipefail
 # checkDependencies
 
 # Run the script
-renameForStarBEAST2
+getBootTrees
 
 # Exit cleanly
 safeExit

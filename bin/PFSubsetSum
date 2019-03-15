@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PFSubsetSum.sh                                                                   #
-  VERSION="v1.3.2"                                                                       #
+  VERSION="v1.3.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
-# Last update: March 11, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -18,7 +18,6 @@
 # PARTITIONING SCHEME IDENTIFIED FOR THE DATA BY PartitionFinder v1 or v2                #
 #                                                                                        #
 ##########################################################################################
-
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -137,19 +136,16 @@ function PFSubsetSum () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PFSubsetSum, v1.3.2 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | PFSubsetSum, v1.3.3 March 2019  (part of PIrANHA v1.0.0)       "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only set to run in current working dir, and echo cwd to screen:
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-MY_WORKING_DIR="$(pwd -P)";
-
+MY_WORKING_DIR="$(pwd -P)";		## Keep, used by script a few places below.
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -280,12 +276,19 @@ rm ./table_header.txt ./table.txt ./subset_names.txt ./subsetModels.txt ;
 #"
 
 echo "----------------------------------------------------------------------------------------------------------"
+	echo "output file(s): PartitionFinder subset summary statistics written to ./sumstats.txt"
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
 
 }
 
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
 
 
 # ############# ############# #############

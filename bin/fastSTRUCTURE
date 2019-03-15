@@ -183,6 +183,7 @@ echo "INFO      | $(date) | Step #4: Visualize results. "
 #"
 
 echo "----------------------------------------------------------------------------------------------------------"
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -225,7 +226,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
- Raj A, Stephens M, Pritchard JK (2014) fastSTRUCTURE: variational inference of population 
+ Raj, A., Stephens, M., Pritchard, J.K. 2014. fastSTRUCTURE: variational inference of population 
 	structure in large SNP data sets. Genetics, 197, 573–589.
 
  Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.

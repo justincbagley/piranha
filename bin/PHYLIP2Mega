@@ -9,7 +9,7 @@
   VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: March 11, 2019                                                            #
+# Last update: March 12, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -140,18 +140,19 @@ echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights rese
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | My verbose out switch: $MY_VERBOSE_OUT_SWITCH ..."
+#echo "INFO      | $(date) | My verbose out switch: $MY_VERBOSE_OUT_SWITCH ..."
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting PHYLIP2Mega script... "
 	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful variables and functions, setting working directory, and checking machine type. "
 fi
-
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Convert PHYLIP multiple sequence alignment (MSA) file(s) to Mega format. "
@@ -204,7 +205,7 @@ fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
 				fi
-			rm ./*.tmp;
+			rm ./*.tmp ;
 		else
 			echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $MY_INPUT_PHYLIP_FILE in working directory. Quitting... " 
 			exit
@@ -261,7 +262,7 @@ fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
 						fi
-					rm ./*.tmp;
+					rm ./*.tmp ;
 				done
 			)
 			fi
@@ -277,23 +278,23 @@ fi
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) |          Deleting original PHYLIP files... "
 		fi
-		rm ./*.phy;
+		rm ./*.phy ;
 	fi
 
 	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]] && [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s mega/ ]] && [[ ! -s phylip/ ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) |          Kept original PHYLIP files. Organizing Mega and PHYLIP files into subfolders... "
 		fi
-		mkdir mega/;
-		mkdir phylip/;
-		mv ./*.phy ./phylip/;
-		mv ./*.meg ./mega/;
+		mkdir mega/ ;
+		mkdir phylip/ ;
+		mv ./*.phy ./phylip/ ;
+		mv ./*.meg ./mega/ ;
 	elif [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]] && [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ -s mega/ ]] && [[ -s phylip/ ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) |          Kept original PHYLIP files. Organizing Mega and PHYLIP files into existing subfolders... "
 		fi
-		mv ./*.phy ./phylip/;
-		mv ./*.meg ./mega/;
+		mv ./*.phy ./phylip/ ;
+		mv ./*.meg ./mega/ ;
 	fi
 
 
@@ -330,7 +331,7 @@ MY_VERBOSE_OUT_SWITCH=0
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputPHYLIP (def: NULL) individual PHYLIP file, user-specified filename
+  -i   inputPHYLIP (def: NULL) input PHYLIP filename; run on this individual PHYLIP file
   -m   multiPHYLIP (def: 0, turned on; 1, on) convert multiple PHYLIP files in working dir
   -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
        converted during the run
@@ -343,9 +344,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  THIS SCRIPT automates converting one or more multiple sequence alignment (MSA) files in
  PHYLIP format (Felsenstein 2002) into the correct input format for Mega (Mega v7+ or X; 
  Kumar et al. 2016, 2018), while saving (-k 1) or writing over (-k 0) the original PHYLIP 
- files.
+ files. Sequence names should include alphanumeric, hyphen, and underscore characters but 
+ no spaces, or else there could be issues. Also, PHYLIP alignment files must have the 
+ extension '.phy'.
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f PHYLIP2Mega --args='-i ./<inputPHYLIP> -k 1'   Convert single PHYLIP to Mega, keeping original file
     piranha -f PHYLIP2Mega --args='-m1 -k 1'				  Convert multiple PHYLIP files to Mega, keeping original files
 
@@ -356,9 +361,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}REFERENCES${reset}
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
- Kumar S, Stecher G, Tamura K (2016) MEGA7: molecular evolutionary genetics analysis version 
+ Kumar, S., Stecher, G., Tamura, K. 2016. MEGA7: molecular evolutionary genetics analysis version 
 	7.0 for bigger datasets. Molecular Biology and Evolution, 33(7), 1870–1874.
- Kumar S, Stecher G, Li M, Knyaz C, Tamura K. MEGA X (2018) molecular evolutionary genetics 
+ Kumar, S., Stecher, G., Li, M., Knyaz, C., Tamura, K. 2018. MEGA X molecular evolutionary genetics 
 	analysis across computing platforms. Molecular Biology and Evolution, 35(6), 1547-1549.
 
  Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.

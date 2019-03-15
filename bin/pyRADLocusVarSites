@@ -6,19 +6,22 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRADLocusVarSites.sh                                                            #
-  VERSION="v0.1.2"                                                                       #
+  VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.                      #
-# Last update: March 11, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # CALCULATES NUMBERS OF VARIABLE SITES AND PARSIMONY-INFORMATIVE (i.e. PHYLOGENETICALLY  #
 # INFORMATIVE SITES) FOR SET OF SNP LOCI IN pyRAD .loci OUTPUT, THEN RANKS LOCI BY       #
-# VARIABILITY                                                                            #
+# VARIABILITY. CREATES VARIOUS OUTPUT FILES.                                             #
 #                                                                                        #
 ##########################################################################################
+
+## TODO: Improve usage text with usage options (at least -h and -V) and some form of 
+## example usage.
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -137,7 +140,7 @@ function pyRADLocusVarSites () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRADLocusVarSites, v0.1.2 March 2019  (part of PIrANHA v1.0.0)"
+echo "INFO      | $(date) | pyRADLocusVarSites, v1.0.0 March 2019  (part of PIrANHA v1.0.0)"
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -145,17 +148,20 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Step #1: Set up and test current working directory. "
 ###### STEP #1: SETUP, READ AND CHECK CURRENT WORKING DIRECTORY, INCLUDING DIR TEST FOR 
 ###### CORRECT WORKING DIR (PYRAD / IPYRAD OUTFILES/ RUN SUBFOLDER).
-MY_PATH="$(pwd -P)";
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd -P)")";
+echoCDWorkingDir
 
 ##--Test whether current working dir is an "outfiles" sub-folder of a pyRAD assembly run.
 ##--If so, move forward with no changes; if not, assume script was run within the main
 ##--dir of a pyRAD assembly run, and cd into outfiles folder.
-MY_OUTFILES_DIR_TEST="$(echo $MY_PATH | sed 's/.*\///g')"
+
+MY_OUTFILES_DIR_TEST="$(echo $USER_SPEC_PATH | sed 's/.*\///g')"
 if [[ "$MY_OUTFILES_DIR_TEST" -eq "outfiles"  ]]; then 
 	echo "INFO      | $(date) | Path check PASSED. You're in pyRAD outfiles dir already. "
 else
 	echo "INFO      | $(date) | Path check FAILED. Now attempting to change into pyRAD outfiles dir... "
-	cd ./outfiles ;
+	cd ./outfiles/ ;
 else
 	echo "INFO      | $(date) | Path check FAILED. Please move into the pyRAD / ipyrad ./outfiles/ dir before running. Exiting... "
 	exit ;
@@ -208,6 +214,7 @@ fi
 #
 		echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files created during run. "
 		echo "INFO      | $(date) |          Removing temporary files and intermediate text files... "
+		############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 			rm ./*.tmp ;
 			rm ./"$i"_varSites.txt ;
 			rm ./"$i"_parsInformSites.txt ;
@@ -220,6 +227,7 @@ fi
 #"
 
 echo "----------------------------------------------------------------------------------------------------------"
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -230,6 +238,10 @@ echo "--------------------------------------------------------------------------
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
+ ${bold}Options:${reset}
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates summarizing the numbers of variable sites (i.e. segregating sites, S)
  and parsimony-informative sites (PIS) from RAD / GBS loci output by the programs pyRAD or 
@@ -239,6 +251,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ranked according to their S and PIS values. Summary and ranked locus information is output
  to several files. The script takes no options and runs non-interactively from the UNIX / 
  LINUX command line (i.e. terminal emulator). 
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f pyRADLocusVarSites
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:

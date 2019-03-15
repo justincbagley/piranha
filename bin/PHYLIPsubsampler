@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsubsampler.sh                                                              #
-  VERSION="v1.1.3"                                                                       #
+  VERSION="v1.1.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: March 12, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -18,6 +18,9 @@
 # FILES DOWN TO ONE (RANDOM) SEQUENCE PER SPECIES (FOR SPECIES TREE ANALYSIS)            #
 #                                                                                        #
 ##########################################################################################
+
+## TODO: Compare with dropRandomHap script; if highly overlapping and non-complementary, 
+## then decide on one and keep it, remove the other, and develop the one you kept further.
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -136,7 +139,7 @@ function PHYLIPsubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.3 March 2019  (part of PIrANHA v1.0.0)  "
+echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.4 March 2019  (part of PIrANHA v1.0.0)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -144,12 +147,8 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting PHYLIPSubsampler analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only set to run in current working dir, and echo cwd to screen:
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-MY_WORKING_DIR="$(pwd -P)";
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -157,10 +156,11 @@ checkMachineType
 
 ###### FILE PROCESSING
 echo "INFO      | $(date) | Step #2: Conduct main PHYLIP file processing steps. "
-## If MY_INPUT_FILE is 'NULL' (not given or changed by user), then use MY_ASSIGNMENT_FILE
+## If INPUT_PHYLIP_FILE is 'NULL' (not given or changed by user), then use MY_ASSIGNMENT_FILE
 ## that is read in and conduct subsampling as usual on all PHYLIP alignments (i.e. in
 ## variable $MY_PHYLIP_ALIGNMENTS) within the current working dir.
-if [[ "$MY_INPUT_FILE" = "NULL" ]]; then
+
+if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]]; then
 
 MY_PHYLIP_ALIGNMENTS=./*.phy ;
 (
@@ -215,13 +215,14 @@ fi
 
 
 
-## If MY_INPUT_FILE is given or changed by user (not NULL), then use MY_ASSIGNMENT_FILE
-## that is read in and conduct subsampling only on the alignment in $MY_INPUT_FILE, 
+## If INPUT_PHYLIP_FILE is given or changed by user (not NULL), then use MY_ASSIGNMENT_FILE
+## that is read in and conduct subsampling only on the alignment in $INPUT_PHYLIP_FILE, 
 ## which must be within the current working dir. This analysis will only subset one file.
-if [[ "$MY_INPUT_FILE" != "NULL" ]]; then
+
+if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
 
 (
-	for i in $MY_INPUT_FILE; do 
+	for i in $INPUT_PHYLIP_FILE; do 
 		LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
 		echo "$LOCUS_NAME";
 
@@ -277,6 +278,7 @@ fi
 #"
 
 echo "----------------------------------------------------------------------------------------------------------"
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -287,7 +289,7 @@ echo "--------------------------------------------------------------------------
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-MY_INPUT_FILE=NULL
+INPUT_PHYLIP_FILE=NULL
 MY_ASSIGNMENT_FILE=assignments.txt
 
 ############ CREATE USAGE & HELP TEXTS
@@ -309,9 +311,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  phylogenetic analyses, for example when (1) estimating 1-tip-per-species gene trees for 
  species tree reconstruction, or (2) when you will use the PHYLIP files to directly estimate 
  the species tree. In the first case, with one input PHYLIP file, you must use -i <inputPHYLIP>.
-	The populations or species are contained in an assignment file, the filename of which is 
- passed to the program. Sequence names may not include space or underline characters, or 
- there will be issues. _Interleaved PHYLIP format is not supported._
+	The populations or species are contained in an assignment file, which is passed to the
+ program using the -a flag. Sequence names should not include space or underline characters, 
+ or there could be issues. Also, PHYLIP alignment files must have the extension '.phy'. 
+ _Interleaved PHYLIP format is not supported._
 
  ${bold}DETAILS${reset}
  The -i flag supplies the name of a single input PHYLIP file in the current <workingDir> 
@@ -333,7 +336,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  expected if no assignment file is specified using the -a flag.
 
  ${bold}Usage examples:${reset}
-    piranha -f PHYLIPsubsampler --args='-a species.txt'    Run with user-specified assignment file 'species.txt'
+ Call the program using PIrANHA, as follows:
+
+    piranha -f PHYLIPsubsampler --args='-a species.txt'    Run on multiple PHYLIP files with user-
+             											   specified assignment file 'species.txt'
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
@@ -360,8 +366,8 @@ fi
 ############ PARSE THE OPTIONS
 while getopts 'i:a:' opt ; do
   case $opt in
-## Datafile options:
-    i) MY_INPUT_FILE=$OPTARG ;;
+## PHYLIPSubsampler options:
+    i) INPUT_PHYLIP_FILE=$OPTARG ;;
     a) MY_ASSIGNMENT_FILE=$OPTARG ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
@@ -373,14 +379,8 @@ while getopts 'i:a:' opt ; do
   esac
 done
 
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# shift $((OPTIND-1)) 
-# # Check for mandatory positional parameters
-# if [ $# -lt 1 ]; then
-# 	echo "$USAGE"
-# 	exit 1
-# fi
-# USER_SPEC_PATH="$1"
+# Store the remaining part as arguments.
+# args+=("$@")
 
 
 # ############# ############# #############

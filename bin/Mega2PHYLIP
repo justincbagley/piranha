@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: Mega2PHYLIP.sh                                                                   #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.                       #
-# Last update: March 11, 2019                                                            #
+# Last update: March 13, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ function Mega2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | Mega2PHYLIP, v1.0.1 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | Mega2PHYLIP, v1.0.2 March 2019  (part of PIrANHA v1.0.0)       "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -145,12 +145,13 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting Mega2PHYLIP script... "
 	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful variables and functions, setting working directory, and checking machine type. "
 fi
-
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Convert Mega multiple sequence alignment (MSA) file(s) to PHYLIP format. "
@@ -370,6 +371,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  while saving (-k 1) or writing over (-k 0) the original Mega files.
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f Mega2PHYLIP --args='-i ./<inputMega> -k 1'      Convert single Mega to PHYLIP, keeping original file
     piranha -f Mega2PHYLIP --args='-m1 -k 1'				   Convert multiple Mega files to PHYLIP, keeping original files
 
@@ -402,7 +405,7 @@ fi
 ############ PARSE THE OPTIONS
 while getopts 'i:m:k:v:' opt ; do
   case $opt in
-## PHYLIP2Mega options:
+## Mega2PHYLIP options:
     i) INPUT_MEGA_FILE=$OPTARG ;;
     m) MULTIPLE_MEGA_SWITCH=$OPTARG ;;
     k) KEEP_ORIG_MEGA_SWITCH=$OPTARG ;;

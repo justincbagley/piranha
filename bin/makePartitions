@@ -14,11 +14,19 @@
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT THAT USES PHYLIP DNA SEQUNENCE ALIGNMENTS IN CURRENT DIRECTORY TO MAKE    #
-# PARTITIONS / CHARSETS FILES IN RAxML PARTITION, PartitionFinder SUBSET, AND NEXUS      #
-# CHARSET FORMATS, WHICH ARE ALL OUTPUT TO FILE                                          #
+# THIS SHELL SCRIPT USES PHYLIP DNA SEQUNENCE ALIGNMENTS IN CURRENT DIRECTORY TO MAKE    #
+# PARTITIONS / CHARSETS FILES IN RAxML, PartitionFinder, AND NEXUS FORMATS, WHICH ARE    #
+# OUTPUT TO SEPARATE FILES                                                               #
 #                                                                                        #
 ##########################################################################################
+
+## OLD NOTE REMOVED FROM USAGE (dates to Jan/Feb 2019; now not relevant): 	
+# This script was written during development of the concatenateSeqs function but can be
+# used as a standalone function to solve the problems of (1) obtaining partitions files
+# for a set of PHYLIP alignments, or specifically (2) correcting partitions output by 
+# ElConcatenero (https://github.com/ODiogoSilva/ElConcatenero; currently packaged with 
+# PIrANHA) if, upon checking, ElConcatenero has given the correct order of loci but incorrect
+# ranges of nucleotides for the partitions in its output. 
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -144,15 +152,11 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting makePartitions analysis... "
-	echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+	echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-## Nothing to do for working dir because script executes in current working dir (of execution/
-## sourcing). Only set to run in current working dir, and echo cwd to screen:
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-MY_WORKING_DIR="$(pwd -P)";
-
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
@@ -162,20 +166,18 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
 fi
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-	mkdir output/ ;
-	exec >> ./output/"$MY_OUTPUT_FILE_SWITCH" ;
+	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Output file switch activated. Logging all output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
+		echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 	fi
 elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
-	mkdir output/ ;
-	exec >> ./output/makePartitions_output.txt ;
+	exec >> ./makePartitions_output.txt ;
 	exec 2>&1 ;
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Default output file settings. Logging all output to file at ./output/makePartitions_output.txt ... "
+		echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./makePartitions_output.txt ... "
 	fi
 fi
 
@@ -222,9 +224,9 @@ count=1
 			MY_NEW_START_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + 1)" ;
 			MY_NEW_END_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + $MY_PHYLIP_NCHAR)" ;
 			echo "DNA, ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL}" >> ./raxml_partitions.part ;
-			echo "${locus}=$MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> partitionfinder_subsets.txt ;
-			echo "  charset ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_lowercase.txt ;
-			echo "  CHARSET ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_uppercase.txt ;
+			echo "${locus}=$MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> ./partitionfinder_subsets.txt ;
+			echo "  charset ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> ./NEXUS_charsets_lowercase.txt ;
+			echo "  CHARSET ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> ./NEXUS_charsets_uppercase.txt ;
 
 			#echo "$MY_PHYLIP_NCHAR" > previous_nchar.tmp ;
 			MY_PREV_END_RANGE_VAL="$(echo $MY_NEW_END_RANGE_VAL)" ;
@@ -243,9 +245,17 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	rm ./*.tmp
+	rm ./*.tmp ;
 
 echo "----------------------------------------------------------------------------------------------------------"
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "output file(s): ./raxml_partitions.part "
+	echo "                ./partitionfinder_subsets.txt "
+	echo "                ./NEXUS_charsets_lowercase.txt "
+	echo "                ./NEXUS_charsets_uppercase.txt "
+fi
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -276,22 +286,29 @@ USAGE="Usage: $(basename $0) [OPTION]...
  partition, PartitionFinder subset, and NEXUS charset formats. Results are output to multiple
  partitions files. The ordering of charsets is equal to the alphanumeric order in which bash 
  or UNIX terminal would read the PHYLIP files (e.g. locus1.phy, locus10.phy, ..., and not 
- locus1.phy, locus2.phy, ...). This is the same order in which PIrANHA's related concatenateSeqs 
- function will read and concatenate the PHYLIP alignments. 
-	This script was written during development of the concatenateSeqs function but can be
- used as a standalone function to solve the problems of (1) obtaining partitions files
- for a set of PHYLIP alignments, or specifically (2) correcting partitions output by 
- ElConcatenero (https://github.com/ODiogoSilva/ElConcatenero; currently packaged with 
- PIrANHA) if, upon checking, ElConcatenero has given the correct order of loci but incorrect
- ranges of nucleotides for the partitions in its output. 
+ locus1.phy, locus2.phy, ...). This is the same order in which the related PIrANHA functions 
+ concatenateSeqs and completeConcatSeqs will read and concatenate the PHYLIP alignments.
+ Sequence names should include alphanumeric, hyphen, and underscore characters but no spaces,
+ or else there could be issues. Also, PHYLIP alignment files must have the extension '.phy'. 
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or Linux
+ (tested on CentOS 6/7). Besides standard UNIX/Linux command line tools, the only other 
+ dependency is Perl (v5+), which is usually already installed on mac and Linux distributions.
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f makePartitions            Run makePartitions in current working directory
     piranha -f makePartitions --args='-h'    Get this makePartitions-specific help text
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
+
+ ${bold}REFERENCES${reset}
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
@@ -315,13 +332,16 @@ while getopts 'o:v:' opt ; do
     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$Usage" >&2
+       echo "$USAGE" >&2
        exit 1 ;;
   esac
 done
+
+# Store the remaining part as arguments.
+# args+=("$@")
 
 
 # ############# ############# #############

@@ -16,7 +16,7 @@
 # Description:                                                                           #
 # SHELL SCRIPT THAT SPLITS A SEQUENTIAL NEXUS ALIGNMENT WITH CHARSET INFORMATION INTO    #
 # MULTIPLE PHYLIP-FORMAT ALIGNMENTS, ONE PER GENE/CHARSET, AND REMOVES INDIVIDUALS WITH  #
-# ALL OR MOSTLY MISSING DATA                                                             #
+# ALL MISSING DATA                                                                       #
 #                                                                                        #
 ##########################################################################################
 
@@ -535,7 +535,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}OVERVIEW${reset}
  THIS SCRIPT takes as input a single sequential (non-interleaved) NEXUS DNA sequence 
  alignment file containing character sets defining each locus/partition in the dataset. 
- The input file, <inputNexus>, is then processed by using the characterizeNexus program to
+ The input file, <inputNEXUS>, is then processed by using the characterizeNexus program to
  gather information on the sequence data and character sets, which is saved and used as input
  for alignmentSplitter, a program that automates splitting the DNA sequence block into
  separate PHYLIP-format alignments for each charset/locus. After running alignmentSplitter,
@@ -553,6 +553,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  operation. Sequence ID names may not include spaces, or there will be issues. 
 
  ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
     piranha -f NEXUS2MultiPHYLIP --args='-i <inputNEXUS> -v 1'  Run on user NEXUS while printing
      										   			  	    text output to screen
     piranha -f NEXUS2MultiPHYLIP -a '-i <inputNEXUS> -v 1'    Same as above, but with -a flag
@@ -583,7 +585,7 @@ fi
 ############ PARSE THE OPTIONS
 while getopts 'i:v:-:' opt ; do
   case $opt in
-## Script options:
+## NEXUS2MultiPHYLIP options:
     i) MY_NEXUS=$OPTARG ;;
     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
 	-) LONG_OPTARG="${OPTARG#*=}"
@@ -601,14 +603,8 @@ while getopts 'i:v:-:' opt ; do
   esac
 done
 
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# shift $((OPTIND-1)) 
-# # Check for mandatory positional parameters
-# if [ $# -lt 1 ]; then
-# 	echo "$USAGE"
-# 	exit 1
-# fi
-# MY_NEXUS="$1"
+# Store the remaining part as arguments.
+# args+=("$@")
 
 
 # ############# ############# #############
