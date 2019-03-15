@@ -19,13 +19,11 @@ The full file tree for this directory is as follows:
    ├── completeConcatSeqs
    ├── completeSeqs
    ├── concatenateSeqs
-   ├── concatenateSeqsOnly
    ├── dadiPostProc
    ├── dadiRunner
    ├── dadiUncertainty
    ├── dropRandomHap
    ├── ElConcatenero
-   ├── estpostCompiler
    ├── ExaBayesPostProc
    ├── FASTA2PHYLIP
    ├── fastSTRUCTURE
@@ -53,7 +51,6 @@ The full file tree for this directory is as follows:
    ├── Mega2PHYLIP
    ├── MLEResultsProc
    ├── MrBayesPostProc
-   ├── multiPHYLIP2FASTA
    ├── NEXUS2MultiPHYLIP
    ├── NEXUS2PHYLIP
    ├── PFSubsetSum
