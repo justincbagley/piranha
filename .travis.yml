@@ -9,7 +9,8 @@ before_install:
   - docker pull koalaman/shellcheck
 
 script:
- - docker run -v $(pwd):/scripts koalaman/shellcheck /scripts/treeThinner.sh
+# - docker run -v $(pwd):/scripts koalaman/shellcheck /scripts/treeThinner.sh
+ - docker run -v $(pwd):/scripts koalaman/shellcheck /bin/treeThinner
 
 matrix:
 fast_finish: true
