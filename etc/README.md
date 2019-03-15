@@ -11,9 +11,6 @@ This is the default configuration file for the BEASTRunner function, with seven 
 ## dadi_runner_default.cfg
 This is the default configuration file for the dadiRunner function, with six variables.
 
-## mrbayes_post_proc.cfg
-This is the default configuration file for the MrBayesPostProc function, with two variables. It may not be necessary anymore (check).
-
 ## raxml_runner.cfg
 This is the default configuration file for the RAxMLRunner function, with four variables.
 
