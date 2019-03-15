@@ -1,9 +1,7 @@
 # PIrANHA Change Log
 
-## PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
-
+### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
-
 
 ### PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
 
