@@ -1,9 +1,9 @@
 # lib
 
-This directory contains the shared libraries and functions that are required by the scripts within this repository.
+As is typical of UNIX/Linux distributions and software, the lib/ directory contains support static files (libraries and functions) that are required for running the main script and all functions within this repository.
 
 ## utils.sh
-This script must be sourced from all my additional scripts.  Contained within this are two important functions.  
+This script must be sourced from all additional scripts in PIrANHA.  Contained within this are two important functions.  
 
 1. **Logging** -  All scripts use the logging functions.  There are nine different levels of logs.  All log levels are called from within a script in the format `info "some message"`.  The levels of logging are:
 	* **die** - Prints an error and exits the script 
@@ -25,5 +25,4 @@ This script contains variables that can be called from any other script.
 
 # sharedFunctions.sh
 This script contains many different functions which can be used throughout different scripts.  The script is well commented.
-
 
