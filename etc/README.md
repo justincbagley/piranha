@@ -1,6 +1,6 @@
 # etc
 
-As is typical of UNIX/Linux distributions and software, this etc/ directory contains the configuration files needed for the scripts and functions within this repository.
+As is typical of UNIX/Linux distributions and software, this etc/ directory contains the configuration files needed for the main script and all functions within this repository.
 
 ## snapp_runner.cfg
 This is the default configuration file for the SNAPPRunner function, with six variables.
