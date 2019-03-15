@@ -1,6 +1,8 @@
+# lib
+
 This directory contains the shared libraries and functions that are required by the scripts within this repository.
 
-# utils.sh
+## utils.sh
 This script must be sourced from all my additional scripts.  Contained within this are two important functions.  
 
 1. **Logging** -  All scripts use the logging functions.  There are nine different levels of logs.  All log levels are called from within a script in the format `info "some message"`.  The levels of logging are:
