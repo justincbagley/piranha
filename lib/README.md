@@ -17,12 +17,12 @@ This script must be sourced from all additional scripts in PIrANHA.  Contained w
 	* **header** - Prints a header to help format logs
 2. **Sourcing Additional Files** - This script reads a list of additional files and sources them.
 
-# setupScriptFunctions.sh
+## setupScriptFunctions.sh
 This script contains different functions used to install software and configure Mac computers from the scripts contained in the `setupScripts` directory.
 
-# sharedVariables.sh
+## sharedVariables.sh
 This script contains variables that can be called from any other script.
 
-# sharedFunctions.sh
+## sharedFunctions.sh
 This script contains many different functions which can be used throughout different scripts.  The script is well commented.
 
