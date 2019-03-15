@@ -1,21 +1,21 @@
 # PIrANHA Change Log
 
-### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
+## PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
-### PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
+## PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
 
 This is a very minor update to the pre-release version that includes edits to the README and index.html files, and that adds this slightly updated changeLog.md file back into the repository. I have now created a successful homebrew tap for PIrANHA that is working with this release (more info soon).
 
-### PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
+## PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
 
 This is a very minor update to the pre-release version removing some PHYLIP and FASTA DNA sequence alignments that I had previously included in the repo for my own testing purposes, and updating README and index.html files.
 
-### PIrANHA v0.2-alpha.1 (official minor pre-release version) - March 15, 2019
+## PIrANHA v0.2-alpha.1 (official minor pre-release version) - March 15, 2019
 
 Since v0.2-alpha, the pre-release version of **PIrANHA v0.2-alpha.1** added several updates including redos for the PIrANHA etc/ dir, a README for bin/, and new scripts for the `MLEResultsProc`, `getTaxonNames`, `taxonCompFilter`, and `SNAPPRunner` functions.
 
-### PIrANHA v0.2-alpha (official minor pre-release version) - March 15, 2019
+## PIrANHA v0.2-alpha (official minor pre-release version) - March 15, 2019
 
 Pre-release version, **PIrANHA v0.2-alpha**, involved a virtually complete rewrite and reorganization of PIrANHA (with >1,200 additions and >400 deletions). All scripts were converted to 'function' programs in bin/ or bin/MAGNET-1.0.0/ of the repo, and I have written a new program, ```piranha```, that is now the main program and runs all functions. I am _still_ in the process of updating the README and all function scripts, but I did a pre-release ratcheted up to v0.2 due to the great improvements in modularization and efficiency that this update allowed (selecting a function and passing all arguments, all from ```piranha```), and because I wanted a new release to use as a starting point to create Debian and Homebrew distribution releases (i.e. brew tap(s) to update as new versions roll out during development). The current organization of **PIrANHA** is much better suited for general use, and for adding other collaborators or developers.
 
