@@ -25,7 +25,7 @@ This release is only available publicly to ease issues related to lack of suppor
 
 ## LICENSE
 
-All code within **PIrANHA v0.2-alpha.1b** repository is available "AS IS" under a generous 3-Clause BSD license. See the [LICENSE](LICENSE) file for more information.
+All code within **PIrANHA v0.2-alpha.1b** repository is available "AS IS" under a 3-Clause BSD license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
