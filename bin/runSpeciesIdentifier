@@ -1,18 +1,365 @@
 #!/bin/sh
 
-###### Notes in shell script for syntax highlighting and future work; perhaps move to a Gist 
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: runSpeciesIdentifier.sh                                                          #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
+# Last update: March 15, 2019                                                            #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# Runs the Taxon DNA software program SpeciesIdentifier, which implements methods in the #
+# well-known Meier et al. 2006 DNA barcoding paper                                       #
+#                                                                                        #
+##########################################################################################
 
-# macOS High Sierra, giving 2 GB memory
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-## option #1:
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+function trapCleanup() {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+function safeExit() {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
 #
-#  cd /Applications/SpeciesIdentifier-1.8 
-#  java -Xmx2000M -jar SpeciesIdentifier.jar
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
 
 
-## option #2:
-
-java -Xmx2000M -jar /Applications/SpeciesIdentifier-1.8 /SpeciesIdentifier.jar
 
 
-exit 0
+function runSpeciesIdentifier () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | runSpeciesIdentifier, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)"
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+echo "INFO      | $(date) | Step #2: Check for SpeciesIdentifier install and attempt to install if not present. "
+## Conduct various checks for SpeciesIdentifier directory and jar file:
+
+
+#
+if [[ "${machine}" = "Mac" ]]; then
+	echo "INFO      | $(date) |          Checking for SpeciesIdentifier... "
+	cd $HOME;
+		## checks 1 & 2:
+		MY_SPECIESIDENT_DIR_CHECK1="$(locate SpeciesIdentifier-1.8)"
+		MY_SPECIESIDENT_DIR_CHECK2="$(which SpeciesIdentifier-1.8)"
+		MY_SPECIESIDENT_JAR_CHECK1="$(locate SpeciesIdentifier.jar)"
+		MY_SPECIESIDENT_JAR_CHECK2="$(which SpeciesIdentifier.jar)"
+	
+		## checks 3 & 4:
+		find / "SpeciesIdentifier-1.8" -type d 2>&1 | grep -v 'Permission denied' > ./find.dir.out
+		find / "SpeciesIdentifier.jar" -type f 2>&1 | grep -v 'Permission denied' > ./find.jar.out
+		MY_SPECIESIDENT_DIR_CHECK3="$(grep -h 'No such file or directory' ./find.dir.out | wc -l)";
+		MY_SPECIESIDENT_JAR_CHECK3="$(grep -h 'No such file or directory' ./find.jar.out | wc -l)";
+
+		## Set Applications/ check value:
+		if [[ ! -f /Applications/SpeciesIdentifier-1.8/SpeciesIdentifier.jar ]]; then
+			MY_SPECIESIDENT_JAR_CHECK4="1"
+		fi
+	
+		##
+		if [[ -z "$MY_SPECIESIDENT_DIR_CHECK1"  ]] && [[ -z "$MY_SPECIESIDENT_DIR_CHECK2"  ]] && [[ "$MY_SPECIESIDENT_DIR_CHECK3" = "1" ]] && [[ -z "$MY_SPECIESIDENT_JAR_CHECK1"  ]] && [[ -z "$MY_SPECIESIDENT_JAR_CHECK2"  ]] && [[ "$MY_SPECIESIDENT_JAR_CHECK3" = "1" ]] && [[ "$MY_SPECIESIDENT_JAR_CHECK4" = "1" ]]; then
+			echo "WARNING!  | $(date) |          Found no SpeciesIdentifier v1.8 directory or executable (jar file) on your machine... "
+			## No SpeciesIdentifier dir or jar file on machine. Next, do curl download of v1.8 executable
+			## and complete install. SpeciesIdentifier is part of the Taxon DNA package/repository
+			## and is available on GitHub at https://github.com/gaurav/taxondna/ (see below).
+			
+			## Next step: curl download then install attempt; if success, run the program; if fail, 
+			## check for homebrew, attempt brew install of curl and then curl SpeciesIdentifier...
+
+			###
+			echo "INFO      | $(date) |          Luckily, SpeciesIdentifier v1.8 is available for your machine type (Mac). Attempting to install it from GitHub... "
+			if [[ -s "$(which curl)" ]]; then
+				echo "INFO      | $(date) |          Found curl... "
+			
+				## Sequence Matrix software details/method (saving here for future reference):
+				#curl -O -J -L https://github.com/gaurav/taxondna/releases/download/1.8/SequenceMatrix-MacOSX-1.8.zip ;
+				#unzip SequenceMatrix-MacOSX-1.8.zip
+				#cd MacOSX/
+				#ls Sequence\ Matrix.app/
+				#open Sequence\ Matrix.app/
+
+				echo "INFO      | $(date) |          Downloading SpeciesIdentifier, unzipping, granting permissions, and moving to /Applications/SpeciesIdentifier-1.8/... "
+				curl -O -J -L https://github.com/gaurav/taxondna/releases/download/1.8/SpeciesIdentifier-1.8.zip ;
+				unzip SpeciesIdentifier-1.8.zip
+				ls ./SpeciesIdentifier*
+				####
+				if [[ -f ./SpeciesIdentifier.jar ]]; then
+					chmod u+x ./SpeciesIdentifier.jar
+					mkdir /Applications/SpeciesIdentifier-1.8/
+					mv ./SpeciesIdentifier-1.8.zip ./Changes.txt ./SpeciesIdentifier Manual.pdf ./SpeciesIdentifier.bat ./SpeciesIdentifier.jar /Applications/SpeciesIdentifier-1.8/ ;
+				fi
+				####
+			elif [[ -z "$(which curl)" ]]; then
+				echo "INFO      | $(date) |          No curl available from cli... "
+
+				## Try homebrew install of curl, then curl download then install routine
+				####
+				if [[ -s "$(which brew)" ]]; then
+					echo "INFO      | $(date) |          Attempting a fresh homebrew install of curl... "
+
+					brew install curl ;
+
+					if [[ -s "$(which curl)" ]]; then
+						echo "INFO      | $(date) |          Found curl... "
+						echo "INFO      | $(date) |          Downloading SpeciesIdentifier, unzipping, granting permissions, and moving to /Applications/SpeciesIdentifier-1.8/... "
+						curl -O -J -L https://github.com/gaurav/taxondna/releases/download/1.8/SpeciesIdentifier-1.8.zip ;
+						unzip SpeciesIdentifier-1.8.zip
+						ls ./SpeciesIdentifier*
+						if [[ -f ./SpeciesIdentifier.jar ]]; then
+							chmod u+x ./SpeciesIdentifier.jar
+							mkdir /Applications/SpeciesIdentifier-1.8/
+							mv ./SpeciesIdentifier-1.8.zip ./Changes.txt ./SpeciesIdentifier Manual.pdf ./SpeciesIdentifier.bat ./SpeciesIdentifier.jar /Applications/SpeciesIdentifier-1.8/ ;
+						fi
+					fi
+				fi
+				####
+			fi
+			###
+		fi
+		##
+
+elif [[ "${machine}" = "Linux" ]]; then
+
+	echo "WARNING!  | $(date) |          Cannot install SpeciesIdentifier v1.8 on Linux because it is only available for Mac and Windows platforms, sorry."
+	echo "WARNING!  | $(date) |          Quitting... "
+	exit 1 ;
+
+fi
+#
+
+
+echo "INFO      | $(date) | Step #3: Attempt to run recent SpeciesIdentifier install. "
+
+# Assuming macOS High Sierra+ and appropriate/working Java install, and giving 2 GB memory...
+
+	## option #1:
+	#
+	#  cd /Applications/SpeciesIdentifier-1.8 
+	#  java -Xmx2000M -jar SpeciesIdentifier.jar
+
+
+	## option #2:
+	cd "$USER_SPEC_PATH";
+	echoCDWorkingDir	
+	
+	java -Xmx2000M -jar /Applications/SpeciesIdentifier-1.8/SpeciesIdentifier.jar 
+
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+# None at this time.
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates running the Taxon DNA software SpeciesIdentifier v1.8, which implements 
+ methods in the well-known DNA barcoding study by Meier et al. (2006), including calculation 
+ of genetic distances, species clusters, and species identification and barcode gap metrics, 
+ among other things. The script first checks for the SpeciesIdentifier.jar file on the user's
+ machine; if found, the jar file is called; if not encountered, then the program attempts to
+ install and open SpeciesIdentifier v1.8 locally. 
+	This program runs in the current working directory but examines many locations on the
+ user's machine. Help text is available through the -h flag. The program is written for Mac 
+ machines and can run on Linux, but SpeciesIdentifier cannot presently be installed on
+ Linux, so the script will fail if that is attempted. A key dependency that is preferred is
+ curl (https://curl.haxx.se). If curl is not found, a curl install will be attempted with 
+ Homebrew, which is a required dependency (find more information at https://brew.sh).
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f runSpeciesIdentifier					
+    piranha -f runSpeciesIdentifier -a '-t 150'      Same as above, but passing arguments with -a flag
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Meier, R., Shiyang, K., Vaidya, G. and Ng, P.K. 2006. DNA barcoding and taxonomy in Diptera: 
+	a tale of high intraspecific variability and low identification success. Systematic 
+	Biology, 55(5), 715-728.
+
+ Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+runSpeciesIdentifier
+
+# Exit cleanly
+safeExit
