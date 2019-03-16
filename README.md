@@ -12,14 +12,14 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 ```
 -->
 
-<h3>
-
-```diff
-! ** WARNING! ** PIrANHA v0.2-alpha.1c is a pre-release version of a new release
-!   that involves a complete rewrite of PIrANHA that is still under development. 
-!                  ** PLEASE DO NOT DOWNLOAD THIS RELEASE!!! **
-```
-</h3>
+> <h3>
+> 
+> ```diff
+> ! ** WARNING! ** PIrANHA v0.2-alpha.1c is a pre-release version of a new release
+> !   that involves a complete rewrite of PIrANHA that is still under development. 
+> !                  ** PLEASE DO NOT DOWNLOAD THIS RELEASE!!! **
+> ```
+> </h3>
 
 This release is only available publicly to ease issues related to _lack_ of support for Homebrew taps for private repositories (e.g. deprecated solutions).
 
