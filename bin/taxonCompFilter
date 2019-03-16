@@ -136,7 +136,7 @@ function taxonCompFilter () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | taxonCompFilter, v1.0.0 March 2019  (part of PIrANHA v1.0.0)  "
+echo "INFO      | $(date) | taxonCompFilter, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -363,7 +363,6 @@ while getopts 'u:p:o:n:t:' opt ; do
        exit 1 ;;
   esac
 done
-
 
 
 # ############# ############# #############
