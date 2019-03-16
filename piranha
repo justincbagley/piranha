@@ -54,7 +54,6 @@ fi
 ## Set bin/ Location
 # -----------------------------------
 BIN_LOCATION="${SCRIPT_PATH}/bin/" # Update this path to find the piranha bin folder.
-#BIN_LOCATION=./bin/
 
 ## trapCleanup Function
 # -----------------------------------
@@ -159,16 +158,12 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 	echo "INFO      | $(date) |          Found machine type ${machine}. "
 
 	if [[ "${machine}" = "Linux" ]]; then
-		## Test for file limits for current user and reset if necessary, only on Linux. Modified
-		## from dDocent script (J. Puritz GitHub repository dDocent). Added here Mar 8, 2019.
-		echo "INFO      | $(date) |          Checking file limits..."
-		F_LIMIT=$(ulimit -n)
-		export F_LIMIT
-		if [[ "$F_LIMIT" != "unlimited" ]]; then
-			N_LIMIT=$(( $NumInd * 10 ));
-				if [[ "$F_LIMIT" -lt "$N_LIMIT" ]]; then
-					ulimit -n $N_LIMIT ;
-			fi
+		echo "INFO      | $(date) |          Checking file limits on Linux..."
+		FILE_LIMIT=$(ulimit -n)
+		export FILE_LIMIT
+		if [[ "$FILE_LIMIT" != "unlimited" ]]; then
+			NEW_LIMIT="$( calc $FILE_LIMIT*10 )";
+			ulimit -n $NEW_LIMIT ;
 		fi
 	fi
 
@@ -176,10 +171,6 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 
 	MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
 	echo "INFO      | $(date) |          Execution path: $MY_EXECUTION_PATH"
-	## $BIN_LOCATION
-	## /Users/justinbagley/GitHub/PIrANHA-1.0/bin/
-	## $MY_EXECUTION_PATH:
-	## if test, then this $MY_EXECUTION_PATH should be: /Users/justinbagley/GitHub/PIrANHA-1.0/bin/test
 
 	## First two conditionals below: cases where function run is not MAGNET.
 	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
