@@ -9,7 +9,7 @@
   VERSION="v0.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.                     #
-# Last update: March 11, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ function vcfSubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | vcfSubsampler, v0.2.1 March 2019  (part of PIrANHA v1.0.0)     "
+echo "INFO      | $(date) | vcfSubsampler, v0.2.1 March 2019  (part of PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -186,7 +186,7 @@ DELETE_ORIG_VCF=0
 USAGE="Usage: $(basename $0) [OPTION]...
 
  This is vcfSubsampler. It uses a list file (snpsFile) to subsample a variant call
- format (VCF) file (<inputVCFFile>) so that it only contains SNPs in the list.
+ format (VCF) file, <inputVCFFile>, so that it only contains SNPs in the list.
 
  ${bold}Options:${reset}
   -i   inputVCFFile (def: input.vcf) input VCF file (tested with v4.0+)
@@ -236,16 +236,6 @@ while getopts 'i:s:o:d:' opt ; do
        exit 1 ;;
   esac
 done
-
-# ############ SKIP OVER THE PROCESSED OPTIONS
-# shift $((OPTIND-1))
-# # Check for mandatory positional parameters
-# if [ $# -lt 1 ]; then
-# 	echo "$USAGE"
-# 	exit 1
-# fi
-# ## Make input file a mandatory parameter:
-# MY_INPUT_VCF="$1"
 
 
 # ############# ############# #############
