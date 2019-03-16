@@ -5,7 +5,7 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        #
 # |                                                                                      #
 #                                                                                        #
-# File: runSpeciesIdentifier.sh                                                          #
+# File: SpeciesIdentifier.sh                                                             #
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
@@ -130,13 +130,13 @@ gemDependencies=()
 
 
 
-function runSpeciesIdentifier () {
+function SpeciesIdentifier () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | runSpeciesIdentifier, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)"
+echo "INFO      | $(date) | SpeciesIdentifier, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -302,8 +302,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f runSpeciesIdentifier					
-    piranha -f runSpeciesIdentifier -a '-t 150'      Same as above, but passing arguments with -a flag
+    piranha -f SpeciesIdentifier	     Run the program			
+    piranha -f SpeciesIdentifier -a '-h'      Print this help text
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
@@ -359,7 +359,7 @@ set -o pipefail
 # checkDependencies
 
 # Run the script
-runSpeciesIdentifier
+SpeciesIdentifier
 
 # Exit cleanly
 safeExit
