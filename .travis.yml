@@ -19,9 +19,11 @@ script:
 ## URL: https://github.com/koalaman/shellcheck/wiki/TravisCI 
 ##  - bash -c 'shopt -s globstar; shellcheck **/*.{sh,ksh,bash}'
 
-  - bash -c 'shellcheck piranha'
+## main script check:
+- bash -c 'shellcheck piranha'
 
-  - bash -c 'shellcheck piranha -h'
+## function script check:
+- bash -c 'shellcheck bin/calcAlignmentPIS'
 
 matrix:
 fast_finish: true
