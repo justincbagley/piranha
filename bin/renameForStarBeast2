@@ -9,7 +9,7 @@
   VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
-# Last update: March 13, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ function renameForStarBEAST2 () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameForStarBEAST2, v1.2.1 March 2019  (part of PIrANHA v1.0.0)"
+echo "INFO      | $(date) | renameForStarBEAST2, v1.2.1 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -259,7 +259,15 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
- Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
+ ${bold}REFERENCES${reset}
+ Bouckaert R, Heled J, Künert D, Vaughan TG, Wu CH, Xie D, Suchard MA, Rambaut A, Drummond 
+ 	AJ (2014) BEAST2: a software platform for Bayesian evolutionary analysis. PLoS 
+ 	Computational Biology, 10, e1003537.
+ Ogilvie, H.A., Bouckaert, R.R. and Drummond, A.J. 2017. StarBEAST2 brings faster species 
+	tree inference and accurate estimates of substitution rates. Molecular Biology and 
+	Evolution, 34(8), 2101-2114.
+
+Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
