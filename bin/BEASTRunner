@@ -411,6 +411,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  cfg file. Last testing was conducted using BEAST v2.4.5. Check for BEAST2 updates at 
  <http://BEAST2.org>. 
 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+    piranha -f BEASTRunner                                 Run with default settings
+    piranha -f BEASTRunner --args='-n 10'                  Change the number of runs to 10
+    piranha -f BEASTRunner --args='-n 10 -w 24:00:00'            Also edit run walltime
+    piranha -f BEASTRunner --args='-n 10 -w 24:00:00 -m 2048M'        Change memory (RAM) allocation to 2GB
+	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
@@ -482,12 +489,12 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  default value of 1024M (~1 GB). Suggested values in MB units: 1024M, 2048M, 3072M, 4096M, 
  or 5120M, or in terms of GB units: 1G, 2G, 3G, 4G, 5G.
  
-		## Usage examples: 
-		$0 .
-		$0 -n 5 .
-		$0 -n 20 .				## Ex.: changing number of runs.
-		$0 -n 20 -w 24:00:00 .		## Ex.: changing run walltime.
-		$0 -n 20 -w 24:00:00 -m 2048M .	## Ex.: changing memory (RAM) allocation.
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+    piranha -f BEASTRunner                                 Run with default settings
+    piranha -f BEASTRunner --args='-n 10'                  Change the number of runs to 10
+    piranha -f BEASTRunner --args='-n 10 -w 24:00:00'            Also edit run walltime
+    piranha -f BEASTRunner --args='-n 10 -w 24:00:00 -m 2048M'        Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
