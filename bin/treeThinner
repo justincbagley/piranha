@@ -9,7 +9,7 @@
   VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.                     #
-# Last update: March 11, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -148,7 +148,7 @@ function treeThinner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | treeThinner, v1.2.1 March 2019  (part of PIrANHA v1.0.0)       "
+echo "INFO      | $(date) | treeThinner, v1.2.1 March 2019  (part of PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -210,9 +210,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Ronquist F, Teslenko M, van der Mark P, Ayres D, Darling A, et al. (2012) MrBayes v. 3.2: 
-    efficient Bayesian phylogenetic inference and model choice across a large model space. 
-    Systematic Biology, 61, 539-542. 
+ Ronquist, F., Teslenko, M., van der Mark, P., Ayres, D., Darling, A., et al. (2012) MrBayes 
+    v. 3.2: efficient Bayesian phylogenetic inference and model choice across a large model 
+    space. Systematic Biology, 61, 539-542. 
 
  Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.
  Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
