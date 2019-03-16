@@ -67,8 +67,8 @@ The full file tree for this directory is as follows:
    ├── RAxMLRunChecker
    ├── RAxMLRunner
    ├── renameForStarBeast2
-   ├── runSpeciesIdentifier
    ├── SNAPPRunner
+   ├── SpeciesIdentifier
    ├── taxonCompFilter
    ├── test
    ├── treeThinner
