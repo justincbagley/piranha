@@ -140,7 +140,7 @@ function pyRADLocusVarSites () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRADLocusVarSites, v1.0.0 March 2019  (part of PIrANHA v1.0.0)"
+echo "INFO      | $(date) | pyRADLocusVarSites, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -262,9 +262,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 
+ Eaton, D.A. 2014. PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 
  	Bioinformatics, 30, 1844-1849.
- Eaton DAR, Overcast I (2016) ipyrad: interactive assembly and analysis of RADseq data sets. 
+ Eaton, D.A.R., Overcast, I. 2016. ipyrad: interactive assembly and analysis of RADseq data sets. 
  	Available at: <http://ipyrad.readthedocs.io/>.
 
  Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.
