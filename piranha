@@ -239,7 +239,7 @@ usage() {
  (https://justinbagley.org/piranha/) for further information.
 
  ${bold}Usage examples:${reset}
-    piranha -f calcAlignmentPIS --args='-h'      Get help text for calcAlignmentPIS
+    piranha -f calcAlignmentPIS --args='-h'      Get help text for calcAlignmentPIS function
     piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
@@ -319,7 +319,7 @@ while [[ ${1} = -?* ]]; do
     --saveDir) shift; saveDir="$1" ;;
     -h|--help) usage >&2; safeExit ;;
     --force) force=true ;;
-    -V|--version) echo "$(basename $0) $VERSION"; safeExit ;;
+    -V|--version) echo "${SCRIPT_NAME} $VERSION"; safeExit ;;
     -v|--verbose) verbose=true ;;
     -l|--log) printLog=true ;;
     -q|--quiet) quiet=true ;;
