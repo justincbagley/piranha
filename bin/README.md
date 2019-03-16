@@ -71,8 +71,6 @@ The full file tree for this directory is as follows:
    ├── SNAPPRunner
    ├── taxonCompFilter
    ├── test
-   ├── toyBayenv2Data
-   ├── trash
    ├── treeThinner
    ├── vcfSubsampler
    └── virtualenv.txt
