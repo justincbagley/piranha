@@ -9,7 +9,7 @@
   VERSION="v1.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.                     #
-# Last update: March 13, 2019                                                            #
+# Last update: March 15, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ function pyRAD2PartitionFinder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.3 March 2019  (part of PIrANHA v1.0.0) "
+echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.3 March 2019  (in PIrANHA v0.2-alpha.1c) "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -393,15 +393,15 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Eaton DA (2014) PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 
+ Eaton, D.A. 2014. PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 
  	Bioinformatics, 30, 1844-1849.
- Eaton DAR, Overcast I (2016) ipyrad: interactive assembly and analysis of RADseq data sets. 
+ Eaton, D.A.R., Overcast, I. 2016. ipyrad: interactive assembly and analysis of RADseq data sets. 
  	Available at: <http://ipyrad.readthedocs.io/>.
- Lanfear R, Calcott B, Ho SYW, Guindon S (2012) Partitionfinder: combined selection of 
+ Lanfear, R., Calcott, B., Ho, S.Y.W., Guindon, S. 2012. Partitionfinder: combined selection of 
 	partitioning schemes and substitution models for phylogenetic analyses. Molecular Biology 
 	and Evolution, 29, 1695–1701. 
- Lanfear R, Calcott B, Kainer D, Mayer C, Stamatakis A (2014) Selecting optimal partitioning 
- 	schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
+ Lanfear, R., Calcott, B., Kainer, D., Mayer, C., Stamatakis, A. 2014. Selecting optimal 
+	partitioning schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
 
  Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.
  Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
