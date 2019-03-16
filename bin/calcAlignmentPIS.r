@@ -22,7 +22,6 @@ library(phyloch)
 getwd()
 
 ############ II. CALCULATE PARSIMONY-INFORMATIVE SITES (PIS) FOR ALL FASTA FILES.
-#files <- list.files(path='/Users/justinbagley/Documents/2\ -\ by\ Project/Anoura_Phylo/FINAL_DATA/alldata/STACEY/FASTA_subsets', pattern='*.fas', full.names=TRUE, recursive=FALSE)
 files <- list.files(path=getwd(), pattern='*.fas', full.names=TRUE, recursive=FALSE)
 iterations <- length(files)
 variables <- 1
