@@ -423,8 +423,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  on a remote, Linux-based supercomputing cluster (e.g. at a high performance computing 
  facility), including summarizing the log file of a BEAST run, as well as summarizing the
  posterior distributions of gene trees and species trees using TreeAnnotator. This script
- was made with BEAST v1.8.3+ in mind, but should also work on output files from BEAST v2.4+
- (Bouckaert et al. 2014).
+ was made with BEAST v1.8.3+ in mind (Drummond et al. 2012), but should also work on output 
+ files from BEAST v2.4+ (Bouckaert et al. 2014).
  
  [In prep.]
 
@@ -439,7 +439,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bouckaert et al. 2014 BEAST reference.
+ Bouckaert, R., Heled, J., Künert, D., Vaughan, T.G., Wu, C.H., Xie, D., Suchard, M.A., Rambaut,
+	A., Drummond, A.J. 2014) BEAST2: a software platform for Bayesian evolutionary analysis. 
+	PLoS Computational Biology, 10, e1003537.
+ Drummond, A.J., Suchard, M.A., Xie, D., Rambaut, A. 2012. Bayesian phylogenetics with BEAUti 
+	and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 
  Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.
  Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
