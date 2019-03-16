@@ -15,8 +15,13 @@ language: bash
 # - docker run -v $(pwd): koalaman/shellcheck piranha
 
 script:
-#  - bash -c 'shopt -s globstar; shellcheck **/*.{sh,ksh,bash}'
+## Idea
+## URL: https://github.com/koalaman/shellcheck/wiki/TravisCI 
+##  - bash -c 'shopt -s globstar; shellcheck **/*.{sh,ksh,bash}'
+
   - bash -c 'shellcheck piranha'
+
+  - bash -c 'shellcheck piranha -h'
 
 matrix:
 fast_finish: true
