@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEASTPostProc.sh                                                                 #
-  VERSION="v1.6.1"                                                                       #
+  VERSION="v1.6.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
-# Last update: March 15, 2019                                                            #
+# Last update: March 18, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -59,7 +59,7 @@ fi
 # Any actions that should be taken if the script is prematurely
 # exited.  Always call this function at the top of your script.
 # -----------------------------------
-function trapCleanup() {
+trapCleanup () {
   echo ""
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
@@ -73,7 +73,7 @@ function trapCleanup() {
 # Non destructive exit for when script exits naturally.
 # Usage: Add this function at the end of every script.
 # -----------------------------------
-function safeExit() {
+safeExit () {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
@@ -130,13 +130,13 @@ gemDependencies=()
 
 
 
-function BEASTPostProc () {
+BEASTPostProc () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTPostProc, v1.6.1 March 2019  (in PIrANHA v0.2-alpha.1c)   "
+echo "INFO      | $(date) | BEASTPostProc, v1.6.2 March 2019  (in PIrANHA v0.2-alpha.1c)   "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -149,9 +149,6 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
-
-
-
 
 
 
@@ -206,8 +203,7 @@ echo "INFO      | $(date) | Step #2: Set up BEAST-related environmental variable
 
 	if [[ ! -z "$MY_BEAST_LOGFILE" ]]; then
 		echo "INFO      | $(date) |          BEAST log file present. Analyzing log file in LogAnalyser... "
-		/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/loganalyser -burnin 12500 "$MY_BEAST_LOGFILE" LogAnalyzer.out.txt
-		## __PATH NEEDED__: If necessary, change start of the line above to include the absolute path to the "loganalyser" executable on your machine, or to just specify the executable name if it is already in your path. 
+		"$LOGANALYSER_PATH" -burnin "$NUM_BURNIN_STEPS" "$MY_BEAST_LOGFILE" LogAnalyser.out.txt ;
 	else
 		echo "WARNING!  | $(date) |          Something went wrong. Found no BEAST log files. "
 	fi
@@ -216,21 +212,21 @@ echo "INFO      | $(date) | Step #2: Set up BEAST-related environmental variable
 ###### Also summarize parameters from ".mle.log" (marginal likelihood estimation) log file, if present, in LogAnalyser (from BEAST v1.8.3):
 	if [[ ! -z "$MY_MARGLIKE_LOGFILE" ]]; then
 		echo "INFO      | $(date) |          Marginal likelihood estimation analysis log file present. Analyzing mle log file in LogAnalyser... "
-		/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/loganalyser -burnin 10000 "$MY_MARGLIKE_LOGFILE" MLE.LogAnalyzer.out.txt
+		"$LOGANALYSER_PATH" -burnin "$NUM_BURNIN_STEPS" "$MY_MARGLIKE_LOGFILE" MLE.LogAnalyser.out.txt ;
 	else
 		echo "WARNING!  | $(date) |          Found no marginal likelihood estimation analysis log files. Moving on... "
 	fi
 
 
-echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
-###### First step is to get 5000 random post-burnin species trees from the posterior distribution of trees:
+echo "INFO      | $(date) | Step #3: If species trees file present, conduct species tree analysis. "
+###### First step is to get $NUM_POSTBURNIN_TREES random post-burnin species trees from the posterior distribution of trees:
 	if [[ ! -z "$MY_STARBEAST_SPECIESTREE_FILE" ]]; then
 		echo "INFO      | $(date) |          BEAST species trees present. Analyzing species trees in TreeAnnotator... "
 
 	(
 		for i in $MY_STARBEAST_SPECIESTREE_FILE; do 
 			echo "INFO      | $(date) |               - Name of trees file being analyzed: $i "
-			tail -n 5000 "${i}" > ./"${i}"_5k_postburn.trees ;
+			tail -n "$NUM_POSTBURNIN_TREES" "${i}" > ./"${i}"_5k_postburn.trees ;
 
 		###### Convert your 5000 post-burnin species trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $i | awk -F"=" '{print $NF}' | sed 's/\;//g')"	## Pull the number of taxa from the species trees file.
@@ -271,10 +267,7 @@ echo "INFO      | $(date) | STEP #2: SPECIES TREE ANALYSIS. "
 		## Example: treeannotator -burnin 100 -heights mean test.trees out.txt
 		## Example: treeannotator -burnin 100 -target map.tree test.trees out.txt
 
-		/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator -burnin 0 -heights mean "${i}"_final_5k.trees "${i}".treeannotator.out
-		## __PATH NEEDED__: If necessary, change start of this line to include the absolute path to the "treeannotator" executable on your machine, or to just specify the executable name if it is already in your path. 
-
-		## NOTE: If you are pointing to a treeannotator executable from BEAST2 (any version), you may get a Java error here saying you need to update to the latest version of Java (e.g. from v6 to v8).
+		"$TREEANNOTATOR_PATH" -burnin 0 -heights mean "${i}"_final_5k.trees "${i}".treeannotator.out ;
 
 		mkdir "${i}".treeannotator ;
 		mv ./"${i}".treeannotator.out ./"${i}".treeannotator ;
@@ -326,20 +319,20 @@ fi
 
 
 
-###################### END OF STEP #2 / SPECIES TREE ANALYSIS ############################
+###################### END OF Step #3 / SPECIES TREE ANALYSIS ############################
 
 
 
 
-echo "INFO      | $(date) | STEP #3: GENE TREE ANALYSIS. "
-###### First step is to get 5000 random post-burnin gene trees from the posterior distribution of trees:
+echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tree analysis. "
+###### First step is to get $NUM_POSTBURNIN_TREES random post-burnin gene trees from the posterior distribution of trees:
 	if [[ ! -z "$MY_BEAST_GENETREE_FILES" ]]; then
 		echo "INFO      | $(date) |          BEAST gene trees present for one or multiple partitions. Analyzing gene trees in TreeAnnotator... "
 
 	(
 		for m in ${MY_BEAST_GENETREE_FILES}; do 
 			echo "INFO      | $(date) |               - Name of trees file being analyzed: $m "
-			tail -n 5000 "${m}" > ./"${m}"_5k_postburn.trees ;		
+			tail -n "$NUM_POSTBURNIN_TREES" "${m}" > ./"${m}"_5k_postburn.trees ;		
 
 		###### Convert your 5000 post-burnin gene trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $m | awk -F"=" '{print $NF}' | sed 's/\;//g')"
@@ -365,8 +358,7 @@ echo "INFO      | $(date) | STEP #3: GENE TREE ANALYSIS. "
 # '
 
 		###### SUMMARIZE POSTERIOR DISTRIBUTION OF GENE TREES USING TREEANNOTATOR
-			/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator -burnin 0 -heights mean "${m}"_final_5k.trees "${m}".treeannotator.out
-			## __PATH NEEDED__: If necessary, change start of this line to include the absolute path to the "treeannotator" executable on your machine, or to just specify the executable name if it is already in your path. 
+			"$TREEANNOTATOR_PATH" -burnin 0 -heights mean "${m}"_final_5k.trees "${m}".treeannotator.out ;
 
 		###### Change name of annotated tree file output by TreeAnnotator for this gene/partition:
 			partitionname="$(echo $m | sed 's/^[a-zA-Z0-9\_]*\.//g' | sed 's/\.trees//g')"
@@ -404,17 +396,29 @@ echo ""
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-## None at this time.
-LOGANALYZER_PATH=
-TREEANNOTATOR_PATH=/fslhome/bagle004/compute/BEASTv1.8.3_linux/bin/treeannotator
+LOGANALYSER_PATH=NULL
+TREEANNOTATOR_PATH=NULL
+#LOGANALYSER_BURNIN_STEPS=10000
+#MLE_BURNIN_STEPS=10000
+#BEAST_TREE_BURNIN_STEPS=10000
+NUM_BURNIN_STEPS=10000
+NUM_POSTBURNIN_TREES=5000
+
+## TODO: Add an "all" option for -p flag, so that if the value is all the program summarizes
+## posterior distributions of parameters and trees in TreeAnnotator over _ALL_ posterior 
+## (post-burnin) trees...
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -l   loganalyserPath (def: author's path) 
-  -t   treeannotatorPath (def: author's path) absolute path to treeannotator executable in 
-       the bin/ folder of a recent BEAST distribution
+  -l   loganalyserPath (def: NULL) absolute path to loganalyser executable in the bin/
+       folder of recent BEAST v1.8.3+ distribution
+  -t   treeannotatorPath (def: NULL) absolute path to treeannotator executable in 
+       the bin/ folder of a recent BEAST v1.8.3+ distribution
+  -b   burninSteps (def: 10000) number of states to discard as 'burn-in' 
+  -p   postburninTrees (def: 5000) number of post-burnin trees to extract for summarizing
+       the posterior distributions of parameters and trees in TreeAnnotator
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
 
@@ -423,10 +427,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  on a remote, Linux-based supercomputing cluster (e.g. at a high performance computing 
  facility), including summarizing the log file of a BEAST run, as well as summarizing the
  posterior distributions of gene trees and species trees using TreeAnnotator. This script
- was made with BEAST v1.8.3+ in mind (Drummond et al. 2012), but should also work on output 
- files from BEAST v2.4+ (Bouckaert et al. 2014).
- 
- [In prep.]
+ was made with BEAST v1.8.3+ in mind (Drummond et al. 2012; currently at v1.10; see 
+ http://beast.community), but should also work on output files from BEAST v2.4+ (Bouckaert 
+ et al. 2014). This script is still being tested. [ In prep. ]
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
@@ -458,6 +461,24 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
+
+############ PARSE THE OPTIONS
+while getopts 'l:t:b:p:' opt ; do
+  case $opt in
+## taxonCompFilter options:
+    l) LOGANALYSER_PATH=$OPTARG ;;
+    t) TREEANNOTATOR_PATH=$OPTARG ;;
+    b) NUM_BURNIN_STEPS=$OPTARG ;;
+    p) NUM_POSTBURNIN_TREES=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
 
 
 # ############# ############# #############
