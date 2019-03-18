@@ -149,9 +149,9 @@ fi
 if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 
 ############ I. READ INPUT, SET UP WORKSPACE, AND CHECK / ECHO MACHINE TYPE.
-	echo "INFO      | $(date) |          Args: $args+ "
 	echo "INFO      | $(date) |          Function: $FUNCTION_TO_RUN "
 	echo "INFO      | $(date) |          Function arguments: $FUNCTION_ARGUMENTS "
+	echo "INFO      | $(date) |          Remaining arguments: $args+ "
 	echoCDWorkingDir
 	echo "INFO      | $(date) |          Checking machine type... "
 	checkMachineType
