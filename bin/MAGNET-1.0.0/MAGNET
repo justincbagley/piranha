@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: March 15, 2019                                                            #
+# Last update: March 18, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -59,7 +59,7 @@ fi
 # Any actions that should be taken if the script is prematurely
 # exited.  Always call this function at the top of your script.
 # -----------------------------------
-function trapCleanup() {
+trapCleanup () {
   echo ""
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
@@ -73,7 +73,7 @@ function trapCleanup() {
 # Non destructive exit for when script exits naturally.
 # Usage: Add this function at the end of every script.
 # -----------------------------------
-function safeExit() {
+safeExit () {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
@@ -130,7 +130,7 @@ gemDependencies=()
 
 
 
-function MAGNET () {
+MAGNET () {
 
 ######################################## START ###########################################
 ##########################################################################################
@@ -139,7 +139,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | MAGNET, v1.0.0 March 2019  (part of PIrANHA v0.2-alpha.1c)     "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
 
 
 ############################## IF -f 1: SINGLE FILE RUN ##################################
