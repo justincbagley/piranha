@@ -9,7 +9,7 @@
   VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: March 13, 2019                                                            #
+# Last update: March 17, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -57,9 +57,9 @@ fi
 # trapCleanup Function
 # -----------------------------------
 # Any actions that should be taken if the script is prematurely
-# exited.  Always call this function at the top of your script.
+# exited. Always call this function at the top of your script.
 # -----------------------------------
-function trapCleanup() {
+trapCleanup () {
   echo ""
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
@@ -73,7 +73,7 @@ function trapCleanup() {
 # Non destructive exit for when script exits naturally.
 # Usage: Add this function at the end of every script.
 # -----------------------------------
-function safeExit() {
+safeExit () {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
@@ -130,7 +130,7 @@ gemDependencies=()
 
 
 
-function calcAlignmentPIS () {
+calcAlignmentPIS () {
 
 ######################################## START ###########################################
 ##########################################################################################
