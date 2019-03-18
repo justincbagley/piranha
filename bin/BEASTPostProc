@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEASTPostProc.sh                                                                 #
-  VERSION="v1.6.2"                                                                       #
+  VERSION="v1.6.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
 # Last update: March 18, 2019                                                            #
@@ -136,7 +136,7 @@ BEASTPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTPostProc, v1.6.2 March 2019  (in PIrANHA v0.2-alpha.1c)   "
+echo "INFO      | $(date) | BEASTPostProc, v1.6.3 March 2019  (in PIrANHA v0.2-alpha.1c)   "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -223,10 +223,18 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 	if [[ ! -z "$MY_STARBEAST_SPECIESTREE_FILE" ]]; then
 		echo "INFO      | $(date) |          BEAST species trees present. Analyzing species trees in TreeAnnotator... "
 
+	MY_K_ABBREV_VAL_TENS="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(.*\..\).*/\1/g' | sed 's/.*\.//g' )";
+	if [[ "$MY_K_ABBREV_VAL_TENS" = "0" ]]; then
+		MY_K_ABBREV_VAL_INT="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(.*\..\).*/\1/g' | sed 's/\..*//g' )";
+		MY_K_ABBREV_VAL="$MY_K_ABBREV_VAL_INT";
+	else
+		MY_K_ABBREV_VAL="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(...\).*/\1/g')"
+	fi
+
 	(
 		for i in $MY_STARBEAST_SPECIESTREE_FILE; do 
 			echo "INFO      | $(date) |               - Name of trees file being analyzed: $i "
-			tail -n "$NUM_POSTBURNIN_TREES" "${i}" > ./"${i}"_5k_postburn.trees ;
+			tail -n "$NUM_POSTBURNIN_TREES" "${i}" > ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;
 
 		###### Convert your 5000 post-burnin species trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $i | awk -F"=" '{print $NF}' | sed 's/\;//g')"	## Pull the number of taxa from the species trees file.
@@ -236,19 +244,19 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 			NUM2="$((2*NUM1))" ;
 			NUM3="$((NUM2+11))" ;
 			head -n"$NUM3" "$i" > ./nexusHeader.txt ;
-			cat ./nexusHeader.txt ./"${i}"_5k_postburn.trees > ./"${i}"_5k_postburn.trees.txt ;
+			cat ./nexusHeader.txt ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees > ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ;
 
 		###### CLEANUP #1: Next, do cleanup by removing any line starting with "==> " (preferred), OR remove line 1 and line $(calc $MY_HEADER_LENGTH + 1) (not preferred), where calc is bash function defined as $ calc () {    	bc -l <<< "$@" }.
-			sed '/^==>\ / d' ./"${i}"_5k_postburn.trees.txt > ./"${i}"_final_5k.trees ;
-			rm ./"${i}"_5k_postburn.trees ;
+			sed '/^==>\ / d' ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt > ./"${i}"_final_"$MY_K_ABBREV_VAL"k.trees ;
+			rm ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;
 			rm ./nexusHeader.txt ;
-			rm ./"${i}"_5k_postburn.trees.txt ;
+			rm ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ;
 
-		###### CLEANUP #2: It's CRITICAL that we make sure the new '*_final_5k.trees' file ends with a newline (empty line). We use
+		###### CLEANUP #2: It's CRITICAL that we make sure the new '*_final_"$MY_K_ABBREV_VAL"k.trees' file ends with a newline (empty line). We use
 		##--sed to do this with a simple command that 'adds \n at the end of the file only if it doesn’t already end with a newline',
 		##--a trick which I have taken from stackexchange user l0b0's answer given at the following URL:
 		##--https://unix.stackexchange.com/questions/31947/how-to-add-a-newline-to-the-end-of-a-file. Thanks l0b0!!
-			sed -i -e '$a\' ./"${i}"_final_5k.trees ;
+		sed -i -e '$a\' ./"${i}"_final_"$MY_K_ABBREV_VAL"k.trees ;
 # '
 
 		###### SUMMARIZE POSTERIOR DISTRIBUTION OF SPECIES TREES USING TREEANNOTATOR
@@ -267,7 +275,7 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 		## Example: treeannotator -burnin 100 -heights mean test.trees out.txt
 		## Example: treeannotator -burnin 100 -target map.tree test.trees out.txt
 
-		"$TREEANNOTATOR_PATH" -burnin 0 -heights mean "${i}"_final_5k.trees "${i}".treeannotator.out ;
+		"$TREEANNOTATOR_PATH" -burnin 0 -heights mean "${i}"_final_"$MY_K_ABBREV_VAL"k.trees "${i}".treeannotator.out ;
 
 		mkdir "${i}".treeannotator ;
 		mv ./"${i}".treeannotator.out ./"${i}".treeannotator ;
@@ -278,14 +286,15 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 	###### Rename species tree files:
 	(
 		shopt -s nullglob
-		files=(./*_final_5k.trees)
+		files=(./*_final_"$MY_K_ABBREV_VAL"k.trees)
 		if [[ "${#files[@]}" -gt 0 ]] ; then
-			echo "INFO      | $(date) |          Renaming final 5k post-burnin species tree files."
-	        for j in ./*.species.trees_final_5k.trees; do
-	            mv "$j" ${j/*/final_5k.species.trees} ;
+			echo "INFO      | $(date) |          Renaming final ${MY_K_ABBREV_VAL}k post-burnin species tree files."
+	        for j in ./*species.trees_final_"$MY_K_ABBREV_VAL"k.trees; do
+	        	echo "$j"
+	            mv "$j" ${j/*/final_"$MY_K_ABBREV_VAL"k.species.trees} ;
 	        done
 	    else
-	        echo "WARNING!  | $(date) |          Failed to rename final 5k post-burnin species tree files. "
+	        echo "WARNING!  | $(date) |          Failed to rename final ${MY_K_ABBREV_VAL}k post-burnin species tree files. "
 	    fi
 	)
 
@@ -295,7 +304,8 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 		folders=(./*.treeannotator)
 		if [[ "${#folders[@]}" -gt 0 ]] ; then
 			echo "INFO      | $(date) |          Previous step succeeded. Renaming folders with TreeAnnotator species tree results. "
-			for k in ./*.species.trees.treeannotator; do
+			for k in ./*species.trees.treeannotator; do
+				echo "$k"
 				mv "$k" ${k/*/treeannotator.species.tree} ;
 			done
 		else
@@ -304,12 +314,16 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 	)
 
 	###### Rename treeannotator output species tree file:
-	(
-		for l in ./treeannotator.species.tree/*.treeannotator.out; do
-	        mv "$l" ${l/*/MCC.species.tree.out} ;
-	    done
-	)
-        mv MCC.species.tree.out ./treeannotator.species.tree
+	cd /treeannotator.species.tree/;
+		mv ./*.treeannotator.out ./MCC.species.tree.out
+		cp ./MCC.species.tree.out ../treeannotator.species.tree
+	cd ..;
+	#(
+	#	for l in ./treeannotator.species.tree/*.treeannotator.out; do
+	#        mv "$l" ${l/*/MCC.species.tree.out} ;
+	#    done
+	#)
+    #    mv MCC.species.tree.out ./treeannotator.species.tree
 
 
 else
@@ -329,10 +343,18 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 	if [[ ! -z "$MY_BEAST_GENETREE_FILES" ]]; then
 		echo "INFO      | $(date) |          BEAST gene trees present for one or multiple partitions. Analyzing gene trees in TreeAnnotator... "
 
+	MY_K_ABBREV_VAL_TENS="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(.*\..\).*/\1/g' | sed 's/.*\.//g' )";
+	if [[ "$MY_K_ABBREV_VAL_TENS" = "0" ]]; then
+		MY_K_ABBREV_VAL_INT="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(.*\..\).*/\1/g' | sed 's/\..*//g' )";
+		MY_K_ABBREV_VAL="$MY_K_ABBREV_VAL_INT";
+	else
+		MY_K_ABBREV_VAL="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(...\).*/\1/g')"
+	fi
+
 	(
 		for m in ${MY_BEAST_GENETREE_FILES}; do 
 			echo "INFO      | $(date) |               - Name of trees file being analyzed: $m "
-			tail -n "$NUM_POSTBURNIN_TREES" "${m}" > ./"${m}"_5k_postburn.trees ;		
+			tail -n "$NUM_POSTBURNIN_TREES" "${m}" > ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;		
 
 		###### Convert your 5000 post-burnin gene trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $m | awk -F"=" '{print $NF}' | sed 's/\;//g')"
@@ -342,23 +364,23 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 			NUM2="$((2*NUM1))" ;
 			NUM3="$((NUM2+11))" ;
 			head -n"$NUM3" "$m" > ./nexusHeader.txt ;
-			cat ./nexusHeader.txt ./"${m}"_5k_postburn.trees > ./"${m}"_5k_postburn.trees.txt ;
+			cat ./nexusHeader.txt ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees > ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ;
 
 		###### CLEANUP #1: Next, do cleanup by removing any line starting with "==> " (preferred), OR remove line 1 and line $(calc $MY_HEADER_LENGTH + 1) (not preferred), where calc is bash function defined as $ calc () {    	bc -l <<< "$@" }.
-			sed '/^==>\ / d' ./"${m}"_5k_postburn.trees.txt > ./"${m}"_final_5k.trees ;
-			rm ./"${m}"_5k_postburn.trees ;
+			sed '/^==>\ / d' ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt > ./"${m}"_final_"$MY_K_ABBREV_VAL"k.trees ;
+			rm ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;
 			rm ./nexusHeader.txt ;
-			rm ./"${m}"_5k_postburn.trees.txt ;
+			rm ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ;
 
-		###### CLEANUP #2: It's CRITICAL that we make sure the new "*_final_5k.trees" file ends with a newline (empty line). We use
+		###### CLEANUP #2: It's CRITICAL that we make sure the new "*_final_"$MY_K_ABBREV_VAL"k.trees" file ends with a newline (empty line). We use
 		##--sed to do this with a simple command that "adds \n at the end of the file only if it doesn’t already end with a newline",
 		##--a trick which I have taken from stackexchange user l0b0's answer given at the following URL:
 		##--https://unix.stackexchange.com/questions/31947/how-to-add-a-newline-to-the-end-of-a-file. Thanks l0b0!!
-			sed -i -e '$a\' ./"${m}"_final_5k.trees
+			sed -i -e '$a\' ./"${m}"_final_"$MY_K_ABBREV_VAL"k.trees
 # '
 
 		###### SUMMARIZE POSTERIOR DISTRIBUTION OF GENE TREES USING TREEANNOTATOR
-			"$TREEANNOTATOR_PATH" -burnin 0 -heights mean "${m}"_final_5k.trees "${m}".treeannotator.out ;
+			"$TREEANNOTATOR_PATH" -burnin 0 -heights mean "${m}"_final_"$MY_K_ABBREV_VAL"k.trees "${m}".treeannotator.out ;
 
 		###### Change name of annotated tree file output by TreeAnnotator for this gene/partition:
 			partitionname="$(echo $m | sed 's/^[a-zA-Z0-9\_]*\.//g' | sed 's/\.trees//g')"
@@ -369,7 +391,7 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 			mkdir ./treeannotator."${partitionname}".gene.tree
 			mv ./MCC."${partitionname}".gene.tree.out ./treeannotator."${partitionname}".gene.tree
 			
-			mv ./"${m}"_final_5k.trees ./final_5k."${partitionname}".gene.trees ;
+			mv ./"${m}"_final_"$MY_K_ABBREV_VAL"k.trees ./final_"$MY_K_ABBREV_VAL"k."${partitionname}".gene.trees ;
 
 		done
 	)
@@ -377,8 +399,6 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 else
 	echo "INFO      | $(date) |          Found no BEAST gene trees. Skipping gene tree analysis... "
 fi
-
-
 
 #echo "INFO      | $(date) | Done processing BEAST results using BEASTPostProc. "
 #echo "Bye.
@@ -412,10 +432,10 @@ NUM_POSTBURNIN_TREES=5000
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -l   loganalyserPath (def: NULL) absolute path to loganalyser executable in the bin/
-       folder of recent BEAST v1.8.3+ distribution
-  -t   treeannotatorPath (def: NULL) absolute path to treeannotator executable in 
-       the bin/ folder of a recent BEAST v1.8.3+ distribution
+  -l   loganalyserPath (def: NULL) mandatory absolute path to loganalyser executable in 
+       the bin/ folder of recent BEAST v1.8.3+ distribution
+  -t   treeannotatorPath (def: NULL) mandatory absolute path to treeannotator executable 
+       in the bin/ folder of a recent BEAST v1.8.3+ distribution
   -b   burninSteps (def: 10000) number of states to discard as 'burn-in' 
   -p   postburninTrees (def: 5000) number of post-burnin trees to extract for summarizing
        the posterior distributions of parameters and trees in TreeAnnotator
@@ -429,12 +449,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  posterior distributions of gene trees and species trees using TreeAnnotator. This script
  was made with BEAST v1.8.3+ in mind (Drummond et al. 2012; currently at v1.10; see 
  http://beast.community), but should also work on output files from BEAST v2.4+ (Bouckaert 
- et al. 2014). This script is still being tested. [ In prep. ]
+ et al. 2014). This script is still being tested. -b and -p flags take integer values of 
+ zero or higher, set by the user. [ In prep. ]
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
  
-    piranha -f BEASTPostProc
+    piranha -f BEASTPostProc -l<loganalyserPath> -t<treeannotatorPath> -b <burninSteps> -p <postburninTrees>
     piranha -f BEASTPostProc --args='-h'
 
  ${bold}CITATION${reset}
