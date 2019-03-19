@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: renameForStarBEAST2.sh                                                           #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
-# Last update: March 15, 2019                                                            #
+# Last update: March 19, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -18,6 +18,16 @@
 # FILES TO APPEND SPECIES ASSIGNMENTS FOR STARBEAST / STARBEAST2                         #
 #                                                                                        #
 ##########################################################################################
+
+## TODO: Add a script to PIrANHA that will convert a simple taxon-assignment file with 
+## individual names in the first column, then a delimiter (tab or space), then species/
+## lineage names in the second column, into ASTRAL-III mapping file format, and possibly
+## assignment formats specific to other software programs. Maybe call it assignSpecies
+## or something along those lines.
+
+## TODO #2: Consider making this script more flexible, so that it could take a simple
+## taxon-species assignment file such as the generic format described above, or multiple
+## types of taxon-species assignment files.
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -59,7 +69,7 @@ fi
 # Any actions that should be taken if the script is prematurely
 # exited.  Always call this function at the top of your script.
 # -----------------------------------
-function trapCleanup() {
+trapCleanup () {
   echo ""
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
@@ -73,7 +83,7 @@ function trapCleanup() {
 # Non destructive exit for when script exits naturally.
 # Usage: Add this function at the end of every script.
 # -----------------------------------
-function safeExit() {
+safeExit () {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
@@ -130,13 +140,13 @@ gemDependencies=()
 
 
 
-function renameForStarBEAST2 () {
+renameForStarBEAST2 () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameForStarBEAST2, v1.2.1 March 2019  (in PIrANHA v0.2-alpha.1c)"
+echo "INFO      | $(date) | renameForStarBEAST2, v1.2.2 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -243,12 +253,18 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -V   version (also: --version) echo version and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT renames tip taxa in all PHYLIP or FASTA DNA sequence alignments in the current
- working directory, so that the taxon names are suitable for assigning species in BEAUti
- v2.4+ (part of BEAST v2.4+; Bouckaert et al. 2014) for StarBEAST2 (Ogilvie et al. 2017). 
- For best results, species assignments in the assignment file should be given as simple
- alphanumeric names with no spaces, hyphens, underscores, or nonalphanumeric characters
- (e.g. the assignment 'unimaculatus' gave no errors in testing).
+ THIS SCRIPT renames tip taxa (i.e. sequence names) in all PHYLIP or FASTA DNA sequence 
+ alignments in the current working directory, so that the taxon names are suitable for 
+ assigning species in BEAUti v2.4+ (part of BEAST v2.4+; Bouckaert et al. 2014) for running
+ the StarBEAST2 model (Ogilvie et al. 2017) in BEAST2. The assignment file links tip taxon
+ names to species/lineages and must be in the mapping file format used by ASTRAL-III (i.e. 
+ 'Accurate Species TRee ALgorithm' version III; Zhang et al. 2018; Rabiee et al. 2019).
+ In this format, information is given on one line per species, with each line containing 
+ the species name followed by a space, then the number of individuals, another space,
+ and then a space-delimited list of individuals (e.g. 'individual_1 individual_2 ...').
+ For best results, species names should be given in <assignmenFile> as simple alphanumeric
+ names with no spaces, hyphens, underscores, or nonalphanumeric characters (e.g. the 
+ assignment 'unimaculatus' gave no errors in testing).
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
@@ -266,8 +282,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Ogilvie, H.A., Bouckaert, R.R. and Drummond, A.J. 2017. StarBEAST2 brings faster species 
 	tree inference and accurate estimates of substitution rates. Molecular Biology and 
 	Evolution, 34(8), 2101-2114.
+ Rabiee, M., Sayyari, E., Mirarab, S. 2019. Multi-allele species reconstruction using ASTRAL. 
+	Molecular Phylogenetics and Evolution, 130, 286–296. 
+ Zhang, C., Rabiee, M., Sayyari, E., Mirarab, S. 2018. ASTRAL-III: polynomial time species 
+	tree reconstruction from partially resolved gene trees. BMC Bioinformatics, 19(S6),
+	153.
 
-Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
+ Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
