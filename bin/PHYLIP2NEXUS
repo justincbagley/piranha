@@ -148,7 +148,10 @@ echo "INFO      | $(date) |          Setting user-specified path to: "
 echo "INFO      | $(date) |          $PWD "	
 echo "INFO      | $(date) |          Input PHYLIP file: $INPUT_PHYLIP_FILE "
 echo "INFO      | $(date) |          Examining current directory, setting variables... "
+
+#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 	MY_PHYLIP_LENGTH="$(cat $INPUT_PHYLIP_FILE | wc -l | sed 's/(\ )*//g')";
 	MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
