@@ -6,15 +6,16 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  VERSION="v1.1.4"                                                                       #
+  VERSION="v1.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: March 15, 2019                                                            #
+# Last update: March 20, 2019                                                            #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO NEXUS FORMAT  #
+# SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO NEXUS FORMAT, #
+# WITH OR WITHOUT PARTITIONS FROM A PARTITIONS FILE                                      #
 #                                                                                        #
 ##########################################################################################
 
@@ -129,13 +130,13 @@ gemDependencies=()
 
 
 
-function PHYLIP2NEXUS () {
+PHYLIP2NEXUS () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.1.4 March 2019  (part of PIrANHA v0.2-alpha.1c)"
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.1.5 March 2019  (part of PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -145,13 +146,14 @@ echo "INFO      | $(date) | Step #1: Set up workspace and set environmental vari
 ###### Set working directory and filetypes as different variables:
 echo "INFO      | $(date) |          Setting user-specified path to: "
 echo "INFO      | $(date) |          $PWD "	
-echo "INFO      | $(date) |          Input PHYLIP file: $1 "
+echo "INFO      | $(date) |          Input PHYLIP file: $INPUT_PHYLIP_FILE "
 echo "INFO      | $(date) |          Examining current directory, setting variables... "
+checkMachineType
 
 	MY_PHYLIP_LENGTH="$(cat $INPUT_PHYLIP_FILE | wc -l | sed 's/(\ )*//g')";
 	MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
 	## This "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines; was going to call it "MY_SEQUENCE_AND_EOF_LINES" but thought that name was too long.
-	tail -n$MY_BODY_LENGTH $MY_PHYLIP > sequences.tmp;
+	tail -n$MY_BODY_LENGTH $INPUT_PHYLIP_FILE > sequences.tmp;
 	MY_NTAX="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
 	MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
 
@@ -184,11 +186,11 @@ elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml"
 	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp ;
 	echo "end;" > ./end.tmp
 #	
-		## OS detection using idea from URL: https://stackoverflow.com/questions/394230/how-to-detect-the-os-from-a-bash-script
-		unamestr="$(uname)";
-		if [[ "$unamestr" == "Darwin" ]]; then
+		# Accommodating different machine types...
+		if [[ "${machine}" = "Mac" ]]; then
 			sed -i '' $'s/$/\\\n/' ./end.tmp ;
-		elif [[ "$unamestr" == "Linux" ]]; then
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/$/\n/' ./end.tmp ;
 		fi
 #
@@ -197,6 +199,12 @@ elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml"
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "nexus" ]] || [[ "$MY_PARTFILE_FORMAT" = "nex" ]] || [[ "$MY_PARTFILE_FORMAT" = "NEX" ]]; then
 	echo "INFO      | $(date) |          Read NEXUS-style charset file. Adding partition information to final NEXUS file... "
+	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex ;
+	echo "INFO      | $(date) |          Making final, partitioned NEXUS file... "
+#
+
+elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "SVDquartets" ]] || [[ "$MY_PARTFILE_FORMAT" = "SVDq" ]]; then
+	echo "INFO      | $(date) |          Read SVDquartets-style NEXUS charset file. Adding partition information to final NEXUS file... "
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex ;
 	echo "INFO      | $(date) |          Making final, partitioned NEXUS file... "
 
@@ -233,10 +241,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) input PHYLIP filename
-  -p   partitionsFile (def: NULL; other: filename) name of file containing RAxML- or NEXUS-
-       formatted character set partitions file
-  -f   fileType (def: raxml; nexus|NEX|nex) partitions file type, either with RAxML DNA 
-       partitions or NEXUS character sets
+  -p   partitionsFile (def: NULL; other: filename) name of file containing data partitions 
+       in RAxML, regular NEXUS, or SVDquartets-style NEXUS format (see below)
+  -f   fileType (def: raxml; other: nexus|NEX|nex, SVDquartets|SVDq) partitions file type, 
+       specifying either RAxML DNA partitions format, NEXUS character sets format, or 
+       SVDquartets NEXUS character sets format
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
@@ -246,12 +255,44 @@ USAGE="Usage: $(basename $0) [OPTION]...
  underscore characters but no spaces. Also, PHYLIP alignment files must have the extension 
  '.phy'. Optionally, the user may use the -p and -f flags to read in and process an external 
  partitions file containing information on character set partitions for <inputPHYLIP>. This 
- partitions file may be in standard RAxML or NEXUS formats.
+ partitions file may be in one of the three standard formats for which examples are provided
+ below and must be described as such using the corresponding -f flag option. The following
+ examples are given for a hypothetical set of subsets identified using PartitionFinder 
+ (Lanfear et al. 2014), as follows:
+ 
+ # Standard RAxML partitions format (e.g. output by PartitionFinder):
+ 
+ 	DNA, p1 = 1-437, 2557-2966, 3646-4111, 4112-4455, 7756-8178, 18049-18521
+ 	DNA, p2 = 438-848, 5168-5641, 10779-11203, 12446-12835, 13296-13700, 15612-16092
+  	...
+ 	DNA, p16 = 35370-35812
+
+ # Regular NEXUS character set format:
+
+ 	begin sets;
+	 	charpartition PartitionFinderSubsets = 
+			 charset p1=1-437, 2557-2966, 3646-4111, 4112-4455, 7756-8178, 18049-18521;
+			 charset p2=438-848, 5168-5641, 10779-11203, 12446-12835, 13296-13700, 15612-16092;
+			 ...
+			 charset p16=35370-35812;
+	 end;
+ 
+ # SVDquartets NEXUS character set format:
+
+ 	begin sets;
+	 	charpartition PartitionFinderSubsets = 
+			 p1 : 1-437, 2557-2966, 3646-4111, 4112-4455, 7756-8178, 18049-18521,
+			 p2 : 438-848, 5168-5641, 10779-11203, 12446-12835, 13296-13700, 15612-16092,
+			 ...
+			 p16 : 35370-35812;
+	 end;
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
     piranha -f PHYLIP2NEXUS --args='-i <inputPHYLIP> -p <partitionsFile> -f raxml'
+    piranha -f PHYLIP2NEXUS --args='-i <inputPHYLIP> -p <partitionsFile> -f NEX'
+    piranha -f PHYLIP2NEXUS --args='-i <inputPHYLIP> -p <partitionsFile> -f SVDquartets'
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
@@ -260,6 +301,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}REFERENCES${reset}
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+ Lanfear R, Calcott B, Kainer D, Mayer C, Stamatakis A (2014) Selecting optimal partitioning 
+ 	schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
 
  Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.
  Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
