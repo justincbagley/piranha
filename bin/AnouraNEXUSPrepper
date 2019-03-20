@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: AnouraNEXUSPrepper.sh                                                            #
-  VERSION="v1.3"                                                                         #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: March 9, 2019                                                             #
+# Last update: March 20, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -59,7 +59,7 @@ fi
 # Any actions that should be taken if the script is prematurely
 # exited.  Always call this function at the top of your script.
 # -----------------------------------
-function trapCleanup() {
+trapCleanup () {
   echo ""
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
@@ -73,7 +73,7 @@ function trapCleanup() {
 # Non destructive exit for when script exits naturally.
 # Usage: Add this function at the end of every script.
 # -----------------------------------
-function safeExit() {
+safeExit () {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
@@ -132,13 +132,13 @@ gemDependencies=()
 
 
 
-function AnouraNEXUSPrepper () {
+AnouraNEXUSPrepper () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3 March 2019  (in PIrANHA v0.2-alpha.1c)   "
+echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.1 March 2019  (in PIrANHA v0.2-alpha.1c)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -258,9 +258,10 @@ MY_INPUT_NEXUS_SWITCH=0
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -h   help text (also: --help) echo this help text and exit
   -i   inputNEXUS (def: 0, uses NEXUS file in current working directory; accommodates .nex,
        .NEX, .nexus, or .NEXUS file extensions) input NEXUS sequence alignment file
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT takes as input a single NEXUS file containing data from one or more UCE loci
@@ -289,6 +290,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
