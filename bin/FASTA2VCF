@@ -362,27 +362,29 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -V   version (also: --version) echo version of this script and exit
 
  OVERVIEW
- THIS SCRIPT automates converting a single multiple sequence FASTA alignment file to variant
- call format (VCF v4.1; http://www.internationalgenome.org/wiki/Analysis/vcf4.0/). The program
- is effectively a wrapper for the program snp sites (https://github.com/sanger-pathogens/snp-sites) 
- that keeps it simple but offers some additional functionality. Specifically the user may 
- optionally call FASTA2VCF to subsample the data for n SNPs within each partition or locus 
- using the -s flag. This option is currently only working with '-s 1', which attempts to 
- remove the effects of linkage disequilibrium (LD) from the data by reducing the output VCF 
- file to 1 SNP per partition/locus (assuming the loci are widely spaced throughout the nuclear 
- genome, as is usually the case for RAD and UCE loci). By default, this script runs in current 
- working directory.
-	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ THIS SCRIPT automates converting a single multiple sequence alignment file in FASTA format
+ (Lipman and Pearson 1985) to variant call format (VCF v4.1; Danecek et al. 2011; see also 
+ http://www.internationalgenome.org/wiki/Analysis/vcf4.0/). The program is effectively a 
+ wrapper for the software program snp-sites (Page et al. 2016; available at: 
+ https://github.com/sanger-pathogens/snp-sites) that keeps it simple but offers some additional 
+ functionality. Specifically the user may optionally call FASTA2VCF to subsample the data 
+ for n SNPs within each partition or locus using the -s flag. This option is currently only
+ working with '-s 1', which attempts to remove the effects of linkage disequilibrium (LD) 
+ from the data by reducing the output VCF file to 1 SNP per partition/locus (assuming the 
+ loci are widely spaced throughout the nuclear genome, as is usually the case for RAD and 
+ UCE loci). By default, this script runs in current working directory.
+	FASTA2VCF runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
  tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many earlier versions 
- or Linux. he main dependency of this software is the program snp-sites, which the user 
+ or Linux. The main dependency of this software is the program snp-sites, which the user 
  must have installed and available as 'snp-sites' from the command line interface (i.e. 
  in your path).
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
  
-    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output>'
+    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output>'			Run without subsampling SNPs
+    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output> -s1'		Subsample 1 SNP per locus/partition
     piranha -f FASTA2VCF --args='-h'
 
  ${bold}CITATION${reset}
@@ -390,7 +392,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- [coming soon. add VCF, FASTA, and snp-sites refs. see https://github.com/sanger-pathogens/snp-sites]
+ Danecek, P., Auton, A., Abecasis, G., Albers, C.A., Banks, E., DePristo, M.A., Handsaker, R.E., 
+	Lunter, G., Marth, G.T., Sherry, S.T., McVean, G. 2011. The variant call format and VCFtools. 
+	Bioinformatics, 27(15), 2156-2158.
+ Lipman, D.J., Pearson, W.R. 1985. Rapid and sensitive protein similarity searches. Science, 
+	227(4693), 1435–1441.
+ Page, A.J., Taylor, B., Delaney, A.J., Soares, J., Seemann, T., Keane, J.A., Harris, S.R. 
+	2016. SNP-sites: rapid efficient extraction of SNPs from multi-FASTA alignments. Microbial 
+	Genomics, 2(4).
 
  Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
