@@ -3,6 +3,8 @@
 ## PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
+- **March 29 2019:** Added new `FASTA2VCF` function which acts as a wrapper for the software program `snp-sites` and allows the user to convert a FASTA multiple sequence alignment to VCF v4.1 format, with or without subsampling SNPs, in easy and automated fashion.
+
 ## PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
 
 This is a minor update to the pre-release version that includes edits to the README and index.html files, and that adds this slightly updated changeLog.md file back into the repository. Other changes include removing `bin/trash` function due to conflicts with `/usr/local/bin/trash` symlink belonging to trash on macOS, which caused homebrew install to fail. After fixing this, I have also now created a successful homebrew tap for PIrANHA that is working with this release (more info soon, to be added to the README). 
