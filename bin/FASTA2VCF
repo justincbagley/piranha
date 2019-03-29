@@ -1,0 +1,466 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: FASTA2VCF.sh                                                                     #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.                       #
+# Last update: March 29, 2019                                                            #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT AUTOMATING CONVERSION OF SINGLE MULTIPLE SEQUENCE FASTA ALIGNMENT TO      #
+# VARIANT CALL FORMAT (VCF) v4.1, WITH OR WITHOUT SUBSAMPLING SNPS PER PARTITION/LOCUS   #
+#                                                                                        #
+##########################################################################################
+
+## TODO: Consider adding additional snp-sites options, or other in-house options to improve
+## this function in the future. Also need to expand the subsampling snps routines to accommodate
+## subsampling more than one SNP per locus, and possibly to accommodate a minimum distance
+## between subsampled SNPs, when there are multiple per locus.
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+FASTA2VCF () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | FASTA2VCF, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.1c)    "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting FASTA2VCF analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+############ OPTIONAL OUTPUT TO FILE
+if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
+	exec >> ./"$MY_LOGFILE_SWITCH"
+	exec 2>&1
+	echo "INFO      | $(date) |          Redirecting all screen output to a logfile named $MY_LOGFILE_SWITCH... "
+fi
+
+
+############ Convert <inputFASTA> to VCF format.
+echo "INFO      | $(date) | Step #2: Convert FASTA multiple sequence alignment to VCF (variant call format v4) using snp-sites (dependency). "
+	
+	## CONVERT INPUT FASTA TO VCF USING SNP-SITES.
+	## Get input FASTA basename, used down below to give the VCF file output by snp-sites
+	## the same basename as the input FASTA file. If no output filename is given, simply
+	## run snp-sites while renaming using the default convention just mentioned; alternatively,
+	## if $MY_OUTPUT_FILENAME is set by the user, then run snp-sites with the basename set 
+	## to $MY_OUTPUT_FILENAME.
+	
+	## TEST CALL: snp-sites -v -o concatenated_seqs.out.vcf concatenated_seqs.fasta
+	
+	MY_INPUT_EXTENSION="$(ls $MY_INPUT_FASTA | sed 's/^.*\.//g' )"
+
+	if [[ "$MY_OUTPUT_FILENAME" = "NULL" ]]; then
+		if [[ "$MY_INPUT_EXTENSION" = "fasta" ]]; then
+			MY_FASTA_BASENAME="$(basename $MY_INPUT_FASTA .fasta)"
+		fi
+		if [[ "$MY_INPUT_EXTENSION" = "fas" ]]; then
+			MY_FASTA_BASENAME="$(basename $MY_INPUT_FASTA .fas)"
+		fi
+		if [[ "$MY_INPUT_EXTENSION" = "fa" ]]; then
+			MY_FASTA_BASENAME="$(basename $MY_INPUT_FASTA .fa)"
+		fi
+		
+			snp-sites -v -o "$MY_FASTA_BASENAME".vcf "$MY_INPUT_FASTA"
+
+	elif [[ "$MY_OUTPUT_FILENAME" != "NULL" ]]; then
+
+			snp-sites -v -o "$MY_OUTPUT_FILENAME".vcf "$MY_INPUT_FASTA"
+
+	fi
+
+
+
+if [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "NULL" ]]; then
+
+############ III. Subsample to n SNPs per partition/locus (currently 1 SNP / partition).
+echo "INFO      | $(date) | Step #3: Subsample to N SNPs per locus/partition (-s flag specified by user). "
+
+if [[ "$MY_SUBSAMPLE_SNPS_SWITCH" = "1" ]]; then
+	echo "INFO      | $(date) |          Found subsampleSNPs (-s) n set to 1. Continuing with this value... "
+elif [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "NULL" ]] && [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "1" ]]; then
+	echo "WARNING!  | $(date) |          Incorrect specification: found subsampleSNPs (-s) n set >1; however, under current implementation, -s can only be used with "
+	echo "WARNING!  | $(date) |                                   n=1. See Usage (-h). Forcing continue with a value of 1... "
+fi
+
+	## MAKE A TEMPORARY COPY OF THE VCF FILE TO DO SUBSEQUENT MANIPULATIONS WITH SO THAT
+	## THE ORIGINAL, CONTAINING ALL (e.g. LINKED) SNPS, IS SAVED FOR THE USER.
+
+	## Make tmp VCF file copy. Do this with grep, and use the -v flag to exclude the header
+	## lines of the VCF file, so that all lines of the resulting VCF contain data, as follows:
+	if [[ "$MY_OUTPUT_FILENAME" = "NULL" ]]; then
+		MY_INPUT_VCF_FILE="$MY_FASTA_BASENAME".vcf
+	elif [[ "$MY_OUTPUT_FILENAME" != "NULL" ]]; then
+		MY_INPUT_VCF_FILE="$MY_OUTPUT_FILENAME".vcf 
+	fi
+	
+	grep -v "^\#" "$MY_INPUT_VCF_FILE" > ./vcf.tmp
+
+	## Get positions column and save to tmp file (this is always col 2 in VCF4 format VCF files):
+	cut -f2 < vcf.tmp > ./SNPpositions.tmp
+
+	## Next, use SNP positions along with partition ranges info to subsample to n SNPs per locus/
+	## partition. We can do this by using a while loop, conditionals, and redirects...
+
+count=1
+(
+	while read line; do
+	#line=line with space-separated range, e.g. 1 594 is the first range for the first partition
+		echo "INFO      | $(date) |          ###----    Partition $((count++)), SNP $MY_SUBSAMPLE_SNPS_SWITCH...    ----### "
+		# Note: Currently only supporting / assuming cases with $MY_SUBSAMPLE_SNPS_SWITCH=1
+
+		## Put line in env var, separate range start and end values:
+		MY_TEST_LINE="$(echo $line)";
+#		echo "$MY_TEST_LINE"
+		MY_FIRST_VAL="$(echo $MY_TEST_LINE | sed 's/\ .*//g')";
+		MY_SECOND_VAL="$(echo $MY_TEST_LINE | sed 's/^[0-9]*\ //g')";
+		echo "INFO      | $(date) |          Partition start: $MY_FIRST_VAL "
+		echo "INFO      | $(date) |          Partition end: $MY_SECOND_VAL "
+		
+			## Loop through SNP positions in SNPpositions.tmp. For each position, if it matches
+			## the range then it is a match and can be echoed to a tmp match file:
+			MY_POSITIONS="$(cat SNPpositions.tmp)"
+			for position in $MY_POSITIONS; do
+				if [[ "$position" -ge "$MY_FIRST_VAL" ]] && [[ "$position" -le "$MY_SECOND_VAL" ]]; then
+					echo "$position" >> ./matching_positions.tmp
+					grep -n '^'$position'$' ./SNPpositions.tmp | sed 's/\:.*//g' >> ./matching_lines.tmp;
+				fi
+			done
+
+		## For ith partition ($line), cat the first matching line to matching lines file for
+		## all partitions:
+		MY_FIRST_MATCH_LINE="$(cat ./matching_lines.tmp | head -n1)"
+		if [[ -s ./matching_lines.tmp ]]; then
+			cat ./matching_lines.tmp | head -n1 >> ./all_first_matching_lines.txt 
+		fi
+		MY_FIRST_MATCH_POSITION="$(cat ./matching_positions.tmp | head -n1)"
+		if [[ -s ./matching_positions.tmp ]]; then
+			cat ./matching_positions.tmp | head -n1 >> ./all_first_matching_positions.txt
+		fi
+		
+		## Save corresponding line with first (ith) matching SNP to a final VCF body file (containing
+		## only the matching SNPs, without the VCF4 header) named ./vcf.body.tmp. I found a new 
+		## sed technique for getting the nth line of a file from the bash terminal at URL: 
+		## https://stackoverflow.com/questions/6022384/bash-tool-to-get-nth-line-from-a-file.
+		## This method is elegant in its simplicity, gives the correct subsampling, and
+		## is as follows:
+		sed ''"$MY_FIRST_MATCH_LINE"'q;d' ./vcf.tmp >> ./vcf.body.tmp;
+
+		rm ./matching_positions.tmp ./matching_lines.tmp
+
+		echo "INFO      | $(date) |          Extracting: "
+		echo "INFO      | $(date) |          SNP $MY_FIRST_MATCH_LINE (VCF row), alignment position (nt) $MY_FIRST_MATCH_POSITION "
+		
+	done < raxml_partitions.part_ranges_spaced.txt
+)
+
+	## Put it all together. Grab the VCF header. Then concatenate the VCF header and final, 
+	## subsampled VCF body file to create a final subsampled VCF file:
+	grep '\#' "$MY_INPUT_VCF_FILE" > ./header.tmp
+
+	if [[ "$MY_OUTPUT_FILENAME" = "NULL" ]]; then
+		echo "INFO      | $(date) |          Saving subsampled SNPs to file ${MY_FASTA_BASENAME}.subsampled.vcf "
+		cat ./header.tmp ./vcf.body.tmp > "$MY_FASTA_BASENAME".subsampled.vcf
+	elif [[ "$MY_OUTPUT_FILENAME" != "NULL" ]]; then
+		echo "INFO      | $(date) |          Saving subsampled SNPs to file ${MY_OUTPUT_FILENAME}.subsampled.vcf "
+		cat ./header.tmp ./vcf.body.tmp > "$MY_OUTPUT_FILENAME".subsampled.vcf 
+	fi
+
+fi
+
+
+############ IV. CLEAN UP THE WORKSPACE.
+echo "INFO      | $(date) | Step #4: Clean up working directory by removing temporary files. "
+## Remove temporary files generated above.
+	rm ./*.tmp
+
+#echo "INFO      | $(date) | Done converting your multiple sequence FASTA file to VCF format using FASTA2VCF.sh. "
+#echo "INFO      | $(date) | Bye.
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ DEPENDENCY INFO
+## snp-sites (URL: https://github.com/sanger-pathogens/snp-sites)
+## USAGE:
+# Usage: snp-sites [-mvph] [-o output_filename] <file>
+# This program finds snp sites from a multi fasta alignment file.
+#  -r     output internal pseudo reference sequence
+#  -m     output a multi fasta alignment file (default)
+#  -v     output a VCF file
+#  -p     output a phylip file
+#  -o STR specify an output filename [STDOUT]
+#  -c     only output columns containing exclusively ACGT
+#  -b     output monomorphic sites, used for BEAST
+#  -h     this help message
+#  -V     print version and exit
+#  <file> input alignment file which can optionally be gzipped
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_INPUT_FASTA=NULL
+MY_PART_RANGES=NULL
+MY_OUTPUT_FILENAME=NULL
+MY_SUBSAMPLE_SNPS_SWITCH=NULL
+MY_LOGFILE_SWITCH=NULL
+MY_OUTPUT_PHYLIP_SWITCH=NULL
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputFASTA (def: NULL) mandatory name of input FASTA file in sequential, non-wrapped
+       text format (with 1 line/sequence)
+  -r   partitionRanges (def: NULL) file with single column of space-, comma-, or tab-
+       delimited start and finish values for the ranges (of bases) occupied by each partition
+       for corresponding <inputFASTA>
+  -o   output (def: NULL, <inputFASTA> basename) user-specified output basename (=filename
+       minus extension; affects output VCF files)
+  -s   subsampleSNPs (def: NULL; or: number of SNPs) allows user to specify number of SNPs
+       to subsample from each partition (e.g. locus). Currently only working with '-s 1',
+       which extracts 1 SNP per partition.
+  -l   logfile (def: NULL; other: logfile name) send all output (stdout and stderr) to file 
+       in <workingDir> with this name, for example 'FASTA2VCF.output.txt'
+  -p   outputPHYLIP (def: NULL, off; 1, on) optionally convert <inputFASTA> to a PHYLIP-formatted
+       alignment file with extension '.phy'
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ OVERVIEW
+ THIS SCRIPT automates converting a single multiple sequence FASTA alignment file to variant
+ call format (VCF v4.1; http://www.internationalgenome.org/wiki/Analysis/vcf4.0/). The program
+ is effectively a wrapper for the program snp sites (https://github.com/sanger-pathogens/snp-sites) 
+ that keeps it simple but offers some additional functionality. Specifically the user may 
+ optionally call FASTA2VCF to subsample the data for n SNPs within each partition or locus 
+ using the -s flag. This option is currently only working with '-s 1', which attempts to 
+ remove the effects of linkage disequilibrium (LD) from the data by reducing the output VCF 
+ file to 1 SNP per partition/locus (assuming the loci are widely spaced throughout the nuclear 
+ genome, as is usually the case for RAD and UCE loci). By default, this script runs in current 
+ working directory.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag, and has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many earlier versions 
+ or Linux. he main dependency of this software is the program snp-sites, which the user 
+ must have installed and available as 'snp-sites' from the command line interface (i.e. 
+ in your path).
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+ 
+    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output>'
+    piranha -f FASTA2VCF --args='-h'
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ [coming soon. add VCF, FASTA, and snp-sites refs. see https://github.com/sanger-pathogens/snp-sites]
+
+ Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$Usage"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'i:r:o:s:l:p:' opt ; do
+  case $opt in
+
+## FASTA2VCF options:
+    i) MY_INPUT_FASTA=$OPTARG ;;
+    r) MY_PART_RANGES=$OPTARG ;;
+    o) MY_OUTPUT_FILENAME=$OPTARG ;;
+    s) MY_SUBSAMPLE_SNPS_SWITCH=$OPTARG ;;
+    l) MY_LOGFILE_SWITCH=$OPTARG ;;
+    p) MY_OUTPUT_PHYLIP_SWITCH=$OPTARG ;;
+
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+FASTA2VCF
+
+# Exit cleanly
+safeExit
