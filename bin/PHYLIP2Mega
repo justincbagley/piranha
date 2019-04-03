@@ -58,7 +58,7 @@ fi
 # Any actions that should be taken if the script is prematurely
 # exited.  Always call this function at the top of your script.
 # -----------------------------------
-function trapCleanup() {
+trapCleanup () {
   echo ""
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
@@ -72,7 +72,7 @@ function trapCleanup() {
 # Non destructive exit for when script exits naturally.
 # Usage: Add this function at the end of every script.
 # -----------------------------------
-function safeExit() {
+safeExit () {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
@@ -129,7 +129,7 @@ gemDependencies=()
 
 
 
-function PHYLIP2Mega () {
+PHYLIP2Mega () {
 
 ######################################## START ###########################################
 ##########################################################################################
