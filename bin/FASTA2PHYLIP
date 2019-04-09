@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: March 15, 2019                                                            #
+# Last update: April 9, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.2)    "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.0.1 March 2019  (in PIrANHA v0.2-alpha.2)    "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -284,9 +284,11 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
-			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp	# Make tmp PHYLIP header.
+			# Make tmp PHYLIP header.
+			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
-			perl -pi -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA"	;			# 1 line per sequence, no '>' delimiter.
+			# 1 line per sequence, no '>' delimiter.
+			perl -pi -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA"	;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
 			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
@@ -334,13 +336,15 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
+			# Make PHYLIP header.
 			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
-			perl -pi -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA"	;			# 1 line per sequence, no '>' delimiter.
+			# 1 line per sequence, no '>' delimiter.
+			perl -pi -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA"	;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
 			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
@@ -411,7 +415,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |               B. CONVERT FASTA TO PHYLIP FORMAT CONDITIONAL ON SEQUENCE LINE BREAK FORMAT. "
+			echo "INFO      | $(date) |               B. CONVERT FASTA TO PHYLIP FORMAT CONDITIONAL ON SEQUENCE LINE BREAK FORMAT. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
@@ -459,13 +463,15 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
-			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;	# Make tmp PHYLIP header.
+			# Make tmp PHYLIP header.
+			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
-			perl -pi -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp	;			# 1 line per sequence, no '>' delimiter.
+			# 1 line per sequence, no '>' delimiter.
+			perl -pi -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp	;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp > ./taxonLabels.tmp ;
 			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
@@ -515,13 +521,15 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
+			# Make PHYLIP header.
 			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
-			perl -pi -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp	;			# 1 line per sequence, no '>' delimiter.
+			# 1 line per sequence, no '>' delimiter.
+			perl -pi -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp	;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp > ./taxonLabels.tmp ;
 			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp | sed 's/$/\ /g' | perl -pe 's/\n//g')";
@@ -580,7 +588,7 @@ MY_OUTPUT_FILE_SWITCH=NULL
 MY_VERBOSE_OUT_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -k   keepFASTA (def: 0, off; 1, on) whether or not to keep modified, intermediate FASTA
@@ -630,7 +638,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
+VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -k   keepFASTA (def: 0, off; 1, on) whether or not to keep modified, intermediate FASTA
