@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: March 16, 2019                                                            #
+# Last update: April 9, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.1, March 2019  (main script for PIrANHA v0.2-alpha.1c)  "
+piranha v1.0.2, April 2019  (main script for PIrANHA v0.2-alpha.2)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -172,10 +172,63 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 	MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
 	echo "INFO      | $(date) |          Execution path: $MY_EXECUTION_PATH"
 
-	## First two conditionals below: cases where function run is not MAGNET.
-	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
+	## First three conditionals below: cases where function run is not MAGNET.
+	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$FUNCTION_TO_RUN" != "list" ]]; then
 		echo "INFO      | $(date) |          Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
+	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$FUNCTION_TO_RUN" = "list" ]]; then
+		echo "
+FUNCTION			   DESCRIPTION
+----------------------------------------------------------------------------------------------------------------
+2logeB10.r             Rscript extracting marginal likelihood estimates and calculate 2loge B10 Bayes factors (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs
+AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses
+BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (usually on remote supercomputer)
+BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST runs/subfolders (destined for supercomputer)
+BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster
+BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal likelihood estimation) analyses using BEAST v2+ PathSampler
+calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-informative sites (pis) for all FASTA files in working dir
+completeConcatSeqs     x
+completeSeqs           x
+concatenateSeqs        x
+dadiPostProc           x
+dadiRunner             x
+dadiUncertainty        x
+dropRandomHap          x
+ExaBayesPostProc       x
+FASTA2PHYLIP           x
+FASTA2VCF              x
+fastSTRUCTURE          x
+getBootTrees           x
+getTaxonNames          x
+MAGNET                 x
+makePartitions         x
+Mega2PHYLIP            x
+MLEResultsProc         x
+MrBayesPostProc        x
+NEXUS2MultiPHYLIP      x
+NEXUS2PHYLIP           x
+PFSubsetSum            x
+PHYLIP2FASTA           x
+phylip2fasta.pl        x
+PHYLIP2Mega            x
+PHYLIP2NEXUS           x
+PHYLIP2PFSubsets       x
+PHYLIPsubsampler       x
+PhyloMapperNullProc    x
+phyNcharSumm           x
+pyRAD2PartitionFinder  x
+pyRADLocusVarSites     x
+RAxMLRunChecker        x
+RAxMLRunner            x
+renameForStarBeast2    x
+SNAPPRunner            x
+SpeciesIdentifier      x
+taxonCompFilter        x
+treeThinner            x
+vcfSubsampler          x
+----------------------------------------------------------------------------------------------------------------
+" ;
+  safeExit ;
 	fi
 
 	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
@@ -239,12 +292,13 @@ usage() {
  (https://justinbagley.org/piranha/) for further information.
 
  ${bold}Usage examples:${reset}
+    piranha -f list                              Get list of available functions
     piranha -f calcAlignmentPIS --args='-h'      Get help text for calcAlignmentPIS function
     piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.
