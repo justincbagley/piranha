@@ -7,8 +7,7 @@
 
 ## PIrANHA v0.2-alpha.2 (official minor pre-release version) - April 9, 2019
 
-This is a minor update to the pre-release version that adds a new `FASTA2VCF` function that converts a sequential FASTA multiple sequence alignment into a variant call format (VCF) file, and allows subsampling 1 SNP per partition/locus. This update also includes edits to the README, index.html, changeLog.md, and travis.yml files. Importantly, I have also now created a successful [homebrew](https://brew.sh) tap for PIrANHA [here](https://github.com/justincbagley/homebrew-piranha) with a formula that is working with v0.2-alpha, and that is now described in the documentation [wiki](https://github.com/justincbagley/piranha/wiki). 
-- **March 29 2019:** Added new `FASTA2VCF` function which acts as a wrapper for the software program `snp-sites` and allows the user to convert a FASTA multiple sequence alignment to VCF v4.1 format, with or without subsampling SNPs, in easy and automated fashion.
+This is a minor update to the pre-release version that adds a new `FASTA2VCF` function which acts as a wrapper for the software program `snp-sites` ([link](https://github.com/sanger-pathogens/snp-sites)) and converts a sequential FASTA multiple sequence alignment into a variant call format (VCF) v4.1 file, with or without subsampling 1 SNP per partition/locus. This update also includes edits to the README, index.html, changeLog.md, and travis.yml files. Importantly, I have also now created a successful [homebrew](https://brew.sh) tap for PIrANHA [here](https://github.com/justincbagley/homebrew-piranha) with a formula that is working with v0.2-alpha, and that is now described in the documentation [wiki](https://github.com/justincbagley/piranha/wiki). 
 
 ## PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
 
