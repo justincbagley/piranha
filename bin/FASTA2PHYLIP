@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
 # Last update: April 9, 2019                                                             #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.0.1 March 2019  (in PIrANHA v0.2-alpha.2)    "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.1.0 April 2019  (in PIrANHA v0.2-alpha.2)     "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -177,20 +177,20 @@ checkMachineType
 ###### Loop through fastas in current working directory, allowing for multiple file extensions,
 ###### and perform operations. However, extension '.fasta' is preferred.
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #2: Convert all FASTA files in current dir to PHYLIP format, & save original FASTA order and characteristics. "
+	echo "INFO      | $(date) |          STEP #2: CONVERT ALL FASTA FILES IN CWD TO PHYLIP FORMAT, & SAVE ORIG FASTA ORDER AND CHARACTERISTICS. "
 fi
 
 MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname \*.fa -o -iname \*.FASTA -o -iname \*.FAS -o -iname \*.FA \))"
 (
 	for MY_FASTA in $MY_FASTA_FILES; do 
 
-	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
+	echo "$MY_FASTA" >> ./output/fileOrder.list.txt ;
 
 	echo "###------    $MY_FASTA    ------### "
 
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |               A. Clean file, get FASTA file and data characteristics. "
+		echo "INFO      | $(date) |               A. CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS. "
 	fi
 	
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
@@ -232,31 +232,32 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |               B. CONVERT FASTA TO PHYLIP FORMAT CONDITIONAL ON SEQUENCE LINE BREAK FORMAT. "
+			echo "INFO      | $(date) |               B. CONVERT FASTA TO PHYLIP FORMAT CONDITIONAL ON SEQUENCE LINE BREAK FORMAT. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
+			echo "Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA";
+				sed -i '' 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
-				sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA";
+				sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
 			fi
-			perl -pi -e 's/\n//g' "$MY_FASTA";
-			perl -pi -e 's/MARK\_EOL/\n/g' "$MY_FASTA";
-			perl -pi -e 's/\>/\n\>/g' "$MY_FASTA";
+			perl -p -i -e 's/\n//g' "$MY_FASTA" ;
+			perl -p -i -e 's/MARK\_EOL/\n/g' "$MY_FASTA" ;
+			perl -p -i -e 's/\>/\n\>/g' "$MY_FASTA" ;
 		
 			## Need empty line check here again:
 			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/^[[:space:]]*$/d' "$MY_FASTA";
+					sed -i '' '/^[[:space:]]*$/d' "$MY_FASTA" ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/^[[:space:]]*$/d' "$MY_FASTA";
+					sed -i '/^[[:space:]]*$/d' "$MY_FASTA" ;
 				fi
 			fi
 		
@@ -266,7 +267,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			# MY_EOF_METRIC="$( some way to search for '\n$' or '$\n$' on UNIX)   grep -h $'$\n$'  "
 		
 			## Count number of taxa/tips present in FASTA file:
-			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')"
+			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
 			fi
@@ -288,24 +289,22 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
 			# 1 line per sequence, no '>' delimiter.
-			perl -pi -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA"	;
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
-			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
+			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
-			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
+			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 		
-			MY_NAMESPACE_LENGTH="$(calc $(cat ./taxonLabels.tmp | awk '{ print length }' | sort -n | tail -1) + 1)"
-		
-			for i in $MY_TAX_LABELS; do
-				printf "%-"$MY_NAMESPACE_LENGTH"s \n" "$i" >> ./taxon_names_spaces.tmp ;
-			done
-		
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+			
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
-			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
 		
 			## Remove any tab characters (these are artifacts of paste operation above).
-			perl -pi -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
 	
 			## Remove orig FASTA file and delete temporary files.
 			rm "$MY_FASTA" ;
@@ -318,11 +317,12 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		if [[ "$MY_FORMAT_METRIC" -eq "2" ]]; then
 		
+		echo "Sequential FASTA format detected. Converting to PHYLIP..."
 		##--The FASTA file has DNA sequences in sequential, unwrapped format already; no need to 
 		##--convert it, so use file as is.
 		
 			## Count number of taxa/tips present in FASTA file:
-			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')";
+			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')"
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
 			fi
@@ -340,28 +340,26 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
-			# Make PHYLIP header.
+			# Make tmp PHYLIP header.
 			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
 			# 1 line per sequence, no '>' delimiter.
-			perl -pi -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA"	;
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
-			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
+			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
-			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
-		
-			MY_NAMESPACE_LENGTH="$(calc $(cat ./taxonLabels.tmp | awk '{ print length }' | sort -n | tail -1) + 1)" ;
-		
-			for i in $MY_TAX_LABELS; do
-				printf "%-"$MY_NAMESPACE_LENGTH"s \n" "$i" >> ./taxon_names_spaces.tmp ;
-			done
-		
+			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+					
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
-			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
 		
 			## Remove any tab characters (these are artifacts of operation above).
-			perl -pi -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
 	
 			## Remove orig FASTA file and delete temporary files.
 			rm "$MY_FASTA" ;
@@ -377,7 +375,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 	
-		cp "$MY_FASTA" ./fasta.tmp ;
+		cp "$MY_FASTA" ./fasta.tmp
 	
 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
 			if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
@@ -421,6 +419,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
+			echo "Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			if [[ "${machine}" = "Mac" ]]; then
@@ -429,9 +428,9 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
 			fi
-			perl -pi -e 's/\n//g' ./fasta.tmp ;
-			perl -pi -e 's/MARK\_EOL/\n/g' ./fasta.tmp ;
-			perl -pi -e 's/\>/\n\>/g' ./fasta.tmp ;
+			perl -p -i -e 's/\n//g' ./fasta.tmp ;
+			perl -p -i -e 's/MARK\_EOL/\n/g' ./fasta.tmp ;
+			perl -p -i -e 's/\>/\n\>/g' ./fasta.tmp ;
 		
 			## Need empty line check here again:
 			if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
@@ -471,24 +470,22 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
 			# 1 line per sequence, no '>' delimiter.
-			perl -pi -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp	;
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp ;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp > ./taxonLabels.tmp ;
-			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
+			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp > ./fastaSeqs.tmp ;
-			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp  | sed 's/$/\ /g' | perl -pe 's/\n//g')" ;
-		
-			MY_NAMESPACE_LENGTH="$(calc $(cat ./taxonLabels.tmp | awk '{ print length }' | sort -n | tail -1) + 1)" ;
-		
-			for i in $MY_TAX_LABELS; do
-				printf "%-"$MY_NAMESPACE_LENGTH"s \n" "$i" >> ./taxon_names_spaces.tmp ;
-			done
-		
+			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+					
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
-			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
 		
 			## Remove any tab characters (these are artifacts of paste operation above).
-			perl -pi -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
 			
 			## Move orig FASTA and new PHYLIP files to their respective folders, and delete temporary
 			## files.
@@ -503,6 +500,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		if [[ "$MY_FORMAT_METRIC" -eq "2" ]]; then
 		
+		echo "Sequential FASTA format detected. Converting to PHYLIP..."
 		##--The FASTA file has DNA sequences in sequential, unwrapped format already; no need to 
 		##--convert it, so use file as is.
 		
@@ -525,28 +523,26 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
-			# Make PHYLIP header.
+			# Make tmp PHYLIP header.
 			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
 		
 			# 1 line per sequence, no '>' delimiter.
-			perl -pi -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp	;
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp ;
 		
 			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp > ./taxonLabels.tmp ;
 			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp > ./fastaSeqs.tmp ;
 			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
-		
-			MY_NAMESPACE_LENGTH="$(calc $(cat ./taxonLabels.tmp | awk '{ print length }' | sort -n | tail -1) + 1)";
-		
-			for i in $MY_TAX_LABELS; do
-				printf "%-"$MY_NAMESPACE_LENGTH"s \n" "$i" >> ./taxon_names_spaces.tmp ;
-			done
-		
+			
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+					
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
-			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
 		
 			## Remove any tab characters (these are artifacts of paste operation above).
-			perl -pi -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
 			
 			## Move orig FASTA and new PHYLIP files to their respective folders, and delete temporary
 			## files.
@@ -578,6 +574,7 @@ echo ""
 ######################################### END ############################################
 
 }
+
 
 
 
