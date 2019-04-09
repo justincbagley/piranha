@@ -557,9 +557,9 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 	done
 )
 
-
-mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
-
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
+fi
 
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 #echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from input sequential FASTA file $MY_FASTA. "
