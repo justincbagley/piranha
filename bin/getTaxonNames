@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: getTaxonNames.sh                                                                 #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 13 17:17:41 CDT 2019.                       #
-# Last update: March 15, 2019                                                            #
+# Last update: April 9, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ getTaxonNames () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | getTaxonNames, v1.0.0 March 2019  (part of PIrANHA v0.2-alpha.2)"
+echo "INFO      | $(date) | getTaxonNames, v1.0.1 April 2019  (part of PIrANHA v0.2-alpha.2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -157,35 +157,32 @@ echo "INFO      | $(date) | Step #2: Make taxon names file based on alignment wi
 ## For phased data, this is 2n if the software previously used to phased the data always outputs
 ## two sequences per individual tip taxon (e.g. with _0 and _1 suffixed, phased designations).
 
-if [[ "$MY_N_MAX_TIP_TAXA" != "NULL" ]]; then
-	i="$MY_N_MAX_TIP_TAXA"
-fi
-
+###### SEARCH FOR PHYLIP ALIGNMENT WITH CORRECT NUMBER OF TAXA, EXTRACT TAXON NAMES TO FILE.
 (
 	for j in ./*.phy; do
 
-		MY_NTAX="$(head -n1 $j | perl -pe  's/\ +.*//g')"
+		MY_NTAX="$(head -n1 $j | perl -pe  's/\ +.*//g')";
 		
-		if [[ "$MY_NTAX" = "$i" ]]; then
+		if [[ "$MY_NTAX" = "$MY_N_MAX_TIP_TAXA" ]]; then
 
 			## If correct number of taxa (maxTips), then make the taxon names file and 
 			## use a break to stop the loop before exiting.
 			echo "INFO      | $(date) |          Making taxon names file ... "
 
-			cp "$j" "$i"_taxon_names.txt;
-			perl -p -i -e 's/\ +.*//g' "$i"_taxon_names.txt;
+			cp "$j" "$MY_N_MAX_TIP_TAXA"_taxon_names.txt;
+			perl -p -i -e 's/\ +.*//g' "$MY_N_MAX_TIP_TAXA"_taxon_names.txt ;
 
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '1d' "$i"_taxon_names.txt;
+				sed -i '' '1d' "$MY_N_MAX_TIP_TAXA"_taxon_names.txt ;
 			fi
 
 			if [[ "${machine}" = "Linux" ]]; then
-				sed -i '1d' "$i"_taxon_names.txt;
+				sed -i '1d' "$MY_N_MAX_TIP_TAXA"_taxon_names.txt ;
 			fi
 
 			break
 
-		elif [[ "$MY_NTAX" != "$i" ]]; then
+		elif [[ "$MY_NTAX" != "$MY_N_MAX_TIP_TAXA" ]]; then
 
 			## If incorrect number of taxa (not matching maxTips), then continue searching
 			## through the PHYLIP files in current working dir until you find a file 
@@ -198,12 +195,19 @@ fi
 )
 
 
+echo "INFO      | $(date) | Step #3: Make taxon names and spaces file from taxon names. "
+
 ###### MAKE TAXON NAMES SPACES FILE.
-sed 's/$/\ x/g' "$i"_taxon_names.txt | column -t | sed 's/x$//g' > "$i"_taxon_names_spaces.txt
+sed 's/$/\ x/g' "$MY_N_MAX_TIP_TAXA"_taxon_names.txt | column -t | sed 's/x$//g' > "$MY_N_MAX_TIP_TAXA"_taxon_names_spaces.txt
+
+#if [[ -s "$MY_N_MAX_TIP_TAXA"_taxon_names_spaces.txt ]]; then
+#	rm "$MY_N_MAX_TIP_TAXA"_taxon_names.txt ;
+#fi
 
 
 echo "----------------------------------------------------------------------------------------------------------"
-echo "output file(s): ./${i}_taxon_names.txt"
+echo "output file(s): ./${MY_N_MAX_TIP_TAXA}_taxon_names.txt"
+echo "                ./${MY_N_MAX_TIP_TAXA}_taxon_names_spaces.txt"
 echo ""
 
 ##########################################################################################
@@ -234,6 +238,15 @@ USAGE="Usage: $(basename $0) [OPTION]...
  sequenced. But for phased data, <numTips> will be 2n if the software previously used to phase 
  the data output two sequences per individual tip taxon (e.g. with _0 and _1 suffixed, phased 
  designations). 
+	If an alignment with <numTips> is encountered and processed, then two files will be output 
+ by this script: (1) a file containing the taxon name labels, and (2) a 'taxon names and spaces' 
+ file containing the taxon labels plus n spaces taking each line out to the same number of 
+ characters (equivalent to left side of a proper multiple sequence alignment, where taxon 
+ names are padded with spaces so that sequences start on the same column of the file, thus 
+ are aligned). The taxon names and spaces file is an important input for other functions in
+ the PIrANHA (Bagley 2019) distribution, including the 'concatenateSeqs' function (see 
+ concatenateSeqs help text for further information: piranha -f concatenateSeqs --args='-h'). 
+ Thus, getTaxonNames is a useful companionto other PIrANHA functions.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
