@@ -278,7 +278,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f RAxMLRunChecker --args='-h'      Print this help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

@@ -12,7 +12,7 @@ All code within the PIrANHA repository, including MAGNET v1.0.0 pipeline code, i
 
 If you use scripts from this repository as part of your published research, then I require you to cite the PIrANHA repository and/or MAGNET package as follows (also see DOI information below):
 
-  Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at: http://github.com/justincbagley/piranha/.
+  Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at: http://github.com/justincbagley/piranha/.
   
   Bagley, J.C. 2019. MAGNET v1.0.0. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
@@ -186,7 +186,7 @@ Usage: MAGNET [OPTION]...
      											    	  HKY85 substitution model for all loci    
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}

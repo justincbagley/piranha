@@ -20,7 +20,7 @@
 ######################################## START ###########################################
 
 cat('INFO      | $(date) |----------------------------------------------------------------\n')
-cat('INFO      | $(date) | 2logeB10.r, v1.2 March 2019  (part of PIrANHA v0.2-alpha.1c)   \n')
+cat('INFO      | $(date) | 2logeB10.r, v1.2 March 2019  (part of PIrANHA v0.2-alpha.2)   \n')
 cat('INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. \n')
 cat('INFO      | $(date) |----------------------------------------------------------------\n')
 

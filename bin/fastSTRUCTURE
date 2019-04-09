@@ -136,7 +136,7 @@ fastSTRUCTURE () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | fastSTRUCTURE, v1.1.2 March 2019  (part of PIrANHA v0.2-alpha.1c)"
+echo "INFO      | $(date) | fastSTRUCTURE, v1.1.2 March 2019  (part of PIrANHA v0.2-alpha.2)"
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -222,7 +222,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  including Python, and automatically generates random number seeds.
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.1c. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

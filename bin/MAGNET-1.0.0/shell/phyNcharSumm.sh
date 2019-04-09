@@ -136,7 +136,7 @@ function phyNcharSumm () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | phyNcharSumm, v1.0.0 March 2019  (part of PIrANHA v1.0.0)      "
+echo "INFO      | $(date) | phyNcharSumm, v1.0.0 March 2019  (part of PIrANHA v0.2-alpha.2)      "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
