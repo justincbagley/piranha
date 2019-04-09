@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.1, March 2019  (main script for PIrANHA v0.2-alpha.1c)  "
+piranha v1.0.1, March 2019  (main script for PIrANHA v0.2-alpha.2)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
