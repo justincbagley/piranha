@@ -151,15 +151,15 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-echo "INFO      | $(date) | Step #2: Make taxon names file based on alignment in current dir with the maximum number of tip taxa ($MY_N_MAX_TIP_TAXA). "
+MY_N_MAX_TIP_TAXA_FIX_SPACES="$(echo $MY_N_MAX_TIP_TAXA | sed 's/\ //g')"
+
+echo "INFO      | $(date) | Step #2: Make taxon names file based on alignment in current dir with the maximum number of tip taxa ($MY_N_MAX_TIP_TAXA_FIX_SPACES). "
 ###### MAKE TAXON NAMES FILE.
 ## Read in maximum number of tip taxa, <numTips>. For unphased data this is n (no. individuals).
 ## For phased data, this is 2n if the software previously used to phased the data always outputs
 ## two sequences per individual tip taxon (e.g. with _0 and _1 suffixed, phased designations).
 
 ###### SEARCH FOR PHYLIP ALIGNMENT WITH CORRECT NUMBER OF TAXA, EXTRACT TAXON NAMES TO FILE.
-
-MY_N_MAX_TIP_TAXA_FIX_SPACES="$(echo $MY_N_MAX_TIP_TAXA | sed 's/\ //g')"
 (
 	for j in ./*.phy; do
 
