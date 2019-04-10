@@ -3,7 +3,8 @@
 ## PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
-- **April 9 2019:** Added updated scripts to fix bugs in `FASTA2PHYLIP` and `getTaxonNames` functions.
+- **April 10, 2019:** Added new `renameTaxa` function that renames taxon (sample) names in genetic data files of type FASTA, NEXUS, PHYLIP, and VCF.
+- **April 9, 2019:** Added updated scripts to fix bugs in `FASTA2PHYLIP` and `getTaxonNames` functions.
 
 ## PIrANHA v0.2-alpha.2 (official minor pre-release version) - April 9, 2019
 
@@ -33,11 +34,11 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 
 
 ## PIrANHA v0.1.7 (official minor version release) - February 19, 2019
-- **February 19 2019:** Improved ```phylipSubsampler.sh``` to check and account for differences in machine type. Now correctly accommodations UNIX (Mac) and LINUX systems.
-- **February 19 2019:** Updated MAGNET script by adding a getBipartTrees function to the MAGNET pipeline, which organizes RAxML bipartitions trees for each locus (= best ML trees with bootstrap proportions along nodes the corresponding bootstrap searches search; resulting from ```-f a -x```options, which are included in all MAGNET calls to RAxML). Edited header and script banner to be prepped for future official release of MAGNET with versioning 0.1.9.
+- **February 19, 2019:** Improved ```phylipSubsampler.sh``` to check and account for differences in machine type. Now correctly accommodations UNIX (Mac) and LINUX systems.
+- **February 19, 2019:** Updated MAGNET script by adding a getBipartTrees function to the MAGNET pipeline, which organizes RAxML bipartitions trees for each locus (= best ML trees with bootstrap proportions along nodes the corresponding bootstrap searches search; resulting from ```-f a -x```options, which are included in all MAGNET calls to RAxML). Edited header and script banner to be prepped for future official release of MAGNET with versioning 0.1.9.
 - **December 2018:** Added new MAGNET script updated to include --resume option, and to set raxml executable name one of two ways after detecting machine type (```raxml``` on Mac, ```raxmlHPC-SS3``` on Linux/supercomputer).
-- **November 25 2018:** Added to MAGNET/shell folder a new 'RAxMLRunChecker.sh' script v1.0, which counts the number of completed RAxML runs during the course of, or after, a MAGNET pipeline run, and also collates information on the dataset (e.g. number of patterns) and run (e.g. run time, optimum likelihood) for each locus/partition.
-- **November 20 2018 bug fix:** Updated MAGNET with edited 'MAGNET.sh' (now v0.1.7+) and 'NEXUS2gphocs.sh' (now v1.3+) scripts containing an important bug fix and some new code checking for whether the NEXUS to fasta file conversion succeeded.
+- **November 25, 2018:** Added to MAGNET/shell folder a new 'RAxMLRunChecker.sh' script v1.0, which counts the number of completed RAxML runs during the course of, or after, a MAGNET pipeline run, and also collates information on the dataset (e.g. number of patterns) and run (e.g. run time, optimum likelihood) for each locus/partition.
+- **November 20, 2018 bug fix:** Updated MAGNET with edited 'MAGNET.sh' (now v0.1.7+) and 'NEXUS2gphocs.sh' (now v1.3+) scripts containing an important bug fix and some new code checking for whether the NEXUS to fasta file conversion succeeded.
 - **November 2018:** Rewrote 'pyRAD2PartitionFinder.sh' script, adding several options including options for choosing the PartitionFinder path and version, model set, model selection parameter (BIC, AIC, or AICc default), and whether or not to run PartitionFinder (or just create the input files). This new pyRAD2PartitionFinder script supersedes the old 'Super-pyRAD2PartitionFinder.sh' script that was previously included for use on HPC supercomputer clusters, which has now been removed from the repo. The new script has been tested on mac/UNIX and Linux (CentOS 6).
 - **June 2018:** Created 'snapp_runner.cfg' example configuration file for SNAPPRunner.
 - **August 2018:** Created 'runSpeciesIdentifier.sh' script for running SpeciesIdentifier DNA barcoding software on supercomputer.
