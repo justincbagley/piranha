@@ -5,17 +5,17 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: MAGNET.sh ~ MAny GeNE Trees, v1.0.0                                              #
-  VERSION="v1.0.0"                                                                       #
+# File: MAGNET.sh ~ MAny GeNE Trees, v1.1.0                                              #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: March 18, 2019                                                            #
+# Last update: April 10, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL PIPELINE FOR AUTOMATING ESTIMATION OF A MAXIMUM-LIKELIHOOD (ML) GENE TREE IN     #
-# RAxML FOR EACH OF MANY LOCI IN A RADseq, UCE, OR MULTILOCUS SEQUENCE DATASET           #
+# RAxML FOR EACH OF MANY LOCI IN A RAD-seq, UCE, OR OTHER MULTILOCUS SEQUENCE DATASET    #
 #                                                                                        #
 ##########################################################################################
 
@@ -136,7 +136,7 @@ MAGNET () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MAGNET, v1.0.0 March 2019  (part of PIrANHA v0.2-alpha.2)     "
+echo "INFO      | $(date) | MAGNET, v1.1.0 April 2019  (part of PIrANHA v0.2-alpha.2)     "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -148,7 +148,20 @@ echo "INFO      | $(date) |-----------------------------------------------------
 if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_NEXUS" != "NULL" ]]; then
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Starting calcAlignmentPIS pipeline... "
+echo "INFO      | $(date) | Starting MAGNET pipeline... "
+echo "INFO      | $(date) |          Running with the following options: "
+echo "INFO      | $(date) |          - NEXUS file, <inputNEXUS> = ${MY_NEXUS} "
+echo "INFO      | $(date) |          - Starting <fileType> = ${STARTING_FILE_TYPE} "
+echo "INFO      | $(date) |          - RAxML <executable> = ${MY_RAXML_EXECUTABLE} "
+echo "INFO      | $(date) |          - Bootstrap reps, <numBootstraps> = ${MY_NUM_BOOTREPS} "
+echo "INFO      | $(date) |          - RAxML model, <raxmlModel> = ${MY_RAXML_MODEL} "
+echo "INFO      | $(date) |          - <simpleModel> option = ${MY_SIMPLE_MODEL} "
+echo "INFO      | $(date) |          - <gapThreshold> option = ${MY_GAP_THRESHOLD} "
+echo "INFO      | $(date) |          - <indivMissingData> option = ${MY_INDIV_MISSING_DATA} "
+echo "INFO      | $(date) |          - Outgroup taxon, <outgroup> = ${MY_OUTGROUP} "
+echo "INFO      | $(date) |          - RAxML output name = ${MY_OUTPUT_NAME} "
+echo "INFO      | $(date) |          - Resume switch (--resume) = ${MY_RESUME_SWITCH} "
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -165,7 +178,6 @@ fi
 if [[ "${machine}" = "Linux" ]]; then
 	MY_RAXML_EXECUTABLE=raxmlHPC-SSE3
 fi
-
 
 
 echo "INFO      | $(date) | Step #2: Input single NEXUS or G-PhoCS file, or multiple PHYLIP files. "
@@ -325,7 +337,7 @@ fi
 
 	MY_NLOCI="$(head -n1 $MY_GPHOCS_DATA_FILE)";
 
-echo "INFO      | $(date) | STEP #3: MAKE ALIGNMENTS FOR EACH LOCUS. "
+echo "INFO      | $(date) | Step #3: Make alignments for each locus. "
 echo "INFO      | $(date) |          In a single loop, using info from '.gphocs' file to split each locus block \
 into a separate PHYLIP-formatted alignment file using gphocs2multiPhylip code... "
 	(
@@ -358,7 +370,7 @@ into a separate PHYLIP-formatted alignment file using gphocs2multiPhylip code...
 
 	################################# MultiRAxMLPrepper.sh ##################################
 
-echo "INFO      | $(date) | STEP #4: MAKE AND CHECK RUN FOLDERS. "
+echo "INFO      | $(date) | Step #4: Make and check run folders. "
 
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
@@ -402,7 +414,7 @@ fi
 
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
-echo "INFO      | $(date) | STEP #5: ESTIMATE GENE TREES. "
+echo "INFO      | $(date) | Step #5: Estimate best maximum-likelihood (ML) gene trees. "
 echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
 	##--Each folder is set with the locus name corresponding to the locus' position in the
 	##--original .gphocs alignment (which, if output by pyRAD, is simply in the order in which
@@ -439,10 +451,10 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 
 
 	##--Here: adding loop code to move all .phy files remaining in the current working 
-	##--directory, after STEP #3 of the pipeline, to a new folder called "phylip_files". This
-	##--is done here because if the phylip_files folder is present at the end of STEP #3,
+	##--directory, after Step #3 of the pipeline, to a new folder called "phylip_files". This
+	##--is done here because if the phylip_files folder is present at the end of Step #3,
 	##--then RAxML will also try to estimate a gene tree for .phy file(s) in this folder during
-	##--STEP #5 of the pipeline above.
+	##--Step #5 of the pipeline above.
 	mkdir ./phylip_files/ ;
 	(
 		for i in $MY_PHYLIP_ALIGNMENTS; do
@@ -453,7 +465,7 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 
-echo "INFO      | $(date) | STEP #3: RESUMING GENE TREE ESTIMATION. RUN ON REMAINING/INCOMPLETE RUN FOLDERS, SKIP THOSE WITH COMPLETED RAXML RUNS. "
+echo "INFO      | $(date) | Step #3: Resuming gene tree estimation. Run on remaining/incomplete run folders, skip those with completed RAxML runs. "
 
 	(
 		for i in ./*/; do
@@ -498,9 +510,9 @@ fi
 
 
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
-	echo "INFO      | $(date) | STEP #6: RAxML POST-PROCESSING. "
+	echo "INFO      | $(date) | Step #6: RAxML post-processing analyses. "
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
-	echo "INFO      | $(date) | STEP #4: RAxML POST-PROCESSING. "
+	echo "INFO      | $(date) | Step #4: RAxML post-processing analyses. "
 fi
 
 	################################## getGeneTrees.sh #######################################
@@ -621,6 +633,18 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting MAGNET pipeline... "
+echo "INFO      | $(date) |          Running with the following options: "
+echo "INFO      | $(date) |          - NEXUS file, <inputNEXUS> = ${MY_NEXUS} "
+echo "INFO      | $(date) |          - Starting <fileType> = ${STARTING_FILE_TYPE} "
+echo "INFO      | $(date) |          - RAxML <executable> = ${MY_RAXML_EXECUTABLE} "
+echo "INFO      | $(date) |          - Bootstrap reps, <numBootstraps> = ${MY_NUM_BOOTREPS} "
+echo "INFO      | $(date) |          - RAxML model, <raxmlModel> = ${MY_RAXML_MODEL} "
+echo "INFO      | $(date) |          - <simpleModel> option = ${MY_SIMPLE_MODEL} "
+echo "INFO      | $(date) |          - <gapThreshold> option = ${MY_GAP_THRESHOLD} "
+echo "INFO      | $(date) |          - <indivMissingData> option = ${MY_INDIV_MISSING_DATA} "
+echo "INFO      | $(date) |          - Outgroup taxon, <outgroup> = ${MY_OUTGROUP} "
+echo "INFO      | $(date) |          - RAxML output name = ${MY_OUTPUT_NAME} "
+echo "INFO      | $(date) |          - Resume switch (--resume) = ${MY_RESUME_SWITCH} "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -652,7 +676,7 @@ echo "INFO      | $(date) |          RAxML."
 
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
-echo "INFO      | $(date) | STEP #3: MAKE RUN FOLDERS. "
+echo "INFO      | $(date) | Step #3: Make run folders. "
 
 	MY_N_PHYLIP_FILES="$(ls $MY_PHYLIP_ALIGNMENTS | wc -l | perl -pe 's/\t//g')";
 
@@ -693,7 +717,7 @@ fi
 
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
-echo "INFO      | $(date) | STEP #4: ESTIMATE GENE TREES. "
+echo "INFO      | $(date) | Step #4: Estimate best maximum-likelihood (ML) gene trees. "
 echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
 	##--Each folder is set with the locus name corresponding to the locus' position in the
 	##--original .gphocs alignment (which, if output by pyRAD, is simply in the order in which
@@ -730,10 +754,10 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 
 
 	##--Here: adding loop code to move all .phy files remaining in the current working 
-	##--directory, after STEP #3 of the pipeline, to a new folder called "phylip_files". This
-	##--is done here because if the phylip_files folder is present at the end of STEP #3,
+	##--directory, after Step #3 of the pipeline, to a new folder called "phylip_files". This
+	##--is done here because if the phylip_files folder is present at the end of Step #3,
 	##--then RAxML will also try to estimate a gene tree for .phy file(s) in this folder during
-	##--STEP #5 of the pipeline above.
+	##--Step #5 of the pipeline above.
 	mkdir ./phylip_files
 	(
 		for i in $MY_PHYLIP_ALIGNMENTS; do
@@ -744,7 +768,7 @@ echo "INFO      | $(date) |          Looping through and analyzing contents of e
 
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 
-echo "INFO      | $(date) | STEP #3: RESUMING GENE TREE ESTIMATION. RUN ON REMAINING/INCOMPLETE RUN FOLDERS, SKIP THOSE WITH COMPLETED RAXML RUNS. "
+echo "INFO      | $(date) | Step #3: Resuming gene tree estimation. Run on remaining/incomplete run folders, skip those with completed RAxML runs. "
 
 	(
 		for i in ./*/; do
@@ -788,9 +812,9 @@ fi
 
 
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
-	echo "INFO      | $(date) | STEP #5: RAxML POST-PROCESSING. "
+	echo "INFO      | $(date) | Step #5: RAxML post-processing analyses. "
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
-	echo "INFO      | $(date) | STEP #4: RAxML POST-PROCESSING. "
+	echo "INFO      | $(date) | Step #4: RAxML post-processing analyses. "
 fi
 
 	################################## getGeneTrees.sh #######################################
@@ -903,6 +927,10 @@ fi
 fi
 #######
 
+	## Remove arguments file generated when parsing the options:
+	rm ./args.txt ;
+	
+
 #echo "INFO      | $(date) | Done estimating gene trees for many loci in RAxML using the MAGNET pipeline."
 #echo "INFO      | $(date) | Bye.
 #"
@@ -917,19 +945,6 @@ echo ""
 }
 
 
-
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_NEXUS=NULL
-STARTING_FILE_TYPE=1
-MY_NUM_BOOTREPS=100
-MY_RAXML_MODEL=GTRGAMMA
-MY_SIMPLE_MODEL=NULL
-MY_GAP_THRESHOLD=0.001
-MY_INDIV_MISSING_DATA=1
-MY_OUTGROUP=NULL
-MY_OUTPUT_NAME=raxml_out
-MY_RESUME_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
@@ -1129,34 +1144,176 @@ if [[ "$1" == "-v" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-## Idea for long option hyphen in getopts came from suggestions at the following thread
-## URL: https://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
-while getopts 'i:f:e:b:r:s:g:m:o:-:' opt ; do
-  case $opt in
-## MAGNET, input datafile, and RAxML options:
-    i) MY_NEXUS=$OPTARG ;;
-    f) STARTING_FILE_TYPE=$OPTARG ;;
-    e) MY_RAXML_EXECUTABLE=$OPTARG ;;
-    b) MY_NUM_BOOTREPS=$OPTARG ;;
-    r) MY_RAXML_MODEL=$OPTARG ;;
-    s) MY_SIMPLE_MODEL=$OPTARG ;;
-    g) MY_GAP_THRESHOLD=$OPTARG ;;
-    m) MY_INDIV_MISSING_DATA=$OPTARG ;;
-    o) MY_OUTGROUP=$OPTARG ;;
-	-) LONG_OPTARG="${OPTARG#*=}"
-         case $OPTARG in
-         resume) MY_RESUME_SWITCH=1 ;;
-         esac ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+# ### SET OPTIONS READ IN FROM ARGS ABOVE
+# (
+# 	while read line; do
+# 		echo "##### $line "
+# 		MY_FLAG_CHECK="$(grep -n '\-' ./args.txt | wc -l | perl -pe 's/\ //g')";
+# 		echo "Flag check: $MY_FLAG_CHECK "
+# 		if [[ "$MY_FLAG_CHECK" -gt "0" ]]; then
+# #
+# 			if [[ "$line" = "--resume" ]]; then 
+# 				echo "1"
+# 				MY_RESUME_SWITCH=1 ;
+# 				echo "$MY_RESUME_SWITCH" ;
+# 			fi
+# #
+# 			MY_FLAG="$(echo $line | perl -pe 's/^\-([A-Za-z]).*$/$1/g')";
+# 			echo "My flag: $MY_FLAG "
+# 			MY_ARG="$(echo $line | perl -pe 's/^\-[A-Za-z]//g' | sed 's/\ //g')"
+# 			echo "My argument: $MY_ARG "
+# #
+# 			if [[ "$MY_FLAG" = "i" ]]; then
+# 				echo "2"
+# 				MY_NEXUS="$MY_ARG" ;
+# 				echo "$MY_NEXUS" ;
+# 			fi
+# 			if [[ "$MY_FLAG" = "f" ]]; then
+# 				echo "3"
+# #				STARTING_FILE_TYPE="$MY_ARG" ;
+# 				STARTING_FILE_TYPE="$(echo $MY_ARG)" ;
+# 				echo "$STARTING_FILE_TYPE" ;
+# 			fi
+# 			if [[ "$MY_FLAG" = "e" ]]; then
+# 				echo "4"
+# 				MY_RAXML_EXECUTABLE="$MY_ARG" ;
+# 				echo "$MY_RAXML_EXECUTABLE" ;
+# 			fi
+# 			
+# 			if [[ "$MY_FLAG" = "b" ]]; then
+# 				echo "5"
+# 				MY_SIMPLE_MODEL="$MY_ARG" ;
+# 				echo "$MY_SIMPLE_MODEL" ;
+# 			fi
+# 			if [[ "$MY_FLAG" = "r" ]]; then
+# 				echo "6"
+# 				MY_GAP_THRESHOLD="$MY_ARG" ;
+# 				echo "$MY_GAP_THRESHOLD" ;
+# 			fi
+# 			if [[ "$MY_FLAG" = "s" ]]; then
+# 				echo "7"
+# 				MY_SIMPLE_MODEL="$MY_ARG" ;
+# 				echo "$MY_SIMPLE_MODEL" ;
+# 			fi
+# 			if [[ "$MY_FLAG" = "g" ]]; then
+# 				echo "8"
+# 				MY_GAP_THRESHOLD="$MY_ARG" ;
+# 				echo "$MY_GAP_THRESHOLD" ;
+# 			fi
+# 			if [[ "$MY_FLAG" = "m" ]]; then
+# 				echo "9"
+# 				MY_INDIV_MISSING_DATA="$MY_ARG" ;
+# 				echo "$MY_INDIV_MISSING_DATA" ;
+# 			fi
+# 			if [[ "$MY_FLAG" = "o" ]]; then
+# 				echo "10"
+# 				MY_OUTGROUP="$MY_ARG" ;
+# 				echo "$MY_OUTGROUP" ;
+# 			fi
+# #
+# 		fi
+# 	done < ./args.txt
+# )
+
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NEXUS=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_NEXUS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		STARTING_FILE_TYPE=1 ;
+	else 
+		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+		STARTING_FILE_TYPE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-e' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RAXML_EXECUTABLE=raxml ;
+	else 
+		MY_ARG="$(grep -h '\-e' ./args.txt | perl -pe 's/\-e//g' | perl -pe 's/\ //g')";
+		MY_RAXML_EXECUTABLE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NUM_BOOTREPS=100 ;
+	else 
+		MY_ARG="$(grep -h '\-b' ./args.txt | perl -pe 's/\-b//g' | perl -pe 's/\ //g')";
+		MY_NUM_BOOTREPS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '^\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RAXML_MODEL=GTRGAMMA ;
+	else 
+		MY_ARG="$(grep -h '^\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
+		MY_RAXML_MODEL="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_SIMPLE_MODEL=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-s' ./args.txt | perl -pe 's/\-s//g' | perl -pe 's/\ //g')";
+		MY_SIMPLE_MODEL="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-g' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_GAP_THRESHOLD=0.001 ;
+	else 
+		MY_ARG="$(grep -h '\-g' ./args.txt | perl -pe 's/\-g//g' | perl -pe 's/\ //g')";
+		MY_GAP_THRESHOLD="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INDIV_MISSING_DATA=1 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MY_INDIV_MISSING_DATA="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTGROUP=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTGROUP="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_NAME=raxml_out ;
+	else 
+		MY_ARG="$(grep -h '\-n' ./args.txt | perl -pe 's/\-n//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_NAME="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-\-resume' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RESUME_SWITCH=0 ;
+	else 
+		MY_RESUME_SWITCH=1 ;
+	fi
 
 
 # ############# ############# #############
