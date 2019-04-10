@@ -246,7 +246,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  are aligned). The taxon names and spaces file is an important input for other functions in
  the PIrANHA (Bagley 2019) distribution, including the 'concatenateSeqs' function (see 
  concatenateSeqs help text for further information: piranha -f concatenateSeqs --args='-h'). 
- Thus, getTaxonNames is a useful companionto other PIrANHA functions.
+ Thus, getTaxonNames is a useful companion to other PIrANHA functions.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
