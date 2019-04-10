@@ -1,0 +1,439 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: renameTaxa.sh                                                                    #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.                       #
+# Last update: April 10, 2019                                                            #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# RENAMES TAXA (SAMPLES) IN FASTA, PHYLIP, NEXUS, OR VCF FILES IN CURRENT DIR BASED ON   #
+# USER-INPUT FILES LISTING ORIGINAL VERSUS NEW TAXON NAMES                               #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+renameTaxa () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | renameTaxa, v1.0.0 April 2019  (part of PIrANHA v0.2-alpha.2) "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting renameTaxa analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+echo "INFO      | $(date) |          Logging output to default file named ./renameTaxa_output.txt ... "
+	exec >> ./renameTaxa_output.txt ;
+	exec 2>&1 ;
+
+
+############ CONVERT NAMES FILES TO SED FORMAT.
+echo "INFO      | $(date) | Step #2: Convert name lists $MY_ORIG_NAMES_FILE and $MY_NEW_NAMES_FILE to shell (stream editor) format. "
+				cp "$MY_ORIG_NAMES_FILE" ./orig_taxon_names.tmp ;
+				cp "$MY_NEW_NAMES_FILE" ./new_taxon_names.tmp   ;
+#				
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' 's/\_/\\_/g' ./orig_taxon_names.tmp  ;
+					sed -i '' 's/\_/\\_/g' ./new_taxon_names.tmp  ;
+					sed -i '' 's/\./\\./g' ./orig_taxon_names.tmp  ;
+					sed -i '' 's/\./\\./g' ./new_taxon_names.tmp  ;
+					
+					MY_ORIG_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./orig_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
+					if [[ "$MY_ORIG_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+						sed -i '' 's/\ /\\_/g' ./orig_taxon_names.tmp  ; 
+					fi
+					
+					MY_NEW_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./new_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
+					if [[ "$MY_NEW_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+						sed -i '' 's/\ /\\_/g' ./new_taxon_names.tmp  ; 
+					fi
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/\_/\\_/g' ./orig_taxon_names.tmp  ;
+					sed -i 's/\_/\\_/g' ./new_taxon_names.tmp  ;
+					sed -i 's/\./\\./g' ./orig_taxon_names.tmp  ;
+					sed -i 's/\./\\./g' ./new_taxon_names.tmp  ;
+					
+					MY_ORIG_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./orig_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
+					if [[ "$MY_ORIG_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+						sed -i 's/\ /\\_/g' ./orig_taxon_names.tmp  ; 
+					fi
+					
+					MY_NEW_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./new_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
+					if [[ "$MY_NEW_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+						sed -i 's/\ /\\_/g' ./new_taxon_names.tmp  ; 
+					fi
+				fi			
+
+
+############ RENAME TAXA IN ALL FILES OF USER-SPECIFIED FILE TYPE IN CURRENT DIRECTORY, USING 
+############ MODIFIED LIST FILES CONVERTED TO SED FORMAT ABOVE.
+
+if [[ "$MY_FILE_TYPE" = "fasta" ]]; then
+
+echo "INFO      | $(date) | Step #3: Rename taxa (sample names) in FASTA multiple sequence alignment files in current working dir using modified "
+echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_FILE}. "
+#file_count=1
+(
+	for MY_FASTA in ./*.fas; do
+		echo "INFO      | $(date) |          ###------   $MY_FASTA   ------###"
+		name_count=1
+		while read orig_name; do
+			new_name="$(sed -n ${name_count}p ./new_taxon_names.tmp | perl -pe 's/\ .*//g' )"
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' 's/'"$orig_name"'/'"$new_name"'/g' "$MY_FASTA"  ;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/'"$orig_name"'/'"$new_name"'/g' "$MY_FASTA"  ;
+				fi			
+			echo "INFO      | $(date) |          Name $((name_count++))..."
+		done < ./orig_taxon_names.tmp
+	done
+)
+
+fi
+
+
+if [[ "$MY_FILE_TYPE" = "phylip" ]]; then
+
+echo "INFO      | $(date) | Step #3: Rename taxa (sample names) in PHYLIP multiple sequence alignment files in current working dir using modified "
+echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_FILE}. "
+#file_count=1
+(
+	for MY_PHYLIP in ./*.fas; do
+		echo "INFO      | $(date) |          ###------   $MY_PHYLIP   ------###"
+		name_count=1
+		while read orig_name; do
+			new_name="$(sed -n ${name_count}p ./new_taxon_names.tmp | perl -pe 's/\ .*//g' )"
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' 's/'"$orig_name"'/'"$new_name"'/g' "$MY_PHYLIP"  ;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/'"$orig_name"'/'"$new_name"'/g' "$MY_PHYLIP"  ;
+				fi			
+			echo "INFO      | $(date) |          Name $((name_count++))..."
+		done < ./orig_taxon_names.tmp
+	done
+)
+
+fi
+
+
+if [[ "$MY_FILE_TYPE" = "nexus" ]]; then
+
+echo "INFO      | $(date) | Step #3: Rename taxa (sample names) in NEXUS multiple sequence alignment files in current working dir using modified "
+echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_FILE}. "
+#file_count=1
+(
+	MY_NEXUS_FILES="$(find . -type f \( -name '*.nex' -o -name '*.NEX' -o -name '*.nexus' -o -name '*.NEXUS' \))";
+	for MY_NEXUS in $MY_NEXUS_FILES; do
+		echo "INFO      | $(date) |          ###------   $MY_NEXUS   ------###"
+		name_count=1
+		while read orig_name; do
+			new_name="$(sed -n ${name_count}p ./new_taxon_names.tmp | perl -pe 's/\ .*//g' )"
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' 's/'"$orig_name"'/'"$new_name"'/g' "$MY_NEXUS"  ;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/'"$orig_name"'/'"$new_name"'/g' "$MY_NEXUS"  ;
+				fi			
+			echo "INFO      | $(date) |          Name $((name_count++))..."
+		done < ./orig_taxon_names.tmp
+	done
+)
+
+fi
+
+
+if [[ "$MY_FILE_TYPE" = "vcf" ]]; then
+
+echo "INFO      | $(date) | Step #3: Rename taxa (sample names) in variant call format (VCF) files in current working dir using modified "
+echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_FILE}. "
+#file_count=1
+(
+	for MY_VCF in ./*.vcf; do
+		echo "INFO      | $(date) |          ###------   $MY_VCF   ------###"
+		name_count=1
+		while read orig_name; do
+			new_name="$(sed -n ${name_count}p ./new_taxon_names.tmp | perl -pe 's/\ .*//g' )"
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i '' 's/'"$orig_name"'/'"$new_name"'/g' "$MY_VCF"  ;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/'"$orig_name"'/'"$new_name"'/g' "$MY_VCF"  ;
+				fi			
+			echo "INFO      | $(date) |          Name $((name_count++))..."
+		done < ./orig_taxon_names.tmp
+	done
+)
+
+fi
+
+if [[ "$MY_FILE_TYPE" = "NULL" ]]; then
+	echo "WARNING!  | $(date) |          File type set to NULL. User must specify file type with -f flag. "
+	echo "WARNING!  | $(date) |          Quitting... "
+	safeExit ;
+fi
+
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+MY_ORIG_NAMES_FILE=NULL
+MY_NEW_NAMES_FILE=NULL
+MY_FILE_TYPE=NULL
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -o   origNames (def: NULL) file containing list of original taxon (sample) names (i.e.
+       search items)
+  -n   newNames (def: NULL) file containing list of new taxon (sample) names (i.e. replace
+       items) in same order as names in <origNames> file
+  -f   fileType (def: NULL; options: fasta, phylip, nexus, vcf) type of files to rename
+  -h   help text (also: -help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS FUNCTION of PIrANHA (Bagley 2019) renames all tip taxa (samples) in genetic data files
+ of type FASTA ('.fas'), PHYLIP ('.phy'), NEXUS ('.nex|.NEX|.nexus'), or VCF ('.vcf') in current 
+ working directory, based on user-supplied files containing the original taxon names (<origNames> 
+ file; -o flag) and new taxon names (<newNames> file; same order as original names; -n flag). 
+ The -f flag allows you to specify the file type to be renamed; for example, '-f fasta' will 
+ cause the program to attempt renaming taxa in all FASTA files in the current dir. The -o, 
+ -n, and -f flags provide mandatory input for the program, and thus are all required arguments,
+ passed within the PIrANHA --args flag (see usage below). By default, the program is designed 
+ to run quietly, with stdout and stderr saved to an output file named 'renameTaxa_output.txt'.
+ 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). There are no other dependencies.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f renameTaxa --args='-o <origNames> -n <newNames> -f <fileType>'    Generic usage
+    piranha -f renameTaxa --args='-o orig_names.txt -n new_names.txt -f fasta'   Rename taxa in FASTA files
+    piranha -f renameTaxa --args='-o orig_names.txt -n new_names.txt -f phylip'  Rename taxa in PHYLIP files
+    piranha -f renameTaxa --args='-o orig_names.txt -n new_names.txt -f nexus'   Rename taxa in NEXUS files
+    piranha -f renameTaxa --args='-o orig_names.txt -n new_names.txt -f vcf'     Rename taxa in VCF files
+    piranha -f renameTaxa --args='-h'      									     Print this help text
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ PARSE THE OPTIONS
+while getopts 'o:n:f:' opt ; do
+  case $opt in
+## renameTaxa options:
+    o) MY_ORIG_NAMES_FILE=$OPTARG ;;
+    n) MY_NEW_NAMES_FILE=$OPTARG ;;
+    f) MY_FILE_TYPE=$OPTARG ;;
+## Missing and illegal options:
+    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+       echo "$USAGE" >&2
+       exit 1 ;;
+  esac
+done
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+renameTaxa
+
+# Exit cleanly
+safeExit
