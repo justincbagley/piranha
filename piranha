@@ -241,13 +241,13 @@ vcfSubsampler          x
 	## so we need to add the subfolder name (which will vary as MAGNET is updated in the 
 	## future) to the execution path, $MY_EXECUTION_PATH.
 	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.0.0/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	fi
 
 	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.0.0/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	fi
