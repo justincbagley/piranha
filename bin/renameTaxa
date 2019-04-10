@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: renameTaxa.sh                                                                    #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.                       #
 # Last update: April 10, 2019                                                            #
@@ -57,7 +57,7 @@ fi
 # trapCleanup Function
 # -----------------------------------
 # Any actions that should be taken if the script is prematurely
-# exited.  Always call this function at the top of your script.
+# exited. Always make this function at the top of your script.
 # -----------------------------------
 trapCleanup () {
   echo ""
@@ -136,12 +136,21 @@ renameTaxa () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameTaxa, v1.0.0 April 2019  (part of PIrANHA v0.2-alpha.2) "
+echo "INFO      | $(date) | renameTaxa, v1.1.0 April 2019  (part of PIrANHA v0.2-alpha.2) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
+#echo "INFO      | $(date) |          Logging output to default file named ./renameTaxa_output.txt ... "
+#	exec >> ./renameTaxa_output.txt ;
+#	exec 2>&1 ;
+
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting renameTaxa analysis... "
+echo "INFO      | $(date) |          Running with the following options: "
+echo "INFO      | $(date) |          - Original names file, <origNames> = ${MY_ORIG_NAMES_FILE} "
+echo "INFO      | $(date) |          - New names file, <newNames> = ${MY_NEW_NAMES_FILE} "
+echo "INFO      | $(date) |          - <fileType> option = ${MY_FILE_TYPE} "
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -151,51 +160,58 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-echo "INFO      | $(date) |          Logging output to default file named ./renameTaxa_output.txt ... "
-	exec >> ./renameTaxa_output.txt ;
-	exec 2>&1 ;
-
-
 ############ CONVERT NAMES FILES TO SED FORMAT.
-echo "INFO      | $(date) | Step #2: Convert name lists $MY_ORIG_NAMES_FILE and $MY_NEW_NAMES_FILE to shell (stream editor) format. "
+echo "INFO      | $(date) | Step #2: Convert name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_FILE} to shell (stream editor) format. "
+				
+				if [[ -s ./orig_taxon_names.tmp ]]; then rm ./orig_taxon_names.tmp ; fi
+				if [[ -s ./new_taxon_names.tmp ]]; then rm ./new_taxon_names.tmp ; fi
+#
 				cp "$MY_ORIG_NAMES_FILE" ./orig_taxon_names.tmp ;
 				cp "$MY_NEW_NAMES_FILE" ./new_taxon_names.tmp   ;
 #				
 				if [[ "${machine}" = "Mac" ]]; then
+#					echo "1"
 					sed -i '' 's/\_/\\_/g' ./orig_taxon_names.tmp  ;
+#					echo "2"
 					sed -i '' 's/\_/\\_/g' ./new_taxon_names.tmp  ;
+#					echo "3"
 					sed -i '' 's/\./\\./g' ./orig_taxon_names.tmp  ;
+#					echo "4"
 					sed -i '' 's/\./\\./g' ./new_taxon_names.tmp  ;
 					
-					MY_ORIG_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./orig_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
-					if [[ "$MY_ORIG_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
-						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
-						sed -i '' 's/\ /\\_/g' ./orig_taxon_names.tmp  ; 
-					fi
-					
-					MY_NEW_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./new_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
-					if [[ "$MY_NEW_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
-						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
-						sed -i '' 's/\ /\\_/g' ./new_taxon_names.tmp  ; 
-					fi
+#					echo "5"
+#					MY_ORIG_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./orig_taxon_names.tmp | wc -l | perl -pe 's/\ .*//g' )";
+#					echo "6"
+#					echo "$MY_ORIG_NAMES_W_SPACES_CHECK"
+#					if [[ "$MY_ORIG_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+#						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+#						sed -i '' 's/\ /\\_/g' ./orig_taxon_names.tmp  ; 
+#					fi
+#					
+#					MY_NEW_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./new_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
+#					if [[ "$MY_NEW_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+#						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+#						sed -i '' 's/\ /\\_/g' ./new_taxon_names.tmp  ; 
+#					fi
 				fi
+#
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/\_/\\_/g' ./orig_taxon_names.tmp  ;
 					sed -i 's/\_/\\_/g' ./new_taxon_names.tmp  ;
 					sed -i 's/\./\\./g' ./orig_taxon_names.tmp  ;
 					sed -i 's/\./\\./g' ./new_taxon_names.tmp  ;
 					
-					MY_ORIG_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./orig_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
-					if [[ "$MY_ORIG_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
-						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
-						sed -i 's/\ /\\_/g' ./orig_taxon_names.tmp  ; 
-					fi
-					
-					MY_NEW_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./new_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
-					if [[ "$MY_NEW_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
-						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
-						sed -i 's/\ /\\_/g' ./new_taxon_names.tmp  ; 
-					fi
+#					MY_ORIG_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./orig_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
+#					if [[ "$MY_ORIG_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+#						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+#						sed -i 's/\ /\\_/g' ./orig_taxon_names.tmp  ; 
+#					fi
+#					
+#					MY_NEW_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./new_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
+#					if [[ "$MY_NEW_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
+#						echo "WARNING!  | $(date) |          Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
+#						sed -i 's/\ /\\_/g' ./new_taxon_names.tmp  ; 
+#					fi
 				fi			
 
 
@@ -233,7 +249,7 @@ echo "INFO      | $(date) | Step #3: Rename taxa (sample names) in PHYLIP multip
 echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_FILE}. "
 #file_count=1
 (
-	for MY_PHYLIP in ./*.fas; do
+	for MY_PHYLIP in ./*.phy; do
 		echo "INFO      | $(date) |          ###------   $MY_PHYLIP   ------###"
 		name_count=1
 		while read orig_name; do
@@ -308,6 +324,13 @@ if [[ "$MY_FILE_TYPE" = "NULL" ]]; then
 	safeExit ;
 fi
 
+echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+echo "INFO      | $(date) |          Deleting temporary files... "
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	rm ./*.tmp ;
+	rm ./args.txt ;	## Remove arguments file generated when parsing the options:
+
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
@@ -318,12 +341,6 @@ echo ""
 }
 
 
-
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_ORIG_NAMES_FILE=NULL
-MY_NEW_NAMES_FILE=NULL
-MY_FILE_TYPE=NULL
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
@@ -346,7 +363,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  cause the program to attempt renaming taxa in all FASTA files in the current dir. The -o, 
  -n, and -f flags provide mandatory input for the program, and thus are all required arguments,
  passed within the PIrANHA --args flag (see usage below). By default, the program is designed 
- to run quietly, with stdout and stderr saved to an output file named 'renameTaxa_output.txt'.
+ to run with stdout and stderr saved to an output file named 'renameTaxa_output.txt' in the
+ current directory.
  	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
@@ -384,22 +402,68 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'o:n:f:' opt ; do
-  case $opt in
-## renameTaxa options:
-    o) MY_ORIG_NAMES_FILE=$OPTARG ;;
-    n) MY_NEW_NAMES_FILE=$OPTARG ;;
-    f) MY_FILE_TYPE=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ORIG_NAMES_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_ORIG_NAMES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NEW_NAMES_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-n' ./args.txt | perl -pe 's/\-n//g' | perl -pe 's/\ //g')";
+		MY_NEW_NAMES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_FILE_TYPE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+		MY_FILE_TYPE="$MY_ARG" ;
+	fi
+
+
+# ############ PARSE THE OPTIONS
+# #while getopts 'o:n:f:' opt ; do
+# while getopts 'o:n:f:' opt ; do
+#   case $opt in
+# ## renameTaxa options:
+#     o) MY_ORIG_NAMES_FILE=$OPTARG ;;
+#     n) MY_NEW_NAMES_FILE=$OPTARG ;;
+#     f) MY_FILE_TYPE=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
 
 
 # ############# ############# #############

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: concatenateSeqs.sh                                                               #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.2.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.                       #
-# Last update: March 15, 2019                                                            #
+# Last update: April 10, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -57,7 +57,7 @@ fi
 # trapCleanup Function
 # -----------------------------------
 # Any actions that should be taken if the script is prematurely
-# exited.  Always call this function at the top of your script.
+# exited. Always make this function at the top of your script.
 # -----------------------------------
 trapCleanup () {
   echo ""
@@ -136,13 +136,18 @@ concatenateSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | concatenateSeqs, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.2) "
+echo "INFO      | $(date) | concatenateSeqs, v1.2.0 April 2019  (in PIrANHA v0.2-alpha.2)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting concatenateSeqs analysis... "
+	echo "INFO      | $(date) |          Running with the following options: "
+	echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+	echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
+	echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+
 	echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
@@ -188,6 +193,7 @@ count=1
  		j="$i".tmp ;
  		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
  		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###"
+		echo "$USER_SPEC_NAMSPACES_FILE"
 
 		## On first loop iteration, make concatenated seqs PHYLIP file from complete locus1 
 		## PHYLIP file, then make partitions/charsets files. Specifically, when you make the
@@ -199,6 +205,8 @@ count=1
 
 		if [[ "$count" = "1" ]]; then
 
+			#echo "$count"
+
 			# Make concatenated seqs file from complete locus1 PHYLIP file, and move original
 			# locus1 PHYLIP file to orig_phylip/ subfolder.
 			mkdir orig_phylip/ ;
@@ -207,10 +215,12 @@ count=1
 
 		elif [[ "$count" -gt "1" ]]; then
 
+			#echo "$count"
+
 			# Concatenate $i > 1 PHYLIP sequences to concatenated seqs PHYLIP file
 			while read l; do
 				MY_TAXON_NAME="$(echo $l | sed 's/\ //g')" ;
-				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')"	 ;			
+				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" $i | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;			
 					# extract/copy corresponding sequence from $i and paste it to end of
 					# line with same name ($MY_TAXON_NAME) in tmp file $j:
 					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
@@ -257,11 +267,13 @@ fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	rm ./*.tmp ;
+	rm ./args.txt ;	## Remove arguments file generated when parsing the options:
 
 echo "----------------------------------------------------------------------------------------------------------"
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "output file(s): ./concatenated_seqs.phy "
-fi
+echo "output file(s): ./concatenated_seqs.phy "
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+#	echo "output file(s): ./concatenated_seqs.phy "
+#fi
 echo ""
 
 ##########################################################################################
@@ -270,11 +282,6 @@ echo ""
 }
 
 
-
-############ SCRIPT OPTIONS
-USER_SPEC_NAMSPACES_FILE=NULL
-MY_OUTPUT_FILE_SWITCH=NULL
-MY_VERBOSE_OUT_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
@@ -330,16 +337,87 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	exit
 fi
 
-# Saves all script output to file named 'output.txt'
-exec >> ./output.txt 
-exec 2>&1
-
-############ Check for mandatory positional parameters
-if [ $# -lt 2 ]; then
-	echo "WARNING!  | $(date) |          Missing one or more mandatory positional parameters. Quitting... "
-	echo "$USAGE"
-  exit 1
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
 fi
-USER_SPEC_NAMSPACES_FILE="$1"
-USER_SPEC_PATH="$2"
 
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		USER_SPEC_NAMSPACES_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		USER_SPEC_NAMSPACES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_FILE_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+concatenateSeqs
+
+# Exit cleanly
+safeExit

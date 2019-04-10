@@ -160,6 +160,7 @@ echo "INFO      | $(date) | Step #2: Make taxon names file based on alignment in
 ## two sequences per individual tip taxon (e.g. with _0 and _1 suffixed, phased designations).
 
 ###### SEARCH FOR PHYLIP ALIGNMENT WITH CORRECT NUMBER OF TAXA, EXTRACT TAXON NAMES TO FILE.
+
 (
 	for j in ./*.phy; do
 

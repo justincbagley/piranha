@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2VCF.sh                                                                     #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.                       #
-# Last update: March 29, 2019                                                            #
+# Last update: April 10, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,12 +141,20 @@ FASTA2VCF () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2VCF, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.2)    "
+echo "INFO      | $(date) | FASTA2VCF, v1.1.0 April 2019  (in PIrANHA v0.2-alpha.2)        "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting FASTA2VCF analysis... "
+echo "INFO      | $(date) |          Running with the following options: "
+echo "INFO      | $(date) |          - FASTA file, <inputFASTA> = ${MY_INPUT_FASTA} "
+echo "INFO      | $(date) |          - <partitionRanges> option = ${MY_PART_RANGES_FILE} "
+echo "INFO      | $(date) |          - Output file basename, <output> = ${MY_OUTPUT_FILENAME} (yields '${MY_OUTPUT_FILENAME}.vcf')"
+echo "INFO      | $(date) |          - Subsample SNPs switch, <subsampleSNPs> = ${MY_SUBSAMPLE_SNPS_SWITCH} "
+echo "INFO      | $(date) |          - Log file option, <logfile> = ${MY_LOGFILE_SWITCH} "
+echo "INFO      | $(date) |          - <outputPHYLIP> option = ${MY_OUTPUT_PHYLIP_SWITCH} "
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -278,19 +286,22 @@ count=1
 		echo "INFO      | $(date) |          Extracting: "
 		echo "INFO      | $(date) |          SNP $MY_FIRST_MATCH_LINE (VCF row), alignment position (nt) $MY_FIRST_MATCH_POSITION "
 		
-	done < raxml_partitions.part_ranges_spaced.txt
+	done < "$MY_PART_RANGES_FILE"
 )
 
 	## Put it all together. Grab the VCF header. Then concatenate the VCF header and final, 
 	## subsampled VCF body file to create a final subsampled VCF file:
 	grep '\#' "$MY_INPUT_VCF_FILE" > ./header.tmp
 
-	if [[ "$MY_OUTPUT_FILENAME" = "NULL" ]]; then
+	if [[ "$MY_OUTPUT_FILENAME" = "NULL" ]] && [[ -s ./vcf.body.tmp ]]; then
 		echo "INFO      | $(date) |          Saving subsampled SNPs to file ${MY_FASTA_BASENAME}.subsampled.vcf "
 		cat ./header.tmp ./vcf.body.tmp > "$MY_FASTA_BASENAME".subsampled.vcf
-	elif [[ "$MY_OUTPUT_FILENAME" != "NULL" ]]; then
+	elif [[ "$MY_OUTPUT_FILENAME" != "NULL" ]] && [[ -s ./vcf.body.tmp ]]; then
 		echo "INFO      | $(date) |          Saving subsampled SNPs to file ${MY_OUTPUT_FILENAME}.subsampled.vcf "
 		cat ./header.tmp ./vcf.body.tmp > "$MY_OUTPUT_FILENAME".subsampled.vcf 
+	elif [[ "$MY_OUTPUT_FILENAME" = "NULL" ]] || [[ "$MY_OUTPUT_FILENAME" != "NULL" ]] && [[ ! -s ./vcf.body.tmp ]]; then
+		echo "WARNING!  | $(date) |          Failed to save subsampled SNPs to file. This is probably because your FASTA file has one locus, or too few "
+		echo "WARNING!  | $(date) |             loci/variable sites. Please try with another FASTA file. "
 	fi
 
 fi
@@ -300,12 +311,28 @@ fi
 echo "INFO      | $(date) | Step #4: Clean up working directory by removing temporary files. "
 ## Remove temporary files generated above.
 	rm ./*.tmp
+	rm ./args.txt ;	## Remove arguments file generated when parsing the options.
+
 
 #echo "INFO      | $(date) | Done converting your multiple sequence FASTA file to VCF format using FASTA2VCF.sh. "
 #echo "INFO      | $(date) | Bye.
 #"
 
 echo "----------------------------------------------------------------------------------------------------------"
+if [[ -s "$MY_FASTA_BASENAME".subsampled.vcf ]]; then
+	echo "output file(s): ${MY_FASTA_BASENAME}.vcf "
+	echo "                ${MY_FASTA_BASENAME}.subsampled.vcf "
+fi
+if [[ -s "$MY_OUTPUT_FILENAME".subsampled.vcf ]]; then
+	echo "output file(s): ${MY_OUTPUT_FILENAME}.vcf "
+	echo "                ${MY_OUTPUT_FILENAME}.subsampled.vcf "
+fi
+if [[ -s "$MY_FASTA_BASENAME".vcf ]] && [[ ! -s "$MY_FASTA_BASENAME".subsampled.vcf ]]; then
+	echo "output file(s): ${MY_FASTA_BASENAME}.vcf "
+fi
+if [[ -s "$MY_OUTPUT_FILENAME".vcf ]] && [[ ! -s "$MY_OUTPUT_FILENAME".subsampled.vcf ]]; then
+	echo "output file(s): ${MY_OUTPUT_FILENAME}.vcf "
+fi
 echo ""
 
 ##########################################################################################
@@ -334,7 +361,7 @@ echo ""
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 MY_INPUT_FASTA=NULL
-MY_PART_RANGES=NULL
+MY_PART_RANGES_FILE=NULL
 MY_OUTPUT_FILENAME=NULL
 MY_SUBSAMPLE_SNPS_SWITCH=NULL
 MY_LOGFILE_SWITCH=NULL
@@ -406,7 +433,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-	echo "$Usage"
+	echo "$USAGE"
 	exit
 fi
 
@@ -415,27 +442,95 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'i:r:o:s:l:p:' opt ; do
-  case $opt in
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
 
-## FASTA2VCF options:
-    i) MY_INPUT_FASTA=$OPTARG ;;
-    r) MY_PART_RANGES=$OPTARG ;;
-    o) MY_OUTPUT_FILENAME=$OPTARG ;;
-    s) MY_SUBSAMPLE_SNPS_SWITCH=$OPTARG ;;
-    l) MY_LOGFILE_SWITCH=$OPTARG ;;
-    p) MY_OUTPUT_PHYLIP_SWITCH=$OPTARG ;;
 
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_FASTA=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_INPUT_FASTA="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_PART_RANGES_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
+		MY_PART_RANGES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_FILENAME=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILENAME="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_SUBSAMPLE_SNPS_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-s' ./args.txt | perl -pe 's/\-s//g' | perl -pe 's/\ //g')";
+		MY_SUBSAMPLE_SNPS_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_PHYLIP_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-p' ./args.txt | perl -pe 's/\-p//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_PHYLIP_SWITCH="$MY_ARG" ;
+	fi
+#
+
+
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:r:o:s:l:p:' opt ; do
+#   case $opt in
+# 
+# ## FASTA2VCF options:
+#     i) MY_INPUT_FASTA=$OPTARG ;;
+#     r) MY_PART_RANGES_FILE=$OPTARG ;;
+#     o) MY_OUTPUT_FILENAME=$OPTARG ;;
+#     s) MY_SUBSAMPLE_SNPS_SWITCH=$OPTARG ;;
+#     l) MY_LOGFILE_SWITCH=$OPTARG ;;
+#     p) MY_OUTPUT_PHYLIP_SWITCH=$OPTARG ;;
+# 
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
 
 
 # ############# ############# #############
