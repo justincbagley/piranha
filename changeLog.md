@@ -3,7 +3,7 @@
 ## PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
-- **April 10, 2019:** Added new `renameTaxa` function that renames taxon (sample) names in genetic data files of type FASTA, NEXUS, PHYLIP, and VCF.
+- **April 10, 2019:** Added new `renameTaxa` function that renames taxon (sample) names in genetic data files of type FASTA, NEXUS, PHYLIP, and VCF according to user specifications.
 - **April 9, 2019:** Added updated scripts to fix bugs in `FASTA2PHYLIP` and `getTaxonNames` functions.
 
 ## PIrANHA v0.2-alpha.2 (official minor pre-release version) - April 9, 2019
