@@ -26,6 +26,7 @@ The full file tree for this directory is as follows:
    ├── ElConcatenero
    ├── ExaBayesPostProc
    ├── FASTA2PHYLIP
+   ├── FASTA2VCF
    ├── fastSTRUCTURE
    ├── getBootTrees
    ├── getTaxonNames
@@ -67,6 +68,7 @@ The full file tree for this directory is as follows:
    ├── RAxMLRunChecker
    ├── RAxMLRunner
    ├── renameForStarBeast2
+   ├── renameTaxa
    ├── SNAPPRunner
    ├── SpeciesIdentifier
    ├── taxonCompFilter
