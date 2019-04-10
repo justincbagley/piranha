@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: concatenateSeqs.sh                                                               #
-  VERSION="v1.2.0"                                                                       #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.                       #
 # Last update: April 10, 2019                                                            #
@@ -136,7 +136,7 @@ concatenateSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | concatenateSeqs, v1.2.0 April 2019  (in PIrANHA v0.2-alpha.2)  "
+echo "INFO      | $(date) | concatenateSeqs, v1.2.1 April 2019  (in PIrANHA v0.2-alpha.2)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -357,7 +357,8 @@ fi
 
 	ALL_MY_ARGUMENTS="$(echo "$@")"
 	echo "$ALL_MY_ARGUMENTS" > ./args.txt
-	perl -p -i -e $'s/\ /\n/g' ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
 	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
 
 
