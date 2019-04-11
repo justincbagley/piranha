@@ -1160,6 +1160,8 @@ fi
 	ALL_MY_ARGUMENTS="$(echo "$@")"
 	echo "$ALL_MY_ARGUMENTS" > ./args.txt
 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e 's/^\-$//g' ./args.txt
+	perl -p -i -e $'s/\-resume/\-\-resume/g' ./args.txt
 	#perl -p -i -e $'s/\ /\n/g' ./args.txt
 	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
 
@@ -1309,6 +1311,11 @@ fi
 		MY_OUTPUT_NAME="$MY_ARG" ;
 	fi
 #
+	if [[  "$(grep -h '\-R' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RESUME_SWITCH=0 ;
+	else 
+		MY_RESUME_SWITCH=1 ;
+	fi
 	if [[  "$(grep -h '\-\-resume' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_RESUME_SWITCH=0 ;
 	else 
