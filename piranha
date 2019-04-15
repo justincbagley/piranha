@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: April 9, 2019                                                             #
+# Last update: April 15, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.2, April 2019  (main script for PIrANHA v0.2-alpha.2)  "
+piranha v1.0.3, April 2019  (main script for PIrANHA v0.2-alpha.2)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -180,13 +180,13 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 		echo "
 FUNCTION			   DESCRIPTION
 ----------------------------------------------------------------------------------------------------------------
-2logeB10.r             Rscript extracting marginal likelihood estimates and calculate 2loge B10 Bayes factors (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs
-AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses
-BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (usually on remote supercomputer)
-BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST runs/subfolders (destined for supercomputer)
-BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster
-BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal likelihood estimation) analyses using BEAST v2+ PathSampler
-calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-informative sites (pis) for all FASTA files in working dir
+2logeB10.r             Rscript extracting marginal likelihood estimates and calculate 2loge B10 Bayes factors (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs.
+AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses.
+BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (usually on remote supercomputer).
+BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST runs/subfolders (destined for supercomputer).
+BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster.
+BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal likelihood estimation) analyses using BEAST v2+ PathSampler.
+calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-informative sites (pis) for all FASTA files in working dir.
 completeConcatSeqs     x
 completeSeqs           x
 concatenateSeqs        x
@@ -196,11 +196,11 @@ dadiUncertainty        x
 dropRandomHap          x
 ExaBayesPostProc       x
 FASTA2PHYLIP           x
-FASTA2VCF              x
+FASTA2VCF              Shell script function automating conversion of single multiple sequence FASTA alignment to variant call format (VCF) v4.1, with or without subsampling SNPs per partition/locus.
 fastSTRUCTURE          x
 getBootTrees           x
 getTaxonNames          x
-MAGNET                 x
+MAGNET                 Shell pipeline for automating estimation of a maximum-likelihood (ML) gene tree in RAxML for each of many loci in a RAD-seq, UCE, or other multilocus dataset. Also contains other tools.
 makePartitions         x
 Mega2PHYLIP            x
 MLEResultsProc         x
@@ -213,6 +213,7 @@ phylip2fasta.pl        x
 PHYLIP2Mega            x
 PHYLIP2NEXUS           x
 PHYLIP2PFSubsets       x
+PHYLIPcleaner          Function that cleans one or more PHYLIP alignments in current dir by removing individuals with all (or mostly) undetermined sites.
 PHYLIPsubsampler       x
 PhyloMapperNullProc    x
 phyNcharSumm           x
@@ -221,6 +222,7 @@ pyRADLocusVarSites     x
 RAxMLRunChecker        x
 RAxMLRunner            x
 renameForStarBeast2    x
+renameTaxa             Automates renaming all tip taxa (samples) in genetic data files of type FASTA, PHYLIP, NEXUS, or VCF (variant call format) in current working directory.
 SNAPPRunner            x
 SpeciesIdentifier      x
 taxonCompFilter        x
@@ -260,13 +262,22 @@ fi
 }
 
 
+# echo "$@"
+# echo "$#"
+# echo "$1" 
+
+# for i in "$@"; do
+# echo "$i";
+# done
+
+
 ############## Begin Options and Usage ###################
 
 ## Print usage
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.2-alpha.1c.
+ This is the main script for PIrANHA v0.2-alpha.2.
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
