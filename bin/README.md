@@ -60,6 +60,7 @@ The full file tree for this directory is as follows:
    ├── PHYLIP2Mega
    ├── PHYLIP2NEXUS
    ├── PHYLIP2PFSubsets
+   ├── PHYLIPcleaner
    ├── PHYLIPsubsampler
    ├── PhyloMapperNullProc
    ├── phyNcharSumm
