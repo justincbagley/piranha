@@ -30,7 +30,7 @@ The full file tree for this directory is as follows:
    ├── fastSTRUCTURE
    ├── getBootTrees
    ├── getTaxonNames
-   ├── MAGNET-1.0.0
+   ├── MAGNET-1.1.0
    │   ├── README.md
    │   ├── MAGNET
    │   ├── perl
