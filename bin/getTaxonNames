@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: getTaxonNames.sh                                                                 #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 13 17:17:41 CDT 2019.                       #
-# Last update: April 10, 2019                                                            #
+# Last update: April 15, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ getTaxonNames () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | getTaxonNames, v1.0.2 April 2019  (part of PIrANHA v0.2-alpha.2)"
+echo "INFO      | $(date) | getTaxonNames, v1.1.0 April 2019  (part of PIrANHA v0.2-alpha.2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -220,10 +220,6 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_N_MAX_TIP_TAXA=NULL
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
@@ -259,7 +255,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Call the program using PIrANHA, as follows:
 
     piranha -f getTaxonNames --args='-n 80'    Run program with the maximum <numTips> set to 80
-    piranha -f getTaxonNames --args='-h'      Print this help text
+    piranha -f getTaxonNames --args='-h'       Print this help text
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
@@ -279,20 +275,50 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'n:' opt ; do
-  case $opt in
-## getTaxonNames options:
-    n) MY_N_MAX_TIP_TAXA=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_N_MAX_TIP_TAXA=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-n' ./args.txt | perl -pe 's/\-n//g' | perl -pe 's/\ //g')";
+		MY_N_MAX_TIP_TAXA="$MY_ARG" ;
+	fi
+#
+
+# ############ PARSE THE OPTIONS
+# while getopts 'n:' opt ; do
+#   case $opt in
+# ## getTaxonNames options:
+#     n) MY_N_MAX_TIP_TAXA=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
 
 
 # ############# ############# #############

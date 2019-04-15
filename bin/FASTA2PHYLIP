@@ -9,7 +9,7 @@
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: April 9, 2019                                                             #
+# Last update: April 15, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -153,7 +153,7 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Starting FASTA2PHYLIP... "
+	echo "INFO      | $(date) | Starting FASTA2PHYLIP analysis... "
 	echo "INFO      | $(date) | Step #1: Set up workspace by defining useful environmental variables and functions, and check machine type. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
@@ -184,9 +184,9 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 (
 	for MY_FASTA in $MY_FASTA_FILES; do 
 
-	echo "$MY_FASTA" >> ./output/fileOrder.list.txt ;
+	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
 
-	echo "###------    $MY_FASTA    ------### "
+	echo "INFO      | $(date) |          ###------    $MY_FASTA    ------### "
 
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -238,7 +238,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
-			echo "Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			if [[ "${machine}" = "Mac" ]]; then
@@ -419,7 +419,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
-			echo "Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			if [[ "${machine}" = "Mac" ]]; then
@@ -500,7 +500,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		if [[ "$MY_FORMAT_METRIC" -eq "2" ]]; then
 		
-		echo "Sequential FASTA format detected. Converting to PHYLIP..."
+		echo "INFO      | $(date) |          Sequential FASTA format detected. Converting to PHYLIP..."
 		##--The FASTA file has DNA sequences in sequential, unwrapped format already; no need to 
 		##--convert it, so use file as is.
 		
@@ -557,9 +557,12 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 	done
 )
 
+
+
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
 fi
+
 
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 #echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from input sequential FASTA file $MY_FASTA. "
@@ -576,13 +579,6 @@ echo ""
 }
 
 
-
-
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_KEEP_FASTA_SWITCH=0
-MY_OUTPUT_FILE_SWITCH=NULL
-MY_VERBOSE_OUT_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename "$0") [OPTION]...
@@ -619,9 +615,9 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  or Linux. 
 
  ${bold}Usage Examples${reset}
-	piranha -f FASTA2PHYLIP --args='-k 1 -v 1'  Convert FASTA files to PHYLIP format, keeping  
-									        	intermediate FASTAs, and echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-k 1 -v 1'     Same as above, but passing arguments with -a flag
+    piranha -f FASTA2PHYLIP --args='-k 1 -v 1'  Convert FASTA files to PHYLIP format, keeping  
+                                                intermediate FASTAs, and echoing run output to screen
+    piranha -f FASTA2PHYLIP -a '-k 1 -v 1'      Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
@@ -684,9 +680,9 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  the verbose output is presently highly redundant across alignments, and thus is not preferred.
  
  ${bold}Usage Examples${reset}
-	piranha -f FASTA2PHYLIP --args='-k 1 -v 1'  Convert FASTA files to PHYLIP format, keeping  
-									        	intermediate FASTAs, and echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-k 1 -v 1'     Same as above, but passing arguments with -a flag
+    piranha -f FASTA2PHYLIP --args='-k 1 -v 1'  Convert FASTA files to PHYLIP format, keeping  
+                                                intermediate FASTAs, and echoing run output to screen
+    piranha -f FASTA2PHYLIP -a '-k 1 -v 1'      Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
@@ -715,22 +711,66 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'k:o:v:' opt ; do
-  case $opt in
-## FASTA2PHYLIP options:
-    k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
-    o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
-    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_KEEP_FASTA_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_FILE_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+
+# ############ PARSE THE OPTIONS
+# while getopts 'k:o:v:' opt ; do
+#   case $opt in
+# ## FASTA2PHYLIP options:
+#     k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
+#     o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
 
 
 # ############# ############# #############
