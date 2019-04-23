@@ -8,8 +8,8 @@
 # File: MAGNET.sh ~ MAny GeNE Trees, v1.1.0                                              #
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: April 10, 2019                                                            #
+# Date: Created by Justin Bagley on Mon, Aug 29 13:12:45 2016 -0700.                     #
+# Last update: April 22, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -472,7 +472,26 @@ echo "INFO      | $(date) | Step #3: Resuming gene tree estimation. Run on remai
 			cd "$i";
 			LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\/$//g')";
 
-			if [[ ! -s ./RAxML_info.raxml_out ]]; then
+			if [[ "$MY_OUTPUT_NAME" = "raxml_out" ]] && [[ ! -s ./RAxML_info.raxml_out ]]; then
+			echo "$i"
+
+				if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -n $MY_OUTPUT_NAME
+				fi
+
+				if [[ "$MY_OUTGROUP" != "NULL" ]] && [[ "$MY_SIMPLE_MODEL" != "NULL" ]]; then
+					"$MY_RAXML_EXECUTABLE" -f a -x $(python -c "import random; print random.randint(10000,100000000000)") -p $(python -c "import random; print random.randint(10000,100000000000)") -# $MY_NUM_BOOTREPS -m $MY_RAXML_MODEL -s ./*.phy --$MY_SIMPLE_MODEL -o $MY_OUTGROUP -n $MY_OUTPUT_NAME
+				fi
+
+			elif [[ "$MY_OUTPUT_NAME" != "raxml_out" ]] && [[ ! -s ./RAxML_info."$MY_OUTPUT_NAME" ]]; then
 			echo "$i"
 
 				if [[ "$MY_OUTGROUP" = "NULL" ]] && [[ "$MY_SIMPLE_MODEL" = "NULL" ]]; then
