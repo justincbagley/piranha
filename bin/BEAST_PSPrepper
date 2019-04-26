@@ -301,16 +301,6 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-CHAIN_LENGTH=100000
-ALPHA_VALUE=0.3
-ROOT_DIR=/tmp
-BURN_IN_PERCENT=50
-PRE_BURN_IN=100000
-DELETE_OLDLOGS=true
-NUM_PS_STEPS=10
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
@@ -383,28 +373,110 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'i:l:a:r:b:p:d:n:' opt ; do
-  case $opt in
-## BEAST Path sampling options:
-    i) MY_INPUTXMLFILE_VAR=$OPTARG ;;
-    l) CHAIN_LENGTH=$OPTARG ;;
-    a) ALPHA_VALUE=$OPTARG ;;
-    r) ROOT_DIR=$OPTARG ;;
-    b) BURN_IN_PERCENT=$OPTARG ;;
-    p) PRE_BURN_IN=$OPTARG ;;
-    d) DELETE_OLDLOGS=$OPTARG ;;
-    n) NUM_PS_STEPS=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
 
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e 's/^\-$//g' ./args.txt
+	perl -p -i -e $'s/\-resume/\-\-resume/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUTXMLFILE_VAR=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_INPUTXMLFILE_VAR="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		CHAIN_LENGTH=100000 ;
+	else 
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		CHAIN_LENGTH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		ALPHA_VALUE=0.3 ;
+	else 
+		MY_ARG="$(grep -h '\-a' ./args.txt | perl -pe 's/\-a//g' | perl -pe 's/\ //g')";
+		ALPHA_VALUE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		ROOT_DIR=/tmp ;
+	else 
+		MY_ARG="$(grep -h '\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
+		ROOT_DIR="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '^\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		BURN_IN_PERCENT=50 ;
+	else 
+		MY_ARG="$(grep -h '^\-b' ./args.txt | perl -pe 's/\-b//g' | perl -pe 's/\ //g')";
+		BURN_IN_PERCENT="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		PRE_BURN_IN=100000 ;
+	else 
+		MY_ARG="$(grep -h '\-p' ./args.txt | perl -pe 's/\-p//g' | perl -pe 's/\ //g')";
+		PRE_BURN_IN="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		DELETE_OLDLOGS=true ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		DELETE_OLDLOGS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		NUM_PS_STEPS=10 ;
+	else 
+		MY_ARG="$(grep -h '\-n' ./args.txt | perl -pe 's/\-n//g' | perl -pe 's/\ //g')";
+		NUM_PS_STEPS="$MY_ARG" ;
+	fi
+#
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:l:a:r:b:p:d:n:' opt ; do
+#   case $opt in
+# ## BEAST Path sampling options:
+#     i) MY_INPUTXMLFILE_VAR=$OPTARG ;;
+#     l) CHAIN_LENGTH=$OPTARG ;;
+#     a) ALPHA_VALUE=$OPTARG ;;
+#     r) ROOT_DIR=$OPTARG ;;
+#     b) BURN_IN_PERCENT=$OPTARG ;;
+#     p) PRE_BURN_IN=$OPTARG ;;
+#     d) DELETE_OLDLOGS=$OPTARG ;;
+#     n) NUM_PS_STEPS=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
 # Store the remaining part as arguments.
 # args+=("$@")
 
