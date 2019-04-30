@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitPHYLIP.sh                                                                   #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, Apr 20 08:32:39 CDT 2019.                       #
-# Last update: April 21, 2019                                                            #
+# Last update: April 30, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ splitPHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitPHYLIP, v1.0.0 April 2019  (part of PIrANHA v0.2-alpha.2) "
+echo "INFO      | $(date) | splitPHYLIP, v1.1.0 April 2019  (part of PIrANHA v0.2-alpha.2) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -200,8 +200,9 @@ fi
 		MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
 			
 		###### Isolate <inputPHYLIP> taxon labels (sequence IDs):
-		sed '1d' ./phylip.tmp | perl -pe $'s/[\ ]*[ACTGactgNn\-\?]*//g; s/\t*[ACTGactgNn\-\?]*//g' > ./taxonLabels.tmp ;
-
+		#sed '1d' ./phylip.tmp | perl -pe $'s/[\ ]*[ACTGactgNn\-\?]*//g; s/\t*[ACTGactgNn\-\?]*//g' > ./taxonLabels.tmp ;
+		sed '1d' ./phylip.tmp | perl -pe $'s/\ +.*//g' | perl -pe $'s/\t.*//g' | sed 's/\ //g' | perl -pe $'s/\t//g' > ./taxonLabels.tmp ;
+		
 		###### Make taxon names and spaces file:
 		perl -p -e $'s/$\n/\ x\n/g' ./taxonLabels.tmp | column -t | perl -pe $'s/x$//g' > ./taxon_names_spaces.tmp ;
 
@@ -213,8 +214,8 @@ fi
 
 		###### Make sequence matrix space-delimited columns, with each column corresponding to a 
 		###### different site:
-		sed 's/\([ACTGactgNn\-\?]\)/\1\ /g' ./sequencesOnly.tmp > ./sequencesOnly_scol.tmp ;
-
+		#sed 's/\([ACTGactgNn\-\?]\)/\1\ /g' ./sequencesOnly.tmp > ./sequencesOnly_scol.tmp ;
+		sed 's/\(.\)/\1\ /g' ./sequencesOnly.tmp > ./sequencesOnly_scol.tmp ;
 
 ######## B. SPLIT FILE BY SEQUENCE RANGES IN PARTITIONS FILE:
 
@@ -306,8 +307,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  PHYLIP alignments, one per partition. The PHYLIP file (extension '.phy') is specified with 
  the -i flag, and the partitions file (-p flag) should contain the hyphen-separated nucleotide 
  ranges (e.g. 1-485) for each of n partitions (equivalent to character sets), with one range 
- per line. The ordering of partitions is not important, and the program will work regardless 
- of whether these are in numeric order.
+ per line. The ordering of partitions is not important; for example, the program will work 
+ regardless of whether or not the partition ranges are given in increasing numeric order.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or Linux
