@@ -5,7 +5,8 @@
 
 ### PIrANHA v0.3a1 (official minor pre-release version 0.3-alpha.1) - May 7, 2019
 
-- **April 30 – May 7, 2019:** Added bug fixes and updates to `piranha`, `dropRandomHap`, `PHYLIP2NEXUS`, `PHYLIP2FASTA`, `PHYLIP2Mega`, and `splitPHYLIP` functions.
+- **May 7, 2019:** Fixed main `piranha` function so that it correctly reads in all arguments passed with the --args='' flag (should also work with -a), which previously caused several functions to fail and invoke `trapExit`.
+- **April 30 – May 7, 2019:** Added bug fixes and updates to `dropRandomHap`, `PHYLIP2NEXUS`, `PHYLIP2FASTA`, `PHYLIP2Mega`, and `splitPHYLIP` functions.
 - **April 10, 2019:** Added new `renameTaxa` function that renames taxon (sample) names in genetic data files of type FASTA, NEXUS, PHYLIP, and VCF according to user specifications.
 - **April 9, 2019:** Added updated scripts to fix bugs in `FASTA2PHYLIP` and `getTaxonNames` functions.
 
