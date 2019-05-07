@@ -1,31 +1,31 @@
 # PIrANHA Change Log
 
-## PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
+### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
-## PIrANHA v0.3a1 (official minor pre-release version 0.3-alpha.1) - May 7, 2019
+### PIrANHA v0.3a1 (official minor pre-release version 0.3-alpha.1) - May 7, 2019
 
 - **April 30 – May 7, 2019:** Added bug fixes and updates to `piranha`, `dropRandomHap`, `PHYLIP2NEXUS`, `PHYLIP2FASTA`, `PHYLIP2Mega`, and `splitPHYLIP` functions.
 - **April 10, 2019:** Added new `renameTaxa` function that renames taxon (sample) names in genetic data files of type FASTA, NEXUS, PHYLIP, and VCF according to user specifications.
 - **April 9, 2019:** Added updated scripts to fix bugs in `FASTA2PHYLIP` and `getTaxonNames` functions.
 
-## PIrANHA v0.2-alpha.2 (official minor pre-release version) - April 9, 2019
+### PIrANHA v0.2-alpha.2 (official minor pre-release version) - April 9, 2019
 
 This is a minor update to the pre-release version that adds a new `FASTA2VCF` function which acts as a wrapper for the software program `snp-sites` ([link](https://github.com/sanger-pathogens/snp-sites)) and converts a sequential FASTA multiple sequence alignment into a variant call format (VCF) v4.1 file, with or without subsampling 1 SNP per partition/locus. This update also includes edits to the README, index.html, changeLog.md, and travis.yml files. Importantly, I have also now created a successful [homebrew](https://brew.sh) tap for PIrANHA [here](https://github.com/justincbagley/homebrew-piranha) with a formula that is working with v0.2-alpha, and that is now described in the documentation [wiki](https://github.com/justincbagley/piranha/wiki). 
 
-## PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
 
 This is a minor update to the pre-release version that includes edits to the README and index.html files, and that adds this slightly updated changeLog.md file back into the repository. Other changes include removing `bin/trash` function due to conflicts with `/usr/local/bin/trash` symlink belonging to trash on macOS, which caused homebrew install to fail. After fixing this, I have also now created a successful homebrew tap for PIrANHA that is working with this release (more info soon, to be added to the README). 
 
-## PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
 
 This is a very minor update to the pre-release version removing some PHYLIP and FASTA DNA sequence alignments that I had previously included in the repo for my own testing purposes, and updating README and index.html files.
 
-## PIrANHA v0.2-alpha.1 (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha.1 (official minor pre-release version) - March 15, 2019
 
 Since v0.2-alpha, the pre-release version of **PIrANHA v0.2-alpha.1** added several updates including redos for the PIrANHA etc/ dir, a README for bin/, and new scripts for the `MLEResultsProc`, `getTaxonNames`, `taxonCompFilter`, and `SNAPPRunner` functions.
 
-## PIrANHA v0.2-alpha (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha (official minor pre-release version) - March 15, 2019
 
 Pre-release version, **PIrANHA v0.2-alpha**, involved a virtually complete rewrite and reorganization of PIrANHA (with >1,200 additions and >400 deletions). All scripts were converted to 'function' programs in bin/ or bin/MAGNET-1.0.0/ of the repo, and I have written a new program, ```piranha```, that is now the main program and runs all functions. I am _still_ in the process of updating the README and all function scripts, but I did a pre-release ratcheted up to v0.2 due to the great improvements in modularization and efficiency that this update allowed (selecting a function and passing all arguments, all from ```piranha```), and because I wanted a new release to use as a starting point to create Debian and Homebrew distribution releases (i.e. brew tap(s) to update as new versions roll out during development). The current organization of **PIrANHA** is much better suited for general use, and for adding other collaborators or developers.
 
@@ -36,7 +36,7 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 - **February – March 2019:** Added -V and --version flag options, to echo version to screen, to most scripts in the repo.
 
 
-## PIrANHA v0.1.7 (official minor version release) - February 19, 2019
+### PIrANHA v0.1.7 (official minor version release) - February 19, 2019
 - **February 19, 2019:** Improved ```phylipSubsampler.sh``` to check and account for differences in machine type. Now correctly accommodations UNIX (Mac) and LINUX systems.
 - **February 19, 2019:** Updated MAGNET script by adding a getBipartTrees function to the MAGNET pipeline, which organizes RAxML bipartitions trees for each locus (= best ML trees with bootstrap proportions along nodes the corresponding bootstrap searches search; resulting from ```-f a -x```options, which are included in all MAGNET calls to RAxML). Edited header and script banner to be prepped for future official release of MAGNET with versioning 0.1.9.
 - **December 2018:** Added new MAGNET script updated to include --resume option, and to set raxml executable name one of two ways after detecting machine type (```raxml``` on Mac, ```raxmlHPC-SS3``` on Linux/supercomputer).
@@ -53,11 +53,11 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 - **bug fix:** - phylipSubsampler.sh (fixes bug causing incorrect number of characters on first line of input files) 
 
 
-## PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
+### PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
 - **August 2017:** Made several updates to README and documentation for the repository.
 
 
-## PIrANHA v0.1.6 (official minor version release) - September 13, 2017
+### PIrANHA v0.1.6 (official minor version release) - September 13, 2017
 - **August 2017:** + updated all README files in the repository (for PIrANHA, BEASTPostProc, BEASTRunner, ExaBayesPostProc, MLEResultsProc, and fastSTRUCTURE scripts).
 - **August 2017:** + added new 'BEASTReset.sh' script, and corresponding README, into BEASTReset sub-folder. This script automates re-setting random starting number seeds in BEAST run submission scripts for supercomputer runs. This is a time-saving script when many failed runs need to be restarted from a different seed!
 - **bug fix:** - MLEResultsProc.sh (expands capability of detecting and accounting for PS/SS runs conducted in different versions of BEAST, i.e. v1 vs. v2) 
@@ -65,7 +65,7 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 - **bug fix:** - PFSubsetSum.sh (fixed script so that it works with PartitionFinder v1 and v2; last testing: v2.1.1) 
 
 
-## PIrANHA v0.1.5 (official minor version release) - August 21, 2017
+### PIrANHA v0.1.5 (official minor version release) - August 21, 2017
 The current release, PIrANHA v0.1.5, contains the following updates, in addition to minor improvements in the code:
 - **August 2017:** + added a Change Log file ('changeLog.md') to supplement releases page and provide log file within master.
 - **August 2017:** + updated MAGNET pipeline by editing 'MAGNET.sh' by adding three new command line options ("\-e", "\-m", and "\-o" flags), as follows:
@@ -83,7 +83,7 @@ The current release, PIrANHA v0.1.5, contains the following updates, in addition
 - **bug fix:** - BEASTRunner.sh
 
 
-## PIrANHA v0.1.4 (modified minor version release - several changes after official v0.1.4 release)
+### PIrANHA v0.1.4 (modified minor version release - several changes after official v0.1.4 release)
 The current, modified PIrANHA v0.1.4 release contains several goodies listed below, in addition to minor improvements in the code!!
 - **August 2017:** + updated 'BEAST\_PSPrepper.sh' script automating editing existing BEAST v2+ (e.g. v2.4.5) input XML files for path sampling analysis, so that users don't have to do this by hand!
 - **May 2017:** + added 'SNAPPRunner.sh' script for conducting multiple runs of SNAPP ("SNP and AFLP Phylogenies") model in BEAST.
@@ -96,23 +96,23 @@ The current, modified PIrANHA v0.1.4 release contains several goodies listed bel
 I have also added a new 'MrBayesPostProc.sh' script and corresponding 'mrbayes_post_proc.cfg' configuration file, which together automate summarizing the posterior distribution of trees and parameters from a single MrBayes run. I intend to extend these scripts to provide options for several other anlayses of individual MrBayes runs/input files, as well as extend them to pulling down results from multiple MrBayes runs.
 
 
-## PIrANHA v0.1.4 (official minor version release) - May 3, 2017
-### What's new?
+### PIrANHA v0.1.4 (official minor version release) - May 3, 2017
+#### What's new?
 - **May 2017:** + build now contains new **BEASTRunner.sh** script and 'beast_runner.cfg' configuration file. BEASTRunner now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
 - **April 2017:** + build now contains new **pyRADLocusVarSites.sh** script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
 - **April 2017:** + I added new **dadiRunner.sh** script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo). *n.b.: A dadiPostProc.sh script is also in the works (but unreleased) that conducts post-processing and graphical plotting of results from multiple dadi runs*
 - **January 2017:** + I added a new script called **BEAST_PSPrepper.sh** that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand!
 
 
-## PIrANHA v0.1.3 (official minor version release) - November 11, 2016
-### What's new?
+### PIrANHA v0.1.3 (official minor version release) - November 11, 2016
+#### What's new?
 This version of PIrANHA introduces the BEASTRunner.sh script for automating independent runs of BEAST1 or BEAST2 on a remote supercomputing cluster. See README for details.
 
 
-## PIrANHA v0.1.2 (official minor version release) - November 10, 2016
+### PIrANHA v0.1.2 (official minor version release) - November 10, 2016
 
 
-## PIrANHA v0.1.1 (official minor version, patch release) - November 10, 2016
+### PIrANHA v0.1.1 (official minor version, patch release) - November 10, 2016
 
 
-## PIrANHA v0.1.0 (pre-release version zero) - September 6, 2016
+### PIrANHA v0.1.0 (pre-release version zero) - September 6, 2016
