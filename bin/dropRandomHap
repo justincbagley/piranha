@@ -16,7 +16,7 @@
 # Description:                                                                           #
 # SHELL SCRIPT TO RANDOMLY DROP ONE PHASED HAPLOTYPE (ALLELE) PER PHASED INDIVIDUAL IN   #
 # EACH OF N PHYLIP GENE ALIGNMENTS IN CURRENT WORKING DIRECTORY, STARTING FROM A TAXON   #
-# NAMES FILE AND WORKING DIR PATH                                                        #
+# NAMES FILE                                                                             #
 #                                                                                        #
 ##########################################################################################
 
