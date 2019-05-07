@@ -3,6 +3,9 @@
 ## PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
+## PIrANHA v0.3a1 (official minor pre-release version 0.3-alpha.1) - May 7, 2019
+
+- **April 30 – May 7, 2019:** Added bug fixes and updates to `piranha`, `dropRandomHap`, `PHYLIP2NEXUS`, `PHYLIP2FASTA`, `PHYLIP2Mega`, and `splitPHYLIP` functions.
 - **April 10, 2019:** Added new `renameTaxa` function that renames taxon (sample) names in genetic data files of type FASTA, NEXUS, PHYLIP, and VCF according to user specifications.
 - **April 9, 2019:** Added updated scripts to fix bugs in `FASTA2PHYLIP` and `getTaxonNames` functions.
 
