@@ -23,7 +23,7 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 > </h3>
 -->
 
-<a href="https://imgur.com/JAfgQ2h"><img src="https://i.imgur.com/JAfgQ2h.png" title="source: Justin C. Bagley" width=180% height=180% align="center" /></a>
+<a href="https://imgur.com/JAfgQ2h"><img src="https://i.imgur.com/JAfgQ2h.png" title="source: Justin C. Bagley" width=200% height=200% align="center" /></a>
 
 This release is only available publicly to ease issues related to _lack_ of support for Homebrew taps for private repositories (e.g. deprecated solutions).
 
