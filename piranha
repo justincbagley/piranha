@@ -378,6 +378,7 @@ unset options
 while [[ ${1} = -?* ]]; do
   case ${1} in
     -f|--func) shift; FUNCTION_TO_RUN="$1" ;;
+#   -a|--args) shift; FUNCTION_ARGUMENTS="$1" ;;
     -a|--args) shift; FUNCTION_ARGUMENTS="$*" ;;
     -o|--output) shift; USER_OUTPUT_DIR="$1" ;;
     --delete) deleteOriginal=true ;;
