@@ -12,6 +12,7 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 ```
 -->
 
+<!--
 > <h3>
 > 
 > ```diff
@@ -20,6 +21,9 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 > !                  ** PLEASE DO NOT DOWNLOAD THIS RELEASE!!! **
 > ```
 > </h3>
+-->
+
+<a href="https://imgur.com/6kl7T7t"><img src="https://i.imgur.com/6kl7T7t.png" title="source: Justin C. Bagley" width=60% height=60% align="center" /></a>
 
 This release is only available publicly to ease issues related to _lack_ of support for Homebrew taps for private repositories (e.g. deprecated solutions).
 
