@@ -33,11 +33,11 @@ All code within **PIrANHA v0.3a1** repository is available "AS IS" under a 3-Cla
 
 ## CITATION
 
-If you use scripts from this repository as part of your published research, I require that you cite the repository as follows (also see DOI information below): 
+If you use scripts from this repository as part of your published research, please cite the repository as follows (also see DOI information below): 
   
 - Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
-Alternatively, please provide the following link to this software repository in your manuscript:
+Alternatively, provide the following link to this software repository in your manuscript:
 
 - https://github.com/justincbagley/PIrANHA
 
