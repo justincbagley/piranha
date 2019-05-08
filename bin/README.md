@@ -26,11 +26,10 @@ The full file tree for this directory is as follows:
    ├── ElConcatenero
    ├── ExaBayesPostProc
    ├── FASTA2PHYLIP
-   ├── FASTA2VCF
    ├── fastSTRUCTURE
    ├── getBootTrees
    ├── getTaxonNames
-   ├── MAGNET-1.1.0
+   ├── MAGNET-1.0.0
    │   ├── README.md
    │   ├── MAGNET
    │   ├── perl
@@ -60,7 +59,6 @@ The full file tree for this directory is as follows:
    ├── PHYLIP2Mega
    ├── PHYLIP2NEXUS
    ├── PHYLIP2PFSubsets
-   ├── PHYLIPcleaner
    ├── PHYLIPsubsampler
    ├── PhyloMapperNullProc
    ├── phyNcharSumm
@@ -69,7 +67,6 @@ The full file tree for this directory is as follows:
    ├── RAxMLRunChecker
    ├── RAxMLRunner
    ├── renameForStarBeast2
-   ├── renameTaxa
    ├── SNAPPRunner
    ├── SpeciesIdentifier
    ├── taxonCompFilter

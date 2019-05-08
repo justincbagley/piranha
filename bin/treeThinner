@@ -148,7 +148,7 @@ treeThinner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | treeThinner, v1.2.1 March 2019  (part of PIrANHA v0.2-alpha.2)"
+echo "INFO      | $(date) | treeThinner, v1.2.1 March 2019  (part of PIrANHA v0.3a1)"
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -206,7 +206,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  b) detect tree file type, and c) conduct thinning.
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

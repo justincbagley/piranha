@@ -136,7 +136,7 @@ phyNcharSumm () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | phyNcharSumm, v1.0.0 March 2019  (part of PIrANHA v0.2-alpha.2)"
+echo "INFO      | $(date) | phyNcharSumm, v1.0.0 March 2019  (part of PIrANHA v0.3a1)"
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -189,7 +189,7 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 if [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]; then
-	echo " Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+	echo " Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 "
 	exit

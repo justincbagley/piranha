@@ -136,7 +136,7 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.0 May 2019  (part of PIrANHA v0.2-alpha.2)  "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.0 May 2019  (part of PIrANHA v0.3a1)  "
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -388,7 +388,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f PHYLIP2NEXUS --args='-m 1' 
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

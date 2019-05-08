@@ -136,7 +136,7 @@ renameTaxa () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameTaxa, v1.1.0 April 2019  (part of PIrANHA v0.2-alpha.2) "
+echo "INFO      | $(date) | renameTaxa, v1.1.0 April 2019  (part of PIrANHA v0.3a1) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -378,14 +378,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f renameTaxa --args='-o orig_names.txt -n new_names.txt -f phylip'  Rename taxa in PHYLIP files
     piranha -f renameTaxa --args='-o orig_names.txt -n new_names.txt -f nexus'   Rename taxa in NEXUS files
     piranha -f renameTaxa --args='-o orig_names.txt -n new_names.txt -f vcf'     Rename taxa in VCF files
-    piranha -f renameTaxa --args='-h'      									     Print this help text
+    piranha -f renameTaxa --args='-h'                                            Print this help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.

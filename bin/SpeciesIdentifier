@@ -136,7 +136,7 @@ SpeciesIdentifier () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | SpeciesIdentifier, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.2)"
+echo "INFO      | $(date) | SpeciesIdentifier, v1.0.0 March 2019  (in PIrANHA v0.3a1)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -306,7 +306,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f SpeciesIdentifier -a '-h'      Print this help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

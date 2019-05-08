@@ -220,7 +220,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f PhyloMapperNullProc --args='-h'		Print the help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2FASTA.sh                                                                  #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: April 30, 2019                                                            #
+# Last update: May 8, 2019                                                               #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2FASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2FASTA, v1.2.1 April 2019  (in PIrANHA v0.2-alpha.2)     "
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.2.2 May 2019  (in PIrANHA v0.3a1)       "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -159,9 +159,12 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ###### Convert PHYLIP files to FASTA format:
 
+	j="$INPUT_PHYLIP_FILE"; 
+	INPUT_PHYLIP_FILE="$(echo "$j" | sed 's/\.\///g')";
+	
 	if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
 		echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE ... "
-		MY_BASENAME="$(basename $INPUT_PHYLIP_FILE .phy)" ;
+		MY_BASENAME="$(basename $INPUT_PHYLIP_FILE '.phy')" ;
 		sed '1d' "$INPUT_PHYLIP_FILE" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 	elif [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ ! -s "$INPUT_PHYLIP_FILE" ]]; then
 		echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
@@ -174,7 +177,7 @@ fi
 		(
 			for i in ./*.phy; do
 				echo "$i" ;
-				MY_BASENAME="$(basename $i .phy)" ;
+				MY_BASENAME="$(basename $i '.phy')" ;
 				sed '1d' "$i" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 			done
 		)
@@ -253,7 +256,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     													    with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

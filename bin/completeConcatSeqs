@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeConcatSeqs.sh                                                            #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.                       #
-# Last update: March 15, 2019                                                            #
+# Last update: April 10, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,13 +137,20 @@ completeConcatSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeConcatSeqs, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.2)"
+echo "INFO      | $(date) | completeConcatSeqs, v1.1.0 April 2019  (in PIrANHA v0.3a1)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) | Starting completeConcatSeqs analysis... "
+echo "INFO      | $(date) |          Running with the following options: "
+echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
+echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+#fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
@@ -152,25 +159,24 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
-fi
-if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
-#
-	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
-	fi
-elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
-	exec >> ./completeConcatSeqs_output.txt ;
-	exec 2>&1 ;
-#
-	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./completeConcatSeqs_output.txt ... "
-	fi
 fi
 
+if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #2: Set output file. "
+	echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./completeConcatSeqs_output.txt ... "
+	exec >> ./completeConcatSeqs_output.txt ;
+	exec 2>&1 ;
+fi
+
+if [[ "$MY_OUTPUT_FILE_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #2: Set output file. "
+	echo "INFO      | $(date) |          Output file set to zero. Logging output to screen rather than file ... "
+fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #3: Run completeConcatSeqs (including completeSeqs and concatenateSeqs routines) on PHYLIP alignments in current working dir. "
@@ -184,46 +190,63 @@ count=1
 		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
 		j="$i".tmp ;
 		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
-		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
+		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------### " ;
 
 			while read k; do
 				MY_TAXON_NAME="$(echo $k | sed 's/\ //g')" ;
-				MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')" ;
-				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;
+				echo "$MY_TAXON_NAME"
+				MY_N_IND_INSTS="$(grep -h "$MY_TAXON_NAME" $i | wc -l | perl -pe 's/\t//g' | sed 's/\ //g')" ;
+				echo "$MY_N_IND_INSTS"
+				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" $i | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;
+				echo "$MY_1ST_INST_LINE"
 				
 				if [[ "$MY_N_IND_INSTS" = "1" ]]; then
-					# extract/copy corresponding sequence from $i and paste it to end of
+					# Extract/copy corresponding sequence from $i and paste it to end of
 					# line with same name ($MY_TAXON_NAME) in tmp file $j:
 					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
 					if [[ "${machine}" = "Mac" ]]; then
-						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						echo "1"
+#						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$i".tmp ;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then
-						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						echo "2"
+#						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$i".tmp ;
 					fi
 
-					
-				elif [[ "$MY_N_IND_INSTS" = "0" ]]; then
-					# only add correct # N's (dummy sequence) to end of line with same
+				elif [[ "$MY_N_IND_INSTS" -eq "0" ]]; then
+					echo "Found zero insts." 
+					# Only add correct # N's (dummy sequence) to end of line with same
 					# name in tmp file $j:
 					if [[ "${machine}" = "Mac" ]]; then
-						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+						echo "3"
+#						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+#						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
+						perl -p -i -e 's/(^'"$MY_TAXON_NAME"'[\ ]*)/$1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then
-						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+						echo "4"
+#						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+#						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
+						perl -p -i -e 's/(^'"$MY_TAXON_NAME"'[\ ]*)/$1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
 					fi
 
 				fi				
 				
 			done < "$USER_SPEC_NAMSPACES_FILE"
+						echo "5"
 
 		# Add header with corrected ntax and nchar information:
 		MY_PHY_NTAX="$(awk 'END {print NR,"lines"}' $j | sed 's/\ .*//g')" ;
+						echo "6"
 		echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp ;
+						echo "7"
 		# Overwrite original phy file with new phy file:
 		cat ./header.tmp "$j" > "$i" ;
+						echo "8"
 
 
 		######  concatenateSeqs  ######
@@ -291,7 +314,7 @@ count=1
 		fi
 
 
-	echo "$((count++))" > count.tmp ;
+		echo "$((count++))" > count.tmp ;
 
 		
 	done
@@ -317,6 +340,8 @@ fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	rm ./*.tmp ;
+	rm ./args.txt ;	## Remove arguments file generated when parsing the options.
+
 
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -332,18 +357,14 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-USER_SPEC_NAMSPACES_FILE=NULL
-MY_OUTPUT_FILE_SWITCH=NULL
-MY_VERBOSE_OUT_SWITCH=0
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNamesSpaces (def: NULL) mandatory name of taxon 'names and spaces' file
-  -o   outputFile (def: NULL) send screen output to file in working dir with user-specified 
-       name, for example 'output.txt'
+  -o   outputFile (def: NULL; 0, off) saves screen output to file with user-specified name 
+       (e.g. 'output.txt'), but setting to 0 turns off logging to file, sends output to
+       screen
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
        screen (stdout)
   -h   help text (also: --help) echo this help text and exit
@@ -365,9 +386,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	When calling the program, <taxonNamesSpaces> is a mandatory option, PHYLIP alignment 
  files in working dir are overwritten with 'complete' alignments, and by default all script 
  output is written to a file named 'completeConcatSeqs_output.txt'. The user may optionally 
- specify verbose output (-v 1) or an output file name (-o flag). Taxon names in the PHYLIP 
- files should contain only alphanumeric characters and no spaces, or else there could be 
- issues. Also, PHYLIP alignment files must have the extension '.phy'.
+ specify verbose output (-v 1) or an output file name (-o flag). If the -o flag is set to 
+ zero ('-o 0'), then output is directed to screen as usual rather than logged to file. Taxon 
+ names in the PHYLIP files should contain only alphanumeric characters and no spaces, or 
+ else there could be issues. Also, PHYLIP alignment files must have the extension '.phy'.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
@@ -383,7 +405,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f completeConcatSeqs --args='-t taxon_name_spaces12.txt -v 1'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.
@@ -399,6 +421,51 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION"
 	exit ;
 fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		USER_SPEC_NAMSPACES_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		USER_SPEC_NAMSPACES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_FILE_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
 
 
 # ############# ############# #############

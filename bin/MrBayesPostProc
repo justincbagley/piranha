@@ -137,7 +137,7 @@ MrBayesPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MrBayesPostProc, v1.6.0 March 2019  (in PIrANHA v0.2-alpha.2)"
+echo "INFO      | $(date) | MrBayesPostProc, v1.6.0 March 2019  (in PIrANHA v0.3a1)"
 echo "INFO      | $(date) | Copyright (c) 2017–2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -384,7 +384,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  to MrBayesPostProc).
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

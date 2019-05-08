@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.4, May 2019  (main script for PIrANHA v0.2-alpha.2)  "
+piranha v1.0.4, May 2019  (main script for PIrANHA v0.3a1)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -277,7 +277,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.2-alpha.2.
+ This is the main script for PIrANHA v0.3a1.
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
@@ -309,7 +309,7 @@ usage() {
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.

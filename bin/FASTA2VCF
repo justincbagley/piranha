@@ -141,7 +141,7 @@ FASTA2VCF () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2VCF, v1.1.0 April 2019  (in PIrANHA v0.2-alpha.2)        "
+echo "INFO      | $(date) | FASTA2VCF, v1.1.0 April 2019  (in PIrANHA v0.3a1)        "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -368,7 +368,7 @@ MY_LOGFILE_SWITCH=NULL
 MY_OUTPUT_PHYLIP_SWITCH=NULL
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFASTA (def: NULL) mandatory name of input FASTA file in sequential, non-wrapped
@@ -410,12 +410,12 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
  
-    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output>'			Run without subsampling SNPs
-    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output> -s1'		Subsample 1 SNP per locus/partition
-    piranha -f FASTA2VCF --args='-h'
+    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output>'         Run without subsampling SNPs
+    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output> -s1'     Subsample 1 SNP per locus/partition
+    piranha -f FASTA2VCF --args='-h'                                                    Print this help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

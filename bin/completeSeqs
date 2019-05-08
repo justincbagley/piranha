@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeSeqs.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: March 15, 2019                                                            #
+# Last update: April 10, 2019                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -21,8 +21,9 @@
 ##########################################################################################
 
 ## TODO: Change need for taxon names and spaces file to only a need for a taxon names file.
-## You should be able to write code to convert an input taxon names file to an appropriately
-## formatted taxon names and spaces file during the course of this script/function.
+## Should be easy to write code to convert an input taxon names file to an appropriately
+## formatted taxon names and spaces file during the course of this script/function. Can also
+## use new getTaxonNames function.
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -141,15 +142,20 @@ completeSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeSeqs, v1.0.0 March 2019  (in PIrANHA v0.2-alpha.2)    "
+echo "INFO      | $(date) | completeSeqs, v1.1.0 April 2019  (in PIrANHA v0.3a1)    "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Starting completeSeqs analysis... "
-	echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
-fi
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) | Starting completeSeqs analysis... "
+echo "INFO      | $(date) |          Running with the following options: "
+echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
+echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+
+echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
+#fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
@@ -259,6 +265,8 @@ fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	rm ./*.tmp ;
+	rm ./args.txt ;	## Remove arguments file generated when parsing the options.
+
 
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -277,13 +285,8 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-USER_SPEC_NAMSPACES_FILE=NULL
-MY_OUTPUT_FILE_SWITCH=NULL
-MY_VERBOSE_OUT_SWITCH=0
-
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNamesSpaces (def: NULL) mandatory name of taxon 'names and spaces' file
@@ -326,7 +329,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f completeSeqs --args='-t taxon_name_spaces12.txt'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -347,23 +350,68 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit ;
 fi
 
-############ PARSE THE OPTIONS
-while getopts 't:o:v:' opt ; do
-  case $opt in
-## completeSeqs options:
-    t) USER_SPEC_NAMSPACES_FILE=$OPTARG ;;
-    o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
-    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
 
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		USER_SPEC_NAMSPACES_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		USER_SPEC_NAMSPACES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_FILE_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+
+
+# ############ PARSE THE OPTIONS
+# while getopts 't:o:v:' opt ; do
+#   case $opt in
+# ## completeSeqs options:
+#     t) USER_SPEC_NAMSPACES_FILE=$OPTARG ;;
+#     o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
 # Store the remaining part as arguments.
 # args+=("$@")
 

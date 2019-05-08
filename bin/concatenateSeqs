@@ -136,20 +136,20 @@ concatenateSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | concatenateSeqs, v1.2.1 April 2019  (in PIrANHA v0.2-alpha.2)  "
+echo "INFO      | $(date) | concatenateSeqs, v1.2.1 April 2019  (in PIrANHA v0.3a1)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Starting concatenateSeqs analysis... "
-	echo "INFO      | $(date) |          Running with the following options: "
-	echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
-	echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
-	echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "INFO      | $(date) | Starting concatenateSeqs analysis... "
+echo "INFO      | $(date) |          Running with the following options: "
+echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
+echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
 
-	echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
-fi
+echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
+#fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
@@ -246,7 +246,6 @@ count=1
 
 
 
-
 ###### FIX NEW CONCATENATED PHYLIP ALIGNMENT TO HAVE THE CORRECT NCHAR INFORMATION
 
 		# Add header with corrected ntax and nchar information:
@@ -267,7 +266,8 @@ fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	rm ./*.tmp ;
-	rm ./args.txt ;	## Remove arguments file generated when parsing the options:
+	rm ./args.txt ;	## Remove arguments file generated when parsing the options.
+
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s): ./concatenated_seqs.phy "
@@ -325,7 +325,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f concatenateSeqs --args='-t taxon_name_spaces12.txt'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.2-alpha.2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.
