@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeSeqs.sh                                                                  #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v2.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 10, 2019                                                            #
+# Last update: May 8, 2019                                                               #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -142,7 +142,7 @@ completeSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeSeqs, v1.1.0 April 2019  (in PIrANHA v0.3a1)    "
+echo "INFO      | $(date) | completeSeqs, v2.0.0 May 2019  (in PIrANHA v0.3a1)             "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -151,7 +151,8 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting completeSeqs analysis... "
 echo "INFO      | $(date) |          Running with the following options: "
 echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
-echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
+echo "INFO      | $(date) |          - Missing character option, <missingCharacter> = ${MY_MISSING_CHAR} "	# def: N
+echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "	# def: completeSeqs_output.txt
 echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
@@ -193,29 +194,18 @@ count=1
 	for i in ./*.phy; do
 		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
 		j="$i".tmp ;
-		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
+		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*[\ ]*//g; s/[\ ]//g')" ;
 		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
 
-			while read k; do
-				MY_TAXON_NAME="$(echo $k | sed 's/\ //g')" ;
-				MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')" ;
-				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;
-				#echo "line: $MY_1ST_INST_LINE"
+			while read line; do
+				MY_TAXON_NAME="$(echo "$line" | sed 's/\ //g')" ;
+				echo $MY_TAXON_NAME
 
-				# $i is expendable & editable (with no mistakes), $j is the key--where the
-				# sequences will simply be added to ends of lines with matching taxon 
-				# name labels. So, first take the name and check whether it exists in the
-				# orig phy file $i. If name exists, copy the sequence and paste it to the end
-				# of the line with the same name in the tmp file $j. If it doesn't exist,
-				# then only add correct # N's (dummy sequence) to end of line with same
-				# name in tmp file $j. When this process is done, $j will be a correct,
-				# complete matrix that only needs a PHYLIP header to be added at 1st line
-				# in order to create a new complete PHYLIP alignment for locus $i.
-				
-				if [[ "$MY_N_IND_INSTS" = "1" ]]; then
+				if [[ ! -z "$(grep -n "$MY_TAXON_NAME" "$i" )" ]]; then 
 					# Extract/copy corresponding sequence from $i and paste it to end of
 					# line with same name ($MY_TAXON_NAME) in tmp file $j:
-					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
+#					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" "$i" | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
+					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" "$i" | perl -pe 's/^.*\ //g' | sed 's/\ //g')" ;
 					if [[ "${machine}" = "Mac" ]]; then
 						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
 					fi
@@ -223,21 +213,47 @@ count=1
 					if [[ "${machine}" = "Linux" ]]; then
 						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
 					fi
+				fi
+						
+				if [[ -z "$(grep -n "$MY_TAXON_NAME" "$i" )" ]]; then 
 
+					if [[ "$MY_MISSING_CHAR" = "N" ]]; then
+						# Only add correct # N's (dummy sequence) to end of line with same
+						# name in tmp file $j, after taxon name plus spaces:
+						MY_SEQUENCE="$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+					elif [[ "$MY_MISSING_CHAR" = "n" ]]; then
+						# Only add correct # n's (dummy sequence) to end of line with same
+						# name in tmp file $j, after taxon name plus spaces:
+						MY_SEQUENCE="$(printf 'n%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+					elif [[ "$MY_MISSING_CHAR" = "?" ]]; then
+						# Only add correct # ?'s (dummy sequence) to end of line with same
+						# name in tmp file $j, after taxon name plus spaces:
+						MY_SEQUENCE="$(printf '?%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+					fi
 					
-				elif [[ "$MY_N_IND_INSTS" = "0" ]]; then
-					# Only add correct # N's (dummy sequence) to end of line with same
-					# name in tmp file $j:
-					if [[ "${machine}" = "Mac" ]]; then
-						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
-					fi
+				fi
 
-					if [[ "${machine}" = "Linux" ]]; then
-						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
-					fi
-
-				fi				
-				
 			done < "$USER_SPEC_NAMSPACES_FILE"
 
 	echo "$((count++))" > count.tmp ;
@@ -270,10 +286,10 @@ fi
 
 echo "----------------------------------------------------------------------------------------------------------"
 
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$count" = "1" ]] || [[ "$count" = "2" ]]; then
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$count" = "1" ]]; then
 	echo "output file(s): Constructed one complete PHYLIP file in current directory "
 fi
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$count" -gt "2" ]]; then
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$count" = "2" ]] || [[ "$count" -gt "2" ]]; then
 	echo "output file(s): Multiple complete PHYLIP files in current directory "
 fi
 echo ""
@@ -290,6 +306,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNamesSpaces (def: NULL) mandatory name of taxon 'names and spaces' file
+  -c   missingCharacter (def: N; others: n, ?) character used to make strings of missing 
+       data representing sequences for missing individuals
   -o   outputFile (def: NULL) send screen output to file in working dir with user-specified 
        name, for example 'output.txt'
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
@@ -302,13 +320,16 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  DNA sequence alignments for different genes (e.g. 100s or 1000s of RAD or UCE loci) with 
  varying levels of taxon sampling (completeness), such that out of the total number of tip 
  taxa, some were sequenced for gene A, and possibly the same or a varying number of tip 
- taxa were sequenced for gene B, and so on. Given such a workspace, this script takes as 
+ taxa were sequenced for gene B, and so on. Given such a workspace, this program takes as 
  input a 'names and spaces file', <taxonNamesSpaces>, containing only the names of 
  tip taxa, one per line, as well as spaces extending the total number of characters to 
  be the same on each line (e.g. 10 or 12 characters including spaces), passed using the 
- -t flag. The script then converts the PHYLIP alignments into 'complete' alignments, each 
+ -t flag. The program then converts the PHYLIP alignments into 'complete' alignments, each 
  containing the full number of tip taxa, by filling in missing taxa with dummy sequences 
- comprised entirely of missing data (coded as NNNs).
+ comprised entirely of missing data, coded as strings of <missingCharacter>. By default, 
+ sequences for missing taxa will be filled in with strings like 'NNN..N'; however, using the
+ options '-c n' or '-c ?' will cause the program to fill in dummy sequences with lowercase 
+ n's or question marks, respectively.
 	When calling the program, <taxonNamesSpaces> is a mandatory option, PHYLIP alignment 
  files in working dir are overwritten with 'complete' alignments, and by default all script 
  output is written to a file named 'completeSeqs_output.txt'. The user may optionally specify
@@ -378,6 +399,13 @@ fi
 	else 
 		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
 		USER_SPEC_NAMSPACES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MISSING_CHAR=N ;
+	else 
+		MY_ARG="$(grep -h '\-c' ./args.txt | perl -pe 's/\-c//g' | perl -pe 's/\ //g')";
+		MY_MISSING_CHAR="$MY_ARG" ;
 	fi
 #
 	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
