@@ -169,6 +169,10 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
 fi
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
+	echo "INFO      | $(date) |          Check the output file for additional run details ... "
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
 #
@@ -176,6 +180,10 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 		echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 	fi
 elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
+	echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./completeSeqs_output.txt ... "
+	echo "INFO      | $(date) |          Check the output file for additional run details ... "
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
 	exec >> ./completeSeqs_output.txt ;
 	exec 2>&1 ;
 #
@@ -186,7 +194,7 @@ fi
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #2: Run main completeSeqs analysis. "
+	echo "INFO      | $(date) | Step #3: Run main completeSeqs analysis. "
 fi
 
 count=1
@@ -275,7 +283,7 @@ count=1
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
+	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
 	echo "INFO      | $(date) |          Deleting temporary files... "
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.

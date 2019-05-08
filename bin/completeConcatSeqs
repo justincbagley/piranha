@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeConcatSeqs.sh                                                            #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v2.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.                       #
-# Last update: April 10, 2019                                                            #
+# Last update: May 8, 2019                                                               #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ completeConcatSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeConcatSeqs, v1.1.0 April 2019  (in PIrANHA v0.3a1)"
+echo "INFO      | $(date) | completeConcatSeqs, v2.0.0 May 2019  (in PIrANHA v0.3a1)       "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -146,7 +146,8 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting completeConcatSeqs analysis... "
 echo "INFO      | $(date) |          Running with the following options: "
 echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
-echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
+echo "INFO      | $(date) |          - Missing character option, <missingCharacter> = ${MY_MISSING_CHAR} "	# def: N
+echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "	# def: completeSeqs_output.txt
 echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
@@ -159,9 +160,12 @@ checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
 	echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
+	echo "INFO      | $(date) |          Check the output file for additional run details ... "
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
 fi
@@ -169,6 +173,9 @@ fi
 if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
 	echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./completeConcatSeqs_output.txt ... "
+	echo "INFO      | $(date) |          Check the output file for additional run details ... "
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
 	exec >> ./completeConcatSeqs_output.txt ;
 	exec 2>&1 ;
 fi
@@ -189,64 +196,79 @@ count=1
 
 		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
 		j="$i".tmp ;
-		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
-		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------### " ;
+		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*[\ ]*//g; s/[\ ]//g')" ;
+		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
 
-			while read k; do
-				MY_TAXON_NAME="$(echo $k | sed 's/\ //g')" ;
-				echo "$MY_TAXON_NAME"
-				MY_N_IND_INSTS="$(grep -h "$MY_TAXON_NAME" $i | wc -l | perl -pe 's/\t//g' | sed 's/\ //g')" ;
-				echo "$MY_N_IND_INSTS"
-				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" $i | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;
-				echo "$MY_1ST_INST_LINE"
-				
-				if [[ "$MY_N_IND_INSTS" = "1" ]]; then
+			while read line; do
+				MY_TAXON_NAME="$(echo "$line" | sed 's/\ //g')" ;
+				echo $MY_TAXON_NAME
+
+				if [[ ! -z "$(grep -n "$MY_TAXON_NAME" "$i" )" ]]; then 
 					# Extract/copy corresponding sequence from $i and paste it to end of
 					# line with same name ($MY_TAXON_NAME) in tmp file $j:
-					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
+#					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" "$i" | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
+					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" "$i" | perl -pe 's/^.*\ //g' | sed 's/\ //g')" ;
 					if [[ "${machine}" = "Mac" ]]; then
-						echo "1"
-#						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
-						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$i".tmp ;
+						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then
-						echo "2"
-#						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
-						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$i".tmp ;
+						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
 					fi
+				fi
+						
+				if [[ -z "$(grep -n "$MY_TAXON_NAME" "$i" )" ]]; then 
 
-				elif [[ "$MY_N_IND_INSTS" -eq "0" ]]; then
-					echo "Found zero insts." 
-					# Only add correct # N's (dummy sequence) to end of line with same
-					# name in tmp file $j:
-					if [[ "${machine}" = "Mac" ]]; then
-						echo "3"
-#						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
-#						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
-						perl -p -i -e 's/(^'"$MY_TAXON_NAME"'[\ ]*)/$1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
+					if [[ "$MY_MISSING_CHAR" = "N" ]]; then
+						# Only add correct # N's (dummy sequence) to end of line with same
+						# name in tmp file $j, after taxon name plus spaces:
+						MY_SEQUENCE="$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+					elif [[ "$MY_MISSING_CHAR" = "n" ]]; then
+						# Only add correct # n's (dummy sequence) to end of line with same
+						# name in tmp file $j, after taxon name plus spaces:
+						MY_SEQUENCE="$(printf 'n%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+					elif [[ "$MY_MISSING_CHAR" = "?" ]]; then
+						# Only add correct # ?'s (dummy sequence) to end of line with same
+						# name in tmp file $j, after taxon name plus spaces:
+						MY_SEQUENCE="$(printf '?%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
+	
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						fi
 					fi
+					
+				fi
 
-					if [[ "${machine}" = "Linux" ]]; then
-						echo "4"
-#						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
-#						sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
-						perl -p -i -e 's/(^'"$MY_TAXON_NAME"'[\ ]*)/$1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$i".tmp ;
-					fi
-
-				fi				
-				
 			done < "$USER_SPEC_NAMSPACES_FILE"
-						echo "5"
-
+	
+		# Overwrite original phy file $i with new edited tmp file $j
+		# cp -f "$j" "$i" ;
+		# SKIP THIS FOR NOW! Just use $j during cat below...
+	
 		# Add header with corrected ntax and nchar information:
 		MY_PHY_NTAX="$(awk 'END {print NR,"lines"}' $j | sed 's/\ .*//g')" ;
-						echo "6"
-		echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp ;
-						echo "7"
+
+		echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp ;	
+
 		# Overwrite original phy file with new phy file:
 		cat ./header.tmp "$j" > "$i" ;
-						echo "8"
 
 
 		######  concatenateSeqs  ######
@@ -362,6 +384,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNamesSpaces (def: NULL) mandatory name of taxon 'names and spaces' file
+  -c   missingCharacter (def: N; others: n, ?) character used to make strings of missing 
+       data representing sequences for missing individuals
   -o   outputFile (def: NULL; 0, off) saves screen output to file with user-specified name 
        (e.g. 'output.txt'), but setting to 0 turns off logging to file, sends output to
        screen
@@ -379,10 +403,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  input a 'names and spaces file', <taxonNamesSpaces>, containing the names of tip taxa,
  one per line, as well as spaces extending the total number of characters to be the same
  on each line (e.g. 10 or 12 characters including spaces), passed using the -t flag. The 
- script (1) converts the PHYLIP alignments into 'complete' alignments, each containing the 
- full number of tip taxa, by filling in missing taxa with dummy sequences comprised entirely 
- of missing data (coded as NNNs) in the alignment, and (2) concatenates all of the alignments 
- into a single PHYLIP alignment named 'concatenated_seqs.phy'.
+ program then (1) converts the PHYLIP alignments into 'complete' alignments, each containing
+ the full number of tip taxa, by filling in missing taxa with dummy sequences comprised 
+ entirely of missing data, coded as strings of <missingCharacter>, and (2) concatenates all 
+ of the alignments into a single PHYLIP alignment named 'concatenated_seqs.phy'. By default, 
+ sequences for missing taxa will be filled in with strings like 'NNN..N'; however, using the
+ options '-c n' or '-c ?' will cause the program to fill in dummy sequences with lowercase 
+ n's or question marks, respectively.
 	When calling the program, <taxonNamesSpaces> is a mandatory option, PHYLIP alignment 
  files in working dir are overwritten with 'complete' alignments, and by default all script 
  output is written to a file named 'completeConcatSeqs_output.txt'. The user may optionally 
@@ -451,6 +478,13 @@ fi
 	else 
 		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
 		USER_SPEC_NAMSPACES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MISSING_CHAR=N ;
+	else 
+		MY_ARG="$(grep -h '\-c' ./args.txt | perl -pe 's/\-c//g' | perl -pe 's/\ //g')";
+		MY_MISSING_CHAR="$MY_ARG" ;
 	fi
 #
 	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
