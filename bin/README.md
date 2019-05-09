@@ -18,6 +18,7 @@ The full file tree for this directory is as follows:
    ├── calcAlignmentPIS.r
    ├── completeConcatSeqs
    ├── completeSeqs
+   ├── concatSeqsPartitions
    ├── concatenateSeqs
    ├── dadiPostProc
    ├── dadiRunner
