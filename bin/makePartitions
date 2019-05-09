@@ -287,9 +287,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  partitions files. The ordering of charsets is equal to the alphanumeric order in which bash 
  or UNIX terminal would read the PHYLIP files (e.g. locus1.phy, locus10.phy, ..., and not 
  locus1.phy, locus2.phy, ...). This is the same order in which the related PIrANHA functions 
- concatenateSeqs and completeConcatSeqs will read and concatenate the PHYLIP alignments.
- Sequence names should include alphanumeric, hyphen, and underscore characters but no spaces,
- or else there could be issues. Also, PHYLIP alignment files must have the extension '.phy'. 
+ concatenateSeqs, concatSeqsPartitions, and completeConcatSeqs will read and concatenate the 
+ PHYLIP alignments. Sequence names should include alphanumeric, hyphen, and underscore 
+ characters but no spaces, or else there could be issues. Also, PHYLIP alignment files must 
+ have the extension '.phy'. 
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or Linux
