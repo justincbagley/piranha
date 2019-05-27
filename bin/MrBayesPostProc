@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MrBayesPostProc.sh                                                               #
-  version="v1.6.0"                                                                       #
+  version="v1.7.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: March 15, 2019                                                            #
+# Last update: May 27, 2019                                                              #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ MrBayesPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MrBayesPostProc, v1.6.0 March 2019  (in PIrANHA v0.3a1)"
+echo "INFO      | $(date) | MrBayesPostProc, v1.7.0 May 2019  (in PIrANHA v0.3a1)  "
 echo "INFO      | $(date) | Copyright (c) 2017–2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -337,15 +337,6 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_LOC_SC_MB_PATH=NULL
-MY_RELBURNIN_FRAC=0.25
-MY_SS_ANALYSIS_SWITCH=0
-MY_SS_NGEN=250000
-MY_SS_DIAGNFREQ=2500
-MY_TEMP_FILE_SWITCH=1
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
@@ -411,25 +402,92 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'p:b:s:g:d:t:' opt ; do
-  case $opt in
-## MrBayesPostProc options:
-    p) MY_LOC_SC_MB_PATH=$OPTARG ;;
-    b) MY_RELBURNIN_FRAC=$OPTARG ;;
-    s) MY_SS_ANALYSIS_SWITCH=$OPTARG ;;
-    g) MY_SS_NGEN=$OPTARG ;;
-    d) MY_SS_DIAGNFREQ=$OPTARG ;;
-    t) MY_TEMP_FILE_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOC_SC_MB_PATH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-p' ./args.txt | perl -pe 's/\-p//g' | perl -pe 's/\ //g')";
+		MY_LOC_SC_MB_PATH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RELBURNIN_FRAC=0.25 ;
+	else 
+		MY_ARG="$(grep -h '\-b' ./args.txt | perl -pe 's/\-b//g' | perl -pe 's/\ //g')";
+		MY_RELBURNIN_FRAC="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_SS_ANALYSIS_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-s' ./args.txt | perl -pe 's/\-s//g' | perl -pe 's/\ //g')";
+		MY_SS_ANALYSIS_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-g' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_SS_NGEN=250000 ;
+	else 
+		MY_ARG="$(grep -h '\-g' ./args.txt | perl -pe 's/\-g//g' | perl -pe 's/\ //g')";
+		MY_SS_NGEN="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_SS_DIAGNFREQ=2500 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_SS_DIAGNFREQ="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_TEMP_FILE_SWITCH=1 ;
+	else 
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		MY_TEMP_FILE_SWITCH="$MY_ARG" ;
+	fi
+
+# ############ PARSE THE OPTIONS
+# while getopts 'p:b:s:g:d:t:' opt ; do
+#   case $opt in
+# ## MrBayesPostProc options:
+#     p) MY_LOC_SC_MB_PATH=$OPTARG ;;
+#     b) MY_RELBURNIN_FRAC=$OPTARG ;;
+#     s) MY_SS_ANALYSIS_SWITCH=$OPTARG ;;
+#     g) MY_SS_NGEN=$OPTARG ;;
+#     d) MY_SS_DIAGNFREQ=$OPTARG ;;
+#     t) MY_TEMP_FILE_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
 
 
 # ############# ############# #############
