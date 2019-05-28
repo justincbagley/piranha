@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: Mega2PHYLIP.sh                                                                   #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.                       #
-# Last update: March 15, 2019                                                            #
+# Last update: May 28, 2019                                                              #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ Mega2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | Mega2PHYLIP, v1.0.2 March 2019  (part of PIrANHA v0.3a1)"
+echo "INFO      | $(date) | Mega2PHYLIP, v1.1.0 May 2019  (part of PIrANHA v0.3a1)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -345,13 +345,6 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-INPUT_MEGA_FILE=NULL
-MULTIPLE_MEGA_SWITCH=0
-KEEP_ORIG_MEGA_SWITCH=0
-MY_VERBOSE_OUT_SWITCH=0
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
@@ -392,33 +385,86 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
-if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
 	exit
 fi
 
-if [[ "$1" = "-V" ]] || [[ "$1" = "--version" ]]; then
-	echo "$(basename $0) $VERSION"
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'i:m:k:v:' opt ; do
-  case $opt in
-## Mega2PHYLIP options:
-    i) INPUT_MEGA_FILE=$OPTARG ;;
-    m) MULTIPLE_MEGA_SWITCH=$OPTARG ;;
-    k) KEEP_ORIG_MEGA_SWITCH=$OPTARG ;;
-    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_MEGA_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_MEGA_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MULTIPLE_MEGA_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MULTIPLE_MEGA_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		KEEP_ORIG_MEGA_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+		KEEP_ORIG_MEGA_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:m:k:v:' opt ; do
+#   case $opt in
+# ## Mega2PHYLIP options:
+#     i) INPUT_MEGA_FILE=$OPTARG ;;
+#     m) MULTIPLE_MEGA_SWITCH=$OPTARG ;;
+#     k) KEEP_ORIG_MEGA_SWITCH=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
 
 # Store the remaining part as arguments.
 # args+=("$@")
