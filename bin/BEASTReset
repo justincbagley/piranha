@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEASTReset.sh                                                                    #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.                     #
-# Last update: March 20, 2019                                                            #
+# Last update: May 28, 2019                                                              #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ BEASTReset () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTReset, v1.0.0 March 2019  (in PIrANHA v0.3a1)      "
+echo "INFO      | $(date) | BEASTReset, v1.1.0 May 2019  (in PIrANHA v0.3a1)      "
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -233,12 +233,6 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_RERUN_DIR_LIST=list.txt
-MY_RUN_SCRIPT=beast_pbs.sh
-MY_SC_MANAGEMENT_SYS=PBS
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
@@ -303,6 +297,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
 
+
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
 	exit
@@ -313,23 +308,69 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'i:s:m:' opt ; do
-  case $opt in
-## BEASTReset options:
-    i) MY_RERUN_DIR_LIST=$OPTARG ;;
-    s) MY_RUN_SCRIPT=$OPTARG ;;
-    m) MY_SC_MANAGEMENT_SYS=$OPTARG ;;
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
 
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RERUN_DIR_LIST=list.txt ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_RERUN_DIR_LIST="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RUN_SCRIPT=beast_pbs.sh ;
+	else 
+		MY_ARG="$(grep -h '\-s' ./args.txt | perl -pe 's/\-s//g' | perl -pe 's/\ //g')";
+		MY_RUN_SCRIPT="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_SC_MANAGEMENT_SYS=PBS ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MY_SC_MANAGEMENT_SYS="$MY_ARG" ;
+	fi
+#
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:s:m:' opt ; do
+#   case $opt in
+# ## BEASTReset options:
+#     i) MY_RERUN_DIR_LIST=$OPTARG ;;
+#     s) MY_RUN_SCRIPT=$OPTARG ;;
+#     m) MY_SC_MANAGEMENT_SYS=$OPTARG ;;
+# 
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
 
 
 # ############# ############# #############
