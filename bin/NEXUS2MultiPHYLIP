@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2MultiPHYLIP.sh                                                             #
-  VERSION="v1.5.3"                                                                       #
+  VERSION="v1.6.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: March 15, 2019                                                            #
+# Last update: May 28, 2019                                                              #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -138,7 +138,7 @@ NEXUS2MultiPHYLIP () {
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.5.3 March 2019  (in PIrANHA v0.3a1)"
+echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.6.0 May 2019  (in PIrANHA v0.3a1) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 fi
@@ -513,13 +513,6 @@ echo "--------------------------------------------------------------------------
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_NEXUS=NULL
-MY_VERBOSE_OUT_SWITCH=1
-MY_EXPERIMENTAL_SWITCH=0
-MY_ANOURA_SWITCH=0
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
@@ -571,7 +564,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
 
-if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
 	exit
 fi
@@ -581,28 +575,81 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
 
-############ PARSE THE OPTIONS
-while getopts 'i:v:-:' opt ; do
-  case $opt in
-## NEXUS2MultiPHYLIP options:
-    i) MY_NEXUS=$OPTARG ;;
-    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
-	-) LONG_OPTARG="${OPTARG#*=}"
-         case $OPTARG in
-         experimental) MY_EXPERIMENTAL_SWITCH=1 ;;
-         Anoura) MY_ANOURA_SWITCH=1 ;;
-         esac ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
 
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e 's/^\-$//g' ./args.txt
+	perl -p -i -e $'s/\-experimental/\-\-experimental/g' ./args.txt
+	perl -p -i -e $'s/\-Anoura/\-\-Anoura/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NEXUS=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_NEXUS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=1 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+#
+## --experimental
+	if [[  "$(grep -h '\-\-experimental' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_EXPERIMENTAL_SWITCH=0 ;
+	else 
+		MY_EXPERIMENTAL_SWITCH=1 ;
+	fi
+## --Anoura
+	if [[  "$(grep -h '\-\-Anoura' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ANOURA_SWITCH=0 ;
+	else 
+		MY_ANOURA_SWITCH=1 ;
+	fi
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:v:-:' opt ; do
+#   case $opt in
+# ## NEXUS2MultiPHYLIP options:
+#     i) MY_NEXUS=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+# 	-) LONG_OPTARG="${OPTARG#*=}"
+#          case $OPTARG in
+#          experimental) MY_EXPERIMENTAL_SWITCH=1 ;;
+#          Anoura) MY_ANOURA_SWITCH=1 ;;
+#          esac ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
 # Store the remaining part as arguments.
 # args+=("$@")
 

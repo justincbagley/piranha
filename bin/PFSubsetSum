@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PFSubsetSum.sh                                                                   #
-  VERSION="v1.3.3"                                                                       #
+  VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
-# Last update: March 15, 2019                                                            #
+# Last update: May 28, 2019                                                              #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ PFSubsetSum () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PFSubsetSum, v1.3.3 March 2019  (part of PIrANHA v0.3a1)"
+echo "INFO      | $(date) | PFSubsetSum, v1.4.0 May 2019  (part of PIrANHA v0.3a1) "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -285,12 +285,67 @@ echo ""
 }
 
 
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+  -c   citation (also: --citation) echo program citation and exit
+
+ ${bold}OVERVIEW${reset}
+ This simple function uses a shell script to calculate summary statistics for DNA subsets 
+ within the optimum sequence partitioning scheme identified for the data by PartitionFinder
+ v1 or v2 (Lanfear et al. 2012, 2014). We assume that the function is being run from a working
+ directory containing files from a completed PartitionFinder run (usually cwd is a subfolder
+ named 'analysis/', created by PartitionFinder for each run), and thus containing at minimum
+ the main 'best_scheme.txt' output file from PartitionFinder, as well as the analysis subfolder
+ named subsets/ (PartitionFinder creates other subfolders named phylofiles/, schemes/, 
+ start_tree/, and cfg/, but these are not necessary). Given such a working directory, 
+ `PFSubsetSum` calculates several summary statistics, including numCharsets (number of character 
+ sets), subsetLengths (alignment lengths in bp), and subsetModels (selected models of DNA 
+ sequence evolution) for each subset in the best scheme. These statistics are collated into 
+ a summary table file named 'sumstats.txt' saved in the current directory.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). The key dependency is R, the R environment for statistical
+ computing (available at: https://cran.r-project.org), which must be installed and available 
+ as 'R' from the command line. Tested using R v3.5+ but should work on older versions.
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f PFSubsetSum                 Regular run in directory containing PartitionFinder results
+    piranha -f PFSubsetSum --args='-h'     Obtain this help text and exit
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Lanfear, R., Calcott, B., Ho, S.Y.W., Guindon, S. 2012. Partitionfinder: combined selection of 
+	partitioning schemes and substitution models for phylogenetic analyses. Molecular Biology 
+	and Evolution, 29, 1695–1701. 
+ Lanfear, R., Calcott, B., Kainer, D., Mayer, C., Stamatakis, A. 2014. Selecting optimal 
+	partitioning schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
+
+ Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.
+ Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
+"
+
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
 	exit
 fi
 
-if [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]; then
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-c" ]] || [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]; then
 	echo " Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 "
