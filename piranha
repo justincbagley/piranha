@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: May 7, 2019                                                               #
+# Last update: June 6, 2019                                                              #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.4, May 2019  (main script for PIrANHA v0.3a1)  "
+piranha v1.0.4, June 2019  (main script for PIrANHA v0.3a1)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -180,54 +180,115 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 		echo "
 FUNCTION			   DESCRIPTION
 ----------------------------------------------------------------------------------------------------------------
-2logeB10.r             Rscript extracting marginal likelihood estimates and calculate 2loge B10 Bayes factors (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs.
-AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses (Calderon, Bagley, and Muchhala, in prep.).
-BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (usually on remote supercomputer).
-BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST runs/subfolders (destined for supercomputer).
+2logeB10.r             Rscript extracting marginal likelihood estimates and calculate 2loge B10 Bayes factors 
+                       (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs.
+AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses (Calderon, 
+                       Bagley, and Muchhala, in prep.).
+BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (usually on 
+                       remote supercomputer).
+BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST 
+                       runs/subfolders (destined for supercomputer).
 BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster.
-BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal likelihood estimation) analyses using BEAST v2+ PathSampler.
-calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-informative sites (pis) for all FASTA files in working dir.
-completeConcatSeqs     Function converting series of PHYLIP (Felsenstein 2002) DNA sequence alignments (with or without varying nos. of taxa) into a single concatenated PHYLIP alignment with complete taxon sampling; also makes character subset/partition files in RAxML, PartitionFinder, and NEXUS formats for the resulting alignment.
-completeSeqs           Function converting series of PHYLIP DNA sequence alignments (with or without varying nos. of taxa) into a single concatenated PHYLIP alignment with complete taxon sampling, starting from a 'taxon names and spaces' file.
-concatenateSeqs        Function that converts series of PHYLIP DNA sequence alignments with equal taxon sampling into a single concatenated PHYLIP alignment.
-dadiPostProc           Function for post-processing output from one or multiple ∂a∂i runs (ideally run with PIrANHA's dadiRunner function), including collation of best-fit parameter estimates, composite likelihoods, and optimal theta values.
-dadiRunner             Automates running ∂a∂i on a remote supercomputing cluster. See help text (-h) and function (bin/ dir) for details.
-dadiUncertainty        Automates uncertainty analysis in ∂a∂i, including generation of bootstrapped SNP files for parameter std. dev. estimation using the GIM method, as well as std. dev. estimation using the FIM method (orig. data only).
-dropRandomHap          This function randomly drops one phased haplotype (allele) per individual in each of n PHYLIIP gene alignments in current working directory, starting from a 'taxon names' file.
-ExaBayesPostProc       Function automating reading and conducting post-processing analyses on phylogenetic results output from ExaBayes.
-FASTA2PHYLIP           Function that automates converting one or multiple sequential FASTA DNA sequence alignment files (with sequences either unwrapped or hard-wrapped across multiple lines) to PHYLIP format.
-FASTA2VCF              Shell script function automating conversion of single multiple sequence FASTA alignment to variant call format (VCF) v4.1, with or without subsampling SNPs per partition/locus.
-fastSTRUCTURE          Interactive function that automates running fastSTRUCTURE (Raj et al. 2014) on biallelic SNP datasets.
-getBootTrees           Function that automates organizing bootstrap trees output by RAxML runs conducted in current working directory using the MAGNET program within PIrANHA.
-getTaxonNames          Utility function that extracts tip taxon names from sequences present in one or multiple PHYLIP DNA sequence alignments in current directory, using information on maximum taxon sampling level from user.
-MAGNET                 Shell pipeline for automating estimation of a maximum-likelihood (ML) gene tree in RAxML for each of many loci in a RAD-seq, UCE, or other multilocus dataset. Also contains other tools.
-makePartitions         Function using PHYLIP DNA sequence alignments in current working directory to make partitions/charsets files in RAxML, PartitionFinder, and NEXUS formats, which are output to separate files.
-Mega2PHYLIP            Automates converting one or more multiple sequence alignment files in Mega format (Mega v7+ or X; Kumar et al. 2016, 2018) to PHYLIP format (Felsenstein 2002), while saving (-k 1) or writing over (-k 0) the original Mega files.
-MLEResultsProc         Automates post-processing of marginal likelihood estimation (MLE) results from running path sampling (ps) or stepping-stone (ss) sampling analyses on different models in BEAST.
-MrBayesPostProc        Simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012) run, whose output files are assumed to be in the current working directory.
-NEXUS2MultiPHYLIP      Function that splits a sequential NEXUS alignment with charaset information into multiple PHYLIP-formatted alignments, one per gene/charset, and removes individuals with all missing data.
-NEXUS2PHYLIP           Function that reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format (Felsenstein 2002). 
-PFSubsetSum            Calculates summary statistics for DNA subsets within the optimum partitioning scheme identified for the data by PartitionFinder v1 or v2 (Lanfear et al. 2012, 2014).
-PHYLIP2FASTA           Automates converting each of one or multiple PHYLIP DNA sequence alignments into FASTA format.
+BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal 
+                       likelihood estimation) analyses using BEAST v2+ PathSampler.
+calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-
+                       informative sites (pis) for all FASTA files in working dir.
+completeConcatSeqs     Function converting series of PHYLIP (Felsenstein 2002) DNA sequence alignments (with or 
+                       without varying nos. of taxa) into a single concatenated PHYLIP alignment with complete 
+                       taxon sampling; also makes character subset/partition files in RAxML, PartitionFinder, 
+                       and NEXUS formats for the resulting alignment.
+completeSeqs           Function converting series of PHYLIP DNA sequence alignments (with or without varying nos. 
+                       of taxa) into a single concatenated PHYLIP alignment with complete taxon sampling, starting 
+                       from a 'taxon names and spaces' file.
+concatenateSeqs        Function that converts series of PHYLIP DNA sequence alignments with equal taxon sampling 
+                       into a single concatenated PHYLIP alignment.
+dadiPostProc           Function for post-processing output from one or multiple ∂a∂i runs (ideally run with 
+                       PIrANHA's dadiRunner function), including collation of best-fit parameter estimates, 
+                       composite likelihoods, and optimal theta values.
+dadiRunner             Automates running ∂a∂i on a remote supercomputing cluster. See help text (-h) and function 
+                       (bin/ dir) for details.
+dadiUncertainty        Automates uncertainty analysis in ∂a∂i, including generation of bootstrapped SNP files for 
+                       parameter std. dev. estimation using the GIM method, as well as std. dev. estimation using 
+                       the FIM method (orig. data only).
+dropRandomHap          This function randomly drops one phased haplotype (allele) per individual in each of n 
+                       PHYLIP gene alignments in current working directory, starting from a 'taxon names' file.
+ExaBayesPostProc       Function automating reading and conducting post-processing analyses on phylogenetic results 
+                       output from ExaBayes.
+FASTA2PHYLIP           Function that automates converting one or multiple sequential FASTA DNA sequence alignment 
+                       files (with sequences either unwrapped or hard-wrapped across multiple lines) to PHYLIP 
+                       format.
+FASTA2VCF              Shell script function automating conversion of single multiple sequence FASTA alignment to 
+                       variant call format (VCF) v4.1, with or without subsampling SNPs per partition/locus.
+fastSTRUCTURE          Interactive function that automates running fastSTRUCTURE (Raj et al. 2014) on biallelic 
+                       SNP datasets.
+getBootTrees           Function that automates organizing bootstrap trees output by RAxML runs conducted in 
+                       current working directory using the MAGNET program within PIrANHA.
+getTaxonNames          Utility function that extracts tip taxon names from sequences present in one or multiple 
+                       PHYLIP DNA sequence alignments in current directory, using information on maximum taxon 
+                       sampling level from user.
+MAGNET                 Shell pipeline for automating estimation of a maximum-likelihood (ML) gene tree in RAxML 
+                       for each of many loci in a RAD-seq, UCE, or other multilocus dataset. Also contains other 
+                       tools.
+makePartitions         Function using PHYLIP DNA sequence alignments in current directory to make partitions/
+                       charsets files in RAxML, PartitionFinder, and NEXUS formats, which are output to separate 
+                       files.
+Mega2PHYLIP            Automates converting one or more multiple sequence alignment files in Mega format (Mega v7+ 
+                       or X; Kumar et al. 2016, 2018) to PHYLIP format (Felsenstein 2002), while saving (-k 1) or 
+                       writing over (-k 0) the original Mega files.
+MLEResultsProc         Automates post-processing of marginal likelihood estimation (MLE) results from running path 
+                       sampling (ps) or stepping-stone (ss) sampling analyses on different models in BEAST.
+MrBayesPostProc        Simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012) run, 
+                       whose output files are assumed to be in the current working directory.
+NEXUS2MultiPHYLIP      Function that splits a sequential NEXUS alignment with charaset information into multiple 
+                       PHYLIP-formatted alignments, one per gene/charset, and removes individuals with all missing 
+                       data.
+NEXUS2PHYLIP           Function that reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format 
+                       (Felsenstein 2002). 
+PFSubsetSum            Calculates summary statistics for DNA subsets within the optimum partitioning scheme 
+                       identified for the data by PartitionFinder v1 or v2 (Lanfear et al. 2012, 2014).
+PHYLIP2FASTA           Automates converting each of one or multiple PHYLIP DNA sequence alignments into FASTA 
+                       format.
 phylip2fasta.pl        Nayoki Takebayashi utility Perl script for converting from PHYLIP to FASTA format.
-PHYLIP2Mega            Utility script for converting one or multiple PHYLIP DNA sequence alignments into Mega format.
-PHYLIP2NEXUS           Converts one or multiple PHYLIP-formatted multiple sequence alignments into NEXUS format, with or without pasting in a user-specified set of partitions (various formats).
-PHYLIP2PFSubsets       Automates construction of Y multiple sequence alignments corresponding to PartitionFinder-inferred subsets, starting from n PHYLIP, per-locus sequence alignments and a PartitionFinder results file (usually 'best_scheme.txt').
-PHYLIPcleaner          Function that cleans one or more PHYLIP alignments in current dir by removing individuals with all (or mostly) undetermined sites.
-PHYLIPsubsampler       Automates subsampling each of one to multiple PHYLIP DNA sequence alignment files down to one (random) sequence per species, e.g. for species tree analyses.
+PHYLIP2Mega            Utility script for converting one or multiple PHYLIP DNA sequence alignments into Mega 
+                       format.
+PHYLIP2NEXUS           Converts one or multiple PHYLIP-formatted multiple sequence alignments into NEXUS format, 
+                       with or without pasting in a user-specified set of partitions (various formats).
+PHYLIP2PFSubsets       Automates construction of Y multiple sequence alignments corresponding to PartitionFinder-
+                       inferred subsets, starting from n PHYLIP, per-locus sequence alignments and a PartitionFinder 
+                       results file (usually 'best_scheme.txt').
+PHYLIPcleaner          Function that cleans one or more PHYLIP alignments in current dir by removing individuals 
+                       with all (or mostly) undetermined sites.
+PHYLIPsubsampler       Automates subsampling each of one to multiple PHYLIP DNA sequence alignment files down to 
+                       one (random) sequence per species, e.g. for species tree analyses.
 PhyloMapperNullProc    Script for post-processing results of a PhyloMapper null model randomization analysis.
-phyNcharSumm           Utility function that summarizes the number of characters in each PHYLIP DNA sequence alignment in current working directory.
-pyRAD2PartitionFinder  Automates running PartitionFinder (Lanfear et al. 2012, 2014) 'out-of-the-box' starting from the PHYLIP DNA sequence alignment file ('.phy') and partitions ('.partitions') file output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016).
-pyRADLocusVarSites     Automates summarizing the numbers of variable sites and parsimony-informative sites (PIS) within RAD/GBS loci output by the programs pyRAD or ipyrad (Eaton 2014; Eaton and Overcast 2016).
-RAxMLRunChecker        Utility function that counts number of loci/partitions with completed RAxML runs, during or after a run of the MAGNET pipeline within PIrANHA, and summarizes run information.
-RAxMLRunner            Script that automates moving and running RAxML input files on a remote supercomputing cluster (with passwordless ssh access; code for extraction of results coming in 2019??...).
-renameForStarBeast2    Function that renames tip taxa (i.e. sequence names) in all PHYLIP or FASTA DNA sequence alignments in the current working directory, so that the taxon names are suitable for assigning species in BEAUti before running *BEAST or StarBEAST2 in BEAST.
-renameTaxa             Automates renaming all tip taxa (samples) in genetic data files of type FASTA, PHYLIP, NEXUS, or VCF (variant call format) in current working directory.
-SNAPPRunner            Function that automates running SNAPP (Bryant et al. 2012) on a remote supercomputing cluster (with passwordless ssh access set up by user).
-SpeciesIdentifier      Runs the Taxon DNA software program SpeciesIdentifier, which implements methods in the well-known Meier et al. (2006) DNA barcoding paper.
-taxonCompFilter        Function that loops through the multiple sequence alignments and keeps only those alignments meeting the user-specified taxonomic completeness threshold <taxCompThresh>; alignments that pass this filter are saved to an output subfolder of the current directory.
-treeThinner            Function that conducts downsampling ('thinning') of trees in MrBayes .t files so that they contain every nth tree.
-vcfSubsampler          Utility function that uses a list file to subsample a variant call format (VCF) file so that it only contains SNPs included in the list.
+phyNcharSumm           Utility function that summarizes the number of characters in each PHYLIP DNA sequence 
+                       alignment in current working directory.
+pyRAD2PartitionFinder  Automates running PartitionFinder (Lanfear et al. 2012, 2014) 'out-of-the-box' starting 
+                       from the PHYLIP DNA sequence alignment file ('.phy') and partitions ('.partitions') file 
+                       output by pyRAD (Eaton 2014) or ipyrad (Eaton and Overcast 2016).
+pyRADLocusVarSites     Automates summarizing the numbers of variable sites and parsimony-informative sites (PIS) 
+                       within RAD/GBS loci output by the programs pyRAD or ipyrad (Eaton 2014; Eaton and Overcast 
+                       2016).
+RAxMLRunChecker        Utility function that counts number of loci/partitions with completed RAxML runs, during 
+                       or after a run of the MAGNET pipeline within PIrANHA, and summarizes run information.
+RAxMLRunner            Script that automates moving and running RAxML input files on a remote supercomputing 
+                       cluster (with passwordless ssh access; code for extraction of results coming in 2019??...).
+renameForStarBeast2    Function that renames tip taxa (i.e. sequence names) in all PHYLIP or FASTA DNA sequence 
+                       alignments in the current working directory, so that the taxon names are suitable for 
+                       assigning species in BEAUti before running *BEAST or StarBEAST2 in BEAST.
+renameTaxa             Automates renaming all tip taxa (samples) in genetic data files of type FASTA, PHYLIP, 
+                       NEXUS, or VCF (variant call format) in current working directory.
+SNAPPRunner            Function that automates running SNAPP (Bryant et al. 2012) on a remote supercomputing 
+                       cluster (with passwordless ssh access set up by user).
+SpeciesIdentifier      Runs the Taxon DNA software program SpeciesIdentifier, which implements methods in the well-
+                       known Meier et al. (2006) DNA barcoding paper.
+taxonCompFilter        Function that loops through the multiple sequence alignments and keeps only those alignments 
+                       meeting the user-specified taxonomic completeness threshold <taxCompThresh>; alignments that 
+                       pass this filter are saved to an output subfolder of the current directory.
+treeThinner            Function that conducts downsampling ('thinning') of trees in MrBayes .t files so that they 
+                       contain every nth tree.
+vcfSubsampler          Utility function that uses a list file to subsample a variant call format (VCF) file so that 
+                       it only contains SNPs included in the list.
 ----------------------------------------------------------------------------------------------------------------
 " ;
   safeExit ;
