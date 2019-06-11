@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.4.2"                                                                       #
+  VERSION="v1.5.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: March 13, 2019                                                            #
+# Last update: June 11, 2019                                                             #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.4.2 March 2019  (part of PIrANHA v0.3a1)"
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.5.0 June 2019  (part of PIrANHA v0.3a1) "
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -301,14 +301,6 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-MY_NEXUS=NULL
-MY_NAME_NCHARS_SWITCH=0
-MY_VERBOSE_OUT_SWITCH=0
-MY_KEEP_FASTA_SWITCH=0
-MY_OVERWRITE_SWITCH=0
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
@@ -445,27 +437,87 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'i:c:v:k:o:' opt ; do
-  case $opt in
-## NEXUS2PHYLIP options:
-    i) MY_NEXUS=$OPTARG ;;
-    c) MY_NAME_NCHARS_SWITCH=$OPTARG ;;
-    v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
-    k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
-    o) MY_OVERWRITE_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
 
-# Store the remaining part as arguments.
-# args+=("$@")
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NEXUS=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_NEXUS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NAME_NCHARS_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-c' ./args.txt | perl -pe 's/\-c//g' | perl -pe 's/\ //g')";
+		MY_NAME_NCHARS_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_KEEP_FASTA_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OVERWRITE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OVERWRITE_SWITCH="$MY_ARG" ;
+	fi
+#
+
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:c:v:k:o:' opt ; do
+#   case $opt in
+# ## NEXUS2PHYLIP options:
+#     i) MY_NEXUS=$OPTARG ;;
+#     c) MY_NAME_NCHARS_SWITCH=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+#     k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
+#     o) MY_OVERWRITE_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
+# # Store the remaining part as arguments.
+# # args+=("$@")
 
 
 # ############# ############# #############
