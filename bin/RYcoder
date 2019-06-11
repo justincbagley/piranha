@@ -1,0 +1,512 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: RYcoder.sh                                                                       #
+  VERSION="v0.1.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.                       #
+# Last update: June 11, 2019                                                             #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL FUNCTION THAT CONVERTS A PHYLIP OR NEXUS DNA SEQUENCE ALIGNMENT INTO "RY"-CODED  #
+# BINARY FORMAT, WITH PURINES (A, G) CODED AS 0's AND PYRIMIDINES (C, T) CODED AS 1's.   #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+RYcoder () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | RYcoder, v0.1.0 June 2019  (part of PIrANHA v0.3a1)   "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
+############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
+###### Set working directory and filetypes as different variables:
+echo "INFO      | $(date) |          Setting user-specified path to: "
+echo "INFO      | $(date) |          $PWD "	
+echo "INFO      | $(date) |          Input file: $INPUT_FILE "
+echo "INFO      | $(date) |          Examining current directory, setting variables... "
+
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+echo "INFO      | $(date) | Step #2: Infer input file type (NEXUS or PHYLIP), set file type environmental variable. "
+############ STEP #2: INFER INPUT FILE TYPE AND SET INPUT TYPE VAR: "$MY_FILE_TYPE"
+MY_INPUT_FILENAME=$(basename -- "$INPUT_FILE");
+MY_INPUT_EXTENSION="${MY_INPUT_FILENAME##*.}";
+INPUT_BASENAME="${MY_INPUT_FILENAME%.*}";
+#MY_NEXUS_CHECK="$(grep -h 'NEXUS'\''nexus'\''Nexus' "$INPUT_FILE" | wc -l | sed 's/\ //g' )";
+
+if [[ "$(grep -h 'NEXUS'\''nexus'\''Nexus' ${MY_INPUT_FILENAME} | wc -l | sed 's/\ //g' )" = "1" ]] || [[ "$MY_INPUT_EXTENSION" = "nex" ]] || [[ "$MY_INPUT_EXTENSION" = "NEX" ]] || [[ "$MY_INPUT_EXTENSION" = "nexus" ]] || [[ "$MY_INPUT_EXTENSION" = "NEXUS" ]] || [[ "$MY_INPUT_EXTENSION" = "Nexus" ]]; then
+	MY_FILE_TYPE=NEXUS
+	echo "INFO      | $(date) |          Input file format: NEXUS"
+elif [[ "$MY_NEXUS_CHECK" != "1" ]] && [[ "$MY_INPUT_EXTENSION" = "phy" ]] || [[ "$MY_INPUT_EXTENSION" = "phylip" ]] || [[ "$MY_INPUT_EXTENSION" = "PHY" ]] || [[ "$MY_INPUT_EXTENSION" = "PHYLIP" ]]; then
+	MY_FILE_TYPE=PHYLIP
+	echo "INFO      | $(date) |          Input file format: PHYLIP"
+fi
+
+echo "INFO      | $(date) | Step #3: Convert file to RY-coded alignment and save new alignment to file."
+############ STEP #3: TAKE ALIGNMENT APART (SEPARATE OUT MATRIX), CONVERT ALIGNMENT TO RY-CODED, MAKE ANY ADDITIONAL OUTPUT FILES
+
+### HANDLE NEXUS FILE
+if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE" = "NEXUS" ]]; then
+	echo "INFO      | $(date) |          Generating RY-coded NEXUS file..."
+
+	MY_HEADER_MAT_LINE="$(grep -n 'MATRIX\|Matrix\|matrix' "$INPUT_FILE" | sed 's/\:.*//g')";
+	MY_NTAX="$(grep -h 'ntax\|Ntax\|NTAX' "$INPUT_FILE" | sed 's/.*\=\([0-9]*\)\ .*/\1/g')";
+	
+	cp "$INPUT_FILE" nexus.tmp ;
+
+	## Accommodating different machine types...
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+		sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+		sed -i '' 's/^$\n//g' ./nexus.tmp ;
+		sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+		sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+		sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+
+		## Now that the matrix is isolated, change coding to 0’s for purines (A, G) and 1’s for 
+		## pyrimidines (C, T)
+		sed 's/A/0/g; s/a/0/g; s/G/0/g; s/g/0/g; s/C/1/g; s/c/1/g; s/T/1/g; s/t/1/g' ./matrixOnly.tmp > ./matrixOnlyRY.tmp ; 
+
+		## Now paste together the taxon names and the RY-coded matrix to make a new matrixRY
+		paste ./taxon_names_spaces.tmp ./matrixOnlyRY.tmp > ./matrixRY.tmp ;
+
+		echo ";" >> ./nexus_tail.tmp ;
+		echo "END;" >> ./nexus_tail.tmp ;
+		echo "" >> ./nexus_tail.tmp ;
+
+		## Make final RY coded alignment file:
+		cat ./nexus_header.tmp ./matrixRY.tmp ./nexus_tail.tmp > "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
+		sed -i '' 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed -i '' 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed -i '' 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+		sed '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+		sed 's/^$\n//g' ./nexus.tmp ;
+		sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+		sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+		sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+
+		## Now that the matrix is isolated, change coding to 0’s for purines (A, G) and 1’s for 
+		## pyrimidines (C, T)
+		sed 's/A/0/g; s/a/0/g; s/G/0/g; s/g/0/g; s/C/1/g; s/c/1/g; s/T/1/g; s/t/1/g' ./matrixOnly.tmp > ./matrixOnlyRY.tmp ; 
+
+		## Now paste together the taxon names and the RY-coded matrix to make a new matrixRY
+		paste ./taxon_names_spaces.tmp ./matrixOnlyRY.tmp > ./matrixRY.tmp ;
+
+		echo ";" >> ./nexus_tail.tmp ;
+		echo "END;" >> ./nexus_tail.tmp ;
+		echo "" >> ./nexus_tail.tmp ;
+		
+		## Make final RY coded alignment file:
+		cat ./nexus_header.tmp ./matrixRY.tmp ./nexus_tail.tmp > "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
+		sed 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+	fi
+
+fi
+###
+
+### HANDLE PHYLIP FILE
+if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE" = "PHYLIP" ]]; then
+	echo "INFO      | $(date) |          Generating RY-coded PHYLIP file..."
+
+	cp "$INPUT_FILE" phylip.tmp ;
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/^$\n//g' ./phylip.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed 's/^$\n//g' ./phylip.tmp ;
+	fi
+
+	MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ .*//g')";
+	MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^.*[0-9]*\ //g')";
+
+	head -n1 ./phylip.tmp > ./phylip_header.tmp ;
+	sed '1d' ./phylip.tmp > ./matrix.tmp ;
+	sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+	sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+
+	## Now that the matrix is isolated, change coding to 0’s for purines (A, G) and 1’s for 
+	## pyrimidines (C, T)
+	sed 's/A/0/g; s/a/0/g; s/G/0/g; s/g/0/g; s/C/1/g; s/c/1/g; s/T/1/g; s/t/1/g' ./matrixOnly.tmp > ./matrixOnlyRY.tmp ; 
+
+	## Now paste together the taxon names and the RY-coded matrix to make a new matrixRY
+	paste ./taxon_names_spaces.tmp ./matrixOnlyRY.tmp > ./matrixRY.tmp ;
+		
+	## Make final RY coded alignment file:
+	cat ./phylip_header.tmp ./matrixRY.tmp > "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
+
+fi
+###
+
+### MAKE ADDITIONAL ALIGNMENTS
+if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ]]; then
+	### MAKE RY PHYLIP FROM RY NEXUS:
+	if [[ "$MY_FILE_TYPE" = "NEXUS" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "phylip" ]]; then
+		echo "INFO      | $(date) |          Additional output switch activated."
+		echo "INFO      | $(date) |          Also generating RY-coded PHYLIP file..."
+		## convert NEXUS to PHYLIP
+		# We have MY_NTAX from above. Need to get NCHAR and make temp PHYLIP header file:
+		MY_NCHAR="$(grep -h 'nchar\|Nchar\|NCHAR' ./nexus_header.tmp | sed 's/^.*=//g; s/\;//g; s/\ //g')";
+		echo "${MY_NTAX} ${MY_NCHAR}" > ./phylip_header.tmp ;
+		
+		# Make PHYLIP file
+		# (note: file with taxon names and spaces, and RY matrix:  ./matrixRY.tmp)
+		cat ./phylip_header.tmp ./matrixRY.tmp > "$INPUT_BASENAME"_RY.phy ;
+		
+		MY_ADDITIONAL_FILE="$INPUT_BASENAME"_RY.phy ;
+	fi
+	
+	### MAKE RY FASTA FROM RY NEXUS:
+	if [[ "$MY_FILE_TYPE" = "NEXUS" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "fasta" ]]; then
+		echo "INFO      | $(date) |          Additional output switch activated."
+		echo "INFO      | $(date) |          Also generating RY-coded FASTA file..."
+		## convert NEXUS to FASTA
+		# Make FASTA file
+		# (note: file with taxon names and spaces, and RY matrix:  ./matrixRY.tmp)
+		cp ./matrixRY.tmp "$INPUT_BASENAME"_RY.fas ;
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' 's/^/\>/g' "$INPUT_BASENAME"_RY.fas ;
+			perl -p -i -e 's/\ +/\n/g; s/\t//g' "$INPUT_BASENAME"_RY.fas ;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/^/\>/g' "$INPUT_BASENAME"_RY.fas ;
+			perl -p -i -e 's/\ +/\n/g; s/\t//g' "$INPUT_BASENAME"_RY.fas ;
+		fi
+
+		MY_ADDITIONAL_FILE="$INPUT_BASENAME"_RY.fas  ;
+	fi
+
+	### MAKE RY NEXUS FROM RY PHYLIP:
+	if [[ "$MY_FILE_TYPE" = "PHYLIP" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "phylip" ]]; then
+		echo "INFO      | $(date) |          Additional output switch activated."
+		echo "INFO      | $(date) |          Also generating RY-coded NEXUS file..."
+
+		# convert PHYLIP to NEXUS
+		echo ""
+
+	fi
+	
+	### MAKE RY FASTA FROM RY PHYLIP:
+	if [[ "$MY_FILE_TYPE" = "PHYLIP" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "fasta" ]]; then
+		echo "INFO      | $(date) |          Additional output switch activated."
+		echo "INFO      | $(date) |          Also generating RY-coded FASTA file..."
+
+		# convert PHYLIP to FASTA
+		echo ""
+
+	fi
+fi
+###
+
+
+echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary fiels generated during run. "
+###### Remove temporary or unnecessary files created above:
+	echo "INFO      | $(date) |          Removing temporary files... "
+	rm ./*.tmp ;
+
+
+echo "----------------------------------------------------------------------------------------------------------"
+if [[ "$ADDITIONAL_OUT_SWITCH" = "NULL" ]]; then
+	echo "output file: ./${INPUT_BASENAME}_RY.${MY_INPUT_EXTENSION}"
+	echo ""
+elif [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]]; then
+	echo "output files: ./${INPUT_BASENAME}_RY.${MY_INPUT_EXTENSION}"
+	echo "              ./${MY_ADDITIONAL_FILE}"
+	echo ""
+fi
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputFile (def: NULL) name of input DNA sequence alignment file, in NEXUS or PHYLIP
+       format
+  -a   additionalOutput (def: NULL; other: nexus, phylip, fasta) file type of additional 
+       RY-coded alignment file to be output by the program
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS FUNCTION takes as input (-i flag) the name of a DNA sequence alignment file in either
+ NEXUS or PHYLIP (Felsenstein 2002) format, and converts the alignment to 'RY' coding, a
+ binary coding format where purine bases are coded as zeros and pyrimidines are coded as 
+ ones. This has the effect of normalizing base frequency composition across the data matrix,
+ so that compositional biases are effectively removed (although phylogenetic signal is 
+ maintained). Sequence names (i.e. tip labels) should include _only_ alphanumeric and underscore 
+ characters but no spaces or hyphens; if both numbers and underscores are included in the 
+ sequence names, then as a rule numbers should follow underscores. Preferably, NEXUS alignment
+ files will have the extension '.nex' and PHYLIP alignment files will have the extension 
+ '.phy'; however, expanded or capitalized versions of these extensions (e.g. '.NEX') are 
+ accommodated by the program. 
+	The -a flag allows the user to specify a value for the <additionalOutput> option, which
+ if filled tells the program to create an additional alignment file in the format specified
+ by the option. For example, if you are using RYcoder to convert a PHYLIP-formatted DNA 
+ alignment to RY-coding, then passing the option '-a nexus' will cause the program to also
+ generate an RY-coded version of the original alignment in NEXUS format. 
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
+ Linux (tested on CentOS 6/7). There are no other dependencies.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f RYcoder --args='-h'                        Obtain RYcoder help text
+    piranha -f RYcoder --args='-i <inputFile>'            Regular file conversion
+    piranha -f RYcoder --args='-i input.phy -a nexus'     Convert PHYLIP to RY coding, and
+                                                          also save RY-coded NEXUS
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+
+ Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		ADDITIONAL_OUT_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-a' ./args.txt | perl -pe 's/\-a//g' | perl -pe 's/\ //g')";
+		ADDITIONAL_OUT_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MULTIPLE_PHYLIP_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_PARTITIONS_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-p' ./args.txt | perl -pe 's/\-p//g' | perl -pe 's/\ //g')";
+		MY_PARTITIONS_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_PARTFILE_FORMAT=raxml ;
+	else 
+		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+		MY_PARTFILE_FORMAT="$MY_ARG" ;
+	fi
+#
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+RYcoder
+
+# Exit cleanly
+safeExit
