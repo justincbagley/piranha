@@ -18,8 +18,8 @@ The full file tree for this directory is as follows:
    ├── calcAlignmentPIS.r
    ├── completeConcatSeqs
    ├── completeSeqs
-   ├── concatSeqsPartitions
    ├── concatenateSeqs
+   ├── concatSeqsPartitions
    ├── dadiPostProc
    ├── dadiRunner
    ├── dadiUncertainty
@@ -68,6 +68,7 @@ The full file tree for this directory is as follows:
    ├── RAxMLRunChecker
    ├── RAxMLRunner
    ├── renameForStarBeast2
+   ├── RYcoder
    ├── SNAPPRunner
    ├── SpeciesIdentifier
    ├── taxonCompFilter
