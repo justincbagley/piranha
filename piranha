@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: June 6, 2019                                                              #
+# Last update: June 12, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -202,6 +202,10 @@ completeSeqs           Function converting series of PHYLIP DNA sequence alignme
                        from a 'taxon names and spaces' file.
 concatenateSeqs        Function that converts series of PHYLIP DNA sequence alignments with equal taxon sampling 
                        into a single concatenated PHYLIP alignment.
+concatSeqsPartitions   Function similar to concatenateSeqs, but which, in addition to concatenating the set of 
+                       PHYLIP alignments, also outputs character subset/partitions files in RAxML, PartitionFinder,
+                       and NEXUS formats. This function differs from completeConcatSeqs in only taking alignments 
+                       with equal taxon sampling and in being slightly faster in this usage case.
 dadiPostProc           Function for post-processing output from one or multiple ∂a∂i runs (ideally run with 
                        PIrANHA's dadiRunner function), including collation of best-fit parameter estimates, 
                        composite likelihoods, and optimal theta values.
@@ -278,6 +282,9 @@ renameForStarBeast2    Function that renames tip taxa (i.e. sequence names) in a
                        assigning species in BEAUti before running *BEAST or StarBEAST2 in BEAST.
 renameTaxa             Automates renaming all tip taxa (samples) in genetic data files of type FASTA, PHYLIP, 
                        NEXUS, or VCF (variant call format) in current working directory.
+RYcoder                New (June 2019) function that converts a PHYLIP or NEXUS DNA sequence alignment into 'RY' 
+                       coding, a binary format with purines (A, G) coded as 0's and pyrimidines (C, T) recoded
+                       as 1's.
 SNAPPRunner            Function that automates running SNAPP (Bryant et al. 2012) on a remote supercomputing 
                        cluster (with passwordless ssh access set up by user).
 SpeciesIdentifier      Runs the Taxon DNA software program SpeciesIdentifier, which implements methods in the well-
