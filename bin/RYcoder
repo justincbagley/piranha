@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RYcoder.sh                                                                       #
-  VERSION="v0.1.0"                                                                       #
+  VERSION="v0.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.                       #
-# Last update: June 11, 2019                                                             #
+# Last update: June 12, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ RYcoder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RYcoder, v0.1.0 June 2019  (part of PIrANHA v0.3a1)   "
+echo "INFO      | $(date) | RYcoder, v0.1.1 June 2019  (part of PIrANHA v0.3a1)   "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -257,8 +257,15 @@ if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE"
 	sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
 
 	## Now that the matrix is isolated, change coding to 0’s for purines (A, G) and 1’s for 
-	## pyrimidines (C, T)
+	## pyrimidines (C, T), and make sure that (according to standard PHYLIP and RAxML format)
+	## the missing characters in the matrix are question marks, '?'s, and not 'N's or 'n's.
 	sed 's/A/0/g; s/a/0/g; s/G/0/g; s/g/0/g; s/C/1/g; s/c/1/g; s/T/1/g; s/t/1/g' ./matrixOnly.tmp > ./matrixOnlyRY.tmp ; 
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+	fi
 
 	## Now paste together the taxon names and the RY-coded matrix to make a new matrixRY
 	paste ./taxon_names_spaces.tmp ./matrixOnlyRY.tmp > ./matrixRY.tmp ;
@@ -281,8 +288,23 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 		echo "${MY_NTAX} ${MY_NCHAR}" > ./phylip_header.tmp ;
 		
 		# Make PHYLIP file
-		# (note: file with taxon names and spaces, and RY matrix:  ./matrixRY.tmp)
-		cat ./phylip_header.tmp ./matrixRY.tmp > "$INPUT_BASENAME"_RY.phy ;
+		# NOTE: file with taxon names and spaces, and RY matrix:  ./matrixRY.tmp; file with
+		# matrix only: ./matrixOnlyRY.tmp.
+
+		## Make sure that (according to standard PHYLIP and RAxML format) the missing characters 
+		## in the matrix are question marks, '?'s, and not 'N's or 'n's.
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+		fi
+
+		## Now paste together the taxon names and the RY-coded matrix to make a new matrixRY
+		## for PHYLIP creation (with ?'s):
+		paste ./taxon_names_spaces.tmp ./matrixOnlyRY.tmp > ./matrixRY_for_phylip.tmp ;
+		
+		cat ./phylip_header.tmp ./matrixRY_for_phylip.tmp > "$INPUT_BASENAME"_RY.phy ;
 		
 		MY_ADDITIONAL_FILE="$INPUT_BASENAME"_RY.phy ;
 	fi
