@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2Mega.sh                                                                   #
-  VERSION="v1.2.0"                                                                       #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: April 30, 2019                                                            #
+# Last update: July 11, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -135,7 +135,7 @@ PHYLIP2Mega () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2Mega, v1.2.0 April 2019  (part of PIrANHA v0.3a1)"
+echo "INFO      | $(date) | PHYLIP2Mega, v1.2.1 July 2019  (part of PIrANHA v0.3a1)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -153,14 +153,21 @@ echoCDWorkingDir
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
+MY_ARGS_CHECK="$(cat args.txt | wc -c | sed 's/\ //g')";
+if [[ "$MY_ARGS_CHECK" = "1" ]]; then 
+	echo "WARNING!  | $(date) |          ERROR: Found no arguments, which could break/delete things. Quitting and printing usage text... " 
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Convert PHYLIP multiple sequence alignment (MSA) file(s) to Mega format. "
 fi
 ############ Convert PHYLIP files to FASTA format:
 	if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
-		if [[ ! -s "$INPUT_PHYLIP_FILE" ]]; then
-			MY_INPUT_PHYLIP_FILE="$(echo $INPUT_PHYLIP_FILE | sed 's/\.\///g' | perl -pe 's/\ +//g; s/\-.*//g' )"
+		if [[ -s "$INPUT_PHYLIP_FILE" ]]; then
+#			MY_INPUT_PHYLIP_FILE="$(echo $INPUT_PHYLIP_FILE | sed 's/\.\///g' | perl -pe 's/\ +//g; s/\-.*//g' )";
+			MY_INPUT_PHYLIP_FILE="$(echo $INPUT_PHYLIP_FILE | sed 's/\.\///g' | perl -pe 's/\ +//g; s/\t//g' )";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |          Converting $MY_INPUT_PHYLIP_FILE ... ";
 			fi
@@ -178,12 +185,12 @@ fi
 			###### Get <inputPHYLIP> characteristics:
 				MY_PHYLIP_LENGTH="$(cat ./phylip.tmp | wc -l | sed 's/(\ )*//g')";
 				MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
-				## ^^^ "MY_BODY_LENGTH" is number of lines comprised by sequence and EOF lines.
+				## ^^^ "MY_PHYLIP_LENGTH" is number of lines comprised by sequence and EOF lines.
 			
 				tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
 			
 				MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
-				MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
+				MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
 			
 			###### Make Mega-formatted file:
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -191,12 +198,13 @@ fi
 				fi
 			
 				echo "#Mega
-\!Title $MY_INPUT_PHYLIP_FILE;" > ./Mega_top.tmp;
+\!Title $MY_INPUT_PHYLIP_FILE;
+\!Description $MY_NTAX taxa, $MY_NCHAR characters;" > ./Mega_top.tmp;
 			
 				MY_PHYLIP_BASENAME="$(echo $MY_INPUT_PHYLIP_FILE | sed 's/\.phy//g')";
 			
 				perl -p -i -e $'s/^/\n\#/g; s/\ +/\n/g' ./sequences.tmp;
-				
+				sed -i '' '1,3d' ./sequences.tmp;
 				cat ./Mega_top.tmp ./sequences.tmp > ./"$MY_PHYLIP_BASENAME".meg ;
 			
 				if [[ "${machine}" = "Mac" ]]; then
@@ -205,6 +213,7 @@ fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
 				fi
+				
 			rm ./*.tmp ;
 		else
 			echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $MY_INPUT_PHYLIP_FILE in working directory. Quitting... " 
@@ -240,20 +249,21 @@ fi
 						tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
 					
 						MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
-						MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
+						MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
 					
 					###### Make Mega-formatted file:
 						if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 							echo "INFO      | $(date) |          Making Mega-formatted file... "
 						fi
 
-					echo "#Mega
-\!Title $i;" > ./Mega_top.tmp;
+				echo "#Mega
+\!Title $i;
+\!Description $MY_NTAX taxa, $MY_NCHAR characters;" > ./Mega_top.tmp;
 					
 						MY_PHYLIP_BASENAME="$(echo $i | sed 's/\.phy//g')";
 					
 						perl -p -i -e $'s/^/\n\#/g; s/\ +/\n/g' ./sequences.tmp;
-						
+						sed -i '' '1,3d' ./sequences.tmp;
 						cat ./Mega_top.tmp ./sequences.tmp > ./"$MY_PHYLIP_BASENAME".meg ;
 					
 						if [[ "${machine}" = "Mac" ]]; then
@@ -262,6 +272,9 @@ fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
 						fi
+
+						# perl -p -i -e 's/^\#[0-9]*.*\n[0-9]*$\n^$\n//g' ./"$MY_PHYLIP_BASENAME".meg;
+
 					rm ./*.tmp ;
 				done
 			)
@@ -338,14 +351,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
  PHYLIP format (Felsenstein 2002) into the correct input format for Mega (Mega v7+ or X; 
  Kumar et al. 2016, 2018), while saving (-k 1) or writing over (-k 0) the original PHYLIP 
  files. Sequence names should include alphanumeric, hyphen, and underscore characters but 
- no spaces, or else there could be issues. Also, PHYLIP alignment files must have the 
- extension '.phy'.
+ no spaces or fully numeric names, or else there could be issues. Also, PHYLIP alignment 
+ files must have the extension '.phy'.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f PHYLIP2Mega --args='-i ./<inputPHYLIP> -k 1'   Convert single PHYLIP to Mega, keeping original file
-    piranha -f PHYLIP2Mega --args='-m1 -k 1'				  Convert multiple PHYLIP files to Mega, keeping original files
+    piranha -f PHYLIP2Mega --args='-i <inputPHYLIP> -k 1'   Convert single PHYLIP to Mega, keeping original file
+    piranha -f PHYLIP2Mega --args='-m1 -k 1'                Convert multiple PHYLIP files to Mega, keeping original files
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
