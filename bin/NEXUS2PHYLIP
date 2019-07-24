@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.5.0"                                                                       #
+  VERSION="v1.6.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: June 11, 2019                                                             #
+# Last update: July 24, 2019                                                             #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,162 +136,257 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.5.0 June 2019  (part of PIrANHA v0.3a1) "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.0 July 2019  (part of PIrANHA v0.3a1) "
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-
-
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting NEXUS2PHYLIP pipeline... "
 	echo "INFO      | $(date) | Step #1: Set up workspace."
 fi
-############ STEP #1: SETUP FUNCTIONS AND ENVIRONMENTAL VARIABLES
-## Setting up workspace is now accomplished by new standard code at start of script that
-## defines and sources $UTILS_LOCATION, $FUNCS_LOCATION, and $VARS_LOCATION.
-
+############ STEP #1: SET UP VARIABLES AND USEFUL FUNCTIONS
+###### Set working directory and filetypes as different variables:
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #2: Get NEXUS file and data characteristics, convert NEXUS to FASTA format. "
+	echo "INFO      | $(date) |          Setting user-specified path to: "
+	echo "INFO      | $(date) |          $PWD "	
+	echo "INFO      | $(date) |          Input file: $MY_NEXUS "
+	echo "INFO      | $(date) |          Examining current directory, setting variables... "
 fi
-############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
-##--Extract charset info from sets block at end of NEXUS file:
-	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" $MY_NEXUS | \
-	awk -F"=" '{print $NF}' | sed 's/\;/\,/g' | \
-	awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}' | \
-	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')" ;
 
-##--Count number of loci present in the NEXUS file, based on number of charsets defined.
-##--Also get corrected count starting from 0 for numbering loci below...
-	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)" ;
-	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)" ;
-
-##--This is the base name of the original nexus file, so you have it. This WILL work regardless
-##--of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
-	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')" ;
-
-##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
-	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
-		rm ./"$MY_NEXUS_BASENAME".fasta ;
-	fi
-	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta ;
-	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')" ;
-
-##--Convert data file from fasta to PHYLIP format using Nayoki Takebayashi fasta2phylip.pl
-##--Perl script (must be available from CLI):
-	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
-
-		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy ;
-		fi
-		fasta2phylip.pl "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy ;
-
-	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
-
-		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy ;
-		fi
-		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy ;
-
-	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-
-		if [[ -s "$MY_NEXUS_BASENAME".phy ]]; then
-			rm ./"$MY_NEXUS_BASENAME".phy ;
-		fi
-		fasta2phylip.pl -c "$MY_NAME_NCHARS_SWITCH" -v "$MY_FASTA" > "$MY_NEXUS_BASENAME".phy ;
-
-	fi
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #3: Fix PHYLIP tip taxon names. "
+	echo "INFO      | $(date) | Step #2: Get NEXUS file and data characteristics. "
 fi
-############ STEP #3: FIX SPACE BETWEEN TIP TAXON NAME AND SEQUENCE, AND CHECK OUTPUT PHYLIP ALIGNMENT CHARACTERISTICS AGAINST NEXUS INFO.
-##--Tip taxon name fixes are implemented, but code for checking PHYLIP file against NEXUS
-##--characteristics is _in prep_.
+############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS
 
-	if [[ "$MY_NAME_NCHARS_SWITCH" = "0" ]]; then
+cp "$MY_NEXUS" ./nexus.tmp ;
 
-		perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy ;
+## This is the base name of the original nexus file, so you have it. This WILL work regardless
+## of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
+	MY_NEXUS_BASENAME="$(echo "$MY_NEXUS" | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')" ;
+	#	echo "$MY_NEXUS_BASENAME"
 
-	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -le "9" ]]; then
+## Check for character sets in the input NEXUS file. 
+	MY_NEXUS_CHARSETS_CHECK="$(grep -n "charset\|CHARSET" "$MY_NEXUS" | wc -l)";
 
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "9" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{9})[A-Za-z\_0-9\-\ ]{1}(.*)/$1\ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "8" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{8})[A-Za-z\_0-9\-\ ]{2}(.*)/$1\ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "7" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{7})[A-Za-z\_0-9\-\ ]{3}(.*)/$1\ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "6" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{6})[A-Za-z\_0-9\-\ ]{4}(.*)/$1\ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "5" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{5})[A-Za-z\_0-9\-\ ]{5}(.*)/$1\ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "4" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{4})[A-Za-z\_0-9\-\ ]{6}(.*)/$1\ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "3" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{3})[A-Za-z\_0-9\-\ ]{7}(.*)/$1\ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "2" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{2})[A-Za-z\_0-9\-\ ]{8}(.*)/$1\ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
-		if [[ "$MY_NAME_NCHARS_SWITCH" = "1" ]]; then
-			perl -p -i -e 's/^([A-Za-z\_0-9\-\ ]{1})[A-Za-z\_0-9\-\ ]{9}(.*)/$1\ \ \ \ \ \ \ \ \ $2/g' "$MY_NEXUS_BASENAME".phy ;
-		fi
+##################
+##################
+if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" = "0" ]]; then
 
-	elif [[ "$MY_NAME_NCHARS_SWITCH" != "0" ]] && [[ "$MY_NAME_NCHARS_SWITCH" -gt "9" ]]; then
+	## Extract NEXUS header and no. taxa information:
+	MY_HEADER_MAT_LINE="$(grep -n 'MATRIX\|Matrix\|matrix' ./nexus.tmp | sed 's/\:.*//g')";
+	MY_NTAX="$(grep -h 'ntax\|Ntax\|NTAX' ./nexus.tmp | sed 's/.*\=\([0-9]*\)\ .*/\1/g')";
+	#	echo "No. taxa: $MY_NTAX"
 
-		echo "WARNING!  | $(date) |          ERROR: Illegal tip taxon name size (only accepts integer values from 1-9). Quitting... "
-		exit 1
-
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Step #3: Convert NEXUS to PHYLIP format. "
 	fi
+	############ STEP #3: CONVERT NEXUS TO PHYLIP FORMAT
+		
+	###	
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+			sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed -i '' 's/^$\n//g' ./nexus.tmp ;
+			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+			sed '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed 's/^$\n//g' ./nexus.tmp ;
+			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+		fi
+	
+			## Now that the matrix is isolated, get no. characters:
+			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
+			
+			## Make PHYLIP header:
+			echo "$MY_NTAX  $MY_NCHAR" > ./phylip_header.tmp ;
+			
+			## Make PHYLIP file:
+			cat ./phylip_header.tmp ./matrixOnly.tmp > "$MY_NEXUS_BASENAME".phy ;
+	###
+	
+fi
+##################
+##################
+
+
+##################
+##################
+if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]]; then
+
+	## Extract charset info from sets block at end of NEXUS file:
+	MY_NEXUS_CHARSETS="$(grep -n "charset\|CHARSET" ./nexus.tmp)";
+	#	echo "$MY_NEXUS_CHARSETS"
+	if [[ ! -z "$MY_NEXUS_CHARSETS" ]]; then 
+		## Count number of loci present in the NEXUS file, based on number of charsets defined.
+		## Also get corrected count starting from 0 for numbering loci below...
+		MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)" ;
+	#	echo "No. loci: $MY_NLOCI"
+	#	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)" ;
+	#	echo "$MY_CORR_NLOCI"
+	
+		## Extract charsets from file:
+		MY_NUM_LINES="$(wc -l "$MY_NEXUS" | sed 's/\.\///g; s/\ '"$MY_NEXUS"'.*//g')";
+		# ^^^^ NOTE: It's OK to use "$MY_NEXUS" here but ./nexus.tmp everywhere else here down.
+		MY_SETS_BLOCK_STARTLINE="$(grep -n "begin sets\|BEGIN SETS" ./nexus.tmp | sed 's/\:.*//g')";
+		sed -n ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'p' ./nexus.tmp > "$MY_NEXUS_BASENAME".charsets.txt ;
+	
+		## Remove charsets from file, while accommodating different machine types...
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+		fi
+	fi
+	
+	## Extract NEXUS header and no. taxa information:
+	MY_HEADER_MAT_LINE="$(grep -n 'MATRIX\|Matrix\|matrix' ./nexus.tmp | sed 's/\:.*//g')";
+	MY_NTAX="$(grep -h 'ntax\|Ntax\|NTAX' ./nexus.tmp | sed 's/.*\=\([0-9]*\)\ .*/\1/g')";
+	#	echo "No. taxa: $MY_NTAX"
+	
+	
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Step #3: Convert NEXUS to PHYLIP format. "
+	fi
+	############ STEP #3: CONVERT NEXUS TO PHYLIP FORMAT
+		
+	###
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+			sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed -i '' 's/^$\n//g' ./nexus.tmp ;
+			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+			sed '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed 's/^$\n//g' ./nexus.tmp ;
+			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+		fi
+	
+			## Now that the matrix is isolated, get no. characters:
+			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
+			
+			## Make PHYLIP header:
+			echo "$MY_NTAX  $MY_NCHAR" > ./phylip_header.tmp ;
+			
+			## Make PHYLIP file:
+			cat ./phylip_header.tmp ./matrixOnly.tmp > "$MY_NEXUS_BASENAME".phy ;
+	###
+
+fi
+##################
+##################
+
+
+##################
+##################
+if [[ "$MY_CHARSETS_SWITCH" = "1" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]]; then
+
+	## Extract charset info from sets block at end of NEXUS file:
+	MY_NEXUS_CHARSETS="$(grep -n "charset\|CHARSET" ./nexus.tmp)";
+	#	echo "$MY_NEXUS_CHARSETS"
+	if [[ ! -z "$MY_NEXUS_CHARSETS" ]]; then 
+		## Count number of loci present in the NEXUS file, based on number of charsets defined.
+		## Also get corrected count starting from 0 for numbering loci below...
+		MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l)" ;
+	#	echo "No. loci: $MY_NLOCI"
+	#	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)" ;
+	#	echo "$MY_CORR_NLOCI"
+	
+		## Extract charsets from file:
+		MY_NUM_LINES="$(wc -l "$MY_NEXUS" | sed 's/\.\///g; s/\ '"$MY_NEXUS"'.*//g')";
+		# ^^^^ NOTE: It's OK to use "$MY_NEXUS" here but ./nexus.tmp everywhere else here down.
+		MY_SETS_BLOCK_STARTLINE="$(grep -n "begin sets\|BEGIN SETS" ./nexus.tmp | sed 's/\:.*//g')";
+		sed -n ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'p' ./nexus.tmp > "$MY_NEXUS_BASENAME".charsets.txt ;
+	
+		## Remove charsets from file, while accommodating different machine types...
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+		fi
+	fi
+	
+	## Extract NEXUS header and no. taxa information:
+	MY_HEADER_MAT_LINE="$(grep -n 'MATRIX\|Matrix\|matrix' ./nexus.tmp | sed 's/\:.*//g')";
+	MY_NTAX="$(grep -h 'ntax\|Ntax\|NTAX' ./nexus.tmp | sed 's/.*\=\([0-9]*\)\ .*/\1/g')";
+	#	echo "No. taxa: $MY_NTAX"
+	
+	
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Step #3: Convert NEXUS to PHYLIP format. "
+	fi
+	############ STEP #3: CONVERT NEXUS TO PHYLIP FORMAT
+		
+	###
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+			sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed -i '' 's/^$\n//g' ./nexus.tmp ;
+			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
+			sed '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed 's/^$\n//g' ./nexus.tmp ;
+			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
+			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+		fi
+	
+			## Now that the matrix is isolated, get no. characters:
+			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
+			
+			## Make PHYLIP header:
+			echo "$MY_NTAX  $MY_NCHAR" > ./phylip_header.tmp ;
+			
+			## Make PHYLIP file:
+			cat ./phylip_header.tmp ./matrixOnly.tmp > "$MY_NEXUS_BASENAME".phy ;
+	###
+
+fi
+##################
+##################
+
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #4: Clean up intermediate FASTA files in working directory. "
+	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary fiels generated during run. "
 fi
-############ STEP #4: CLEAN UP (REMOVE, OR KEEP & ORGANIZE) INTERMEDIATE FASTA FILES IN WORKING DIRECTORY.
-##--Clean up intermediate fasta files:
-	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
-
-		rm ./"$MY_NEXUS_BASENAME".fasta
-
-	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "0" ]]; then
-
-	    if [[ -s fasta/ ]]; then
-		    # rm -r fasta/;
-		    if [[ ! -s NEXUS2PHYLIP_fasta/ ]]; then mkdir NEXUS2PHYLIP_fasta/; fi
-			mv ./*.fasta ./NEXUS2PHYLIP_fasta/;
-	    else
-		    if [[ ! -s fasta/ ]]; then mkdir fasta/; fi
-			mv ./*.fasta ./fasta/;
-		fi
-
-	elif [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_OVERWRITE_SWITCH" = "1" ]]; then
-
-	    if [[ -s fasta/ ]]; then
-		    rm -r fasta/;
-		   if [[ ! -s fasta/ ]]; then mkdir fasta/; fi
-	    else
-		    if [[ ! -s fasta/ ]]; then mkdir fasta/; fi
-		fi
-		mv -f ./*.fasta ./fasta/;
-
+###### Remove temporary or unnecessary files created above:
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Removing temporary files... "
 	fi
+	rm ./*.tmp ;
 
-
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#	echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
-#	echo "INFO      | $(date) | Bye.
-#"
-#fi
 
 echo "----------------------------------------------------------------------------------------------------------"
+if [[ -s "$MY_NEXUS_BASENAME".charsets.txt ]] && [[ -s "$MY_NEXUS_BASENAME" ]]; then
+	echo "output files: ./${MY_NEXUS_BASENAME}.phy"
+	echo "              ./${MY_NEXUS_BASENAME}.charsets.txt"
+else
+	echo "output file: ./${MY_NEXUS_BASENAME}.phy"
+fi
 echo ""
 
 ##########################################################################################
@@ -306,14 +401,12 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
-  -c   nameChars (def: 10-character names) number of characters to which tip taxon names
-       should be shortened, allowing integer values ranging 1-9
+  -c   charSets (def: 0, absent; 1, present) whether or not the input NEXUS file contains
+       character sets in a separate 'sets' block
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
        screen (stdout)
-  -k   keepFasta (def: 0, off; 1, on, keep fasta intermediate) whether or not to keep
-       intermediate fasta files generated during the run
-  -o   fastaOverwrite (def: 0, off; 1, on) whether or not to force overwrite of fasta
-       files in current working directory (e.g. from previous steps of pipeline)
+  -o   overwritePHYLIP (def: 0, off; 1, on) whether or not to force overwrite of PHYLIP
+       files in current working directory
   -h   help text (also: --help) echo this help text and exit
   -H   verbose help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
@@ -324,17 +417,15 @@ USAGE="Usage: $(basename $0) [OPTION]...
  spaces, or else there will be issues. By default, program runs quietly with no ouput to
  screen or stderr or stdout files; however, -v option causes verbose run information to be
  output to screen (stdout).
-	The Naoki Takebayashi 'fasta2phylip.pl' Perl script distributed with PIrANHA must be in 
- working directory or available from command line (in your path). The only other dependency 
- is Perl (v5+), which is usually already installed on mac and Linux distributions. Tested 
- with Perl v5.1+ on macOS High Sierra (v10.13+).
+	The only dependency is Perl (v5+), which is usually already installed on mac and Linux 
+ distributions. Tested with Perl v5.1+ on macOS High Sierra (v10.13+).
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1 -k 1'  Run on user NEXUS while echoing output to 
-     										   				  	screen and keeping intermediate FASTA files
-    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1 -k 1'  	Same as above, but with -a flag
+    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1'  Run on user NEXUS while echoing output 
+                                                           to screen
+    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1'      Same as above, but with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
@@ -352,14 +443,12 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
-  -c   nameChars (def: 10-character names) number of characters to which tip taxon names
-       should be shortened, allowing integer values ranging 1-9
+  -c   charSets (def: 0, absent; 1, present) whether or not the input NEXUS file contains
+       character sets in a separate 'sets' block
   -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
        screen (stdout)
-  -k   keepFasta (def: 0, off; 1, on, keep fasta intermediate) whether or not to keep
-       intermediate fasta files generated during the run
-  -o   fastaOverwrite (def: 0, off; 1, on) whether or not to force overwrite of fasta
-       files in current working directory (e.g. from previous steps of pipeline)
+  -o   overwritePHYLIP (def: 0, off; 1, on) whether or not to force overwrite of PHYLIP
+       files in current working directory
   -h   help text (also: --help) echo this help text and exit
   -H   verbose help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
@@ -370,45 +459,34 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  spaces, or else there will be issues. By default, program runs quietly with no ouput to
  screen or standard output files; however, -v option causes verbose run information to be
  output to screen (stdout).
-	The Naoki Takebayashi 'fasta2phylip.pl' Perl script distributed with PIrANHA must be in 
- working directory or available from command line (in your path). The only other dependency 
- is Perl (v5+), which is usually already installed on mac and Linux distributions. Tested 
- with Perl v5.1+ on macOS High Sierra (v10.13+).
+	The only dependency is Perl (v5+), which is usually already installed on mac and Linux 
+ distributions. Tested with Perl v5.1+ on macOS High Sierra (v10.13+).
 
  ${bold}DETAILS${reset}
  The -i flag specifies the name of the input NEXUS file, which should be a standard NEXUS
  DNA sequence data file in sequential format (sequences on one line per individual/taxon).
  This flag is mandatory.
 
- The -c flag specifies an integer number of character to shorten tip taxon names to, for
- example, such that a value of 9 will reduce all tip taxon names to 9 alphanumeric
- characters followed by a space by taking the first 9 characters of the names (for a 10-
- character total at the start of each sequence-containing line of the alignment file. This
- takes advantage of -c flag capabilities in a dependency Perl script. By default, 10-character
- names will be kept, and single spaces will be placed between tip taxon names and corresponding
- sequences.
-
+ The -c flag allows the user to specify whether the input NEXUS file, <inputNEXUS>, does (1) 
+ or does not (0) contain a character sets in a 'sets' block at the end of the file. This flag
+ is not mandatory, and is set to 0 by default.
+ 
  The -v flag allows users to choose verbose output that prints name conversions, as well as
  step information (what the program is doing), to stdout. Off by default.
 
- The -k flag specifies whether to keep intermediate fasta files, one per <inputNexus>,
- generated during a run of the script. Fasta files are deleted by default, but if set to
- keep (1), fastas will be moved to a sub-folder named 'fasta' at the end of the run.
-
  The -o flag allows the user to specify whether or not to force output file overwrite of
- fasta files in current working directory and is set to on as the default; set to 0 to skip
- overwrite and always preserve existing fasta files, if present (not recommended).
+ PHYLIP files in current working directory with the same name; set to 0 to skip overwrite
+ and always preserve existing PHYLIP files, if present (not recommended; not tested).
 
- Dependencies: Perl and Naoki Takebayashi 'fasta2phylip.pl' Perl script in working
- directory or available from command line (in your path). Tested with Perl v5.1+ on macOS
- High Sierra (v10.13+).
+ Dependencies: Perl, standard UNIX command line tools (e.g. sed). Tested with Perl v5.1+ on 
+ macOS High Sierra (v10.13+).
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1 -k 1'  Run on user NEXUS while echoing output to 
-     										   				  	screen and keeping intermediate FASTA files
-    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1 -k 1'  	Same as above, but with -a flag
+    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1'  Run on user NEXUS while echoing output 
+                                                           to screen
+    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1'      Same as above, but with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
@@ -447,9 +525,10 @@ fi
 	# echo "$MY_ARGS"
 
 
-############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
 	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./nexus.tmp ]]; then rm ./nexus.tmp ; fi ;
 
 	ALL_MY_ARGUMENTS="$(echo "$@")"
 	echo "$ALL_MY_ARGUMENTS" > ./args.txt
@@ -468,10 +547,10 @@ fi
 	fi
 #
 	if [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_NAME_NCHARS_SWITCH=0 ;
+		MY_CHARSETS_SWITCH=0 ;
 	else 
 		MY_ARG="$(grep -h '\-c' ./args.txt | perl -pe 's/\-c//g' | perl -pe 's/\ //g')";
-		MY_NAME_NCHARS_SWITCH="$MY_ARG" ;
+		MY_CHARSETS_SWITCH="$MY_ARG" ;
 	fi
 #
 	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
@@ -481,12 +560,12 @@ fi
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_KEEP_FASTA_SWITCH=0 ;
-	else 
-		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
-		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
-	fi
+#	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MY_KEEP_FASTA_SWITCH=0 ;
+#	else 
+#		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+#		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
+#	fi
 #
 	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_OVERWRITE_SWITCH=0 ;
