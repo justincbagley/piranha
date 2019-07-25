@@ -1,0 +1,402 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: RougeNaRokRunner.sh                                                              #
+  VERSION="v0.1.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.                       #
+# Last update: July 25, 2019                                                             #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL FUNCTION AUTOMATES RUNNING RogueNaRok ON AN INPUT FILE OF TREES. THREE ROUTINES  #
+# ARE CALLED: LEAF STABILITY INDEX (rnr-lsi), MAXIMUM AGREEMENT SUBTREE (rnr-mast), AND  #
+# TAXONOMIC INSTABILITY INDEX (rnr-tii)                                                  #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+RougeNaRokRunner () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | RougeNaRokRunner, v0.1.0 July 2019  (part of PIrANHA v0.3a1)   "
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Step #1: Set up workspace, set environmental variables, and perform checks. "
+############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
+###### Set working directory and filetypes as different variables:
+echo "INFO      | $(date) |          Setting user-specified path to: "
+echo "INFO      | $(date) |          $PWD "	
+echo "INFO      | $(date) |          Input file: $INPUT_FILE "
+echo "INFO      | $(date) |          Examining current directory, setting variables... "
+
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+echo "INFO      | $(date) |          Checking availability of RogueNaRok programs from the command line... "
+## This provides a prelim check on availability of RogueNaRok programs from the command line.
+## If the programs are not available, then the code below will not run. So you will need to
+## throw an error message and quit.
+	MY_RNR_LSI_CHECK="$(which rnr-lsi)"
+#		if [[ ! -z "$MY_RNR_LSI_CHECK" ]]; then echo here; fi
+	MY_RNR_MAST_CHECK="$(which rnr-mast)"
+#		if [[ ! -z "$MY_RNR_MAST_CHECK" ]]; then echo here; fi
+	MY_RNR_TII_CHECK="$(which rnr-tii)"
+#		if [[ ! -z "$MY_RNR_TII_CHECK" ]]; then echo here; fi
+	if [[ ! -z "$MY_RNR_LSI_CHECK" ]] && [[ ! -z "$MY_RNR_MAST_CHECK" ]] && [[ ! -z "$MY_RNR_TII_CHECK" ]]; then
+		echo "INFO      | $(date) |          Check PASSED... "	
+	elif [[ -z "$MY_RNR_LSI_CHECK" ]] || [[ -z "$MY_RNR_MAST_CHECK" ]] || [[ -z "$MY_RNR_TII_CHECK" ]]; then
+		echo "WARNING!  | $(date) |          Check FAILED! "
+		echo "WARNING!  | $(date) |          One or more RogueNaRok programs (rnr-lsi, rnr-mast, rnr-tii) are NOT available from the command line. "
+		echo "INFO      | $(date) |             Please (re)install the software and try again. Quitting... "
+		exit
+	fi
+
+
+echo "INFO      | $(date) | Step #2: Clean tree file, and check tree file characteristics. "
+############ STEP #2: GET TREE FILE CHARACTERISTICS (NO. TREES, NO. TAXA; NO. TAX CHECK) AND THEN RUN ROGUENAROK
+echo "INFO      | $(date) |          Moving trees to temporary file (trees.tmp) and cleaning... "
+## Copy inputFile (trees file) to temporary file for manipulation:
+	cp "$INPUT_FILE" ./trees.tmp 
+
+## Clean file by removing new lines, empty lines or commented out lines (starting with the
+## pound sign):
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' 's/^$\n//g' ./trees.tmp ;
+		sed -i '' 's/^\ +$\n//g' ./trees.tmp ;
+		sed -i '' 's/^#.*\n//g' ./trees.tmp ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/^$\n//g' ./trees.tmp ;
+		sed -i 's/^\ +$\n//g' ./trees.tmp ;
+		sed -i 's/^#.*\n//g' ./trees.tmp ;
+	fi
+
+echo "INFO      | $(date) |          Checking numbers of trees and taxa... "
+## Check numbers of trees and taxa, report back to user. Would be desirable to also perform a
+## check on the number of taxa in each tree, which must be identical for RogueNaRok analysis
+## to run successfully.
+##
+## First, count number of lines with semicolon characters as = number of trees. (Could also 
+## count number of lines with parenthesis characters, but this would assume that trees are 
+## written as one tree per line.)
+	MY_NUM_SEMICOLONS="$(grep -n '\;' ./trees.tmp | wc -l | sed 's/\ //g')";
+	MY_NUM_LINES="$(wc -l ./trees.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
+
+	# Is semicolons same as lines, indicating one tree per line, yes / no?
+	if [[ "$MY_NUM_SEMICOLONS" = "$MY_NUM_LINES" ]]; then
+		echo "INFO      | $(date) |             Found one tree per line. Everything's good... "
+		MY_NUM_TREES="$MY_NUM_SEMICOLONS" ;
+	elif [[ "$MY_NUM_SEMICOLONS" != "$MY_NUM_LINES" ]]; then
+		echo "WARNING!  | $(date) |             Found more than one tree per line. There could be issues... "
+		# Try to get trees arranged as one per line by replacing '\,$\n' (comma-ending lines) 
+		# with nothing; replacing all '\n' with nothing; and then adding carriage returns
+		# back in after each semicolon.
+		echo "WARNING!  | $(date) |             Attempting reorganization to one tree per line... "
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i '' 's/\,$\n//g' ./trees.tmp ;
+			sed -i '' 's/\n//g' ./trees.tmp ;
+			sed -i '' 's/\;/\;\n/g' ./trees.tmp ;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/\,$\n//g' ./trees.tmp ;
+			sed -i 's/\n//g' ./trees.tmp ;
+			sed -i 's/\;/\;\n/g' ./trees.tmp ;
+		fi
+	fi
+
+echo "INFO      | $(date) | Step #3: Prep environment and run RogueNaRok. "
+echo "INFO      | $(date) |          Adding environmental variable for file name... "
+	## Prep filename/basename:
+	MY_FILENAME=$(basename -- "$INPUT_FILE");
+	MY_EXTENSION="${MY_FILENAME##*.}";
+	FILENAME="${MY_FILENAME%.*}";
+
+echo "INFO      | $(date) |          Running RogueNaRok... "
+	## Run RogueNaRok!
+echo "INFO      | $(date) |             Running leaf stability index (LSI) analysis... "
+	rnr-lsi -i ./trees.tmp -n "$FILENAME"_RnR  ;
+echo "INFO      | $(date) |             Running maximum agreement subtree (MAST) analysis... "
+	rnr-mast -i ./trees.tmp -n "$FILENAME"_RnR  ;
+echo "INFO      | $(date) |             Running taxonomic instability index (TII) analysis... "
+	rnr-tii -i ./trees.tmp -n "$FILENAME"_RnR  ;
+
+echo "INFO      | $(date) |          RogueNaRok runs completed. "
+
+
+echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+###### Remove temporary or unnecessary files created above:
+	echo "INFO      | $(date) |          Removing temporary files... "
+	if [[ ! -z "$(ls ./*.tmp)" ]]; then
+		rm ./*.tmp ;
+	fi
+
+echo "----------------------------------------------------------------------------------------------------------"
+if [[ -s "$FILENAME"_RnR ]]; then 
+	echo "output file(s): One or more files output by RogueNaRok in current directory"
+else
+	echo "output file(s): Check current directory for output files..."
+fi
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputFile (def: NULL) input DNA sequence alignment filename
+  -k   keepTempFiles (def: 0, no; 1, yes) whether or not to keep temporary tree file(s)
+       generated during run of this function
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates reading in one Newick-formatted tree file (-i flag) and analyzing it
+ in RogueNaRok (Aberer et al. 2013), a popular algorithm for identification of 'rogue' taxa
+ in phylogenies. The input trees are generally expected to be bootstrap trees, for example 
+ from a ML bootstrapping analysis in RAxML, or Bayesian trees from the posterior of a 
+ Bayesian inference analysis. The goal of RogueNaRok is to identify rogues for removal, so
+ in hopes that this will improve bootstrap or posterior support in the consensus tree 
+ generated from the tree set. Usually, Newick tree files contain one tree per line; this is
+ the recommended format. However, if your tree code is hard-wrapped so that you have trees
+ spanning multiple lines, then the program attempts to reorganize the file to contain only
+ one tree per line, before running RogueNaRok. It is also important to note that RogueNaRok
+ expects the same taxa with the same name labels in each tree in the tree set provided by 
+ the user. In summary, RogueNaRokRunner may fail if trees are given across multiple lines, 
+ and RogueNaRok will fail if trees have variable taxon membership.
+	The only dependencies are RogueNaRok (available on GitHub: https://github.com/aberer/RogueNaRok) 
+ and Perl (v5+), which is usually already installed on mac and Linux distributions. Tested 
+ with RogueNaRok (RnR) version 1.0 and Perl v5.1+ on macOS High Sierra (v10.13+). The three
+ programs in RogueNaRok 1.0 must be available from the command line as rnr-lsi, rnr-mast, and
+ rnr-tii.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f RogueNaRokRunner --args='-i <inputFile>'        Basic run on single tree file
+    piranha -f RogueNaRokRunner --args='-i <inputFile> -k 1'   Same as above, except keeping temp
+                                                               temporary files created during run
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Aberer, A., Krompass, D., Stamatakis, A. 2013. Pruning rogue taxa improves phylogenetic 
+	accuracy: an efficient algorithm and webservice. Systematic Biology, 62(1), 162–166.
+
+ Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_FILE="$MY_ARG" ;
+	fi
+#
+#	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MULTIPLE_PHYLIP_SWITCH=0 ;
+#	else 
+#		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+#		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
+#	fi
+#
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+#RnRrunner
+RougeNaRokRunner
+
+# Exit cleanly
+safeExit
