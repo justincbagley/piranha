@@ -159,11 +159,8 @@ echo "INFO      | $(date) |          Checking availability of RogueNaRok program
 ## If the programs are not available, then the code below will not run. So you will need to
 ## throw an error message and quit.
 	MY_RNR_LSI_CHECK="$(which rnr-lsi)"
-#		if [[ ! -z "$MY_RNR_LSI_CHECK" ]]; then echo here; fi
 	MY_RNR_MAST_CHECK="$(which rnr-mast)"
-#		if [[ ! -z "$MY_RNR_MAST_CHECK" ]]; then echo here; fi
 	MY_RNR_TII_CHECK="$(which rnr-tii)"
-#		if [[ ! -z "$MY_RNR_TII_CHECK" ]]; then echo here; fi
 	if [[ ! -z "$MY_RNR_LSI_CHECK" ]] && [[ ! -z "$MY_RNR_MAST_CHECK" ]] && [[ ! -z "$MY_RNR_TII_CHECK" ]]; then
 		echo "INFO      | $(date) |          Check PASSED... "	
 	elif [[ -z "$MY_RNR_LSI_CHECK" ]] || [[ -z "$MY_RNR_MAST_CHECK" ]] || [[ -z "$MY_RNR_TII_CHECK" ]]; then
@@ -395,7 +392,6 @@ set -o pipefail
 # checkDependencies
 
 # Run the script
-#RnRrunner
 RogueNaRokRunner
 
 # Exit cleanly
