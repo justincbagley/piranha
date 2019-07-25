@@ -371,7 +371,7 @@ fi
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary fiels generated during run. "
+	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
 fi
 ###### Remove temporary or unnecessary files created above:
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then

@@ -352,7 +352,7 @@ fi
 ###
 
 
-echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary fiels generated during run. "
+echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
 ###### Remove temporary or unnecessary files created above:
 	echo "INFO      | $(date) |          Removing temporary files... "
 	rm ./*.tmp ;
