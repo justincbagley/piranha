@@ -5,7 +5,7 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: RougeNaRokRunner.sh                                                              #
+# File: RogueNaRokRunner.sh                                                              #
   VERSION="v0.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.                       #
@@ -131,13 +131,13 @@ gemDependencies=()
 
 
 
-RougeNaRokRunner () {
+RogueNaRokRunner () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RougeNaRokRunner, v0.1.0 July 2019  (part of PIrANHA v0.3a1)   "
+echo "INFO      | $(date) | RogueNaRokRunner, v0.1.0 July 2019  (part of PIrANHA v0.3a1)   "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -396,7 +396,7 @@ set -o pipefail
 
 # Run the script
 #RnRrunner
-RougeNaRokRunner
+RogueNaRokRunner
 
 # Exit cleanly
 safeExit
