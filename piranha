@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.0.4"                                                                       #
+  VERSION="v1.0.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: June 12, 2019                                                             #
+# Last update: July 25, 2019                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.4, June 2019  (main script for PIrANHA v0.3a1)  "
+piranha v1.0.5, July 2019  (main script for PIrANHA v0.3a1)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -184,8 +184,8 @@ FUNCTION			   DESCRIPTION
                        (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs.
 AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses (Calderon, 
                        Bagley, and Muchhala, in prep.).
-BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (usually on 
-                       remote supercomputer).
+BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (e.g. Drummond
+                       et al. 2012; Bouckaert et al. 2014; usually on a remote supercomputer).
 BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST 
                        runs/subfolders (destined for supercomputer).
 BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster.
@@ -282,6 +282,8 @@ renameForStarBeast2    Function that renames tip taxa (i.e. sequence names) in a
                        assigning species in BEAUti before running *BEAST or StarBEAST2 in BEAST.
 renameTaxa             Automates renaming all tip taxa (samples) in genetic data files of type FASTA, PHYLIP, 
                        NEXUS, or VCF (variant call format) in current working directory.
+RogueNaRokRunner       Function that automates reading in a Newick-formatted tree file (-i flag) and analyzing it
+                       in RogueNaRok (Aberer et al. 2013).
 RYcoder                New (June 2019) function that converts a PHYLIP or NEXUS DNA sequence alignment into 'RY' 
                        coding, a binary format with purines (A, G) coded as 0's and pyrimidines (C, T) recoded
                        as 1's.
@@ -296,6 +298,33 @@ treeThinner            Function that conducts downsampling ('thinning') of trees
                        contain every nth tree.
 vcfSubsampler          Utility function that uses a list file to subsample a variant call format (VCF) file so that 
                        it only contains SNPs included in the list.
+
+${bold}REFERENCES${reset}
+Aberer, A., Krompass, D., Stamatakis, A. 2013. Pruning rogue taxa improves phylogenetic 
+	accuracy: an efficient algorithm and webservice. Systematic Biology, 62(1), 162–166.
+Bouckaert, R., Heled, J., Künert, D., Vaughan, T.G., Wu, C.H., Xie, D., Suchard, M.A., 
+	Rambaut, A., Drummond, A.J. 2014. BEAST2: a software platform for Bayesian evolutionary 
+	analysis. PLoS Computational Biology, 10, e1003537.
+Bryant, D., Bouckaert, R., Felsenstein, J., Rosenberg, N.A., RoyChoudhury, A. 2012. Inferring 
+	species trees directly from biallelic genetic markers: bypassing gene trees in a full 
+	coalescent analysis. Molecular Biology and Evolution, 29, 1917–1932.
+Drummond, A.J., Suchard, M.A., Xie, D., Rambaut, A. 2012. Bayesian phylogenetics with BEAUti 
+ 	and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
+Eaton, D.A. 2014. PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 
+ 	Bioinformatics, 30, 1844-1849.
+Eaton, D.A.R., Overcast, I. 2016. ipyrad: interactive assembly and analysis of RADseq data sets. 
+ 	Available at: <http://ipyrad.readthedocs.io/>.
+Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+Lanfear, R., Calcott, B., Ho, S.Y.W., Guindon, S. 2012. Partitionfinder: combined selection of 
+	partitioning schemes and substitution models for phylogenetic analyses. Molecular Biology 
+	and Evolution, 29, 1695–1701. 
+Lanfear, R., Calcott, B., Kainer, D., Mayer, C., Stamatakis, A. 2014. Selecting optimal 
+	partitioning schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
+Meier, R., Shiyang, K., Vaidya, G., Ng, P.K. 2006. DNA barcoding and taxonomy in Diptera: 
+	a tale of high intraspecific variability and low identification success. Systematic 
+	Biology, 55(5), 715-728.
+
 ----------------------------------------------------------------------------------------------------------------
 " ;
   safeExit ;
