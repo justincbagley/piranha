@@ -279,27 +279,32 @@ USAGE="Usage: $(basename $0) [OPTION]...
  in RogueNaRok (Aberer et al. 2013), a popular algorithm for identification of 'rogue' taxa
  in phylogenies. The input trees are generally expected to be bootstrap trees, for example 
  from a ML bootstrapping analysis in RAxML, or Bayesian trees from the posterior of a 
- Bayesian inference analysis. The goal of RogueNaRok is to identify rogues for removal, so
- in hopes that this will improve bootstrap or posterior support in the consensus tree 
- generated from the tree set. Usually, Newick tree files contain one tree per line; this is
- the recommended format. However, if your tree code is hard-wrapped so that you have trees
- spanning multiple lines, then the program attempts to reorganize the file to contain only
- one tree per line, before running RogueNaRok. It is also important to note that RogueNaRok
+ Bayesian inference analysis. The goal of RogueNaRok is to identify rogues for removal, in
+ hopes that removing those taxa will improve bootstrap or posterior support in the consensus 
+ tree generated from the tree set. 
+	Regarding input, Newick tree files usually contain one tree per line, and this is the 
+ recommended format. However, if your tree code is hard-wrapped, with trees spanning multiple
+ lines, then the program will attempt to reorganize the input file so it contains only one
+ tree per line, prior to running RogueNaRok. It is also important to note that RogueNaRok
  expects the same taxa with the same name labels in each tree in the tree set provided by 
  the user. In summary, RogueNaRokRunner may fail if trees are given across multiple lines, 
- and RogueNaRok will fail if trees have variable taxon membership.
+ and RogueNaRok will fail if trees have variable taxon membership. Regarding outputs, if 
+ 100% successful, this function should run RogueNaRok, yielding six output files, including
+ one 'info' file and one output file from each of the three RogueNaRok programs called (see
+ below).
 	The only dependencies are RogueNaRok (available on GitHub: https://github.com/aberer/RogueNaRok) 
  and Perl (v5+), which is usually already installed on mac and Linux distributions. Tested 
  with RogueNaRok (RnR) version 1.0 and Perl v5.1+ on macOS High Sierra (v10.13+). The three
- programs in RogueNaRok 1.0 must be available from the command line as rnr-lsi, rnr-mast, and
- rnr-tii.
+ programs in RogueNaRok 1.0 that are called must be available from the command line as rnr-lsi
+ (which calculates leaf stability index, LSI), rnr-mast (calculates maximum agreement subtree 
+ (MAST) scores), and rnr-tii (which calculates taxonomic instability index, TII). 
  
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
     piranha -f RogueNaRokRunner --args='-i <inputFile>'        Basic run on single tree file
-    piranha -f RogueNaRokRunner --args='-i <inputFile> -k 1'   Same as above, except keeping temp
-                                                               temporary files created during run
+    piranha -f RogueNaRokRunner --args='-i <inputFile> -k 1'   Same as above, except keeping
+                                                               temporary files from the run
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
