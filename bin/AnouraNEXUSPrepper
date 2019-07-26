@@ -138,7 +138,7 @@ AnouraNEXUSPrepper () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.1 March 2019  (in PIrANHA v0.3a1)"
+echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.1 March 2019  (in PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -277,7 +277,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Sierra (10.13+) and many earlier macOS or OSX versions.
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

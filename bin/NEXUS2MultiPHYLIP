@@ -138,7 +138,7 @@ NEXUS2MultiPHYLIP () {
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.6.0 May 2019  (in PIrANHA v0.3a1) "
+echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.6.0 May 2019  (in PIrANHA v0.3a2) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 fi
@@ -553,7 +553,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f NEXUS2MultiPHYLIP -a '-i <inputNEXUS> -v 1'    Same as above, but with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

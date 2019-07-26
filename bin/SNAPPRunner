@@ -640,7 +640,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f SNAPPRunner --args='-n 10 -w 24:00:00 -m 2048M'      Also increase the default walltime and memory (RAM) settings
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

@@ -136,7 +136,7 @@ BEASTRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTRunner, v1.5.0 April 2019  (in PIrANHA v0.3a1)     "
+echo "INFO      | $(date) | BEASTRunner, v1.5.0 April 2019  (in PIrANHA v0.3a2)     "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -412,7 +412,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEASTRunner --args='-n 10 -w 24:00:00 -m 2048M'  Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -490,7 +490,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEASTRunner --args='-n 10 -w 24:00:00 -m 2048M'  Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

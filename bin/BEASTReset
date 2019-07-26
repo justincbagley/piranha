@@ -137,7 +137,7 @@ BEASTReset () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTReset, v1.1.0 May 2019  (in PIrANHA v0.3a1)      "
+echo "INFO      | $(date) | BEASTReset, v1.1.0 May 2019  (in PIrANHA v0.3a2)      "
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -286,11 +286,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEASTReset --args='-h'	  Print help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.

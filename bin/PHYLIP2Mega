@@ -135,7 +135,7 @@ PHYLIP2Mega () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2Mega, v1.2.1 July 2019  (part of PIrANHA v0.3a1)"
+echo "INFO      | $(date) | PHYLIP2Mega, v1.2.1 July 2019  (part of PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -361,7 +361,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f PHYLIP2Mega --args='-m1 -k 1'                Convert multiple PHYLIP files to Mega, keeping original files
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

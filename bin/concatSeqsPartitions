@@ -138,7 +138,7 @@ concatSeqsPartitions () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | concatSeqsPartitions, v1.0.0 May 2019  (in PIrANHA v0.3a1)     "
+echo "INFO      | $(date) | concatSeqsPartitions, v1.0.0 May 2019  (in PIrANHA v0.3a2)     "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -351,7 +351,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f concatSeqsPartitions --args='-t taxon_name_spaces12.txt'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

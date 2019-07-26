@@ -136,7 +136,7 @@ function NEXUS2gphocs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2gphocs, v1.5.0 March 2019  (part of PIrANHA v0.3a1)      "
+echo "INFO      | $(date) | NEXUS2gphocs, v1.5.0 March 2019  (part of PIrANHA v0.3a2)      "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -329,7 +329,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f MAGNET-1.0.0/NEXUS2gphocs --args='-h'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
