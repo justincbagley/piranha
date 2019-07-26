@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.5, July 2019  (main script for PIrANHA v0.3a1)  "
+piranha v1.0.5, July 2019  (main script for PIrANHA v0.3a2)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -230,6 +230,7 @@ getBootTrees           Function that automates organizing bootstrap trees output
 getTaxonNames          Utility function that extracts tip taxon names from sequences present in one or multiple 
                        PHYLIP DNA sequence alignments in current directory, using information on maximum taxon 
                        sampling level from user.
+list                   Function that prints a tabulated list of PIrANHA functions and their descriptions.
 MAGNET                 Shell pipeline for automating estimation of a maximum-likelihood (ML) gene tree in RAxML 
                        for each of many loci in a RAD-seq, UCE, or other multilocus dataset. Also contains other 
                        tools.
@@ -406,7 +407,7 @@ usage() {
     piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.
