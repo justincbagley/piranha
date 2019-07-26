@@ -3,7 +3,12 @@
 ### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
-- **July 2019:** Added new `RYcoder` function that reads in a PHYLIP or NEXUS DNA sequence alignment and converts it into 'RY'-coded, binary format, with purines (A, G) coded as 0's and pyrimidines (C, T) coded as 1's. Also added new `RogueNaRok` function that reads in a Newick tree file and runs it through RogueNaRok to identify rogue taxa. Finally, I conducted a comlete rewrite of the `NEXUS2PHYLIP` function that removes its dependence on N. Takebayashi's Perl script (see previous version), and I also made some minor edits to `piranha` and edits and bug fixes for other functions.
+### PIrANHA v0.3a2 (official minor pre-release version 0.3-alpha.2) - July 26, 2019
+
+- **July 25, 2019:** Added new `RogueNaRokRunner` function that reads in a Newick tree file and runs it through RogueNaRok to identify rogue taxa. Additionally, I conducted a comlete rewrite of the `NEXUS2PHYLIP` function that removes its dependence on N. Takebayashi's Perl script (see previous version), and I made minor edits to `piranha` and edits and bug fixes for other functions including `RYcoder`.
+- **July 24, 2019:** Minor updates and bug fixes for `PHYLIP2NEXUS` function.
+- **July 11, 2019:** Minor updates and fixes for `PHYLIP2Mega` function.
+- **June 11, 2019:** Added new `RYcoder` function that reads in a PHYLIP or NEXUS DNA sequence alignment and converts it into 'RY'-coded, binary format, with purines (A, G) coded as 0's and pyrimidines (C, T) coded as 1's. 
 
 ### PIrANHA v0.3a1 (official minor pre-release version 0.3-alpha.1) - May 7, 2019
 
