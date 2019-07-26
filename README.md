@@ -47,7 +47,7 @@ Alternatively, provide the following link to this software repository in your ma
 
 The DOI for PIrANHA, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.890815.svg)](https://doi.org/10.5281/zenodo.890815). Here are some examples of citing PIrANHA using the DOI: 
   
-  Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
+  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
   Bagley, J.C. 2019. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
