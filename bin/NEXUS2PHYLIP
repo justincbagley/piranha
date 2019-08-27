@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.6.0"                                                                       #
+  VERSION="v1.6.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: July 24, 2019                                                             #
+# Last update: August 27, 2019                                                           #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.0 July 2019  (part of PIrANHA v0.3a2) "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.1 August 2019  (part of PIrANHA v0.3a2) "
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -154,9 +154,7 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) |          Examining current directory, setting variables... "
 fi
 
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -164,15 +162,19 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS
 
-cp "$MY_NEXUS" ./nexus.tmp ;
+	cp "$MY_NEXUS" ./nexus.tmp ;
 
 ## This is the base name of the original nexus file, so you have it. This WILL work regardless
 ## of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
 	MY_NEXUS_BASENAME="$(echo "$MY_NEXUS" | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')" ;
-	#	echo "$MY_NEXUS_BASENAME"
+		#	echo "INFO      | $(date) |          Basename check:"
+		#	echo "INFO      | $(date) |          ${MY_NEXUS_BASENAME}"
 
-## Check for character sets in the input NEXUS file. 
-	MY_NEXUS_CHARSETS_CHECK="$(grep -n "charset\|CHARSET" "$MY_NEXUS" | wc -l)";
+## Check for character sets in the input NEXUS file.
+	MY_NEXUS_CHARSETS_CHECK="$(awk '/charset/ || /CHARSET/ { count++ } END { print count }' ./nexus.tmp )";
+	if [[ -z "$MY_NEXUS_CHARSETS_CHECK" ]]; then MY_NEXUS_CHARSETS_CHECK="0"; fi
+		#	echo "INFO      | $(date) |          Charsets check:"
+		#	echo "INFO      | $(date) |          ${MY_NEXUS_CHARSETS_CHECK}"
 
 ##################
 ##################
