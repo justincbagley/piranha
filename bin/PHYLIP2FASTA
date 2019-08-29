@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2FASTA.sh                                                                  #
-  VERSION="v1.2.2"                                                                       #
+  VERSION="v1.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: May 8, 2019                                                               #
+# Last update: August 29, 2019                                                           #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2FASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2FASTA, v1.2.2 May 2019  (in PIrANHA v0.3a2)       "
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.2.3 August 2019  (in PIrANHA v0.3a2)       "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -183,6 +183,10 @@ fi
 		)
 		fi
 	fi
+
+	## Clean FASTA. Remove any tabs if present from the final FASTA file generated above:
+	perl -p -i -e 's/\t//g' "$MY_BASENAME".fas
+
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files and removing temporary files per user request. "

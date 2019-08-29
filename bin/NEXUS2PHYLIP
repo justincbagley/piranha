@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.6.1"                                                                       #
+  VERSION="v1.6.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: August 27, 2019                                                           #
+# Last update: August 29, 2019                                                           #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.1 August 2019  (part of PIrANHA v0.3a2) "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.2 August 2019  (part of PIrANHA v0.3a2) "
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -210,12 +210,16 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" = "0" ]]; 
 	
 			## Now that the matrix is isolated, get no. characters:
 			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
-			
+			MY_CORR_NCHAR="$(calc $MY_NCHAR-1)";
+
 			## Make PHYLIP header:
-			echo "$MY_NTAX  $MY_NCHAR" > ./phylip_header.tmp ;
+			echo "$MY_NTAX  $MY_CORR_NCHAR" > ./phylip_header.tmp ;
+			
+			## Paste taxon names spaces with the matrix (put back together):
+			paste ./taxon_names_spaces.tmp ./matrixOnly.tmp > ./phylip_full_matrix.tmp
 			
 			## Make PHYLIP file:
-			cat ./phylip_header.tmp ./matrixOnly.tmp > "$MY_NEXUS_BASENAME".phy ;
+			cat ./phylip_header.tmp ./phylip_full_matrix.tmp > "$MY_NEXUS_BASENAME".phy ;
 	###
 	
 fi
@@ -284,12 +288,16 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	
 			## Now that the matrix is isolated, get no. characters:
 			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
+			MY_CORR_NCHAR="$(calc $MY_NCHAR-1)";
 			
 			## Make PHYLIP header:
-			echo "$MY_NTAX  $MY_NCHAR" > ./phylip_header.tmp ;
+			echo "$MY_NTAX  $MY_CORR_NCHAR" > ./phylip_header.tmp ;
+			
+			## Paste taxon names spaces with the matrix (put back together):
+			paste ./taxon_names_spaces.tmp ./matrixOnly.tmp > ./phylip_full_matrix.tmp
 			
 			## Make PHYLIP file:
-			cat ./phylip_header.tmp ./matrixOnly.tmp > "$MY_NEXUS_BASENAME".phy ;
+			cat ./phylip_header.tmp ./phylip_full_matrix.tmp > "$MY_NEXUS_BASENAME".phy ;
 	###
 
 fi
@@ -358,12 +366,16 @@ if [[ "$MY_CHARSETS_SWITCH" = "1" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	
 			## Now that the matrix is isolated, get no. characters:
 			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
+			MY_CORR_NCHAR="$(calc $MY_NCHAR-1)";
 			
 			## Make PHYLIP header:
-			echo "$MY_NTAX  $MY_NCHAR" > ./phylip_header.tmp ;
+			echo "$MY_NTAX  $MY_CORR_NCHAR" > ./phylip_header.tmp ;
+			
+			## Paste taxon names spaces with the matrix (put back together):
+			paste ./taxon_names_spaces.tmp ./matrixOnly.tmp > ./phylip_full_matrix.tmp
 			
 			## Make PHYLIP file:
-			cat ./phylip_header.tmp ./matrixOnly.tmp > "$MY_NEXUS_BASENAME".phy ;
+			cat ./phylip_header.tmp ./phylip_full_matrix.tmp > "$MY_NEXUS_BASENAME".phy ;
 	###
 
 fi
