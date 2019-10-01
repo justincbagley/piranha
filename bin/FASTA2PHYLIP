@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: April 15, 2019                                                            #
+# Last update: October 1, 2019                                                           #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.1.0 April 2019  (in PIrANHA v0.3a2)     "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.1.1 October 2019  (in PIrANHA v0.3a2)     "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -159,9 +159,6 @@ fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
-checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ## Organize working directory structure:
 	if [[ ! -s ./output/ ]]; then
@@ -198,23 +195,15 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
 			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/^[[:space:]]*$/d' "$MY_FASTA" ;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/^[[:space:]]*$/d' "$MY_FASTA" ;
-				fi
+					sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
+					rm ./*.bak ;
 			fi
 		
 		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 		##--Unlike sequence lines, these lines will all contain '#' characters.
 			if [[ "$(grep -n '\#' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/\#/d' "$MY_FASTA" ;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/\#/d' "$MY_FASTA" ;
-				fi
+					sed -i.bak '/\#/d' "$MY_FASTA" ;
+					rm ./*.bak ;
 			fi
 		
 		##--Generate metric used below to test FASTA file format and identify whether file contains 
@@ -241,24 +230,17 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
-			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
-			fi
-			if [[ "${machine}" = "Linux" ]]; then
-				sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
-			fi
+			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
+			rm ./*.bak ;
+
 			perl -p -i -e 's/\n//g' "$MY_FASTA" ;
 			perl -p -i -e 's/MARK\_EOL/\n/g' "$MY_FASTA" ;
 			perl -p -i -e 's/\>/\n\>/g' "$MY_FASTA" ;
 		
 			## Need empty line check here again:
 			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/^[[:space:]]*$/d' "$MY_FASTA" ;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/^[[:space:]]*$/d' "$MY_FASTA" ;
-				fi
+				sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
+				rm ./*.bak ;
 			fi
 		
 			## May also need to make sure the last line has EOF line (i.e. a blank line with no 
@@ -379,23 +361,15 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 	
 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
 			if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/^[[:space:]]*$/d' ./fasta.tmp ;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/^[[:space:]]*$/d' ./fasta.tmp ;
-				fi
+				sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
+				rm ./*.bak ;
 			fi
 		
 		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 		##--Unlike sequence lines, these lines will all contain '#' characters.
 			if [[ "$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/\#/d' ./fasta.tmp ;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/\#/d' ./fasta.tmp ;
-				fi
+				sed -i.bak '/\#/d' ./fasta.tmp ;
+				rm ./*.bak ;
 			fi
 		
 		##--Generate metric used below to test FASTA file format and identify whether file contains 
@@ -422,24 +396,17 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
-			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
-			fi
-			if [[ "${machine}" = "Linux" ]]; then
-				sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
-			fi
+			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
+			rm ./*.bak ;
+			
 			perl -p -i -e 's/\n//g' ./fasta.tmp ;
 			perl -p -i -e 's/MARK\_EOL/\n/g' ./fasta.tmp ;
 			perl -p -i -e 's/\>/\n\>/g' ./fasta.tmp ;
 		
 			## Need empty line check here again:
 			if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/^[[:space:]]*$/d' ./fasta.tmp ;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/^[[:space:]]*$/d' ./fasta.tmp ;
-				fi
+				sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
+				rm ./*.bak ;
 			fi
 		
 			## May also need to make sure the last line has EOF line (i.e. a blank line with no 
