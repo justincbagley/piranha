@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.1.1"                                                                       #
+  VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: October 1, 2019                                                           #
+# Last update: October 21, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.1.1 October 2019  (in PIrANHA v0.3a2)     "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.1.2 October 2019  (in PIrANHA v0.3a2)     "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -279,7 +279,12 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 		
 			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
-			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			## Commented out because of 'line too long' error on Oct 21, 2019:
+			## (Worth checking into to see if you can code a way around this, but the phylip
+			## file that results is still an alignment that runs in RAxML, even though the 
+			## columns aren't perfectly aligned (which is what this command below would 
+			## fix)).
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
 			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
 			
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
@@ -290,7 +295,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 	
 			## Remove orig FASTA file and delete temporary files.
 			rm "$MY_FASTA" ;
-			rm ./*.tmp ;
+			# rm ./*.tmp ;
 		
 		fi
 		
@@ -334,7 +339,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 			
 			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
-			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
 			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
 					
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
@@ -445,7 +450,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 			
 			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
-			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
 			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
 					
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
@@ -502,7 +507,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 			
 			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
-			column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
 			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
 					
 			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: getTaxonNames.sh                                                                 #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 13 17:17:41 CDT 2019.                       #
-# Last update: April 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ getTaxonNames () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | getTaxonNames, v1.1.0 April 2019  (part of PIrANHA v0.3a2)"
+echo "INFO      | $(date) | getTaxonNames, v1.1.1 October 2019  (part of PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -176,7 +176,8 @@ echo "INFO      | $(date) | Step #2: Make taxon names file based on alignment in
 			perl -p -i -e 's/\ +.*//g' "$MY_N_MAX_TIP_TAXA_FIX_SPACES"_taxon_names.txt ;
 
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '1d' "$MY_N_MAX_TIP_TAXA_FIX_SPACES"_taxon_names.txt ;
+				sed -i.bak '1d' "$MY_N_MAX_TIP_TAXA_FIX_SPACES"_taxon_names.txt ;
+				rm ./*.bak;
 			fi
 
 			if [[ "${machine}" = "Linux" ]]; then

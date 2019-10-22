@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RogueNaRokRunner.sh                                                              #
-  VERSION="v0.1.0"                                                                       #
+  VERSION="v0.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.                       #
-# Last update: July 25, 2019                                                             #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ RogueNaRokRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RogueNaRokRunner, v0.1.0 July 2019  (part of PIrANHA v0.3a2)   "
+echo "INFO      | $(date) | RogueNaRokRunner, v0.1.1 October 2019  (part of PIrANHA v0.3a2)   "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -180,9 +180,10 @@ echo "INFO      | $(date) |          Moving trees to temporary file (trees.tmp) 
 ## Clean file by removing new lines, empty lines or commented out lines (starting with the
 ## pound sign):
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' 's/^$\n//g' ./trees.tmp ;
-		sed -i '' 's/^\ +$\n//g' ./trees.tmp ;
-		sed -i '' 's/^#.*\n//g' ./trees.tmp ;
+		sed -i.bak 's/^$\n//g' ./trees.tmp ;
+		sed -i.bak 's/^\ +$\n//g' ./trees.tmp ;
+		sed -i.bak 's/^#.*\n//g' ./trees.tmp ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/^$\n//g' ./trees.tmp ;
@@ -212,9 +213,10 @@ echo "INFO      | $(date) |          Checking numbers of trees and taxa... "
 		# back in after each semicolon.
 		echo "WARNING!  | $(date) |             Attempting reorganization to one tree per line... "
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' 's/\,$\n//g' ./trees.tmp ;
-			sed -i '' 's/\n//g' ./trees.tmp ;
-			sed -i '' 's/\;/\;\n/g' ./trees.tmp ;
+			sed -i.bak 's/\,$\n//g' ./trees.tmp ;
+			sed -i.bak 's/\n//g' ./trees.tmp ;
+			sed -i.bak 's/\;/\;\n/g' ./trees.tmp ;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/\,$\n//g' ./trees.tmp ;

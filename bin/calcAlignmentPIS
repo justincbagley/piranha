@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: calcAlignmentPIS.sh                                                              #
-  VERSION="v1.4.0"                                                                       #
+  VERSION="v1.4.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: March 17, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | calcAlignmentPIS, v1.4.0 March 2019  (in PIrANHA v0.3a2)"
+echo "INFO      | $(date) | calcAlignmentPIS, v1.4.1 October 2019  (in PIrANHA v0.3a2)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -222,7 +222,8 @@ echo "INFO      | $(date) |          Editing PIS output table... "
 	sed 's/\"//g' input_file_order.txt | sed '1d' | perl -p -e 's/^.*\t.*\///g' > input_file_order_filenames.txt ;
 
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' '1d' pis_output_table.txt ;
+		sed -i.bak '1d' pis_output_table.txt ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i '1d' pis_output_table.txt ;
@@ -243,7 +244,8 @@ if [[ "$MY_PIS_THRESHOLD_SWITCH" != "0" ]]; then
 			cp ./pis_results_table_revsort.txt ./pis.tmp ;
 
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '1d' ./pis.tmp ;
+				sed -i.bak '1d' ./pis.tmp ;
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '1d' ./pis.tmp ;

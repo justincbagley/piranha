@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPcleaner.sh                                                                 #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
-# Last update: April 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -140,7 +140,7 @@ PHYLIPcleaner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPcleaner, v1.0.0 April 2019  (in PIrANHA v0.3a2)     "
+echo "INFO      | $(date) | PHYLIPcleaner, v1.0.1 October 2019  (in PIrANHA v0.3a2)     "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -191,7 +191,8 @@ fi
 	## If present, remove empty lines / newlines from current PHYLIP file, $i.
 		if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '/^[[:space:]]*$/d' "$i" ;
+				sed -i.bak '/^[[:space:]]*$/d' "$i" ;
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '/^[[:space:]]*$/d' "$i" ;
@@ -202,7 +203,8 @@ fi
 	## Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
 		if [[ "$(grep -n '\#' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '/\#/d' "$i" ;
+				sed -i.bak '/\#/d' "$i" ;
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '/\#/d' "$i" ;
@@ -212,12 +214,13 @@ fi
 	echo "INFO      | $(date) |          Checking for and removing individuals comprised entirely of undetermined sites (gaps, missing characters)... "
 	## Check and remove individuals with all missing data:
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '/\ [N\-]*$/d' "$i" ;
-				sed -i '' '/\ [n\-]*$/d' "$i" ;
-				sed -i '' '/\ [\?\-]*$/d' "$i" ;
-#				sed -i '' '/\ [\-N]*$/d' "$i" ;
-#				sed -i '' '/\ [\-n]*$/d' "$i" ;
-#				sed -i '' '/\ [\-\?]*$/d' "$i" ;
+				sed -i.bak '/\ [N\-]*$/d' "$i" ;
+				sed -i.bak '/\ [n\-]*$/d' "$i" ;
+				sed -i.bak '/\ [\?\-]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-N]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-n]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-\?]*$/d' "$i" ;
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '/\ [N\-]*$/d' "$i" ;
@@ -232,7 +235,8 @@ fi
 			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)" ;
 	
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+				sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
@@ -266,17 +270,18 @@ echo "INFO      | $(date) |          Check results thoroughly, then start over a
 	(
 		for i in ./*.phy; do 
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
-				sed -i '' '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
-				sed -i '' '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
+				sed -i.bak '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
+				sed -i.bak '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
+				sed -i.bak '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
 	
-				sed -i '' '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
-				sed -i '' '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
+				sed -i.bak '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
+				sed -i.bak '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
 			
-				sed -i '' '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
-				sed -i '' '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
-				sed -i '' '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
-				sed -i '' '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+				sed -i.bak '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
+				sed -i.bak '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
+				sed -i.bak '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
+				sed -i.bak '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+				rm ./*.bak;
 			fi
 
 			if [[ "${machine}" = "Linux" ]]; then
@@ -297,7 +302,8 @@ echo "INFO      | $(date) |          Check results thoroughly, then start over a
 			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)" ;
 			
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+				sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;

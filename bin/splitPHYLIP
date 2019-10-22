@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitPHYLIP.sh                                                                   #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, Apr 20 08:32:39 CDT 2019.                       #
-# Last update: April 30, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ splitPHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitPHYLIP, v1.1.0 April 2019  (part of PIrANHA v0.3a2) "
+echo "INFO      | $(date) | splitPHYLIP, v1.1.1 October 2019  (part of PIrANHA v0.3a2) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -186,7 +186,8 @@ fi
 		
 		###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' '/^[[:space:]]*$/d' ./phylip.tmp;
+			sed -i.bak '/^[[:space:]]*$/d' ./phylip.tmp;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i '/^[[:space:]]*$/d' ./phylip.tmp;

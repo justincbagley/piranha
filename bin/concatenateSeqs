@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: concatenateSeqs.sh                                                               #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.                       #
-# Last update: April 10, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ concatenateSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | concatenateSeqs, v1.2.1 April 2019  (in PIrANHA v0.3a2)  "
+echo "INFO      | $(date) | concatenateSeqs, v1.2.2 October 2019  (in PIrANHA v0.3a2)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -225,7 +225,8 @@ count=1
 					# line with same name ($MY_TAXON_NAME) in tmp file $j:
 					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
 					if [[ "${machine}" = "Mac" ]]; then
-						sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
+						sed -i.bak '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
+						rm ./*.bak;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then

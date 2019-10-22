@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiUncertainty.sh                                                               #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: March 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ dadiUncertainty () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiUncertainty, v1.0.0 March 2019  (in PIrANHA v0.3a2) "
+echo "INFO      | $(date) | dadiUncertainty, v1.0.1 October 2019  (in PIrANHA v0.3a2) "
 echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -308,9 +308,10 @@ close O;
 EOF
 
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' 's/\\quote/\"/g' ./vcf2dadi.pl ;
-		sed -i '' $'s/\TAB/\t/g' ./vcf2dadi.pl ;
-		sed -i '' 's/^\\//g' ./vcf2dadi.pl ;
+		sed -i.bak 's/\\quote/\"/g' ./vcf2dadi.pl ;
+		sed -i.bak $'s/\TAB/\t/g' ./vcf2dadi.pl ;
+		sed -i.bak 's/^\\//g' ./vcf2dadi.pl ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/\\quote/\"/g' ./vcf2dadi.pl ;
@@ -394,13 +395,14 @@ print \quoteboot \$b\n\quote;
 EOF
 
 	if [[ "${machine}" = "Mac" ]]; then			
-		sed -i '' 's/\\quote/\"/g' ./dadiBoot.pl ;
-		sed -i '' "s/\\singlequote/'/g" ./dadiBoot.pl ;
-		sed -i '' $'s/\TAB/\t/g' ./dadiBoot.pl ;
-		sed -i '' 's/^\\//g' ./dadiBoot.pl ;
+		sed -i.bak 's/\\quote/\"/g' ./dadiBoot.pl ;
+		sed -i.bak "s/\\singlequote/'/g" ./dadiBoot.pl ;
+		sed -i.bak $'s/\TAB/\t/g' ./dadiBoot.pl ;
+		sed -i.bak 's/^\\//g' ./dadiBoot.pl ;
 		perl -p -i -e 's/\t\\\t/\t\t/g' dadiBoot.pl ;
-		sed -i '' 's/\;\\/\;/g' ./dadiBoot.pl ;
+		sed -i.bak 's/\;\\/\;/g' ./dadiBoot.pl ;
 		perl -p -i -e 's/\\'\''\\s\\'\''/'\''\\s'\''/g' dadiBoot.pl ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/\\quote/\"/g' ./dadiBoot.pl ;
@@ -493,9 +495,10 @@ for i in range(1,$MY_NUM_BOOT_DATASETS_PLUSONE):
 ##--Fix "\quote" in ./scriptMaker.py by adding in real double quote, '\"'; fix \TAB by adding in 
 ##--real tab, '\t'. Do this using in-place sed editing (-i flag):
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' 's/\\quote/\"/g' ./scriptMaker.py ;
-		sed -i '' $'s/\TAB/\t/g' ./scriptMaker.py ;
-		sed -i '' 's/^\\//g' ./scriptMaker.py ;
+		sed -i.bak 's/\\quote/\"/g' ./scriptMaker.py ;
+		sed -i.bak $'s/\TAB/\t/g' ./scriptMaker.py ;
+		sed -i.bak 's/^\\//g' ./scriptMaker.py ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/\\quote/\"/g' ./scriptMaker.py ;
@@ -509,7 +512,8 @@ for i in range(1,$MY_NUM_BOOT_DATASETS_PLUSONE):
 	python ./scriptMaker.py >> ./makeBootFS.py.tmp ;
 
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' '/error.*$/d' ./makeBootFS.py.tmp ;
+		sed -i.bak '/error.*$/d' ./makeBootFS.py.tmp ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i '/error.*$/d' ./makeBootFS.py.tmp ;
@@ -632,7 +636,8 @@ echo "
 " > py_shebang_header.tmp
 
 if [[ "${machine}" = "Mac" ]]; then
-	sed -i '' '1d' ./py_shebang_header.tmp  ;
+	sed -i.bak '1d' ./py_shebang_header.tmp  ;
+	rm ./*.bak;
 fi
 if [[ "${machine}" = "Linux" ]]; then
 	sed -i '1d' ./py_shebang_header.tmp  ;
@@ -689,7 +694,8 @@ uncerts_GIM = dadi.Godambe.GIM_uncert(func_ex, $MY_PTS_VAR_NAME, all_boot, popt,
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runGIM.tmp
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+		sed -i.bak 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/file(\\/file(/g' ./all_boot_runGIM.tmp ;
@@ -758,7 +764,8 @@ echo "
 " > py_shebang_header.tmp
 
 if [[ "${machine}" = "Mac" ]]; then
-	sed -i '' '1d' ./py_shebang_header.tmp  ;	
+	sed -i.bak '1d' ./py_shebang_header.tmp  ;	
+	rm ./*.bak;
 fi
 if [[ "${machine}" = "Linux" ]]; then
 	sed -i '1d' ./py_shebang_header.tmp  ;	
@@ -814,7 +821,8 @@ uncerts_FIM = dadi.Godambe.FIM_uncert(func_ex, $MY_PTS_VAR_NAME, popt, data, mul
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runFIM.tmp
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+		sed -i.bak 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/file(\\/file(/g' ./all_boot_runFIM.tmp ;

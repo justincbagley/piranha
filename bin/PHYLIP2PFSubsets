@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2PFSubsets.sh                                                              #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.                        #
-# Last update: March 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ PHYLIP2PFSubsets () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2PFSubsets, v1.0.1 March 2019  (in PIrANHA v0.3a2)"
+echo "INFO      | $(date) | PHYLIP2PFSubsets, v1.0.2 October 2019  (in PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -182,7 +182,8 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 						# line with same name ($MY_TAXON_NAME) in tmp file $j:
 						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')";
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							rm ./*.bak;
 						fi
 
 						if [[ "${machine}" = "Linux" ]]; then
@@ -193,7 +194,8 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 						# only add correct # N's (dummy sequence) to end of line with same
 						# name in tmp file $j:
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})"'/g' "$j" ;
+							rm ./*.bak;
 						fi
 
 						if [[ "${machine}" = "Linux" ]]; then
@@ -241,7 +243,8 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 						# line with same name ($MY_TAXON_NAME) in tmp file $j:
 						MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')";
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
+							sed -i.bak '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
+							rm ./*.bak;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then

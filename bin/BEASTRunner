@@ -296,7 +296,7 @@ qsub beast_pbs.sh
 
 	done
 )
-## NOT RUN:  sed -i '' 1,3d ./cd_and_qsub_commands.txt		## First line of file attempts to cd to "./*/", but this will break the submission script. Here, we use sed to remove the first three lines, which contain the problematic cd line, a qsub line, and a blank line afterwards.
+## NOT RUN:  sed -i.bak 1,3d ./cd_and_qsub_commands.txt		## First line of file attempts to cd to "./*/", but this will break the submission script. Here, we use sed to remove the first three lines, which contain the problematic cd line, a qsub line, and a blank line afterwards.
 
 echo "
 $MY_SC_PBS_WKDIR_CODE
@@ -490,7 +490,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEASTRunner --args='-n 10 -w 24:00:00 -m 2048M'  Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

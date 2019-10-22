@@ -136,7 +136,7 @@ PhyloMapperNullProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PhyloMapperNullProc, v1.0.0 March 2019  (part of PIrANHA v1.0.0)"
+echo "INFO      | $(date) | PhyloMapperNullProc, v1.0.0 March 2019  (part of PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 

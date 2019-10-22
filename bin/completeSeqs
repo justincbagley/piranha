@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeSeqs.sh                                                                  #
-  VERSION="v2.0.0"                                                                       #
+  VERSION="v2.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: May 8, 2019                                                               #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -142,7 +142,7 @@ completeSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeSeqs, v2.0.0 May 2019  (in PIrANHA v0.3a2)             "
+echo "INFO      | $(date) | completeSeqs, v2.0.1 October 2019  (in PIrANHA v0.3a2)             "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -215,7 +215,8 @@ count=1
 #					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" "$i" | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
 					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" "$i" | perl -pe 's/^.*\ //g' | sed 's/\ //g')" ;
 					if [[ "${machine}" = "Mac" ]]; then
-						sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+						rm ./*.bak;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then
@@ -230,7 +231,8 @@ count=1
 						# name in tmp file $j, after taxon name plus spaces:
 						MY_SEQUENCE="$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							rm ./*.bak;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then
@@ -241,7 +243,8 @@ count=1
 						# name in tmp file $j, after taxon name plus spaces:
 						MY_SEQUENCE="$(printf 'n%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							rm ./*.bak;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then
@@ -252,7 +255,8 @@ count=1
 						# name in tmp file $j, after taxon name plus spaces:
 						MY_SEQUENCE="$(printf '?%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
+							rm ./*.bak;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then

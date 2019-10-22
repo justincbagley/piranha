@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.6.2"                                                                       #
+  VERSION="v1.6.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: August 29, 2019                                                           #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.2 August 2019  (part of PIrANHA v0.3a2) "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.3 October 2019  (part of PIrANHA v0.3a2) "
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -193,8 +193,9 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" = "0" ]]; 
 	###	
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
-			sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
-			sed -i '' 's/^$\n//g' ./nexus.tmp ;
+			sed -i.bak '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed -i.bak 's/^$\n//g' ./nexus.tmp ;
+			rm ./*.bak;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
 			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
 			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
@@ -250,7 +251,8 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	
 		## Remove charsets from file, while accommodating different machine types...
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+			sed -i.bak ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
@@ -271,8 +273,9 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	###
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
-			sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
-			sed -i '' 's/^$\n//g' ./nexus.tmp ;
+			sed -i.bak '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed -i.bak 's/^$\n//g' ./nexus.tmp ;
+			rm ./*.bak;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
 			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
 			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
@@ -328,7 +331,8 @@ if [[ "$MY_CHARSETS_SWITCH" = "1" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	
 		## Remove charsets from file, while accommodating different machine types...
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+			sed -i.bak ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i ''"$MY_SETS_BLOCK_STARTLINE"','"$MY_NUM_LINES"'d' ./nexus.tmp ;
@@ -349,8 +353,9 @@ if [[ "$MY_CHARSETS_SWITCH" = "1" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	###
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
-			sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
-			sed -i '' 's/^$\n//g' ./nexus.tmp ;
+			sed -i.bak '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+			sed -i.bak 's/^$\n//g' ./nexus.tmp ;
+			rm ./*.bak;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
 			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
 			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 

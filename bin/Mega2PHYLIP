@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: Mega2PHYLIP.sh                                                                   #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.                       #
-# Last update: May 28, 2019                                                              #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ Mega2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | Mega2PHYLIP, v1.1.0 May 2019  (part of PIrANHA v0.3a2)  "
+echo "INFO      | $(date) | Mega2PHYLIP, v1.1.1 October 2019  (part of PIrANHA v0.3a2)  "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -168,7 +168,8 @@ fi
 			
 			###### Remove any blank/empty lines in <inputMega> and get alignment characteristics etc.:
 				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/^[[:space:]]*$/d' ./mega.tmp;
+					sed -i.bak '/^[[:space:]]*$/d' ./mega.tmp;
+					rm ./*.bak;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i '/^[[:space:]]*$/d' ./mega.tmp;
@@ -177,7 +178,8 @@ fi
 			###### Remove Mega header, which takes up two lines (first two lines, since we've removed
 			###### all blank/empty lines above):
 				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '1,2d' ./mega.tmp;
+					sed -i.bak '1,2d' ./mega.tmp;
+					rm ./*.bak;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i '1,2d' ./mega.tmp;
@@ -238,7 +240,8 @@ fi
 					
 					###### Remove any blank/empty lines in <inputMega> and get alignment characteristics etc.:
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' '/^[[:space:]]*$/d' ./mega.tmp;
+							sed -i.bak '/^[[:space:]]*$/d' ./mega.tmp;
+							rm ./*.bak;
 						fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i '/^[[:space:]]*$/d' ./mega.tmp;
@@ -247,7 +250,8 @@ fi
 					###### Remove Mega header, which takes up two lines (first two lines, since we've removed
 					###### all blank/empty lines above):
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' '1,2d' ./mega.tmp;
+							sed -i.bak '1,2d' ./mega.tmp;
+							rm ./*.bak;
 						fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i '1,2d' ./mega.tmp;

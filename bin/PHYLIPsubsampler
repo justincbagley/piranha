@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsubsampler.sh                                                              #
-  VERSION="v1.1.4"                                                                       #
+  VERSION="v1.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: March 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -139,7 +139,7 @@ PHYLIPsubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.4 March 2019  (in PIrANHA v0.3a2)"
+echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.5 October 2019  (in PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -194,10 +194,11 @@ MY_PHYLIP_ALIGNMENTS=./*.phy ;
 
 		while read j; do
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				rm ./*.bak;
 			fi
 
 			if [[ "${machine}" = "Linux" ]]; then
@@ -253,10 +254,11 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
 
 		while read j; do
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i '' 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				rm ./*.bak;
 			fi
 
 			if [[ "${machine}" = "Linux" ]]; then

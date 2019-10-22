@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.4.0"                                                                       #
+  VERSION="v1.4.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: March 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -142,7 +142,7 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.4.0 March 2019  (in PIrANHA v0.3a2)   "
+echo "INFO      | $(date) | dropRandomHap, v1.4.1 October 2019  (in PIrANHA v0.3a2)   "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -181,7 +181,8 @@ echo "INFO      | $(date) | Step #3: Prep taxon names file to contain only basen
 	if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
 
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' 's/\_0$//g; s/\_1$//g' "$USER_SPEC_TAXNAMES_FILE" ;
+			sed -i.bak 's/\_0$//g; s/\_1$//g' "$USER_SPEC_TAXNAMES_FILE" ;
+			rm ./*.bak;
 		fi
 
 		if [[ "${machine}" = "Linux" ]]; then
@@ -274,10 +275,11 @@ echo "INFO      | $(date) | Step #4: Run main dropRandomHap function to randomly
 
 				if [[ "${machine}" = "Mac" ]]; then
 					# Delete nth = $MY_1ST_INST_LINE line of file with sed (=easy!):
-					sed -i '' ''"$MY_1ST_INST_LINE"'d' "$i" ;
+					sed -i.bak ''"$MY_1ST_INST_LINE"'d' "$i" ;
 
-					sed -i '' 's/'"$MY_TAXON_BASENAME"'\_0\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
-					sed -i '' 's/'"$MY_TAXON_BASENAME"'\_1\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
+					sed -i.bak 's/'"$MY_TAXON_BASENAME"'\_0\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
+					sed -i.bak 's/'"$MY_TAXON_BASENAME"'\_1\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
+					rm ./*.bak;
 				fi
 
 				if [[ "${machine}" = "Linux" ]]; then
@@ -297,7 +299,8 @@ echo "INFO      | $(date) | Step #4: Run main dropRandomHap function to randomly
 		MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
 
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+			sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+			rm ./*.bak;
 		fi
 
 		if [[ "${machine}" = "Linux" ]]; then

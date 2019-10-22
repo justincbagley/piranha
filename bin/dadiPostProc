@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiPostProc.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
-# Last update: March 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ dadiPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiPostProc, v1.0.0 March 2019  (in PIrANHA v0.3a2)    "
+echo "INFO      | $(date) | dadiPostProc, v1.0.1 October 2019  (in PIrANHA v0.3a2)    "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -193,8 +193,9 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "FALSE" ]]; then
 
 				## Clean up only to tab-separated BFP estimates:
 				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
-					sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+					sed -i.bak $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+					sed -i.bak 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+					rm ./*.bak;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
@@ -290,8 +291,9 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "TRUE" ]]; then
 
 						## Clean up only to tab-separated BFP estimates:
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
-							sed -i '' 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+							sed -i.bak $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+							sed -i.bak 's/^$//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
+							rm ./*.bak;
 						fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"${MY_OUTPUT_BASENAME}"_BFP.tmp ;
@@ -465,7 +467,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
 														ranges starting from values other than 1
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

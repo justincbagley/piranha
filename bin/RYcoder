@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RYcoder.sh                                                                       #
-  VERSION="v0.1.1"                                                                       #
+  VERSION="v0.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.                       #
-# Last update: June 12, 2019                                                             #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ RYcoder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RYcoder, v0.1.1 June 2019  (part of PIrANHA v0.3a2)   "
+echo "INFO      | $(date) | RYcoder, v0.1.2 October 2019  (part of PIrANHA v0.3a2)   "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -184,8 +184,9 @@ if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE"
 	## Accommodating different machine types...
 	if [[ "${machine}" = "Mac" ]]; then
 		sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
-		sed -i '' '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
-		sed -i '' 's/^$\n//g' ./nexus.tmp ;
+		sed -i.bak '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
+		sed -i.bak 's/^$\n//g' ./nexus.tmp ;
+		rm ./*.bak;
 		sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
 		sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
 		sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
@@ -203,9 +204,10 @@ if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE"
 
 		## Make final RY coded alignment file:
 		cat ./nexus_header.tmp ./matrixRY.tmp ./nexus_tail.tmp > "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
-		sed -i '' 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
-		sed -i '' 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
-		sed -i '' 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed -i.bak 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed -i.bak 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed -i.bak 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
@@ -242,7 +244,8 @@ if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE"
 
 	cp "$INPUT_FILE" phylip.tmp ;
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' 's/^$\n//g' ./phylip.tmp ;
+		sed -i.bak 's/^$\n//g' ./phylip.tmp ;
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed 's/^$\n//g' ./phylip.tmp ;
@@ -261,7 +264,8 @@ if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE"
 	## the missing characters in the matrix are question marks, '?'s, and not 'N's or 'n's.
 	sed 's/A/0/g; s/a/0/g; s/G/0/g; s/g/0/g; s/C/1/g; s/c/1/g; s/T/1/g; s/t/1/g' ./matrixOnly.tmp > ./matrixOnlyRY.tmp ; 
 	if [[ "${machine}" = "Mac" ]]; then
-		sed -i '' 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+		sed -i.bak 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
@@ -294,7 +298,8 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 		## Make sure that (according to standard PHYLIP and RAxML format) the missing characters 
 		## in the matrix are question marks, '?'s, and not 'N's or 'n's.
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+			sed -i.bak 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
@@ -318,7 +323,8 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 		# (note: file with taxon names and spaces, and RY matrix:  ./matrixRY.tmp)
 		cp ./matrixRY.tmp "$INPUT_BASENAME"_RY.fas ;
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' 's/^/\>/g' "$INPUT_BASENAME"_RY.fas ;
+			sed -i.bak 's/^/\>/g' "$INPUT_BASENAME"_RY.fas ;
+			rm ./*.bak;
 			perl -p -i -e 's/\ +/\n/g; s/\t//g' "$INPUT_BASENAME"_RY.fas ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then

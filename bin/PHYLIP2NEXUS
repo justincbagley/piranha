@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  VERSION="v1.3.2"                                                                       #
+  VERSION="v1.3.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: July 24, 2019                                                             #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.2 July 2019  (part of PIrANHA v0.3a2)  "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.3 October 2019  (part of PIrANHA v0.3a2)  "
 echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -195,7 +195,8 @@ elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml"
 #	
 		# Accommodating different machine types...
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' $'s/$/\\\n/' ./end.tmp ;
+			sed -i.bak $'s/$/\\\n/' ./end.tmp ;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/$/\n/' ./end.tmp ;
@@ -268,7 +269,8 @@ END;
 #	
 			# Accommodating different machine types...
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' $'s/$/\\\n/' ./end.tmp ;
+				sed -i.bak $'s/$/\\\n/' ./end.tmp ;
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i 's/$/\n/' ./end.tmp ;

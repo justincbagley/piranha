@@ -18,6 +18,12 @@
 #                                                                                        #
 ##########################################################################################
 
+## TODO: Extend to add -i <inputNEXUS> option to specify the input NEXUS file, as well as 
+## an -m <multiNEXUSSwitch> option, where if -m1, then run on multiple NEXUS files in 
+## current working directory rather than a single NEXUS input file. Adding -m requires 
+## restructuring this script with various bash/shell conditionals, while also making sure
+## that output files are specific to each input NEXUS filename (basename).
+
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 

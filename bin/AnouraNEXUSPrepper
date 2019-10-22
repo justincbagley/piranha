@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: AnouraNEXUSPrepper.sh                                                            #
-  VERSION="v1.3.1"                                                                       #
+  VERSION="v1.3.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: March 20, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -138,7 +138,7 @@ AnouraNEXUSPrepper () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.1 March 2019  (in PIrANHA v0.3a2)"
+echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.2 October 2019  (in PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -173,36 +173,40 @@ echo "INFO      | $(date) | Step #2: Use sed & Perl search and replace to fix va
 ## 2. Search and replace on a variety of patterns:
 
 if [[ "${machine}" = "Mac" ]]; then
-	sed -i '' 's/begin\ data\;/BEGIN\ DATA\;/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/dimensions/DIMENSIONS/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/ntax/NTAX/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/nchar/NCHAR/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/format/FORMAT/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/datatype/DATATYPE/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/\=dna/\=DNA/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/matrix/MATRIX/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/missing\=\?/MISSING\=N/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/gap\=\-/GAP\=\-\ INTERLEAVE\=NO/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/begin\ data\;/BEGIN\ DATA\;/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/dimensions/DIMENSIONS/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/ntax/NTAX/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/nchar/NCHAR/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/format/FORMAT/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/datatype/DATATYPE/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/\=dna/\=DNA/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/matrix/MATRIX/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/missing\=\?/MISSING\=N/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/gap\=\-/GAP\=\-\ INTERLEAVE\=NO/g' "$MY_NEXUS_FILENAME"
+	rm ./*.bak;
 
 	## Use Ns as missing, so convert any question marks to capital N's:
-	sed -i '' 's/\?/N/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/\?/N/g' "$MY_NEXUS_FILENAME"
+	rm ./*.bak;
 
 	## Taxon/tip name sed replacements:
-	sed -i '' 's/^a\_/A/g; s/^g\_/G/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/\_type\_/type/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/Acartype0\ /Acartype\_0\ \ /g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/Acartype1\ /Acartype\_1\ \ /g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/^a\_/A/g; s/^g\_/G/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/\_type\_/type/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/Acartype0\ /Acartype\_0\ \ /g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/Acartype1\ /Acartype\_1\ \ /g' "$MY_NEXUS_FILENAME"
+	rm ./*.bak;
 
 	## Set section sed replacements:
-	sed -i '' 's/charset\ '\''uce\-/CHARSET\ uce/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/charset\ '\''uce\-/CHARSET\ uce/g' "$MY_NEXUS_FILENAME"
 #
-	sed -i '' 's/^CHARSET/\ \ CHARSET/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/^CHARSET/\ \ CHARSET/g' "$MY_NEXUS_FILENAME"
 #
-	sed -i '' 's/\.nexus'\''\ \=\ /\=/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/\.nexus'\''\ \=\ /\=/g' "$MY_NEXUS_FILENAME"
 
 	# Capitalization (optional):
-	sed -i '' 's/begin\ sets\;/BEGIN\ SETS\;/g' "$MY_NEXUS_FILENAME"
-	sed -i '' 's/end\;/END\;/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/begin\ sets\;/BEGIN\ SETS\;/g' "$MY_NEXUS_FILENAME"
+	sed -i.bak 's/end\;/END\;/g' "$MY_NEXUS_FILENAME"
+	rm ./*.bak;
 fi
 
 if [[ "${machine}" = "Linux" ]]; then

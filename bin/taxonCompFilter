@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: taxonCompFilter.sh                                                               #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 15 11:20:02 CDT 2019.                       #
-# Last update: March 15, 2019                                                            #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ taxonCompFilter () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | taxonCompFilter, v1.0.0 March 2019  (in PIrANHA v0.3a2)"
+echo "INFO      | $(date) | taxonCompFilter, v1.0.1 October 2019  (in PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -190,9 +190,10 @@ count=1
 #
 		if [[ "${machine}" = "Mac" ]]; then
 			## Remove _[01], spaces after tip taxon names, and all sequences:
-			sed -i '' 's/\ .*//g' "$MY_PHY_BASENAME".tmp
-			sed -i '' 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp
-			sed -i '' '1d' "$MY_PHY_BASENAME".tmp
+			sed -i.bak 's/\ .*//g' "$MY_PHY_BASENAME".tmp
+			sed -i.bak 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp
+			sed -i.bak '1d' "$MY_PHY_BASENAME".tmp
+			rm ./*.bak;
 		fi
 
 		if [[ "${machine}" = "Linux" ]]; then

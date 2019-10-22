@@ -497,7 +497,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f dadiRunner --args='-i <SNPInput> -n 20 -w 24:00:00'		Changing run walltime.
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

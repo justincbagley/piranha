@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2MultiPHYLIP.sh                                                             #
-  VERSION="v1.6.0"                                                                       #
+  VERSION="v1.6.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: May 28, 2019                                                              #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -138,7 +138,7 @@ NEXUS2MultiPHYLIP () {
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.6.0 May 2019  (in PIrANHA v0.3a2) "
+echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.6.1 October 2019  (in PIrANHA v0.3a2) "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 fi
@@ -239,7 +239,8 @@ fi
 	sed '1,'"$MY_HEADER_ENDLINE"'d;'"$MY_ALIGN_ENDLINE_MINUSONE"','"$MY_NEXUS_EOF_MINUSONE"'d' "$MY_NEXUS" > "$MY_NEXUS_BASENAME".headless.tmp ;
 
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' '/^\s*$/d' "$MY_NEXUS_BASENAME".headless.tmp ;
+			sed -i.bak '/^\s*$/d' "$MY_NEXUS_BASENAME".headless.tmp ;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i '/^\s*$/d' "$MY_NEXUS_BASENAME".headless.tmp ;
@@ -355,7 +356,8 @@ count=1;
 		## Based on machine type, remove all tab characters inserted during paste above:
 
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' 's/'"$TAB"'//g' ./phylip_files/locus"$count".phy ;
+			sed -i.bak 's/'"$TAB"'//g' ./phylip_files/locus"$count".phy ;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/'"$TAB"'//g' ./phylip_files/locus"$count".phy ;
@@ -367,7 +369,8 @@ count=1;
 		## online resource at URL: https://bash.cyberciti.biz/guide/Redirection_of_standard_error
 	
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' 's/^.\{'"$line"'\}//g' "$MY_DNA_FILE" 2>stderr.log.txt ;
+			sed -i.bak 's/^.\{'"$line"'\}//g' "$MY_DNA_FILE" 2>stderr.log.txt ;
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed '' 's/^.\{'"$line"'\}//g' "$MY_DNA_FILE" 2>stderr.log.txt ;
@@ -417,14 +420,16 @@ if [[ "$MY_ANOURA_SWITCH" = "1" ]]; then
 	(
 		for i in ./*.phy; do
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' 's/Acartype0\ /Acartype\_0\ \ /g' "$i"
+				sed -i.bak 's/Acartype0\ /Acartype\_0\ \ /g' "$i"
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i 's/Acartype0\ /Acartype\_0\ \ /g' "$i"
 			fi
 	
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i '' 's/Acartype1\ /Acartype\_1\ \ /g' "$i"
+				sed -i.bak 's/Acartype1\ /Acartype\_1\ \ /g' "$i"
+				rm ./*.bak;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i 's/Acartype1\ /Acartype\_1\ \ /g' "$i"
@@ -453,10 +458,11 @@ fi
 (
 	for i in ./*.phy; do 
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' '/\ [N\-]*$/d' "$i";
+			sed -i.bak '/\ [N\-]*$/d' "$i";
 			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
 			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
-			sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+			sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i '/\ [N\-]*$/d' "$i";
@@ -475,12 +481,13 @@ if [[ "$MY_EXPERIMENTAL_SWITCH" = "1" ]]; then
 (
 	for i in ./*.phy; do 
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' '/\ [ACTG]\{5,10\}[N\-]*$/d' "$i";
-			sed -i '' '/\ [N\-]*[ACTG]\{5,10\}$/d' "$i";
-			sed -i '' '/N\{50\}[ACTG]\{5,10\}N\{50\}/d' "$i";
+			sed -i.bak '/\ [ACTG]\{5,10\}[N\-]*$/d' "$i";
+			sed -i.bak '/\ [N\-]*[ACTG]\{5,10\}$/d' "$i";
+			sed -i.bak '/N\{50\}[ACTG]\{5,10\}N\{50\}/d' "$i";
 			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
 			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
-			sed -i '' '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+			sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i";
+			rm ./*.bak;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i '/\ [ACTG]\{5,10\}[N\-]*$/d' "$i";

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2Mega.sh                                                                   #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: July 11, 2019                                                             #
+# Last update: October 22, 2019                                                          #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -135,7 +135,7 @@ PHYLIP2Mega () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2Mega, v1.2.1 July 2019  (part of PIrANHA v0.3a2)"
+echo "INFO      | $(date) | PHYLIP2Mega, v1.2.2 October 2019  (part of PIrANHA v0.3a2)"
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -176,7 +176,8 @@ fi
 			
 			###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
 				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' '/^[[:space:]]*$/d' ./phylip.tmp;
+					sed -i.bak '/^[[:space:]]*$/d' ./phylip.tmp;
+					rm ./*.bak;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i '/^[[:space:]]*$/d' ./phylip.tmp;
@@ -204,11 +205,13 @@ fi
 				MY_PHYLIP_BASENAME="$(echo $MY_INPUT_PHYLIP_FILE | sed 's/\.phy//g')";
 			
 				perl -p -i -e $'s/^/\n\#/g; s/\ +/\n/g' ./sequences.tmp;
-				sed -i '' '1,3d' ./sequences.tmp;
+				sed -i.bak '1,3d' ./sequences.tmp;
+				rm ./*.bak;
 				cat ./Mega_top.tmp ./sequences.tmp > ./"$MY_PHYLIP_BASENAME".meg ;
 			
 				if [[ "${machine}" = "Mac" ]]; then
-					sed -i '' 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+					sed -i.bak 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+					rm ./*.bak;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
@@ -235,7 +238,8 @@ fi
 					
 					###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' '/^[[:space:]]*$/d' ./phylip.tmp;
+							sed -i.bak '/^[[:space:]]*$/d' ./phylip.tmp;
+							rm ./*.bak;
 						fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i '/^[[:space:]]*$/d' ./phylip.tmp;
@@ -263,11 +267,13 @@ fi
 						MY_PHYLIP_BASENAME="$(echo $i | sed 's/\.phy//g')";
 					
 						perl -p -i -e $'s/^/\n\#/g; s/\ +/\n/g' ./sequences.tmp;
-						sed -i '' '1,3d' ./sequences.tmp;
+						sed -i.bak '1,3d' ./sequences.tmp;
+						rm ./*.bak;
 						cat ./Mega_top.tmp ./sequences.tmp > ./"$MY_PHYLIP_BASENAME".meg ;
 					
 						if [[ "${machine}" = "Mac" ]]; then
-							sed -i '' 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+							sed -i.bak 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
+							rm ./*.bak;
 						fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i 's/\\!/\!/g' ./"$MY_PHYLIP_BASENAME".meg;
