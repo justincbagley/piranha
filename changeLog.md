@@ -3,6 +3,10 @@
 ### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
+### Following last release - 2019:
+
+- **October 22, 2019:** Made minor edits and bug fixes (fixing `sed` code that caused failures when user had GNU SED installed instead of BSD SED) to all of the following function scripts: `PhyloMapperNullProc`, `PHYLIPsubsampler`, `PHYLIPcleaner`, `PHYLIP2PFSubsets`, `MLEResultsProc`, `getBootTrees`, `fastSTRUCTURE`, `dropRandomHap`, `dadiUncertainty`, `dadiRunner`, `dadiPostProc`, `calcAlignmentPIS`, `BEASTRunner`, `BEAST_PSPrepper`, `RAxMLRunChecker`, `RAxMLRunner`, `SNAPPRunner`, `SpeciesIdentifier`, `AnouraNEXUSPrepper`, `concatenateSeqs`, `concatSeqsPartitions`, `FASTA2VCF`, `getTaxonNames`, `makePartitions`, `MrBayesPostProc`, `phyNcharSumm`, `pyRAD2PartitionFinder`, `pyRADLocusVarSites`, `renameForStarBeast2`, `renameTaxa`, `renameTaxa_v1`, `splitPHYLIP`, `taxonCompFilter`, `treeThinner`, `vcfSubsampler`, `completeSeqs`, `RYcoder`, `RogueNaRokRunner`, `PHYLIP2NEXUS`, `PHYLIP2Mega`, `NEXUS2PHYLIP`, `NEXUS2MultiPHYLIP`, `Mega2PHYLIP`, `BEASTReset`, `FASTA2PHYLIP`, `completeConcatSeqs`
+
 ### PIrANHA v0.3a2 (official minor pre-release version 0.3-alpha.2) - July 26, 2019
 
 - **July 25, 2019:** Added new `RogueNaRokRunner` function that reads in a Newick tree file and runs it through RogueNaRok to identify rogue taxa. Additionally, I conducted a comlete rewrite of the `NEXUS2PHYLIP` function that removes its dependence on N. Takebayashi's Perl script (see previous version), and I made minor edits to `piranha` and edits and bug fixes for other functions including `RYcoder`.
