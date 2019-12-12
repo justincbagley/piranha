@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.0.5"                                                                       #
+  VERSION="v1.0.6"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: July 25, 2019                                                             #
+# Last update: December 12, 2019                                                         #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.5, July 2019  (main script for PIrANHA v0.3a2)  "
+piranha v1.0.6, December 2019  (main script for PIrANHA v0.3a2)  "
 echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -189,6 +189,7 @@ BEASTPostProc          Conducts post-processing of gene trees and species trees 
 BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST 
                        runs/subfolders (destined for supercomputer).
 BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster.
+BEAST_logThinner       Function that conducts downsampling ('thinning') of BEAST2 .log files to every nth line.
 BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal 
                        likelihood estimation) analyses using BEAST v2+ PathSampler.
 calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-
@@ -230,7 +231,6 @@ getBootTrees           Function that automates organizing bootstrap trees output
 getTaxonNames          Utility function that extracts tip taxon names from sequences present in one or multiple 
                        PHYLIP DNA sequence alignments in current directory, using information on maximum taxon 
                        sampling level from user.
-list                   Function that prints a tabulated list of PIrANHA functions and their descriptions.
 MAGNET                 Shell pipeline for automating estimation of a maximum-likelihood (ML) gene tree in RAxML 
                        for each of many loci in a RAD-seq, UCE, or other multilocus dataset. Also contains other 
                        tools.
@@ -375,7 +375,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.3a1.
+ This is the main script for PIrANHA v0.3a2.
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
