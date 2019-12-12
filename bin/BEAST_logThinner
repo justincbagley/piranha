@@ -1,0 +1,289 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: BEAST_logThinner.sh                                                               #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.                       #
+# Last update: December 12, 2019                                                         #
+# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT FOR DOWNSAMPLING ("THINNING") BEAST LOG FILES TO CONTAIN EVERY NTH LINE   #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+BEAST_logThinner () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | BEAST_logThinner, v1.0.0 December 2019  (part of PIrANHA v0.3a2)"
+echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+
+###### READ IN PARAMETERS FOR LOG FILE THINNING:
+
+### STEP #1:
+read -p "READ      | $(date) | Please enter the name of your BEAST2 .log file : " MY_LOGFILE ;
+read -p "READ      | $(date) | Please enter the frequency (n) of nth lines that you would like to keep : " NTH_LINES ;
+
+	## Log file information processing:
+	TOTAL_LINES="$(wc -l "$MY_LOGFILE" | sed 's/\ .*//g')";
+	MY_NUM_TOP_HEADER_LINES=$(grep -n '^#' "$MY_LOGFILE" | tail -n1 | sed 's/\:.*//g') ;
+	MY_NUM_HEADER_LINES="$(calc $MY_NUM_TOP_HEADER_LINES + 1)";
+	MY_FIRST_LOGLINE="$(calc $MY_NUM_HEADER_LINES + 1)";
+	NUM_LOGGED_LINES="$(calc $TOTAL_LINES - $MY_NUM_HEADER_LINES)";
+	
+ 	echo "INFO      | $(date) | INPUT FILE:"
+	echo "INFO      | $(date) | Log file: $MY_LOGFILE "
+	echo "INFO      | $(date) | Total number of lines: $TOTAL_LINES "
+	echo "INFO      | $(date) | Number of header lines: $MY_NUM_HEADER_LINES "
+	echo "INFO      | $(date) | Number of logged lines: $NUM_LOGGED_LINES "
+ 	echo "INFO      | $(date) | "
+
+###### CONDUCT LOG FILE THINNING:
+
+### STEP #2:
+	head -n"$MY_NUM_HEADER_LINES" "$MY_LOGFILE" > header.txt ;
+
+### STEP #3:
+	grep -v '^#' "$MY_LOGFILE" > ./logged.txt ;
+	awk 'NR == 1 || NR % '$NTH_LINES' == 0' ./logged.txt | sed '1d' > thinned_logged.txt ;
+
+### STEP #4:
+	echo "
+" > ./end.txt ;
+
+	cat ./header.txt ./thinned_logged.txt ./end.txt > ./"$MY_LOGFILE"_nth_line.log.txt ;
+
+### CLEANUP.
+	rm ./header.txt ;
+	rm ./logged.txt ;
+	rm ./thinned_logged.txt ;
+	rm ./end.txt ;
+
+###### THINNED LOG FILE POST-PROCESSING
+
+	## Thinned log file information processing:
+	MY_THINNED_LOGFILE="$MY_LOGFILE"_nth_line.log.txt
+	
+	TOTAL_THINNED_FILE_LINES="$(wc -l "$MY_THINNED_LOGFILE" | sed 's/\ .*//g')";
+	MY_NUM_TOP_HEADER_LINES=$(grep -n '^#' "$MY_THINNED_LOGFILE" | tail -n1 | sed 's/\:.*//g') ;
+	MY_NUM_HEADER_LINES="$(calc $MY_NUM_TOP_HEADER_LINES + 1)";
+	MY_FIRST_LOGLINE="$(calc $MY_NUM_HEADER_LINES + 1)";
+	NUM_LOGGED_LINES="$(calc $TOTAL_THINNED_FILE_LINES - $MY_NUM_HEADER_LINES)";
+
+ 	echo "INFO      | $(date) | OUTPUT FILE:"
+	echo "INFO      | $(date) | Thinned log file: $MY_THINNED_LOGFILE "
+	echo "INFO      | $(date) | Total number of lines: $TOTAL_THINNED_FILE_LINES "
+	echo "INFO      | $(date) | Number of header lines: $MY_NUM_HEADER_LINES "
+	echo "INFO      | $(date) | Number of logged lines: $NUM_LOGGED_LINES "
+ 	echo "INFO      | $(date) | "
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo "Output file: ./${MY_LOGFILE}_nth_line.log.txt 
+"
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates thinning a BEAST log file ('.log' extension) output by the program
+ BEAST2 (tested with v2.5+) (Bouckaert et al. 2014). This is an interactive script. First, 
+ the user is prompted to input the name of their log file. After reading this in, the thinning 
+ frequency (n; as in every nth line) is read from user. This information is used to output 
+ a thinned log file in the current working directory, named like the input log file, but 
+ with '_nth_line.log.txt' appended to the end of the filename. 
+ 
+ TODO: Extend this script to work with log files from other phylogenetic software programs 
+ in the near future (2020), by allowing it to a) run with options (non-interactively), 
+ b) detect tree file type, and c) conduct thinning. Also extend to BEAST1 log files.
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Bouckaert, R., Heled, J., Künert, D., Vaughan, T.G., Wu, C.H., Xie, D., Suchard, M.A., Rambaut,
+	A., Drummond, A.J. 2014) BEAST2: a software platform for Bayesian evolutionary analysis. 
+	PLoS Computational Biology, 10, e1003537.
+
+ Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.
+ Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+BEAST_logThinner
+
+# Exit cleanly
+safeExit
