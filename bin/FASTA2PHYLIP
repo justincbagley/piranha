@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.1.2"                                                                       #
+  VERSION="v1.2.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: October 21, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: March 30, 2020                                                            #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -139,9 +139,16 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.1.2 October 2019  (in PIrANHA v0.3a2)     "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.2.0 March 2020  (in PIrANHA v0.3a2)           "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
+
+
+############################## IF -f 1: SINGLE FASTA RUN #################################
+##########################################################################################
+
+#######
+if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 
 ######################################## START ###########################################
 ############ OPTIONAL OUTPUT TO FILE
@@ -170,16 +177,10 @@ echoCDWorkingDir
 	fi
 
 
-############ STEP #2: CONVERT ALL FASTA FILES IN CWD TO PHYLIP AND SAVE FASTA ORDER AND CHARACTERISTICS.
-###### Loop through fastas in current working directory, allowing for multiple file extensions,
-###### and perform operations. However, extension '.fasta' is preferred.
+############ STEP #2: CONVERT USER-SPECIFIED INPUT FASTA FILE IN CWD TO PHYLIP AND SAVE FASTA CHARACTERISTICS.
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          STEP #2: CONVERT ALL FASTA FILES IN CWD TO PHYLIP FORMAT, & SAVE ORIG FASTA ORDER AND CHARACTERISTICS. "
+	echo "INFO      | $(date) | Step #2: Convert input FASTA file ${MY_FASTA} to PHYLIP format, & save FASTA characteristics. "
 fi
-
-MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname \*.fa -o -iname \*.FASTA -o -iname \*.FAS -o -iname \*.FA \))"
-(
-	for MY_FASTA in $MY_FASTA_FILES; do 
 
 	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
 
@@ -187,7 +188,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |               A. CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS. "
+		echo "INFO      | $(date) |               A. Clean file, get FASTA file and data characteristics. "
 	fi
 	
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
@@ -221,7 +222,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               B. CONVERT FASTA TO PHYLIP FORMAT CONDITIONAL ON SEQUENCE LINE BREAK FORMAT. "
+			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
@@ -392,7 +393,403 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               B. CONVERT FASTA TO PHYLIP FORMAT CONDITIONAL ON SEQUENCE LINE BREAK FORMAT. "
+			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
+		fi
+		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
+		
+		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
+		
+			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
+		
+			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
+			rm ./*.bak ;
+			
+			perl -p -i -e 's/\n//g' ./fasta.tmp ;
+			perl -p -i -e 's/MARK\_EOL/\n/g' ./fasta.tmp ;
+			perl -p -i -e 's/\>/\n\>/g' ./fasta.tmp ;
+		
+			## Need empty line check here again:
+			if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
+				rm ./*.bak ;
+			fi
+		
+			## May also need to make sure the last line has EOF line (i.e. a blank line with no 
+			## carriage return).
+			# ADD TEST HERE
+			# MY_EOF_METRIC="$( some way to search for '\n$' or '$\n$' on UNIX)   grep -h $'$\n$'  "
+		
+			## Count number of taxa/tips present in FASTA file:
+			MY_NTAXA="$(grep -n '^>' ./fasta.tmp | wc -l | perl -pe 's/^\ +//g')";
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+			fi
+		
+			## This is the base name of the original FASTA file, so you have it. This will work regardless 
+			## of whether the FASTA filename extension is written in lowercase or in all caps, as 
+			## abbreviated (e.g. ".fa", ".fas", ".FAS") or in full (e.g. ".fasta", ".FASTA").
+			MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{2,\}$//g')";
+		
+			## Count corrected number of characters in DNA alignment
+			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
+			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+			fi
+		
+			## Convert sequential, unwrapped FASTA file to PHYLIP format:
+			# Make tmp PHYLIP header.
+			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
+		
+			# 1 line per sequence, no '>' delimiter.
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp ;
+		
+			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp > ./taxonLabels.tmp ;
+			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp > ./fastaSeqs.tmp ;
+			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+					
+			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
+		
+			## Remove any tab characters (these are artifacts of paste operation above).
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+			
+			## Move orig FASTA and new PHYLIP files to their respective folders, and delete temporary
+			## files.
+			mv "$MY_FASTA" ./orig_fasta_files/ ;
+			mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
+			rm ./*.tmp ;
+		
+		fi
+		
+		
+		#####  SEQUENTIAL, UNWRAPPED FASTA2PHYLIP CONVERSION CODE  #####
+		
+		if [[ "$MY_FORMAT_METRIC" -eq "2" ]]; then
+		
+		echo "INFO      | $(date) |          Sequential FASTA format detected. Converting to PHYLIP..."
+		##--The FASTA file has DNA sequences in sequential, unwrapped format already; no need to 
+		##--convert it, so use file as is.
+		
+			## Count number of taxa/tips present in FASTA file:
+			MY_NTAXA="$(grep -n '^>' ./fasta.tmp | wc -l | perl -pe 's/^\ +//g')";
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+			fi
+		
+			## This is the base name of the original FASTA file, so you have it. This will work regardless 
+			## of whether the FASTA filename extension is written in lowercase or in all caps, as 
+			## abbreviated (".fas", ".FAS") or in full (".fasta", ".FASTA").
+			MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')";
+		
+			## Count corrected number of characters in DNA alignment
+			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
+			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+			fi
+		
+			## Convert sequential, unwrapped FASTA file to PHYLIP format:
+			# Make tmp PHYLIP header.
+			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
+		
+			# 1 line per sequence, no '>' delimiter.
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' ./fasta.tmp ;
+		
+			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp > ./taxonLabels.tmp ;
+			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' ./fasta.tmp | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp > ./fastaSeqs.tmp ;
+			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' ./fasta.tmp  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+					
+			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
+		
+			## Remove any tab characters (these are artifacts of paste operation above).
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+			
+			## Move orig FASTA and new PHYLIP files to their respective folders, and delete temporary
+			## files.
+			mv "$MY_FASTA" ./orig_fasta_files/ ;
+			mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
+			rm ./*.tmp ;
+		
+		fi
+	
+	fi
+
+
+	rm ./output/fileOrder.list.txt
+
+fi
+#######
+
+
+
+############################### IF -f 2: MULTI FASTA RUN #################################
+##########################################################################################
+
+if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
+
+######################################## START ###########################################
+############ OPTIONAL OUTPUT TO FILE
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	exec >> ./"$MY_OUTPUT_FILE_SWITCH"
+	exec 2>&1
+#
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
+fi
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting FASTA2PHYLIP analysis... "
+	echo "INFO      | $(date) | Step #1: Set up workspace by defining useful environmental variables and functions, and check machine type. "
+fi
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+
+## Organize working directory structure:
+	if [[ ! -s ./output/ ]]; then
+		mkdir output/ ;
+	fi
+	if [[ "$MY_KEEP_FASTA_SWITCH" = "1" ]] && [[ ! -s ./orig_fasta_files/ ]] && [[ ! -s ./phylip_files/ ]]; then
+		mkdir orig_fasta_files/ ;
+		mkdir phylip_files/ ;
+	fi
+
+
+############ STEP #2: CONVERT ALL FASTA FILES IN CWD TO PHYLIP AND SAVE FASTA ORDER AND CHARACTERISTICS.
+###### Loop through fastas in current working directory, allowing for multiple file extensions,
+###### and perform operations. However, extension '.fasta' is preferred.
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #2: Convert all FASTA files in cwd to PHYLIP format, & save orig. FASTA order and characteristics. "
+fi
+
+MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname \*.fa -o -iname \*.FASTA -o -iname \*.FAS -o -iname \*.FA \))"
+(
+	for MY_FASTA in $MY_FASTA_FILES; do 
+
+	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
+
+	echo "INFO      | $(date) |          ###------    $MY_FASTA    ------### "
+
+
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |               A. Clean file, get FASTA file and data characteristics. "
+	fi
+	
+	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
+		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
+		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
+		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
+			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+					sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
+					rm ./*.bak ;
+			fi
+		
+		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
+		##--Unlike sequence lines, these lines will all contain '#' characters.
+			if [[ "$(grep -n '\#' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+					sed -i.bak '/\#/d' "$MY_FASTA" ;
+					rm ./*.bak ;
+			fi
+		
+		##--Generate metric used below to test FASTA file format and identify whether file contains 
+		##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
+		
+			## Get first ID delimiter line number:
+			MY_FIRST_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | head -n1)";
+			
+			## Get second ID delimiter line number:
+			MY_SECOND_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+		
+			## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
+			## If 2, unwrapped; if greater than 2, hard-wrapped.
+			MY_FORMAT_METRIC="$(calc $MY_SECOND_ID_LINE - $MY_FIRST_ID_LINE)";
+		
+		
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
+		fi
+		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
+		
+		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
+		
+			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
+		
+			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
+			rm ./*.bak ;
+
+			perl -p -i -e 's/\n//g' "$MY_FASTA" ;
+			perl -p -i -e 's/MARK\_EOL/\n/g' "$MY_FASTA" ;
+			perl -p -i -e 's/\>/\n\>/g' "$MY_FASTA" ;
+		
+			## Need empty line check here again:
+			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
+				rm ./*.bak ;
+			fi
+		
+			## May also need to make sure the last line has EOF line (i.e. a blank line with no 
+			## carriage return).
+			# ADD TEST HERE
+			# MY_EOF_METRIC="$( some way to search for '\n$' or '$\n$' on UNIX)   grep -h $'$\n$'  "
+		
+			## Count number of taxa/tips present in FASTA file:
+			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')";
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+			fi
+		
+			## This is the base name of the original FASTA file, so you have it. This will work regardless 
+			## of whether the FASTA filename extension is written in lowercase or in all caps, as 
+			## abbreviated (e.g. ".fa", ".fas", ".FAS") or in full (e.g. ".fasta", ".FASTA").
+			MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{2,\}$//g')";
+		
+			## Count corrected number of characters in DNA alignment
+			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
+			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+			fi
+		
+			## Convert sequential, unwrapped FASTA file to PHYLIP format:
+			# Make tmp PHYLIP header.
+			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
+		
+			# 1 line per sequence, no '>' delimiter.
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
+		
+			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
+			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
+			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+		
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			## Commented out because of 'line too long' error on Oct 21, 2019:
+			## (Worth checking into to see if you can code a way around this, but the phylip
+			## file that results is still an alignment that runs in RAxML, even though the 
+			## columns aren't perfectly aligned (which is what this command below would 
+			## fix)).
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+			
+			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
+		
+			## Remove any tab characters (these are artifacts of paste operation above).
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+	
+			## Remove orig FASTA file and delete temporary files.
+			rm "$MY_FASTA" ;
+			# rm ./*.tmp ;
+		
+		fi
+		
+		
+		#####  SEQUENTIAL, UNWRAPPED FASTA2PHYLIP CONVERSION CODE  #####
+		
+		if [[ "$MY_FORMAT_METRIC" -eq "2" ]]; then
+		
+		echo "Sequential FASTA format detected. Converting to PHYLIP..."
+		##--The FASTA file has DNA sequences in sequential, unwrapped format already; no need to 
+		##--convert it, so use file as is.
+		
+			## Count number of taxa/tips present in FASTA file:
+			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')"
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+			fi
+		
+			## This is the base name of the original FASTA file, so you have it. This will work regardless 
+			## of whether the FASTA filename extension is written in lowercase or in all caps, as 
+			## abbreviated (".fas", ".FAS") or in full (".fasta", ".FASTA").
+			MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')";
+		
+			## Count corrected number of characters in DNA alignment
+			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
+			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+			fi
+		
+			## Convert sequential, unwrapped FASTA file to PHYLIP format:
+			# Make tmp PHYLIP header.
+			echo "$MY_NTAXA  $MY_CORRECTED_NCHAR" > ./header.tmp ;
+		
+			# 1 line per sequence, no '>' delimiter.
+			perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
+		
+			sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
+			MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
+			#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+			
+			perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
+			#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
+			perl -p -i -e 's/x$//g' ./taxonLabels.tmp; mv ./taxonLabels.tmp ./taxon_names_spaces.tmp ;
+					
+			paste ./taxon_names_spaces.tmp ./fastaSeqs.tmp > ./new_fasta_body.tmp ;
+			cat ./header.tmp ./new_fasta_body.tmp > "$MY_FASTA_BASENAME".phy  ;
+		
+			## Remove any tab characters (these are artifacts of operation above).
+			perl -p -i -e 's/\t//g' ./"$MY_FASTA_BASENAME".phy ;
+	
+			## Remove orig FASTA file and delete temporary files.
+			rm "$MY_FASTA" ;
+			rm ./*.tmp ;
+		
+		fi
+	
+	fi
+	
+	
+	
+	if [[ "$MY_KEEP_FASTA_SWITCH" = "1" ]]; then
+		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
+		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
+	
+		cp "$MY_FASTA" ./fasta.tmp
+	
+		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
+			if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
+				rm ./*.bak ;
+			fi
+		
+		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
+		##--Unlike sequence lines, these lines will all contain '#' characters.
+			if [[ "$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				sed -i.bak '/\#/d' ./fasta.tmp ;
+				rm ./*.bak ;
+			fi
+		
+		##--Generate metric used below to test FASTA file format and identify whether file contains 
+		##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
+		
+			## Get first ID delimiter line number:
+			MY_FIRST_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | head -n1)";
+			
+			## Get second ID delimiter line number:
+			MY_SECOND_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+		
+			## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
+			## If 2, unwrapped; if greater than 2, hard-wrapped.
+			MY_FORMAT_METRIC="$(calc $MY_SECOND_ID_LINE - $MY_FIRST_ID_LINE)";
+		
+		
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
@@ -530,6 +927,9 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 )
 
 
+fi
+#######
+
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
@@ -556,6 +956,10 @@ echo ""
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
+  -f   fileType (def: 1; 1 = single FASTA, 2 = multiple FASTA files) starting file type; 
+       if 1, expects to run on a single FASTA file (<inputFASTA>, defined by -i flag) in 
+       current directory; if 2, then expects to run on multiple FASTA files in current dir
+  -i   inputFASTA (def: NULL) input FASTA file; only specified with -f 1
   -k   keepFASTA (def: 0, off; 1, on) whether or not to keep modified, intermediate FASTA
        files that replace the original FASTAs
   -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
@@ -567,15 +971,20 @@ USAGE="Usage: $(basename "$0") [OPTION]...
   -V   version (also: --version) echo version and exit
 
  ${bold}OVERVIEW${reset}
- Reads in all FASTA DNA sequence alignment files in current directory and converts them 
- to PHYLIP ('.phy') format (Felsenstein 2002). Each FASTA file must be sequential in format, 
- with each sequence on one or multiple contiguous lines, but individual sequences may be 
- hard wrapped across multiple lines (e.g. using line breaking to limit sequence text to 
- 60-90 nucleotide characters per line), or not (e.g. with one sequence per line). Tip taxon 
- names may include alphanumeric, hyphen, and underscore characters but no spaces or pound 
- signs (#), or else there could be issues. Whereas filename extensions '.fasta', '.fas', or 
- '.fa' are preferred, the program also accommodates uppercase versions of these extensions
- for FASTA files. 
+ Reads in one or multiple FASTA DNA sequence alignment files in current directory and 
+ converts them to PHYLIP ('.phy') format (Felsenstein 2002). If supplied with a single FASTA 
+ data file (using '-f1 -i <inputFASTA>' options), then that file is converted into a PHYLIP 
+ alignment file. However, if option '-f2' is supplied (without the -i flag), then the 
+ program will assume that the current directory contains multiple FASTA sequence alignment 
+ files and will convert them each to PHYLIP format, with input from other user-specified 
+ options.
+	Each FASTA file must be sequential in format, with each sequence on one or multiple 
+ contiguous lines, but individual sequences may be hard wrapped across multiple lines (e.g. 
+ using line breaking to limit sequence text to 60-90 nucleotide characters per line), or 
+ not (e.g. with one sequence per line). Tip taxon names may include alphanumeric, hyphen, 
+ and underscore characters but no spaces or pound signs (#), or else there could be issues. 
+ Whereas filename extensions '.fasta', '.fas', or '.fa' are preferred, the program also 
+ accommodates uppercase versions of these extensions for FASTA files. 
 	An option (-k 1) is available that allows keeping original FASTA files. By default, the
  program runs quietly with limited stdout or stderr output to screen (only filenames); however, 
  the -v option causes verbose run information to be redirected to screen for each FASTA file 
@@ -583,13 +992,15 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  with the user's preferred filename, saved in ./output/.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
- tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many earlier versions 
- or Linux. 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 6/7 Linux, but should work 
+ on many earlier versions of macOS or Linux. 
 
  ${bold}Usage Examples${reset}
-    piranha -f FASTA2PHYLIP --args='-k 1 -v 1'  Convert FASTA files to PHYLIP format, keeping  
-                                                intermediate FASTAs, and echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-k 1 -v 1'      Same as above, but passing arguments with -a flag
+    piranha -f FASTA2PHYLIP --args='-f 1 -i input.fasta -v 1'  Convert input.fasta to PHYLIP format, echoing
+                                                               run output to screen
+    piranha -f FASTA2PHYLIP --args='-f 2 -k 1 -v 1'            Convert FASTA files to PHYLIP format, keeping  
+                                                               intermediate FASTAs, and echoing run output to screen
+    piranha -f FASTA2PHYLIP -a '-f 2-k 1 -v 1'                 Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -600,12 +1011,16 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
 
 VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
+  -f   fileType (def: 1; 1 = single FASTA, 2 = multiple FASTA files) starting file type; 
+       if 1, expects to run on a single FASTA file (<inputFASTA>, defined by -i flag) in 
+       current directory; if 2, then expects to run on multiple FASTA files in current dir
+  -i   inputFASTA (def: NULL) input FASTA file; only specified with -f 1
   -k   keepFASTA (def: 0, off; 1, on) whether or not to keep modified, intermediate FASTA
        files that replace the original FASTAs
   -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
@@ -617,15 +1032,20 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
   -V   version (also: --version) echo version and exit
 
  ${bold}OVERVIEW${reset}
- Reads in all FASTA DNA sequence alignment files in current directory and converts them 
- to PHYLIP ('.phy') format (Felsenstein 2002). Each FASTA file must be sequential in format, 
- with each sequence on one or multiple contiguous lines, but individual sequences may be 
- hard wrapped across multiple lines (e.g. using line breaking to limit sequence text to 
- 60-90 nucleotide characters per line), or not (e.g. with one sequence per line). Tip taxon 
- names may include alphanumeric, hyphen, and underscore characters but no spaces or pound 
- signs (#), or else there could be issues. Whereas filename extensions '.fasta', '.fas', or 
- '.fa' are preferred, the program also accommodates uppercase versions of these extensions
- for FASTA files. 
+ Reads in one or multiple FASTA DNA sequence alignment files in current directory and 
+ converts them to PHYLIP ('.phy') format (Felsenstein 2002). If supplied with a single FASTA 
+ data file (using '-f1 -i <inputFASTA>' options), then that file is converted into a PHYLIP 
+ alignment file. However, if option '-f2' is supplied (without the -i flag), then the 
+ program will assume that the current directory contains multiple FASTA sequence alignment 
+ files and will convert them each to PHYLIP format, with input from other user-specified 
+ options.
+	Each FASTA file must be sequential in format, with each sequence on one or multiple 
+ contiguous lines, but individual sequences may be hard wrapped across multiple lines (e.g. 
+ using line breaking to limit sequence text to 60-90 nucleotide characters per line), or 
+ not (e.g. with one sequence per line). Tip taxon names may include alphanumeric, hyphen, 
+ and underscore characters but no spaces or pound signs (#), or else there could be issues. 
+ Whereas filename extensions '.fasta', '.fas', or '.fa' are preferred, the program also 
+ accommodates uppercase versions of these extensions for FASTA files. 
 	An option (-k 1) is available that allows keeping original FASTA files. By default, the
  program runs quietly with limited stdout or stderr output to screen (only filenames); however, 
  the -v option causes verbose run information to be redirected to screen for each FASTA file 
@@ -633,10 +1053,17 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  with the user's preferred filename, saved in ./output/.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
- tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many earlier versions 
- or Linux. 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 6/7 Linux, but should work 
+ on many earlier versions of macOS or Linux. 
 
  ${bold}DETAILS${reset}
+ The -f flag specifies the starting <fileType>. If -f 1, then the mandatory input is the name
+ of the corresponding <inputFASTA> starting file, which is passed using the -i flag above.
+ If -f 2, then there is no additional mandatory input, and the program will run on all 
+ FASTA files in the current working directory.
+ 
+ The -i flag passess the name of the input FASTA file, <inputFASTA> parameter, to the program.
+
  The -k flag allows the user to choose whether or not the original FASTA files should be 
  replaced with the newly generated PHYLIP file (0; default), or kept unmodified (1). If the 
  latter, then 'orig_fasta_files/' and 'phylip_files/' subfolders are created, and the original 
@@ -652,9 +1079,11 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  the verbose output is presently highly redundant across alignments, and thus is not preferred.
  
  ${bold}Usage Examples${reset}
-    piranha -f FASTA2PHYLIP --args='-k 1 -v 1'  Convert FASTA files to PHYLIP format, keeping  
-                                                intermediate FASTAs, and echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-k 1 -v 1'      Same as above, but passing arguments with -a flag
+    piranha -f FASTA2PHYLIP --args='-f 1 -i input.fasta -v 1'  Convert input.fasta to PHYLIP format, echoing
+                                                               run output to screen
+    piranha -f FASTA2PHYLIP --args='-f 2 -k 1 -v 1'            Convert FASTA files to PHYLIP format, keeping  
+                                                               intermediate FASTAs, and echoing run output to screen
+    piranha -f FASTA2PHYLIP -a '-f 2-k 1 -v 1'                 Same as above, but passing arguments with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -665,7 +1094,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
@@ -706,6 +1135,20 @@ fi
 ############ MANUALLY PARSE THE OPTIONS FROM ARGS
 
 ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		STARTING_FILE_TYPE=1 ;
+	else 
+		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+		STARTING_FILE_TYPE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_FASTA=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_FASTA="$MY_ARG" ;
+	fi
+#
 	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_KEEP_FASTA_SWITCH=0 ;
 	else 

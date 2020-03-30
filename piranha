@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.0.6"                                                                       #
+  VERSION="v1.0.7"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: December 12, 2019                                                         #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: March 30, 2020                                                            #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description: Main script for PIrANHA package, controls all other scripts. With no      #
@@ -137,8 +137,8 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.6, December 2019  (main script for PIrANHA v0.3a2)  "
-echo "Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
+piranha v1.0.7, March 2020  (main script for PIrANHA v0.3a2)  "
+echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ -z "$FUNCTION_TO_RUN" ]] && [[ -z "$FUNCTION_ARGUMENTS" ]]; then
@@ -161,10 +161,11 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 		echo "INFO      | $(date) |          Checking file limits on Linux..."
 		FILE_LIMIT=$(ulimit -n)
 		export FILE_LIMIT
-		if [[ "$FILE_LIMIT" != "unlimited" ]]; then
-			NEW_LIMIT="$( calc $FILE_LIMIT*10 )";
-			ulimit -n $NEW_LIMIT ;
-		fi
+		echo "INFO      | $(date) |             ulimit: ${FILE_LIMIT}"
+#		if [[ "$FILE_LIMIT" != "unlimited" ]]; then
+#			NEW_LIMIT="$( calc $FILE_LIMIT*10 )";
+#			ulimit -n $NEW_LIMIT ;
+#		fi
 	fi
 
 ############ II. CALL USER-SPECIFIED FUNCTION / SCRIPT IN BIN LOCATION, WITH OR WITHOUT ARGUMENTS.
@@ -221,7 +222,7 @@ ExaBayesPostProc       Function automating reading and conducting post-processin
                        output from ExaBayes.
 FASTA2PHYLIP           Function that automates converting one or multiple sequential FASTA DNA sequence alignment 
                        files (with sequences either unwrapped or hard-wrapped across multiple lines) to PHYLIP 
-                       format.
+                       format (Felsenstein 2002).
 FASTA2VCF              Shell script function automating conversion of single multiple sequence FASTA alignment to 
                        variant call format (VCF) v4.1, with or without subsampling SNPs per partition/locus.
 fastSTRUCTURE          Interactive function that automates running fastSTRUCTURE (Raj et al. 2014) on biallelic 
@@ -249,6 +250,9 @@ NEXUS2MultiPHYLIP      Function that splits a sequential NEXUS alignment with ch
                        data.
 NEXUS2PHYLIP           Function that reads in a single NEXUS datafile and converts it to PHYLIP ('.phy') format 
                        (Felsenstein 2002). 
+nQuireRunner           Function that automates running nQuire software (Weiß et al. 2018) to determine sample 
+                       ploidy level from next-generation sequencing (NGS) reads for one or multiple samples,
+                       starting from BAM file(s) for the sample(s)
 PFSubsetSum            Calculates summary statistics for DNA subsets within the optimum partitioning scheme 
                        identified for the data by PartitionFinder v1 or v2 (Lanfear et al. 2012, 2014).
 PHYLIP2FASTA           Automates converting each of one or multiple PHYLIP DNA sequence alignments into FASTA 
@@ -325,6 +329,9 @@ Lanfear, R., Calcott, B., Kainer, D., Mayer, C., Stamatakis, A. 2014. Selecting 
 Meier, R., Shiyang, K., Vaidya, G., Ng, P.K. 2006. DNA barcoding and taxonomy in Diptera: 
 	a tale of high intraspecific variability and low identification success. Systematic 
 	Biology, 55(5), 715-728.
+Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a statistical 
+	framework for ploidy estimation using next generation sequencing. BMC bioinformatics, 
+	19(1), 122.
 
 ----------------------------------------------------------------------------------------------------------------
 " ;
@@ -341,13 +348,13 @@ Meier, R., Shiyang, K., Vaidya, G., Ng, P.K. 2006. DNA barcoding and taxonomy in
 	## so we need to add the subfolder name (which will vary as MAGNET is updated in the 
 	## future) to the execution path, $MY_EXECUTION_PATH.
 	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.0/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	fi
 
 	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.0/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	fi
@@ -411,7 +418,7 @@ usage() {
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
 }
 
