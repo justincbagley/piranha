@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.6.3"                                                                       #
+  VERSION="v1.6.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: March 30, 2020                                                            #
+# Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.3 October 2019  (part of PIrANHA v0.3a2) "
-echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.4 March 2020  (part of PIrANHA v0.3a2)      "
+echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -197,16 +197,16 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" = "0" ]]; 
 			sed -i.bak 's/^$\n//g' ./nexus.tmp ;
 			rm ./*.bak;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
-			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
-			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+			sed 's/^\([A-Za-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-Za-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
 			sed '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
 			sed 's/^$\n//g' ./nexus.tmp ;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
-			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
-			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+			sed 's/^\([A-Za-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-Za-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
 		fi
 	
 			## Now that the matrix is isolated, get no. characters:
@@ -277,16 +277,16 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 			sed -i.bak 's/^$\n//g' ./nexus.tmp ;
 			rm ./*.bak;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
-			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
-			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+			sed 's/^\([A-Za-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-Za-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
 			sed '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
 			sed 's/^$\n//g' ./nexus.tmp ;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
-			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
-			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+			sed 's/^\([A-Za-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-Za-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
 		fi
 	
 			## Now that the matrix is isolated, get no. characters:
@@ -357,16 +357,16 @@ if [[ "$MY_CHARSETS_SWITCH" = "1" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 			sed -i.bak 's/^$\n//g' ./nexus.tmp ;
 			rm ./*.bak;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
-			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
-			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+			sed 's/^\([A-Za-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-Za-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -n '1,'"$MY_HEADER_MAT_LINE"'p' ./nexus.tmp > ./nexus_header.tmp ;
 			sed '1,'"$MY_HEADER_MAT_LINE"'d' ./nexus.tmp ;
 			sed 's/^$\n//g' ./nexus.tmp ;
 			sed -n '1,'"$MY_NTAX"'p' ./nexus.tmp > ./matrix.tmp ;
-			sed 's/^\([A-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
-			sed 's/^[A-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
+			sed 's/^\([A-Za-z\_0-9\.\ ]*\ \).*/\1/g' ./matrix.tmp > ./taxon_names_spaces.tmp ; 
+			sed 's/^[A-Za-z\_0-9\.\ ]*\ //g' ./matrix.tmp > ./matrixOnly.tmp ; 
 		fi
 	
 			## Now that the matrix is isolated, get no. characters:
@@ -447,15 +447,15 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1'      Same as above, but with -a flag
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v1.0.0. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.
- Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
 "
 
 VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
@@ -516,7 +516,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.
- Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
