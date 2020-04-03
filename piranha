@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.0.7"                                                                       #
+  VERSION="v1.0.8"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: March 30, 2020                                                            #
+# Last update: April 3, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.7, March 2020  (main script for PIrANHA v0.3a2)  "
+piranha v1.0.8, April 2020  (main script for PIrANHA v0.3a2)          "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -149,6 +149,7 @@ fi
 if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 
 ############ I. READ INPUT, SET UP WORKSPACE, AND CHECK / ECHO MACHINE TYPE.
+#	echo "INFO      | $(date) |          Script path: $SCRIPT_PATH/piranha"
 	echo "INFO      | $(date) |          Function: $FUNCTION_TO_RUN "
 	echo "INFO      | $(date) |          Function arguments: $FUNCTION_ARGUMENTS "
 	echo "INFO      | $(date) |          Remaining arguments: $args+ "
@@ -223,6 +224,8 @@ ExaBayesPostProc       Function automating reading and conducting post-processin
 FASTA2PHYLIP           Function that automates converting one or multiple sequential FASTA DNA sequence alignment 
                        files (with sequences either unwrapped or hard-wrapped across multiple lines) to PHYLIP 
                        format (Felsenstein 2002).
+FASTAsummary           Summarizes characteristics (numbers of characters and tip taxa) in one or multiple FASTA 
+                       DNA sequence alignment files in current working directory, and saves to file.
 FASTA2VCF              Shell script function automating conversion of single multiple sequence FASTA alignment to 
                        variant call format (VCF) v4.1, with or without subsampling SNPs per partition/locus.
 fastSTRUCTURE          Interactive function that automates running fastSTRUCTURE (Raj et al. 2014) on biallelic 
@@ -269,6 +272,8 @@ PHYLIPcleaner          Function that cleans one or more PHYLIP alignments in cur
                        with all (or mostly) undetermined sites.
 PHYLIPsubsampler       Automates subsampling each of one to multiple PHYLIP DNA sequence alignment files down to 
                        one (random) sequence per species, e.g. for species tree analyses.
+PHYLIPsummary          Summarizes characteristics (numbers of characters and tip taxa) in one or multiple PHYLIP 
+                       DNA sequence alignment files in current working directory, and saves to file.
 PhyloMapperNullProc    Script for post-processing results of a PhyloMapper null model randomization analysis.
 phyNcharSumm           Utility function that summarizes the number of characters in each PHYLIP DNA sequence 
                        alignment in current working directory.
@@ -338,25 +343,75 @@ Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a sta
   safeExit ;
 	fi
 
-	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
+	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
 		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
+	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" = "true" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
+		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha.out.log.txt ;
+	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" = "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
+		# Redirect stderr and stdout to /dev/null
+		# URL: https://stackoverflow.com/questions/2292847/how-to-silence-output-in-a-bash-script
+		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" >/dev/null 2>&1 ;
+	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
+		# Run main piranha BASH script in debug mode using set -x ... set +x, which increases verbosity...
+		# URL: https://unix.stackexchange.com/questions/155551/how-to-debug-a-bash-script
+		set -x ;
+			"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS";
+		set +x ;
+	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
+		# Run main piranha BASH script in debug mode using set -x ... set +x, which increases verbosity...
+		# URL: https://unix.stackexchange.com/questions/155551/how-to-debug-a-bash-script
+		set -x ;
+			"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha.out.log.txt ;
+		set +x ;
 	fi
 
 	## Next two conditionals below: cases where function run _is_ MAGNET. Need these cases
 	## because MAGNET comes with PIrANHA in its own subfolder with its own file structure,
 	## so we need to add the subfolder name (which will vary as MAGNET is updated in the 
 	## future) to the execution path, $MY_EXECUTION_PATH.
-	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
+	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
+	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		echo "INFO      | $(date) |          Executing function without additional arguments in BASH debug mode..."
+		set -x ;
+			"$MY_EXECUTION_PATH" ;
+		set +x ;
+	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		echo "INFO      | $(date) |          Executing function without additional arguments..."
+		"$MY_EXECUTION_PATH" &> piranha_MAGNET.out.log.txt ;
+	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		echo "INFO      | $(date) |          Executing function without additional arguments in BASH debug mode..."
+		set -x ;
+			"$MY_EXECUTION_PATH" &> piranha_MAGNET.out.log.txt ;
+		set +x ;
 	fi
 
-	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
+	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
+	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		echo "INFO      | $(date) |          Executing function with -a flag arguments in BASH debug mode..."
+		set -x ;
+			"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
+		set +x ;
+	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
+		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha_MAGNET.out.log.txt ;
+	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		echo "INFO      | $(date) |          Executing function with -a flag arguments in BASH debug mode..."
+		set -x ;
+			"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha_MAGNET.out.log.txt ;
+		set +x ;
 	fi
 
 fi
@@ -387,12 +442,8 @@ usage() {
  ${bold}Options:${reset}
   -f, --func        Function, <function>
   -a, --args        Function arguments passed to <function>
-  -u, --username    Username for script
-  -p, --password    User password
-  --force           Skip all user interaction.  Implied 'Yes' to all actions.
   -q, --quiet       Quiet (no output)
   -l, --log         Print log to file
-  -s, --strict      Exit script with null variables.  i.e 'set -o nounset'
   -v, --verbose     Output more information. (Items echoed to 'verbose')
   -d, --debug       Runs script in BASH debug mode (set -x)
   -h, --help        Display this help and exit
