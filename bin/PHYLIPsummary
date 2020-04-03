@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Jun 19 14:04:27 CDT 2019.                       #
-# Last update: April 2, 2020                                                             #
+# Last update: April 3, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -162,6 +162,7 @@ echo "INFO      | $(date) | Step #2: Check and produce summaries of characterist
 ### RUN ON SINGLE INPUT PHYLIP FILE
 ###
 if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
+	#### Get PHYLIP characteristics:
 	MY_BASENAME="$(basename "$INPUT_PHYLIP_FILE" '.phy')";
 #
 	MY_NCHAR="$(head -n1 "$INPUT_PHYLIP_FILE" | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
@@ -184,6 +185,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 count=0
 (
 	for i in ./*.phy ; do
+		#### Get PHYLIP characteristics:
 		MY_BASENAME="$(basename "$i" '.phy')";
 #
 		MY_NCHAR="$(head -n1 "$i" | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
@@ -267,7 +269,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Call the program using PIrANHA, as follows:
 
     piranha -f PHYLIPsummary --args='-h'                 Obtain PHYLIPsummary help text
-    piranha -f PHYLIPsummary --args='-i <inputFile>'     Summarize single PHYLIP file
+    piranha -f PHYLIPsummary --args='-i <inputPHYLIP>'   Summarize single PHYLIP file
     piranha -f PHYLIPsummary --args='-m 1'               Summarize multiple PHYLIP files
 
  ${bold}CITATION${reset}
