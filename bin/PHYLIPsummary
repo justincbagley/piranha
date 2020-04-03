@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsummary.sh                                                                 #
-  VERSION="v0.1.1"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Jun 19 14:04:27 CDT 2019.                       #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 2, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,11 +136,12 @@ PHYLIPsummary () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPsummary, v0.1.1 October 2019  (part of PIrANHA v0.3a2)   "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
+echo "INFO      | $(date) | PHYLIPsummary, v1.0.1 April 2020  (part of PIrANHA v0.3a2)     "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
+echo "INFO      | $(date) | Starting PHYLIPsummary analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
 ###### Set working directory and filetypes as different variables:
@@ -173,7 +174,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
 
 	echo "File	nTax	nChar" > ./header.tmp ;
 	paste ./PHYLIP_order.list.tmp ./PHYLIP_nChar.list.txt ./PHYLIP_nTax.list.txt > ./PHYLIP_table.tmp ;
-	cat ./header.tmp ./PHYLIP_table.tmp > ./PHYLIP_Summary.txt
+	cat ./header.tmp ./PHYLIP_table.tmp > ./PHYLIP_Summary.txt ;
 fi
 ###
 
@@ -198,7 +199,7 @@ count=0
 #
 	echo "File	nTax	nChar" > ./header.tmp ;
 	paste ./PHYLIP_order.list.tmp ./PHYLIP_nChar.list.txt ./PHYLIP_nTax.list.txt > ./PHYLIP_table.tmp ;
-	cat ./header.tmp ./PHYLIP_table.tmp > ./PHYLIP_Summary.txt
+	cat ./header.tmp ./PHYLIP_table.tmp > ./PHYLIP_Summary.txt ;
 
 #	MY_N_PHY_FILES="$(echo "$count" )";
 	MY_N_PHY_FILES="$(ls ./*.phy | wc -l | sed 's/\ //g')";
@@ -241,7 +242,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) input PHYLIP filename
-  -m   multiPHYLIP (def: 0, turned on; 1, on) summarize multiple PHYLIP files in working dir
+  -m   multiPHYLIP (def: 0, turned off; 1, on) whether to summarize multiple PHYLIP files 
+       in current working directory
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
