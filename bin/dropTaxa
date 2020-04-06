@@ -1,0 +1,734 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: dropTaxa.sh                                                                      #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.                        #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT AUTOMATES REMOVING TAXA FROM SEQUENTIAL, MULTI-INDIVIDUAL FASTA OR   #
+# PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENTS, STARTING FROM A LIST                         #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+
+# DESIRED USAGE:
+# dropTaxa -i <inputFile> | -m1 -f <fileType> -t <taxonList> 
+# where -i is single input and -f and -t are mandatory, OR -m1 indicates multiple input files 
+# of type specified by -f, and -t is also mandatory
+dropTaxa () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | dropTaxa, v1.0.0 April 2020  (part of PIrANHA v0.3a2)          "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting dropTaxa script... "
+	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful variables and functions, setting working directory, and checking machine type. "
+fi
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #2: Read in and process taxon list, and remove unwanted taxa. "
+fi
+############ PROCESS TAXON LIST FILE <taxonList> AND MAKE IT CONFORM TO SED FORMAT, WHILE SAVING
+############ COPY OF ORIGINAL
+if [[ -s "$MY_TAXON_LIST" ]]; then
+	cp "$MY_TAXON_LIST" "$MY_TAXON_LIST"-COPY ;
+#
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i.bak 's/\ /\_/g; s/\-/\\\-/g; s/\_/\\\_/g; s/\./\_/g' "$MY_TAXON_LIST" ;
+		rm ./*.bak;
+	fi
+		if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\ /\_/g; s/\-/\\\-/g; s/\_/\\\_/g; s/\./\_/g' "$MY_TAXON_LIST" ;
+	fi
+fi
+
+############ CASE #1: SINGLE INPUT SEQUENTIAL PHYLIP FILE
+if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_FILE_TYPE" = "PHYLIP" ]]; then 
+	if [[ "$INPUT_FILE" != "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "0" ]]; then
+		if [[ ! -s "$INPUT_FILE" ]]; then
+			#### Get PHYLIP characteristics:
+			MY_PHYLIP_EXTENSION=".${INPUT_FILE##*.}";
+			MY_PHYLIP_BASENAME="$(echo "${INPUT_FILE%%.*}")";
+			#echo "$MY_PHYLIP_BASENAME"
+#
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |          Input file: $INPUT_FILE ... ";
+				echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
+				echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+				if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) |          <keepFile> switch activated. Saving original PHYLIP input file to ./orig_phylip/ ... ";
+					if [[ ! -s ./orig_phylip/  ]]; then mkdir ./orig_phylip/ ; fi 
+					cp "$INPUT_FILE" ./orig_phylip/ 
+				fi
+				echo "INFO      | $(date) |          Removing unwanted taxa from PHYLIP input file ... ";
+			fi
+#
+			echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+			## If present, remove empty lines / newlines from current PHYLIP file, $INPUT_FILE.
+			if [[ "$(grep -n '^[\s]*$' $INPUT_FILE | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/^[[:space:]]*$/d' "$INPUT_FILE" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' "$INPUT_FILE" ;
+				fi
+			fi
+#			
+			## If present, remove lines that have been commented out from current PHYLIP file, $INPUT_FILE. 
+			## Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
+			if [[ "$(grep -n '\#' $INPUT_FILE | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/\#/d' "$INPUT_FILE" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/\#/d' "$INPUT_FILE" ;
+				fi
+			fi
+#
+			if [[ "${machine}" = "Mac" ]]; then
+			(
+				while read line; do
+					sed -i.bak '/'"$line"'/d' "$INPUT_FILE"  ;
+					rm ./*.bak ;
+				done < "$MY_TAXON_LIST"
+			)
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+			(
+				while read line; do
+					sed -i '/'"$line"'/d' "$INPUT_FILE"  ;
+				done < "$MY_TAXON_LIST"
+			)
+			fi
+#
+			cat "$INPUT_FILE" | tail -n+2 > ./seqs.tmp ;
+			MY_NTAX="$(cat "$INPUT_FILE" | tail -n+2 | wc -l | perl -pe 's/\t//g; s/\ //g')" ;
+			MY_NCHAR="$(head -n1 "$INPUT_FILE" | sed 's/.*\ //g; s/\ //g')";
+			echo "$MY_NTAX  $MY_NCHAR" > ./header.tmp ;
+			## Write new file with reduced DNA sequence matrix and corrected PHYLIP header,
+			## and overwrite / keep original file in accordance with KEEP_ORIG_FILE_SWITCH
+			## setting:
+			if [[ "$KEEP_ORIG_FILE_SWITCH" = "0" ]]; then 
+				rm "$INPUT_FILE" ;
+				cat ./header.tmp ./seqs.tmp > "$INPUT_FILE" ;
+			else
+				cat ./header.tmp ./seqs.tmp > ./"$MY_PHYLIP_BASENAME"_reduced.phy ;
+			fi
+			rm ./*.tmp ;
+			if [[ -s ./_reduced.phy ]]; then rm ./_reduced.phy ; fi
+#
+		else
+			echo "WARNING!  | $(date) |          ERROR: Found no file named $INPUT_FILE in working directory. Quitting... " 
+			exit
+		fi
+	fi
+fi
+
+############ CASE #2: MULTIPLE PHYLIP FILES IN CWD
+if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_FILE_TYPE" = "PHYLIP" ]]; then 
+	if [[ "$INPUT_FILE" = "NULL" ]] || [[ "$MULTIPLE_FILE_SWITCH" = "1" ]]; then
+	MY_PHYLIP_ALIGNMENTS=./*.phy
+	count=1
+	(
+		for i in $MY_PHYLIP_ALIGNMENTS; do
+			#### Get PHYLIP characteristics:
+			MY_PHYLIP_EXTENSION=".${i##*.}";
+			MY_PHYLIP_BASENAME="$(echo "${i%%.*}")";
+			#echo "$MY_PHYLIP_BASENAME"
+#
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |          ###-----   PHYLIP File $count   -----### "
+				echo "INFO      | $(date) |          Input file: $i ... ";
+				echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
+				echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+				if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) |          <keepFile> switch activated. Saving original PHYLIP input file to ./orig_phylip/ ... ";
+					if [[ ! -s ./orig_phylip/  ]]; then mkdir ./orig_phylip/ ; fi 
+					cp "$i" ./orig_phylip/ 
+				fi
+				echo "INFO      | $(date) |          Removing unwanted taxa from PHYLIP input file $((count++)) ... ";
+			fi
+#
+			echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+			## If present, remove empty lines / newlines from current PHYLIP file, $i.
+			if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/^[[:space:]]*$/d' "$i" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' "$i" ;
+				fi
+			fi
+#			
+			## If present, remove lines that have been commented out from current PHYLIP file, $i. 
+			## Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
+			if [[ "$(grep -n '\#' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/\#/d' "$i" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/\#/d' "$i" ;
+				fi
+			fi
+#
+			if [[ "${machine}" = "Mac" ]]; then
+			(
+				while read line; do
+					sed -i.bak '/'"$line"'/d' "$i"  ;
+					rm ./*.bak ;
+				done < "$MY_TAXON_LIST"
+			)
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+			(
+				while read line; do
+					sed -i '/'"$line"'/d' "$i"  ;
+				done < "$MY_TAXON_LIST"
+			)
+			fi
+#
+			cat "$i" | tail -n+2 > ./seqs.tmp ;
+			MY_NTAX="$(cat "$i" | tail -n+2 | wc -l | perl -pe 's/\t//g; s/\ //g')" ;
+			MY_NCHAR="$(head -n1 "$i" | sed 's/.*\ //g; s/\ //g')";
+			echo "$MY_NTAX  $MY_NCHAR" > ./header.tmp ;
+			## Write new file with reduced DNA sequence matrix and corrected PHYLIP header,
+			## and overwrite / keep original file in accordance with KEEP_ORIG_FILE_SWITCH
+			## setting:
+			if [[ "$KEEP_ORIG_FILE_SWITCH" = "0" ]]; then 
+				rm "$i" ;
+				cat ./header.tmp ./seqs.tmp > "$i" ;
+			else
+				cat ./header.tmp ./seqs.tmp > ./"$MY_PHYLIP_BASENAME"_reduced.phy ;
+			fi
+			rm ./*.tmp ;
+			if [[ -s ./_reduced.phy ]]; then rm ./_reduced.phy ; fi
+#
+		done
+	)
+	fi
+fi
+
+############ CASE #3: SINGLE INPUT SEQUENTIAL, NON-WRAPPED FASTA FILE
+if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_FILE_TYPE" = "FASTA" ]] || [[ "$MY_FILE_TYPE" = "FAS" ]]; then 
+	if [[ "$INPUT_FILE" != "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "0" ]]; then
+		if [[ ! -s "$INPUT_FILE" ]]; then
+			#### Get FASTA characteristics:
+			MY_FASTA_EXTENSION=".${INPUT_FILE##*.}";
+			MY_FASTA_BASENAME="$(echo "${INPUT_FILE%%.*}")";
+			#echo "$MY_FASTA_BASENAME"
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |          Input file: $INPUT_FILE ... ";
+				echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
+				echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+				if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) |          <keepFile> switch activated. Saving original FASTA input file to ./orig_fasta/ ... ";
+					if [[ ! -s ./orig_fasta/  ]]; then mkdir ./orig_fasta/ ; fi 
+					cp "$INPUT_FILE" ./orig_fasta/ 
+				fi
+				echo "INFO      | $(date) |          Removing unwanted taxa from FASTA input file ... ";
+			fi
+#
+			echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+			## If present, remove empty lines / newlines from current FASTA file, $INPUT_FILE.
+			if [[ "$(grep -n '^[\s]*$' $INPUT_FILE | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/^[[:space:]]*$/d' "$INPUT_FILE" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' "$INPUT_FILE" ;
+				fi
+			fi
+#			
+			## If present, remove lines that have been commented out from current FASTA file, $INPUT_FILE. 
+			## Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
+			if [[ "$(grep -n '\#' $INPUT_FILE | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/\#/d' "$INPUT_FILE" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/\#/d' "$INPUT_FILE" ;
+				fi
+			fi
+#
+			if [[ "${machine}" = "Mac" ]]; then
+			(
+				while read line; do
+					# This is a FASTA file, so delete taxon line and subsequent line, which
+					# should contain the corresponding sequence:
+					sed -i.bak '/'"$line"'/,/^/d' "$MY_INPUT_FILE"  ;
+					rm ./*.bak ;
+				done < "$MY_TAXON_LIST"
+			)
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+			(
+				while read line; do
+					# This is a FASTA file, so delete taxon line and subsequent line, which
+					# should contain the corresponding sequence:
+					sed -i '/'"$line"'/,/^/d' "$MY_INPUT_FILE"  ;
+				done < "$MY_TAXON_LIST"
+			)
+			fi
+		else
+			echo "WARNING!  | $(date) |          ERROR: Found no file named $INPUT_FILE in working directory. Quitting... " 
+			exit
+		fi
+	fi
+fi
+
+############ CASE #4: MULTIPLE SEQUENTIAL, NON-WRAPPED FASTA FILES IN CWD
+if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_FILE_TYPE" = "FASTA" ]] || [[ "$MY_FILE_TYPE" = "FAS" ]]; then 
+	if [[ "$INPUT_FILE" = "NULL" ]] || [[ "$MULTIPLE_FILE_SWITCH" = "1" ]]; then
+	count=1
+	(
+		for i in ./*.{fasta,fas,FASTA,FAS} ; do
+			if [[ "$i" != "./*.fasta" ]] && [[ "$i" != "./*.fas" ]] && [[ "$i" != "./*.FASTA" ]] && [[ "$i" != "./*.FAS" ]]; then
+				#### Get FASTA characteristics:
+				MY_FASTA_EXTENSION=".${i##*.}";
+				MY_FASTA_BASENAME="$(echo "${i%%.*}")";
+				#echo "$MY_FASTA_BASENAME"
+#
+				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) |          ###-----   FASTA File $count   -----### "
+					echo "INFO      | $(date) |          Input file: $i ... ";
+					echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
+					echo "INFO      | $(date) |          File extension: $MY_FASTA_EXTENSION ... ";
+					echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+					if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          <keepFile> switch activated. Saving original FASTA input file to ./orig_fasta/ ... ";
+						if [[ ! -s ./orig_fasta/  ]]; then mkdir ./orig_fasta/ ; fi 
+						cp "$i" ./orig_fasta/ 
+					fi
+					echo "INFO      | $(date) |          Removing unwanted taxa from FASTA input file $((count++)) ... ";
+				fi
+#
+				echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+				## If present, remove empty lines / newlines from current FASTA file, $i.
+				if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i.bak '/^[[:space:]]*$/d' "$i" ;
+						rm ./*.bak;
+					fi
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i '/^[[:space:]]*$/d' "$i" ;
+					fi
+				fi
+#			
+				## If present, remove lines that have been commented out from current FASTA file, $i. 
+				## Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
+				if [[ "$(grep -n '\#' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i.bak '/\#/d' "$i" ;
+						rm ./*.bak;
+					fi
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i '/\#/d' "$i" ;
+					fi
+				fi
+#
+				if [[ "${machine}" = "Mac" ]]; then
+				(
+					while read line; do
+						# This is a FASTA file, so delete taxon line and subsequent line, which
+						# should contain the corresponding sequence:
+						sed -i.bak '/'"$line"'/,/^/d' "$i"  ;
+					rm ./*.bak ;
+					done < "$MY_TAXON_LIST"
+				)
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+				(
+					while read line; do
+						# This is a FASTA file, so delete taxon line and subsequent line, which
+						# should contain the corresponding sequence:
+						sed -i '/'"$line"'/,/^/d' "$i"  ;
+					done < "$MY_TAXON_LIST"
+				)
+				fi
+			fi
+		done
+	)
+	fi
+fi
+
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #3: Clean up working directory by removing temporary files etc. "
+fi
+############ CLEANUP: Remove temporary files in working directory, conditional upon user request.
+if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi
+
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+#	echo "INFO      | $(date) |          Done removing unwanted taxa from FASTA or PHYLIP files using dropTaxa.sh." 
+#	echo "Bye.
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+
+if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_FILE_TYPE" = "PHYLIP" ]] && [[ "$INPUT_FILE" != "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "0" ]]; then
+	echo "output file: Modified version of ${INPUT_FILE} with unwanted taxa removed "
+fi
+if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_FILE_TYPE" = "FASTA" ]] || [[ "$MY_FILE_TYPE" = "FAS" ]] && [[ "$INPUT_FILE" != "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "0" ]]; then
+	echo "output file: Modified version of ${INPUT_FILE} with unwanted taxa removed "
+fi
+#
+#
+if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_FILE_TYPE" = "PHYLIP" ]] && [[ "$INPUT_FILE" = "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "1" ]]; then
+	echo "output file(s)/folder(s): Multiple PHYLIP files ('.phy') in current directory, with unwanted taxa removed "
+fi
+if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_FILE_TYPE" = "FASTA" ]] || [[ "$MY_FILE_TYPE" = "FAS" ]] && [[ "$INPUT_FILE" = "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "1" ]]; then
+	echo "output file(s)/folder(s): Multiple FASTA files in current directory, with unwanted taxa removed "
+fi
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputFile (def: NULL) name of input DNA sequence alignment file
+  -m   multiFile (def: 0, turned off; 1, on) drop taxa from multiple alignment files in 
+       current working directory
+  -f   fileType (def: NULL; phylip|PHYLIP, fasta|FASTA) input file type (mandatory)
+  -t   <taxonList> (def: NULL) name of taxon list file containing the names of tip
+       taxa to remove, one per line
+  -k   keepFile (def: 0, off; 1, on, keep) whether or not to keep original file(s)
+  -v   verbose (def: 0, off; 1, on) specify verbose filename output to screen (stdout)
+  -h   help text (also: --help) show this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates removal of unwanted tip taxa (sequences) from one or more multiple 
+ sequence alignment (MSA) file(s) in FASTA or PHYLIP format (Felsenstein 2002) in the current
+ working directory, while saving (-k 1) or writing over (-k 0) the original input file(s). 
+ There are two basic workflows for running this script. 1) To remove taxa from a single input
+ file, the user must supply the input filename (-i flag) and the <fileType> parameter (-f 
+ flag), as well as the taxon list file containing names of tip taxa to remove (passed with
+ -t flag). 2) To remove taxa from multiple FASTA or PHYLIP files in the current directory,
+ the user must turn on the <multiFile> option with -m 1, and provide the <fileType> and
+ <taxonList> parameters. 
+	An option (-k 1) is available that allows keeping the original FASTA or PHYLIP files. By 
+ default, the program runs quietly with limited stdout or stderr output to screen; however, 
+ setting the -v option to 1 redirects verbose run information to screen for each input file.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. There are no other dependencies. 
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f dropTaxa --args='-i <inputFile> -f phylip -t <taxonList> -v 1'     Drop taxa in <taxonList> from single PHYLIP file, overwrite 
+                                                                                  original, and print run updates (stdout) to screen
+
+    piranha -f dropTaxa --args='-i <inputFile> -f fasta -t <taxonList>'           Drop taxa from single FASTA file, overwrite original file
+    piranha -f dropTaxa --args='-i <inputFile> -f phylip -t <taxonList>'          Drop taxa from single PHYLIP file, overwrite original file
+    piranha -f dropTaxa --args='-i <inputFile> -f fasta -t <taxonList> -k 1'      Drop taxa from single FASTA file, keep original file
+    piranha -f dropTaxa --args='-i <inputFile> -f phylip -t <taxonList> -k 1'     Drop taxa from single PHYLIP file, keep original file
+
+    piranha -f dropTaxa --args='-m 1 -f phylip -t <taxonList> -v 1'               Drop taxa from multiple PHYLIP files, overwrite originals, and
+                                                                                  print run updates (stdout) to screen
+
+    piranha -f dropTaxa --args='-m 1 -f fasta -t <taxonList>'                     Drop taxa from multiple FASTA files, overwrite original files
+    piranha -f dropTaxa --args='-m 1 -f phylip -t <taxonList>'                    Drop taxa from multiple PHYLIP files, overwrite original files
+    piranha -f dropTaxa --args='-m 1 -f fasta -t <taxonList> -k 1'                Drop taxa from multiple FASTA files, keep original files
+    piranha -f dropTaxa --args='-m 1 -f phylip -t <taxonList> -k 1'               Drop taxa from multiple PHYLIP files, keep original files
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+
+ Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MULTIPLE_FILE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MULTIPLE_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_FILE_TYPE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+		MY_FILE_TYPE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_TAXON_LIST=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		MY_TAXON_LIST="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		KEEP_ORIG_FILE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+		KEEP_ORIG_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:m:f:t:k:v:' opt ; do
+#   case $opt in
+# ## dropTaxa options:
+#     i) INPUT_FILE=$OPTARG ;;
+#     m) MULTIPLE_FILE_SWITCH=$OPTARG ;;
+#     f) MY_FILE_TYPE=$OPTARG ;;
+#     t) MY_TAXON_LIST=$OPTARG ;;
+#     k) KEEP_ORIG_FILE_SWITCH=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+
+# Store the remaining part as arguments.
+# args+=("$@")
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+dropTaxa
+
+# Exit cleanly
+safeExit
