@@ -90,8 +90,6 @@ Directory tree...
 │   ├── snapp_runner.cfg
 │   └── .gitignore
 ├── test
-│   ├── debug_bin
-│   │   └── ...
 │   ├── test.fasta
 │   ├── test.phy
 │   ├── test.nex
