@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropTaxa.sh                                                                      #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.                        #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,7 +141,7 @@ dropTaxa () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropTaxa, v1.0.0 April 2020  (part of PIrANHA v0.3a2)          "
+echo "INFO      | $(date) | dropTaxa, v1.1.0 April 2020  (part of PIrANHA v0.3a2)          "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -157,6 +157,9 @@ echoCDWorkingDir
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Read in and process taxon list, and remove unwanted taxa. "
@@ -521,6 +524,10 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 fi
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -542,6 +549,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -v   verbose (def: 0, off; 1, on) specify verbose filename output to screen (stdout)
   -h   help text (also: --help) show this help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates removal of unwanted tip taxa (sequences) from one or more multiple 
@@ -591,7 +599,6 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.
  Copyright (c) 2020 Justin C. Bagley. All rights reserved.
 "
-
 
 if [[ -z "$*" ]]; then
 	echo "$USAGE"
@@ -672,6 +679,18 @@ fi
 	else 
 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
 
 # ############ PARSE THE OPTIONS
