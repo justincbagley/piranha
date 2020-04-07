@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2VCF.sh                                                                     #
-  VERSION="v1.1.1"                                                                       #
+  VERSION="v1.2.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.                       #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,7 +141,7 @@ FASTA2VCF () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2VCF, v1.1.1 April 2020                                   "
+echo "INFO      | $(date) | FASTA2VCF, v1.2.0 April 2020                                   "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -162,6 +162,10 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 ############ OPTIONAL OUTPUT TO FILE
 if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
@@ -337,6 +341,10 @@ if [[ -s "$MY_OUTPUT_FILENAME".vcf ]] && [[ ! -s "$MY_OUTPUT_FILENAME".subsample
 fi
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -389,6 +397,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
        alignment file with extension '.phy'
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  OVERVIEW
  THIS SCRIPT automates converting a single multiple sequence alignment file in FASTA format
@@ -514,7 +523,17 @@ fi
 		MY_OUTPUT_PHYLIP_SWITCH="$MY_ARG" ;
 	fi
 #
-
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
 
 
 # ############ PARSE THE OPTIONS
