@@ -1,0 +1,539 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: FASTAsummary.sh                                                                  #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
+# Last update: April 3, 2020                                                             #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL FUNCTION THAT SUMMARIZES THE CHARACTERISTICS OF ONE OR MULTIPLE FASTA DNA        #
+# SEQUENCE ALIGNMENT FILES AND SAVES RESULTS TO FILE                                     #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+FASTAsummary () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | FASTAsummary, v1.0.0 April 2020  (part of PIrANHA v0.3a2)      "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting FASTAsummary analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
+############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
+###### Set working directory and filetypes as different variables:
+echo "INFO      | $(date) |          Setting user-specified path to: "
+echo "INFO      | $(date) |          $PWD "	
+if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
+	echo "INFO      | $(date) |          Input file: $INPUT_FILE "
+elif [[ "$INPUT_FASTA_FILE" = "NULL" ]]; then
+	echo "INFO      | $(date) |          Input file: Multiple FASTA alignments in current directory "
+fi
+echo "INFO      | $(date) |          Examining current directory, setting variables... "
+
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+
+
+echo "INFO      | $(date) | Step #2: Summarize characteristics of input FASTA file(s). "
+############ STEP #2: SUMMARIZE INPUT FASTA FILE(S)
+
+### RUN ON SINGLE INPUT FASTA FILE
+###
+if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
+	#### Get FASTA characteristics:
+	MY_FASTA_EXTENSION=".${INPUT_FASTA_FILE##*.}";
+	MY_FASTA_BASENAME="$(echo "${INPUT_FASTA_FILE%%.*}")";
+#
+	MY_NCHAR="$(head -n2 "$INPUT_FASTA_FILE" | tail -n1 | perl -pe $'s/\ //g; s/\n//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+	echo "$MY_NCHAR" >> ./FASTA_nChar.list.txt ;
+#
+	echo "$INPUT_FASTA_FILE" >> ./FASTA_order.list.tmp ;
+#
+	MY_NTAX="$(grep -h '^>' "$INPUT_FASTA_FILE" | wc -l | sed 's/\ //g')";
+	echo "$MY_NTAX" >> ./FASTA_nTax.list.txt ;
+#
+	echo "INFO      | $(date) |          Investigating character content of the alignment..."
+	MY_TOT_CHAR_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+	MY_CHAR_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/\-//g' | sed 's/\?//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+	MY_GAP_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[A-Za-z\?]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+	MY_A_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[B-Zb-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+	MY_C_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[ABD-Zabd-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+	MY_T_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[A-SU-Za-su-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+	MY_G_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[A-FH-Za-fh-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+#
+	echo "INFO      | $(date) |          Calculating character proportions (prop. character, prop. gap, prop. A, ...)..."
+	MY_PROP_CHAR="$(calc $MY_CHAR_COUNT / $MY_TOT_CHAR_COUNT)";
+	echo "$MY_PROP_CHAR" >> ./propChar.list.tmp ;
+	MY_PROP_GAP="$(calc $MY_GAP_COUNT / $MY_TOT_CHAR_COUNT)";
+	echo "$MY_PROP_GAP" >> ./propGap.list.tmp ;
+	MY_PROP_A="$(calc $MY_A_COUNT / $MY_TOT_CHAR_COUNT)";
+	echo "$MY_PROP_A" >> ./propA.list.tmp ;
+	MY_PROP_C="$(calc $MY_C_COUNT / $MY_TOT_CHAR_COUNT)";
+	echo "$MY_PROP_C" >> ./propC.list.tmp ;
+	MY_PROP_T="$(calc $MY_T_COUNT / $MY_TOT_CHAR_COUNT)";
+	echo "$MY_PROP_T" >> ./propT.list.tmp ;
+	MY_PROP_G="$(calc $MY_G_COUNT / $MY_TOT_CHAR_COUNT)";
+	echo "$MY_PROP_G" >> ./propG.list.tmp ;
+#
+	echo "INFO      | $(date) |          Calculating character percentages (% character, % gap, % A, ...)..."
+	MY_PERCENT_CHAR="$(calc $MY_PROP_CHAR*100)";
+	echo "$MY_PERCENT_CHAR" >> ./percChar.list.tmp ;
+	MY_PERCENT_GAP="$(calc $MY_PROP_GAP*100)";
+	echo "$MY_PERCENT_GAP" >> ./percGap.list.tmp ;
+	MY_PERCENT_A="$(calc $MY_PROP_A*100)";
+	echo "$MY_PERCENT_A" >> ./percA.list.tmp ;
+	MY_PERCENT_C="$(calc $MY_PROP_C*100)";
+	echo "$MY_PERCENT_C" >> ./percC.list.tmp ;
+	MY_PERCENT_T="$(calc $MY_PROP_T*100)";
+	echo "$MY_PERCENT_T" >> ./percT.list.tmp ;
+	MY_PERCENT_G="$(calc $MY_PROP_G*100)";
+	echo "$MY_PERCENT_G" >> ./percG.list.tmp ;
+#	
+
+
+	echo "INFO      | $(date) |          Calculating number of parsimony-informative sites (PIS) for single input FASTA using piranha's calcAlignmentPIS function..."
+	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR
+	### THE INPUT FASTA (TESTING WITH SINGLE INPUT FASTA)
+
+	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
+	
+echo "#!/bin/sh
+
+$MY_PIRANHA_PATH -f calcAlignmentPIS --args='-i $INPUT_FASTA_FILE -k 0'
+
+" > ./piranha_calcAlignmentPIS.sh
+
+	chmod u+x ./piranha_calcAlignmentPIS.sh ;
+
+	. ./piranha_calcAlignmentPIS.sh  >/dev/null 2>&1 ;
+
+	MY_PIS_VAL="$(head -n2 pis_results_table.txt | tail -n1 | perl -pe  $'s/\t.*//g' | sed 's/\ //g')";
+	echo "$MY_PIS_VAL" > ./FASTA_PIS.list.txt ;
+
+	### POST-PROCESSING RESULTS
+	echo "File	nTax	nChar	PIS	propChar	propGap	propA	propC	propT	propG" > ./header.tmp ;
+	paste ./FASTA_order.list.tmp ./FASTA_nTax.list.txt ./FASTA_nChar.list.txt ./FASTA_PIS.list.txt ./propChar.list.tmp ./propGap.list.tmp ./propA.list.tmp ./propC.list.tmp ./propT.list.tmp ./propG.list.tmp > ./FASTA_table.tmp ;
+	cat ./header.tmp ./FASTA_table.tmp > ./FASTA_Summary.txt
+fi
+###
+
+### RUN ON MULTIPLE FASTA FILES
+###
+if [[ "$INPUT_FASTA_FILE" = "NULL" ]] && [[ "$MULTIPLE_FASTA_SWITCH" = "1" ]]; then
+count=1
+(
+	for i in ./*.{fasta,fas,FASTA,FAS} ; do
+		if [[ "$i" != "./*.fasta" ]] && [[ "$i" != "./*.fas" ]] && [[ "$i" != "./*.FASTA" ]] && [[ "$i" != "./*.FAS" ]]; then
+		#### Get FASTA characteristics:
+		MY_FASTA_EXTENSION=".${i##*.}";
+		MY_FASTA_BASENAME="$(echo "${i%%.*}")";
+#
+		MY_NCHAR="$(head -n2 "$i" | tail -n1 | perl -pe $'s/\ //g; s/\n//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		echo "$MY_NCHAR" >> ./FASTA_nChar.list.txt ;
+#
+		echo "$i" >> ./FASTA_order.list.tmp ;
+#
+		MY_NTAX="$(grep -h '^>' "$i" | wc -l | sed 's/\ //g')";
+		echo "$MY_NTAX" >> ./FASTA_nTax.list.txt ;
+#
+		echo "INFO      | $(date) |          Investigating character content of the alignment..."
+		MY_TOT_CHAR_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		MY_CHAR_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/\-//g' | sed 's/\?//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		MY_GAP_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[A-Za-z\?]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		MY_A_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[B-Zb-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		MY_C_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[ABD-Zabd-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		MY_T_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[A-SU-Za-su-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		MY_G_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[A-FH-Za-fh-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+#
+		echo "INFO      | $(date) |          Calculating character proportions (prop. character, prop. gap, prop. A, ...)..."
+		MY_PROP_CHAR="$(calc $MY_CHAR_COUNT / $MY_TOT_CHAR_COUNT)";
+		echo "$MY_PROP_CHAR" >> ./propChar.list.tmp ;
+		MY_PROP_GAP="$(calc $MY_GAP_COUNT / $MY_TOT_CHAR_COUNT)";
+		echo "$MY_PROP_GAP" >> ./propGap.list.tmp ;
+		MY_PROP_A="$(calc $MY_A_COUNT / $MY_TOT_CHAR_COUNT)";
+		echo "$MY_PROP_A" >> ./propA.list.tmp ;
+		MY_PROP_C="$(calc $MY_C_COUNT / $MY_TOT_CHAR_COUNT)";
+		echo "$MY_PROP_C" >> ./propC.list.tmp ;
+		MY_PROP_T="$(calc $MY_T_COUNT / $MY_TOT_CHAR_COUNT)";
+		echo "$MY_PROP_T" >> ./propT.list.tmp ;
+		MY_PROP_G="$(calc $MY_G_COUNT / $MY_TOT_CHAR_COUNT)";
+		echo "$MY_PROP_G" >> ./propG.list.tmp ;
+#
+		echo "INFO      | $(date) |          Calculating character percentages (% character, % gap, % A, ...)..."
+		MY_PERCENT_CHAR="$(calc $MY_PROP_CHAR*100)";
+		echo "$MY_PERCENT_CHAR" >> ./percChar.list.tmp ;
+		MY_PERCENT_GAP="$(calc $MY_PROP_GAP*100)";
+		echo "$MY_PERCENT_GAP" >> ./percGap.list.tmp ;
+		MY_PERCENT_A="$(calc $MY_PROP_A*100)";
+		echo "$MY_PERCENT_A" >> ./percA.list.tmp ;
+		MY_PERCENT_C="$(calc $MY_PROP_C*100)";
+		echo "$MY_PERCENT_C" >> ./percC.list.tmp ;
+		MY_PERCENT_T="$(calc $MY_PROP_T*100)";
+		echo "$MY_PERCENT_T" >> ./percT.list.tmp ;
+		MY_PERCENT_G="$(calc $MY_PROP_G*100)";
+		echo "$MY_PERCENT_G" >> ./percG.list.tmp ;
+#	
+		echo "INFO      | $(date) |          Done summarizing FASTA file $((count++)): ${i} ";
+		fi
+	done
+)
+#
+
+
+	echo "INFO      | $(date) |          Calculating number of parsimony-informative sites (PIS) for multiple FASTAs using piranha calcAlignmentPIS function..."
+	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR
+	### MULTIPLE FASTA FILES IN CURRENT WORKING DIRECTORY
+
+	#echo "A"
+	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
+	echo "INFO      | $(date) |          piranha path: $MY_PIRANHA_PATH"
+
+#echo "B"
+echo "#!/bin/sh
+
+$MY_PIRANHA_PATH -f calcAlignmentPIS --args='-k 0'
+
+" > ./piranha_calcAlignmentPIS.sh
+
+	#echo "C"
+	chmod u+x ./piranha_calcAlignmentPIS.sh ;
+
+	#echo "D"
+	. ./piranha_calcAlignmentPIS.sh  >/dev/null 2>&1 ;
+	
+	#echo "E"
+	#cp ./pis_results_table.txt ./FASTA_PIS.list.txt ;
+	cut -f 1 ./pis_results_table.txt | tail -n+2 | perl -pe $'s/\t//g; s/\ //g' > ./FASTA_PIS.list.txt ;
+	#echo "F"
+
+	### POST-PROCESSING RESULTS
+	#echo "G"
+	echo "File	nTax	nChar	PIS	propChar	propGap	propA	propC	propT	propG" > ./header.tmp ;
+	MY_N_FASTA_FILES="$(wc -l ./FASTA_PIS.list.txt | perl -pe $'s/\ \.\/.*//g; s/\ //g')";
+	#echo "H"
+	cp ./FASTA_order.list.tmp ./FASTA_order.list2.tmp
+	#echo "I"
+	head -n"$MY_N_FASTA_FILES" ./FASTA_order.list2.tmp > ./FASTA_order.list.tmp
+#
+	#echo "J"
+	paste ./FASTA_order.list.tmp ./FASTA_nTax.list.txt ./FASTA_nChar.list.txt ./FASTA_PIS.list.txt ./propChar.list.tmp ./propGap.list.tmp ./propA.list.tmp ./propC.list.tmp ./propT.list.tmp ./propG.list.tmp > ./FASTA_table.tmp ;
+	#echo "K"
+	cat ./header.tmp ./FASTA_table.tmp > ./FASTA_Summary.txt
+ 	#echo "L"
+fi
+###
+
+
+echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
+###### Remove temporary or unnecessary files created above:
+	echo "INFO      | $(date) |          Removing temporary files... "
+	if [[ -s ./piranha_calcAlignmentPIS.sh ]]; then rm ./piranha_calcAlignmentPIS.sh ; fi
+	if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi
+	if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi
+	if [[ -s ./header.tmp ]]; then rm ./header.tmp ; fi
+	if [[ -s ./pis.tmp ]]; then rm ./pis.tmp ; fi
+	if [[ -s ./pis_results_table_headless_revsort.txt ]]; then rm ./pis_results_table_headless_revsort.txt ; fi 
+	if [[ -s ./pis_results_table_headless.txt ]]; then rm ./pis_results_table_headless.txt ; fi 
+	if [[ -s ./pis_output_table.txt ]]; then rm ./pis_output_table.txt ; fi 
+	if [[ -s ./input_file_order_filenames.txt ]]; then rm ./input_file_order_filenames.txt ; fi 
+	if [[ -s ./input_file_order.txt ]]; then rm ./input_file_order.txt ; fi
+#
+	if [[ ! -z "$(ls ./*.tmp)" ]]; then
+		rm ./*.tmp ;
+	fi
+#
+	if [[ -s ./pis_results_table.txt ]] && [[ "$INPUT_FASTA_FILE" = "NULL" ]]; then 
+		mv ./pis_results_table.txt ./FASTA_PIS_results_table.txt ;
+	elif [[ -s ./pis_results_table.txt ]] && [[ "$INPUT_FASTA_FILE" != "NULL" ]]; then 
+		rm ./pis_results_table.txt ;
+	fi
+#
+	if [[ -s ./pis_results_table_revsort.txt ]] && [[ "$INPUT_FASTA_FILE" = "NULL" ]]; then 
+		mv ./pis_results_table_revsort.txt ./FASTA_PIS_results_table_revsort.txt ; 
+	elif [[ -s ./pis_results_table_revsort.txt ]] && [[ "$INPUT_FASTA_FILE" != "NULL" ]]; then 
+		rm ./pis_results_table_revsort.txt ; 
+	fi
+
+echo "----------------------------------------------------------------------------------------------------------"
+if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
+	echo "input FASTA file: $INPUT_FASTA_FILE "
+	echo "output files:     ./FASTA_nTax.list.txt "
+	echo "                  ./FASTA_nChar.list.txt "
+	echo "                  ./FASTA_PIS.list.txt "
+	echo "                  ./FASTA_Summary.txt "
+fi
+if [[ "$INPUT_FASTA_FILE" = "NULL" ]] && [[ "$MULTIPLE_FASTA_SWITCH" = "1" ]]; then
+	echo "input FASTA files: $MY_N_FASTA_FILES FASTA alignments from current directory"
+	echo "output files:     ./FASTA_nTax.list.txt "
+	echo "                  ./FASTA_nChar.list.txt "
+	echo "                  ./FASTA_PIS.list.txt "
+	echo "                  ./FASTA_PIS_results_table.txt "
+	echo "                  ./FASTA_PIS_results_table_revsort.txt "
+	echo "                  ./FASTA_Summary.txt "
+fi
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputFASTA (def: NULL) input FASTA filename
+  -m   multiFASTA (def: 0, turned off; 1, on) whether to summarize multiple FASTA files 
+       in current working directory
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT reads one (-i flag) or multiple (-m flag) multi-individual FASTA DNA sequence 
+ alignment files and produces a summary of their main characteristics, including number of
+ taxa (tips/sequence labels), number of characters (bp), number of parsimony-informative 
+ sites (PIS), proportion/percentage nucleotide characters, proportion/percentage gap 
+ characters, and proportions/percentages of A, C, T, and G bases in the alignment(s), all 
+ of which are saved to file. Count data are saved to separate lists, and all statistics are 
+ saved to a single summary table. Specifically, output for an analysis of a single input
+ FASTA file is saved to the following files:
+
+ - No. taxa:                               FASTA_nTax.list.txt
+ - No. characters:                         FASTA_nChar.list.txt
+ - No. parsimony-informative sites (PIS):  FASTA_PIS.list.txt
+ - FASTA summary:                          FASTA_Summary.txt     (table)
+
+ Several additional files are output when run on multiple FASTAs.
+	This program assumes that sequence names include alphanumeric, hyphen, and underscore 
+ characters but no spaces (or else there could be problems). A variety of FASTA alignment 
+ file extensions are accommodated, including '.fasta' or '.fas' and their all-caps versions.
+ The program runs on UNIX-like and Linux systems using commonly distributed utility software,
+ with usage obtained by running the script with the -h flag. It has been tested on macOS 
+ High Sierra (v10.13+) and Mojave, as well as Centos 5/6/7 Linux, but should work on many 
+ other versions of these operating systems. There are no other dependencies.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f FASTAsummary --args='-h'                 Obtain FASTAsummary help text
+    piranha -f FASTAsummary --args='-i <inputFASTA>'    Summarize single FASTA file
+    piranha -f FASTAsummary --args='-m 1'               Summarize multiple FASTA files
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_FASTA_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_FASTA_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MULTIPLE_FASTA_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MULTIPLE_FASTA_SWITCH="$MY_ARG" ;
+	fi
+#
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+FASTAsummary
+
+# Exit cleanly
+safeExit
