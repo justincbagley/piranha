@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEASTReset.sh                                                                    #
-  VERSION="v1.1.2"                                                                       #
+  VERSION="v1.2.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ BEASTReset () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTReset, v1.1.2 April 2020                                  "
+echo "INFO      | $(date) | BEASTReset, v1.2.0 April 2020                                  "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -151,6 +151,9 @@ echoCDWorkingDir
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 echo "INFO      | $(date) | Step #2: Run BEASTReset with slightly different options, depending on whether machine is mac or Linux. "
 
@@ -226,6 +229,10 @@ fi
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -244,6 +251,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
        supercomputer
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THI SCRIPT expects to start from a set of BEAST run sub-folders in the current working 
@@ -358,6 +366,17 @@ fi
 		MY_SC_MANAGEMENT_SYS="$MY_ARG" ;
 	fi
 #
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
 
 # ############ PARSE THE OPTIONS
 # while getopts 'i:s:m:' opt ; do

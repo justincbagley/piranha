@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEAST_PSPrepper.sh                                                               #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ BEAST_PSPrepper () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEAST_PSPrepper, v1.0.1 April 2020                             "
+echo "INFO      | $(date) | BEAST_PSPrepper, v1.1.0 April 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -150,6 +150,9 @@ echoCDWorkingDir
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 
 ## PRE-EMPTIVELY FIX issues with echoing shell text containing dollar signs and minus signs
@@ -296,6 +299,10 @@ fi
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -307,17 +314,18 @@ echo ""
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputXMLFile (def: NULL) input XML file for BEAST
-  -l   chainLength (def: 100000) length of MCMC chin for each path sampling step
-  -a   alpha (shape parameter of the Beta distribution; default=0.3)
-  -r   rootdir (def: /tmp) absolute path to root directory where files for each step will be kept
-  -b   burnInPercentage (def: 50, same as in BEAST) percent of samples discarded as burnin
-  -p   preBurnin (def: 100000) number of samples discarded from first step of analysis
-  -d   deleteOldLogs (def: true) logical variable specifying whether or not to delete previous 
-       logs that may be present in the rootdir
-  -n   nrOfSteps (def: 10) total number of path sampling steps for analysis
-  -h   help text (also: -help) echo this help text and exit
-  -V   version (also: --version) echo version of this script and exit
+  -i       inputXMLFile (def: NULL) input XML file for BEAST
+  -l       chainLength (def: 100000) length of MCMC chin for each path sampling step
+  -a       alpha (shape parameter of the Beta distribution; default=0.3)
+  -r       rootdir (def: /tmp) absolute path to root directory where files for each step will be kept
+  -b       burnInPercentage (def: 50, same as in BEAST) percent of samples discarded as burnin
+  -p       preBurnin (def: 100000) number of samples discarded from first step of analysis
+  -d       deleteOldLogs (def: true) logical variable specifying whether or not to delete previous 
+           logs that may be present in the rootdir
+  -n       nrOfSteps (def: 10) total number of path sampling steps for analysis
+  -h       help text (also: -help) echo this help text and exit
+  -V       version (also: --version) echo version of this script and exit
+  --debug  debug (def: off) run function in Bash debug mode
 
  OVERVIEW
  This script works by (Step #1) setting up user options/input, and then (Step #2) using a 
@@ -461,6 +469,11 @@ fi
 		NUM_PS_STEPS="$MY_ARG" ;
 	fi
 #
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
 
 # ############ PARSE THE OPTIONS
 # while getopts 'i:l:a:r:b:p:d:n:' opt ; do

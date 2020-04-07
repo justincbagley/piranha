@@ -377,7 +377,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
   -h   help text (also: --help) echo this help text and exit
   -H   help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
-  -d   debug (also: --debug) run function in Bash debug mode
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates splitting out each sequence (tip taxon) in a multi-individual FASTA 
@@ -424,7 +424,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
   -h   help text (also: --help) echo this help text and exit
   -H   help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
-  -d   debug (also: --debug) run function in Bash debug mode
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates splitting out each sequence (tip taxon) in a multi-individual FASTA 
