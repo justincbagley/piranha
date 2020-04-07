@@ -174,10 +174,10 @@ read -p "Please enter the frequency (n) of nth lines that you would like to keep
    cat ./header.txt ./thinned_trees.txt ./end.txt > ./nth_line_trees.t ;
 
 ### CLEANUP.
-   rm ./header.txt ;
-   rm ./trees.txt ;
-   rm ./thinned_trees.txt ;
-   rm ./end.txt ;
+	if [[ -s ./header.txt ]]; then rm ./header.txt ; fi
+	if [[ -s ./trees.txt ]]; then rm ./trees.txt ; fi
+	if [[ -s ./thinned_trees.txt ]]; then rm ./thinned_trees.txt ; fi
+	if [[ -s ./end.txt ]]; then rm ./end.txt ; fi
 
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -217,6 +217,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.
  Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"

@@ -5,12 +5,12 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        #
 # |                                                                                      #
 #                                                                                        #
-# File: BEAST_logThinner.sh                                                               #
-  VERSION="v1.0.0"                                                                       #
+# File: BEAST_logThinner.sh                                                              #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.                       #
-# Last update: December 12, 2019                                                         #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -134,8 +134,8 @@ BEAST_logThinner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEAST_logThinner, v1.0.0 December 2019  (part of PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | BEAST_logThinner, v1.0.1 April 2020                            "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -176,10 +176,10 @@ read -p "READ      | $(date) | Please enter the frequency (n) of nth lines that 
 	cat ./header.txt ./thinned_logged.txt ./end.txt > ./"$MY_LOGFILE"_nth_line.log.txt ;
 
 ### CLEANUP.
-	rm ./header.txt ;
-	rm ./logged.txt ;
-	rm ./thinned_logged.txt ;
-	rm ./end.txt ;
+	if [[ -s ./header.txt ]]; then rm ./header.txt ; fi
+	if [[ -s ./logged.txt ]]; then rm ./logged.txt ; fi
+	if [[ -s ./thinned_logged.txt ]]; then rm ./thinned_logged.txt ; fi
+	if [[ -s ./end.txt ]]; then rm ./end.txt ; fi
 
 ###### THINNED LOG FILE POST-PROCESSING
 
@@ -238,8 +238,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	PLoS Computational Biology, 10, e1003537.
 
  Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"

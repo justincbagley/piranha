@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.6.4"                                                                       #
+  VERSION="v1.6.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: March 30, 2020                                                            #
+# Last update: April 6, 2020                                                             #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.4 March 2020  (part of PIrANHA v0.3a2)      "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.5 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -518,6 +518,11 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.
  Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"

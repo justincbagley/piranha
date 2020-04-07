@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeSeqs.sh                                                                  #
-  VERSION="v2.0.1"                                                                       #
+  VERSION="v2.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -142,8 +142,8 @@ completeSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeSeqs, v2.0.1 October 2019  (in PIrANHA v0.3a2)             "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | completeSeqs, v2.0.2 April 2020            "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -292,8 +292,8 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	rm ./*.tmp ;
-	rm ./args.txt ;	## Remove arguments file generated when parsing the options.
+	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 
 echo "----------------------------------------------------------------------------------------------------------"
@@ -370,8 +370,13 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Sun, February 24, 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

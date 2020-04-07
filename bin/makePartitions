@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: makePartitions.sh                                                                #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: March 15, 2019                                                            #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -145,8 +145,8 @@ makePartitions () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | makePartitions, v1.2.1 March 2019  (part of PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | makePartitions, v1.2.2 April 2020                              "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -245,7 +245,8 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	rm ./*.tmp ;
+	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -312,8 +313,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

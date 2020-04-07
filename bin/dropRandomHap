@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.4.1"                                                                       #
+  VERSION="v1.4.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -142,8 +142,8 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.4.1 October 2019  (in PIrANHA v0.3a2)   "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | dropRandomHap, v1.4.2 April 2020                               "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -193,7 +193,7 @@ echo "INFO      | $(date) | Step #3: Prep taxon names file to contain only basen
 	# Get unique basenames only and replace file:
 	sort -u "$USER_SPEC_TAXNAMES_FILE" > "$USER_SPEC_TAXNAMES_FILE".tmp ;
 	mv "$USER_SPEC_TAXNAMES_FILE".tmp "$USER_SPEC_TAXNAMES_FILE" ;
-	rm ./*.tmp ;
+	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 
 	
 ## Now that you have only unique tip taxon basenames, randomize them by making a shuffle 
@@ -218,13 +218,13 @@ text_shuffle () {
 	MY_NUM_LINES="$( wc -l $1 | perl -pe $'s/\t//g; s/\ //g' | sed 's/\(^[0-9]*\).*/\1/g' )"
 (	for i in $(seq 1 "$MY_NUM_LINES"); do echo "$i" >> seq.tmp; done  )
 	perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < seq.tmp > seq.rand.tmp
-	rm ./seq.tmp ;
+	if [[ -s ./seq.tmp ]]; then rm ./seq.tmp ; fi
 (	
 	while read line; do
 		sed -n ''"$line"'p' "$1" >> ./"$MY_TAXNAMES_FILE_BASENAME"_shuffle.txt ;
 	done < seq.rand.tmp
 )
-	rm ./seq.rand.tmp ;
+	if [[ -s ./seq.rand.tmp ]]; then rm ./seq.rand.tmp ; fi
 	#rm "$1"
 }
 
@@ -368,6 +368,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
     piranha -f dropRandomHap --args='-h'
     piranha -f dropRandomHap --args='-t <taxonNamesFile>'
+    piranha -f dropRandomHap --args='-t <taxonNamesFile> -o output.txt'
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -381,8 +382,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	loci. Bioinformatics, 32(5), 786-788.
 
  Created by Justin Bagley on Sun, February 24, 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

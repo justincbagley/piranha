@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: calcAlignmentPIS.sh                                                              #
-  VERSION="v1.4.1"                                                                       #
+  VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | calcAlignmentPIS, v1.4.1 October 2019  (in PIrANHA v0.3a2)  "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | calcAlignmentPIS, v1.5.1 April 2020                            "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -154,25 +154,47 @@ checkMachineType
 echo "INFO      | $(date) | Step #2: Create custom Rscript. "
 ############ II. CREATE CUSTOM RSCRIPT FOR ESTIMATING PARSIMONY INFORMATIVE SITES.
 echo "INFO      | $(date) |          Building custom calcAlignmentPIS R script for calculating parsimony-informative sites (PIS) from FASTA files... "
+if [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
+	echo "WARNING!  | $(date) |          NOTE: <keepFiles> switch turned off, so R script and R output files will be removed at the end of this run."
+fi
+if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi
+if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi
+if [[ -s ./calcAlignmentPIS.r ]]; then rm ./calcAlignmentPIS.r ; fi
 
 ## NOTE: This Rscript is essentially an automation wrapper based on existing functions for
 ## reading FASTA alignments and calculating PIS in the R package phyloch, which is only
 ## available from author Christoph Hiebl's website at URL: http://www.christophheibl.de/Rpackages.html.
 ## The package phyloch MUST be installed before running this script.
 
-echo "
-#!/usr/bin/env Rscript
-
-################################### calcAlignmentPIS.R #####################################
+##### ORIGINAL NOTES IN THE R SCRIPT:
 ## R code for looping through set of FASTA files in dir and calculating parsimony-informative
 ## sites for each alignment, then saving and outputting to file. Written for Anoura UCE
 ## data analysis, March 6, 2019
-
+##
 ## Be sure to do the following OUTSIDE of R before running R on your machine (assuming
 ## you have set up the prepR function in your ~/.bashrc (Linux) or ~/.bash_profile (Mac)
 ## files on machine).
 ## $ prepR
+#####
 
+############ 
+############ MULTIPLE FASTAS (DEFAULT, OR SET WITH -m FLAG)
+############ 
+if [[ "$INPUT_FASTA_FILE" = "NULL" ]] && [[ "$MULTIPLE_FASTA_SWITCH" = "1" ]]; then
+
+(	
+	for i in ./*.{fasta,fas,FASTA,FAS} ; do
+		if [[ "$i" != "./*.fasta" ]] && [[ "$i" != "./*.fas" ]] && [[ "$i" != "./*.FASTA" ]] && [[ "$i" != "./*.FAS" ]]; then
+		echo "$i" >> ./FASTA_order.list.tmp ;
+		fi
+	done
+)
+MY_FASTA_EXTENSION="$(head -n1 ./FASTA_order.list.tmp | sed 's/\.\///g; s/.*\./\./g')";
+
+echo "
+#!/usr/bin/env Rscript
+
+################################### calcAlignmentPIS.R #####################################
 ############ I. SETUP
 ##--Load needed packages, R code, or other prelim stuff. Install packages if not present.
 packages <- c('phyloch')
@@ -184,8 +206,7 @@ library(phyloch)
 getwd()
 
 ############ II. CALCULATE PARSIMONY-INFORMATIVE SITES (PIS) FOR ALL FASTA FILES.
-#files <- list.files(path='/Users/justinbagley/Documents/2\ -\ by\ Project/Anoura_Phylo/FINAL_DATA/alldata/STACEY/FASTA_subsets', pattern='*.fas', full.names=TRUE, recursive=FALSE)
-files <- list.files(path=getwd(), pattern='*.fas', full.names=TRUE, recursive=FALSE)
+files <- list.files(path=getwd(), pattern='*$MY_FASTA_EXTENSION', full.names=TRUE, recursive=FALSE)
 iterations <- length(files)
 variables <- 1
 output <- matrix(ncol=variables, nrow=iterations)
@@ -208,12 +229,73 @@ output
 write.table(files, 'input_file_order.txt', sep='\t')
 
 ######################################### END ############################################
-" > calcAlignmentPIS.r
+" > calcAlignmentPIS.R
+
+fi
+###
+
+############ 
+############ SINGLE INPUT FASTA SPECIFIED AS $INPUT_FASTA_FILE WITH -i FLAG
+############ 
+###
+if [[ "$INPUT_FASTA_FILE" != "NULL" ]]; then
+# Clean input FASTA file env variable, removing any spaces that might be present (which 
+# would cause the R script to fail):
+INPUT_FASTA_FILE="$(echo "$INPUT_FASTA_FILE" | sed 's/\ //g' | sed 's/\.fasta\-k0/\.fasta/g' | sed 's/\.fas\-k0/\.fas/g')";
+echo "
+#!/usr/bin/env Rscript
+
+################################### calcAlignmentPIS.R #####################################
+############ I. SETUP
+##--Load needed packages, R code, or other prelim stuff. Install packages if not present.
+packages <- c('phyloch')
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+	install.packages(setdiff(packages, rownames(installed.packages())))
+}
+library(phyloch)
+#setwd('$MY_PATH')	# With my current R setup, no need to set wd because this is done automatically at start up.
+getwd()
+
+############ II. CALCULATE PARSIMONY-INFORMATIVE SITES (PIS) FOR ALL FASTA FILES.
+files <- list.files(path=getwd(), pattern='$INPUT_FASTA_FILE', full.names=TRUE, recursive=FALSE)
+iterations <- length(files)
+variables <- 1
+output <- matrix(ncol=variables, nrow=iterations)
+
+## Use loop through FASTA files in files (above) to calculate PIS for each file and save
+## to output matrix:
+for(i in 1:iterations){
+	# Read FASTA file
+	fas <- read.fas(files[i])
+	# Apply function to estimate parsimony-informative sites (PIS)
+	pis_out <- pis(fas, abs = TRUE, use.ambiguities = FALSE)
+	# Add PIS result to data matrix
+	output[i,] <- pis_out
+}
+
+write.table(output, 'pis_output_table.txt', sep='\t', quote=FALSE, row.names=FALSE, col.names=TRUE)
+
+output
+
+write.table(files, 'input_file_order.txt', sep='\t')
+
+######################################### END ############################################
+" > calcAlignmentPIS.R
+
+fi
+###
 
 
 echo "INFO      | $(date) | Step #3: Run the Rscript (which also saves output and results to file). "
 ############ III. RUN RSCRIPT.
-	R CMD BATCH ./calcAlignmentPIS.R ;
+	prepR () {
+		export TMPDIR=~/tmp ; ## set temp file directory to be within $HOME
+		R_LOCATION="$(which R | sed 's/\ //g')";
+		alias R="$R_LOCATION";
+}
+	prepR
+
+	R CMD BATCH calcAlignmentPIS.R ;
 
 
 echo "INFO      | $(date) | Step #4: Conduct post-processing of R output. "
@@ -230,7 +312,10 @@ echo "INFO      | $(date) |          Editing PIS output table... "
 	fi
 
 	echo pis file | perl -pe $'s/\ /\t/g' > header.tmp ;
+
 	paste pis_output_table.txt input_file_order_filenames.txt > pis_results_table_headless.txt ;
+	cat header.tmp pis_results_table_headless.txt > pis_results_table.txt ;
+
 	sort -n -r pis_results_table_headless.txt > pis_results_table_headless_revsort.txt ;
 	cat header.tmp pis_results_table_headless_revsort.txt > pis_results_table_revsort.txt ;
 
@@ -273,22 +358,44 @@ fi
 echo "INFO      | $(date) | Step #5: Clean up workspace. "
 echo "INFO      | $(date) |          Cleaning up workspace by removing temporary files generated during run... "
 ############ V. CLEAN UP WORKSPACE BY REMOVING TEMPORARY FILES.
-	rm ./*.tmp ;
-	rm ./pis_results_table_headless_revsort.txt ./pis_results_table_headless.txt ./pis_output_table.txt ./input_file_order_filenames.txt ./input_file_order.txt ;
+	if [[ ! -s ./piranha_calcAlignmentPIS.sh ]]; then 
+		if [[ -s ./header.tmp ]]; then rm ./header.tmp ; fi
+		if [[ -s ./pis.tmp ]]; then rm ./pis.tmp ; fi
+		rm ./pis_results_table_headless_revsort.txt ./pis_results_table_headless.txt ./pis_output_table.txt ./input_file_order_filenames.txt ./input_file_order.txt ;
+	else
+		echo "INFO      | $(date) |          "
+	fi
 
+	if [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
+		if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi
+		if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi
+	fi
+	
 #echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
 #echo "INFO      | $(date) | Done. Bye. "
 echo "----------------------------------------------------------------------------------------------------------"
-if [[ "$MY_PIS_THRESHOLD_SWITCH" = "0" ]]; then
-	echo "output file(s): ./pis_results_table_revsort.txt"
-	echo "                ./calcAlignmentPIS.r"
+if [[ "$MY_PIS_THRESHOLD_SWITCH" = "0" ]] && [[ "$KEEP_R_FILES_SWITCH" = "1" ]]; then
+	echo "output file(s): ./pis_results_table.txt"
+	echo "                ./pis_results_table_revsort.txt"
+	echo "                ./calcAlignmentPIS.R"
 fi
-if [[ "$MY_PIS_THRESHOLD_SWITCH" != "0" ]]; then
-	echo "output file(s)/folder(s): ./pis_results_table_revsort.txt"
+if [[ "$MY_PIS_THRESHOLD_SWITCH" != "0" ]] && [[ "$KEEP_R_FILES_SWITCH" = "1" ]]; then
+	echo "output file(s)/folder(s): ./pis_results_table.txt"
+	echo "                          ./pis_results_table_revsort.txt"
 	echo "                          ./pis_results_table_revsort_top${MY_N_ALIGN_CUTOFF}_filenames.txt"
 	echo "                          ./pis_threshold_alignments/"
 	echo "                          ./calcAlignmentPIS.Rout"
-	echo "                          ./calcAlignmentPIS.r"
+	echo "                          ./calcAlignmentPIS.R"
+fi
+if [[ "$MY_PIS_THRESHOLD_SWITCH" = "0" ]] && [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
+	echo "output file(s): ./pis_results_table.txt"
+	echo "                ./pis_results_table_revsort.txt"
+fi
+if [[ "$MY_PIS_THRESHOLD_SWITCH" != "0" ]] && [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
+	echo "output file(s)/folder(s): ./pis_results_table.txt"
+	echo "                          ./pis_results_table_revsort.txt"
+	echo "                          ./pis_results_table_revsort_top${MY_N_ALIGN_CUTOFF}_filenames.txt"
+	echo "                          ./pis_threshold_alignments/"
 fi
 echo ""
 
@@ -303,34 +410,54 @@ echo ""
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 # USER_SPEC_PATH=.
+INPUT_FASTA_FILE=NULL
+MULTIPLE_FASTA_SWITCH=1
 MY_PIS_THRESHOLD_SWITCH=0
+KEEP_R_FILES_SWITCH=1
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
+  -i   inputFASTA (def: NULL) input FASTA filename
+  -m   multiFASTA (def: 1, turned on; 0, off) whether or not to run on multiple FASTA files 
+       in current working directory
   -t   threshold (def: 0, off; other: N) '-t N' calls additional post-processing routine
        that subsets alignments to a threshold number, N, with the most parsimony-informative
        sites (PIS). Takes integer values of N > 0.
+  -k   keepFiles (def: 1, on; 0, off) whether or not to keep custom R script and R output
+       files generated during the run
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT automates calculating the number of parsimony-informative sites (PIS) for each
- in a set of FASTA-formatted multiple sequence alignments (MSAs) in current working directory.
- To do this, calcAlignmentPIS.sh generates and runs a custom Rscript calling on functions in
- the R package phyloch (Heibl 2013). Thus parts of this script function as a wrapper for
- phyloch, and R (v3.3+) and the phyloch package are important dependencies.
-	Optionally, the user may specify for a threshold number of alignments, N, with the highest
- PIS values to be saved using the -t flag. For example, '-t 150' sets N=150 and the program
- will keep the 150 FASTA alignments with the most PIS. The N alignments will be copied to a
- subfolder named 'pis_threshold_alignments/'.
+ THIS SCRIPT automates calculating the number of parsimony-informative sites (PIS) for one 
+ or multiple FASTA-formatted multiple sequence alignments (MSAs) in the current working 
+ directory. To do this, calcAlignmentPIS.sh generates and runs a custom Rscript calling on 
+ functions in the R package phyloch (Heibl 2013). Thus parts of this function act as a 
+ wrapper for phyloch, and R (v3.3+) and the phyloch package are important dependencies.
+	By default, the program runs on all FASTA files (all with same extension, either '.fas'
+ or '.fasta') in the working directory. Optionally, the user may specify whether or not to 
+ run on multiple FASTAs with the -m flag, or the user may supply a single FASTA file for 
+ analysis using the -i flag. The user may also specify for a threshold number of alignments, 
+ N, with the highest PIS values to be saved using the -t flag. For example, '-t 150' sets 
+ N=150 and the program will keep the 150 FASTA alignments with the most PIS. The N alignments 
+ will be copied to a subfolder named 'pis_threshold_alignments/'. The -k flag allows the 
+ user to specify whether or not to keep custom R script ('.r') and R output ('.Rout') files
+ generated during the run, and this option is turned on by default, so set to -k 0 for a 
+ clean working dir with only the results table(s).
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
-    piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
+    piranha -f calcAlignmentPIS --args='-i input.fasta'  Run calcAlignmentPIS on all FASTAS in current
+    piranha -f calcAlignmentPIS --args='-m 1'            Run calcAlignmentPIS on all FASTAS in current
+                                                         dir, with no threshold
+    piranha -f calcAlignmentPIS --args='-t 150'          Run calcAlignmentPIS on all FASTAS in current
+                                                         dir, with threshold at N=150 alignments
+    piranha -f calcAlignmentPIS -a '-t 150'              Same as above, but passing arguments with -a flag
+    piranha -f calcAlignmentPIS --args='-k 0'            Default multi-FASTA run, but removing custom
+                                                         R input and output files generated during run
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -341,8 +468,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	phylogenetic software packages. Available at: <http://www.christophheibl.de/Rpackages.html.>
 
  Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"
@@ -355,10 +487,13 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 't:' opt ; do
+while getopts 'i:m:t:k:' opt ; do
   case $opt in
 ## Script options:
+    i) INPUT_FASTA_FILE=$OPTARG ;;
+    m) MULTIPLE_FASTA_SWITCH=$OPTARG ;;
     t) MY_PIS_THRESHOLD_SWITCH=$OPTARG ;;
+    k) KEEP_R_FILES_SWITCH=$OPTARG ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
        echo "$USAGE" >&2

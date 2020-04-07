@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEASTPostProc.sh                                                                 #
-  VERSION="v1.7.0"                                                                       #
+  VERSION="v1.7.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
-# Last update: May 28, 2019                                                              #
-# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ BEASTPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTPostProc, v1.7.0 May 2019  (in PIrANHA v0.3a2)   "
-echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | BEASTPostProc, v1.7.1 April 2020                               "
+echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -248,9 +248,9 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 
 		###### CLEANUP #1: Next, do cleanup by removing any line starting with "==> " (preferred), OR remove line 1 and line $(calc $MY_HEADER_LENGTH + 1) (not preferred), where calc is bash function defined as $ calc () {    	bc -l <<< "$@" }.
 			sed '/^==>\ / d' ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt > ./"${i}"_final_"$MY_K_ABBREV_VAL"k.trees ;
-			rm ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;
-			rm ./nexusHeader.txt ;
-			rm ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ;
+			if [[ -s ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees ]]; then rm ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees ; fi
+			if [[ -s ./nexusHeader.txt ]]; then rm ./nexusHeader.txt ; fi
+			if [[ -s ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ]]; then rm ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ; fi
 
 		###### CLEANUP #2: It's CRITICAL that we make sure the new '*_final_"$MY_K_ABBREV_VAL"k.trees' file ends with a newline (empty line). We use
 		##--sed to do this with a simple command that 'adds \n at the end of the file only if it doesn’t already end with a newline',
@@ -368,9 +368,9 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 
 		###### CLEANUP #1: Next, do cleanup by removing any line starting with "==> " (preferred), OR remove line 1 and line $(calc $MY_HEADER_LENGTH + 1) (not preferred), where calc is bash function defined as $ calc () {    	bc -l <<< "$@" }.
 			sed '/^==>\ / d' ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt > ./"${m}"_final_"$MY_K_ABBREV_VAL"k.trees ;
-			rm ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;
-			rm ./nexusHeader.txt ;
-			rm ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ;
+			if [[ -s ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees ]]; then rm ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees ; fi
+			if [[ -s ./nexusHeader.txt ]]; then rm ./nexusHeader.txt ; fi
+			if [[ -s ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ]]; then rm ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees.txt ; fi
 
 		###### CLEANUP #2: It's CRITICAL that we make sure the new "*_final_"$MY_K_ABBREV_VAL"k.trees" file ends with a newline (empty line). We use
 		##--sed to do this with a simple command that "adds \n at the end of the file only if it doesn’t already end with a newline",
@@ -399,6 +399,10 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 else
 	echo "INFO      | $(date) |          Found no BEAST gene trees. Skipping gene tree analysis... "
 fi
+
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 #echo "INFO      | $(date) | Done processing BEAST results using BEASTPostProc. "
 #echo "Bye.
@@ -456,9 +460,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 
  Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
 
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

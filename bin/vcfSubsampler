@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: vcfSubsampler.sh                                                                 #
-  VERSION="v0.2.1"                                                                       #
+  VERSION="v0.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.                     #
-# Last update: March 17, 2019                                                            #
-# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ vcfSubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | vcfSubsampler, v0.2.1 March 2019  (part of PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | vcfSubsampler, v0.2.2 April 2020  "
+echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -155,7 +155,7 @@ echo "INFO      | $(date) |-----------------------------------------------------
 	cat ./header.tmp "$MY_OUTPUT_VCF_FILE".tmp > "$MY_OUTPUT_VCF_FILE".vcf ;
 
 ##--Cleanup temporary files:
-	rm ./*.tmp
+	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 
 ##--Final cleanup:
 ##--Delete the original .vcf file if user has specified to do so:
@@ -206,8 +206,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.
- Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

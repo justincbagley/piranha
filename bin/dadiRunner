@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiRunner.sh                                                                    #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.                     #
-# Last update: March 15, 2019                                                            #
-# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -135,8 +135,8 @@ dadiRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiRunner, v1.0.0 March 2019  (in PIrANHA v0.3a2)      "
-echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | dadiRunner, v1.0.1 April 2020                                  "
+echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -354,10 +354,10 @@ echo "INFO      | $(date) |          Finished copying run folders to supercomput
 echo "INFO      | $(date) | Step #6: Clean up workspace by removing unnecessary files generated during run. "
 echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
 	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".py; done;
-	rm ./batch_qsub_top.txt ;
-	rm ./cd_and_qsub_commands.txt ;
-	rm ./batch_qsub_bottom.txt ;
-	rm ./dadirunner_batch_qsub.sh ;
+	if [[ -s ./batch_qsub_top.txt ]]; then rm ./batch_qsub_top.txt ; fi
+	if [[ -s ./cd_and_qsub_commands.txt ]]; then rm ./cd_and_qsub_commands.txt ; fi
+	if [[ -s ./batch_qsub_bottom.txt ]]; then rm ./batch_qsub_bottom.txt ; fi
+	if [[ -s ./dadirunner_batch_qsub.sh ]]; then rm ./dadirunner_batch_qsub.sh ; fi
 
 #echo "INFO      | $(date) | Done organizing and copying SNP data and model files to supercomputer and submitting ∂a∂i "
 #echo "INFO      | $(date) | jobs to the queue, using the dadiRunner pipeline. "
@@ -430,7 +430,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  	data. PLOS Genetics, 5(10), e1000695.
 
  Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.
- Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
 
 VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
@@ -497,7 +497,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f dadiRunner --args='-i <SNPInput> -n 20 -w 24:00:00'		Changing run walltime.
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -506,8 +506,13 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  	data. PLOS Genetics, 5(10), e1000695.
 
  Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.
- Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

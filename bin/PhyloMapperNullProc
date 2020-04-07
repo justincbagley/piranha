@@ -136,7 +136,7 @@ PhyloMapperNullProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PhyloMapperNullProc, v1.0.0 March 2019  (part of PIrANHA v0.3a2)"
+echo "INFO      | $(date) | PhyloMapperNullProc, v1.0.0 March 2019                         "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -230,6 +230,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.
  Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"

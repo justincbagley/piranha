@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: Mega2PHYLIP.sh                                                                   #
-  VERSION="v1.1.1"                                                                       #
+  VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.                       #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ Mega2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | Mega2PHYLIP, v1.1.1 October 2019  (part of PIrANHA v0.3a2)  "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | Mega2PHYLIP, v1.1.2 April 2020                                 "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -219,7 +219,7 @@ fi
 			
 				perl -p -i -e 's/\ +$//g' ./"$MY_PHYLIP_BASENAME".phy ;
 
-			rm ./*.tmp;
+			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp; fi
 		else
 			echo "WARNING!  | $(date) |          ERROR: Found no Mega file named $MY_INPUT_MEGA_FILE in working directory. Quitting... " 
 			exit
@@ -291,7 +291,7 @@ fi
 						
 						perl -p -i -e 's/\ +$//g' ./"$MY_PHYLIP_BASENAME".phy ;
 
-					rm ./*.tmp;
+					if [[ ! -z ./*.tmp ]]; then rm ./*.tmp; fi
 				done
 			)
 			fi
@@ -386,9 +386,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	analysis across computing platforms. Molecular Biology and Evolution, 35(6), 1547-1549.
 
  Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
 
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

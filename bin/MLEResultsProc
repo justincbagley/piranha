@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MLEResultsProc.sh                                                                #
-  VERSION="v1.4.0"                                                                       #
+  VERSION="v1.4.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.                     #
-# Last update: March 15, 2019                                                            #
-# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -137,8 +137,8 @@ MLEResultsProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MLEResultsProc, v1.4.0 March 2019  (part of PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | MLEResultsProc, v1.4.1 April 2020                              "
+echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -173,7 +173,7 @@ echo "INFO      | $(date) | Step #2: Check BEAST version, in order to detect and
 	MY_BEAST2_VER_CHECK="$(grep -h 'BEAST\ v2' $y | wc -l)";
 	MY_BEAST2_VER_CHECK2="$(grep -h 'marginal\ L\ estimate' $y | wc -l)";
 
-	rm ./file.tmp ;
+	if [[ -s ./file.tmp ]]; then rm ./file.tmp ; fi
 
 
 echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files in current directory. "
@@ -204,9 +204,9 @@ echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files
 		done
 	)
 
-	rm ./*_filename.tmp ;
-	rm ./*_PSMLEs.tmp ;
-	rm ./*_SSMLEs.tmp ;
+	if [[ ! -z ./*_filename.tmp ]]; then rm ./*_filename.tmp ; fi
+	if [[ ! -z ./*_PSMLEs.tmp ]]; then rm ./*_PSMLEs.tmp ; fi
+	if [[ ! -z ./*_SSMLEs.tmp ]]; then rm ./*_SSMLEs.tmp ; fi
 
 }
 
@@ -244,8 +244,8 @@ echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files
 		done
 	)
 
-	rm ./*_filename.tmp ;
-	rm ./*_PSMLEs.tmp ;
+	if [[ ! -z ./*_filename.tmp ]]; then rm ./*_filename.tmp ; fi
+	if [[ ! -z ./*_PSMLEs.tmp ]]; then rm ./*_PSMLEs.tmp ; fi
 }
 
 
@@ -272,8 +272,8 @@ echo "INFO      | $(date) | Step #4: Arrange MLE results in tab-delimited file w
 	cat header.txt data.tmp | sed 's/\_filename.tmp//g; s/\ /	/g' > MLE.output.txt ;
 
 	echo "INFO      | $(date) |          Cleaning up... "
-	rm header.txt ;
-	rm data.tmp ;
+	if [[ -s ./header.txt ]]; then rm header.txt ; fi
+	if [[ -s ./data.tmp ]]; then rm data.tmp ; fi
 
 
 echo "INFO      | $(date) | Step #5: Load MLE results into R and compute Bayes factor tables. "
@@ -333,7 +333,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f MLEResultsProc			   Run with program defaults in current directory
+    piranha -f MLEResultsProc                  Run with program defaults in current directory
     piranha -f MLEResultsProc --args='-h'      Print this help text
 
  ${bold}CITATION${reset}
@@ -341,8 +341,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

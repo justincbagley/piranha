@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2FASTA.sh                                                                  #
-  VERSION="v1.2.3"                                                                       #
+  VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: August 29, 2019                                                           #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ PHYLIP2FASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2FASTA, v1.2.3 August 2019  (in PIrANHA v0.3a2)       "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.2.4 April 2020       "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -195,7 +195,8 @@ fi
 ## if PHYLIP files kept, then organize output FASTAs into one dir, and original PHYLIPs into
 ## a separate dir.
 	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
-		rm ./*.phy ;
+		if [[ ! -z ./*.phy ]]; then rm ./*.phy ; fi
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
 	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s fasta/ ]] && [[ ! -s phylip/ ]]; then
@@ -203,6 +204,7 @@ fi
 		mkdir phylip/ ;
 		mv ./*.phy ./phylip/ ;
 		mv ./*.fas ./fasta/ ;
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -268,8 +270,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
 	echo "$USAGE"

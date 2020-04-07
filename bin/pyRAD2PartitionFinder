@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRAD2PartitionFinder.sh                                                         #
-  VERSION="v1.2.3"                                                                       #
+  VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.                     #
-# Last update: March 15, 2019                                                            #
-# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ pyRAD2PartitionFinder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.3 March 2019  (in PIrANHA v0.3a2) "
-echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.4 April 2020 "
+echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -208,7 +208,9 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	" > PF_bottom.tmp
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg ;  	## Make PartitionFinder configuration file.
-	rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
+		rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+	fi
 
 
 if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
@@ -258,7 +260,9 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	" > PF_bottom.tmp
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
-	rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
+		rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+	fi
 
 
 if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
@@ -309,7 +313,9 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	" > PF_bottom.tmp
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
-	rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
+		rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+	fi
 
 if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
 echo "INFO      | $(date) | Step #4: Run PartitionFinder on data in current working directory. "
@@ -404,8 +410,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	partitioning schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
 
  Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"

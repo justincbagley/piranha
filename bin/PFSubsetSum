@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PFSubsetSum.sh                                                                   #
-  VERSION="v1.4.0"                                                                       #
+  VERSION="v1.4.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
-# Last update: May 28, 2019                                                              #
-# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ PFSubsetSum () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PFSubsetSum, v1.4.0 May 2019  (part of PIrANHA v0.3a2) "
-echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | PFSubsetSum, v1.4.1 April 2020 "
+echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -245,14 +245,16 @@ write.table(out, '"$MY_WORKING_DIR"/subsetLengths/"$SUBSET_NAME"_subsetLength.ou
 		chmod u+x ./GetSubsetLength.r ;
 		R CMD BATCH GetSubsetLength.R ;
 
-        rm ./Rinput.txt ./GetSubsetLength.r ;
+		if [[ -s ./Rinput.txt ]]; then rm ./Rinput.txt ; fi 
+		if [[ -s ./GetSubsetLength.r ]]; then rm ./GetSubsetLength.r ; fi 
 
 		cat ./subsetLengths/"$SUBSET_NAME"_subsetLength.out >> ./subsetLengths/ALL_subsetLengths.txt ;
 
 	done
 )
 
-rm subsets.txt ./p*.txt ;   ##--Remove subset lists and individual subset files
+if [[ -s subsets.txt ]]; then rm subsets.txt ; fi 		##--Remove subset lists and individual subset files
+if [[ ! -z ./p*.txt ]]; then rm ./p*.txt ; fi 
 mv ./*.Rout ./subsetLengths/ ;
 
 
@@ -260,7 +262,7 @@ echo "INFO      | $(date) |          3. Extracting subsetModels (selected models
 	grep -n "^[0-9]" ./best_scheme.txt > ./subset_mods_prep.txt ;
 	MY_SUBSET_MODELS_PREPPER=./subset_mods_prep.txt ;
 	sed 's/^[0-9:\ |]*//g; s/\ \ \ \ |\ p.*$//g' $MY_SUBSET_MODELS_PREPPER > ./subsetModels.txt ;
-	rm ./subset_mods_prep.txt ;
+	if [[ -s ./subset_mods_prep.txt ]]; then rm ./subset_mods_prep.txt ; fi 
 
 
 echo "INFO      | $(date) |          4. Making file 'sumstats.txt' with subset summary statistics table...  "
@@ -268,8 +270,14 @@ echo "###################### PartitionFinder Subsets Summary Statistics ########
 Subset	numCharsets	subsetLength	subsetModel	| partitions" > table_header.txt ;
 paste ./subset_names.txt **/ALL_numCharsets.txt **/ALL_subsetLengths.txt ./subsetModels.txt | column -s $'\t' -t > ./table.txt ;
 cat ./table_header.txt ./table.txt > ./sumstats.txt ;
-rm ./table_header.txt ./table.txt ./subset_names.txt ./subsetModels.txt ;
 
+
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	if [[ -s ./table_header.txt ]]; then rm ./table_header.txt ; fi 
+	if [[ -s ./table.txt ]]; then rm ./table.txt ; fi 
+	if [[ -s ./subset_names.txt ]]; then rm ./subset_names.txt ; fi 
+	if [[ -s ./subsetModels.txt ]]; then rm ./subsetModels.txt ; fi 
 
 #echo "INFO      | $(date) | Done calculating summary statistics for subsets in your best PartitionFinder scheme using PFSubsetSum. "
 #echo "INFO      | $(date) | Bye. 
@@ -332,8 +340,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	partitioning schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
 
  Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.
- Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename $0) $VERSION";
@@ -346,7 +359,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-c" ]] || [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]; then
-	echo " Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	echo " Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 "
 	exit

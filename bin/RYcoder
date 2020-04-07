@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RYcoder.sh                                                                       #
-  VERSION="v0.1.3"                                                                       #
+  VERSION="v0.1.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.                       #
-# Last update: March 30, 2020                                                            #
+# Last update: April 6, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ RYcoder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RYcoder, v0.1.3 March 2020  (part of PIrANHA v0.3a2)           "
+echo "INFO      | $(date) | RYcoder, v0.1.4 April 2020                                     "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -433,6 +433,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.
  Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

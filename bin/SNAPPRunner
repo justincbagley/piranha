@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: SNAPPRunner.sh                                                                   #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.                     #
-# Last update: March 15, 2019                                                            #
-# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | SNAPPRunner, v1.2.1 March 2019  (part of PIrANHA v0.3a2)       "
-echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | SNAPPRunner, v1.2.2 April 2020                                 "
+echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -474,10 +474,10 @@ echo "INFO      | $(date) |          Finished copying run folders to supercomput
 echo "INFO      | $(date) | Step #5: Clean up temporary files generated during SNAPPRunner run to this point. "
 echo "INFO      | $(date) |          Removing temporary files from local machine..."
 	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".xml; done ;
-	rm ./qsub_top.txt ;
-	rm ./cd_and_qsub_commands.txt ;
-	rm ./qsub_bottom.txt ;
-	rm ./SNAPPRunner_batch_qsub.sh ;
+	if [[ -s ./qsub_top.txt ]]; then rm ./qsub_top.txt ; fi
+	if [[ -s ./cd_and_qsub_commands.txt ]]; then rm ./cd_and_qsub_commands.txt ; fi
+	if [[ -s ./qsub_bottom.txt ]]; then rm ./qsub_bottom.txt ; fi
+	if [[ -s ./SNAPPRunner_batch_qsub.sh ]]; then rm ./SNAPPRunner_batch_qsub.sh ; fi
 
 #echo "INFO      | $(date) | Done."
 #echo "INFO      | $(date) | Bye.
@@ -569,7 +569,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  	and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 
  Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.
- Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
 
 VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
@@ -640,7 +640,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f SNAPPRunner --args='-n 10 -w 24:00:00 -m 2048M'      Also increase the default walltime and memory (RAM) settings
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -654,8 +654,13 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  	and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 
  Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.
- Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
@@ -673,7 +678,7 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 'n:w:m:p:' opt ; do
+while getopts 'n:w:m:p:s:' opt ; do
   case $opt in
 ## SNAPPRunner options:
     n) MY_NUM_INDEP_RUNS=$OPTARG ;;

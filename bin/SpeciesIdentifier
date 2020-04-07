@@ -302,7 +302,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f SpeciesIdentifier	     Run the program			
+    piranha -f SpeciesIdentifier              Run the program			
     piranha -f SpeciesIdentifier -a '-h'      Print this help text
 
  ${bold}CITATION${reset}
@@ -317,6 +317,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.
  Copyright (c) 2019 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"

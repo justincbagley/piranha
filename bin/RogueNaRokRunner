@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RogueNaRokRunner.sh                                                              #
-  VERSION="v0.1.1"                                                                       #
+  VERSION="v0.1.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.                       #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -137,8 +137,8 @@ RogueNaRokRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RogueNaRokRunner, v0.1.1 October 2019  (part of PIrANHA v0.3a2)   "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.  "
+echo "INFO      | $(date) | RogueNaRokRunner, v0.1.3 April 2020   "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -250,6 +250,7 @@ echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary fi
 	if [[ ! -z "$(ls ./*.tmp)" ]]; then
 		rm ./*.tmp ;
 	fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ -s "$FILENAME"_RnR ]]; then 
@@ -317,8 +318,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	accuracy: an efficient algorithm and webservice. Systematic Biology, 62(1), 162–166.
 
  Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

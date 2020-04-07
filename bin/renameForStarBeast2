@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: renameForStarBEAST2.sh                                                           #
-  VERSION="v1.2.2"                                                                       #
+  VERSION="v1.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
-# Last update: March 19, 2019                                                            #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -146,8 +146,8 @@ renameForStarBEAST2 () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameForStarBEAST2, v1.2.2 March 2019  (in PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | renameForStarBEAST2, v1.2.3 April 2020 "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -223,7 +223,9 @@ fi
 echo "INFO      | $(date) | Step #4: Clean up workspace by deleting temporary files created during run. "
 echo "INFO      | $(date) |          Removing temporary files... "
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-	rm ./species_assign_names.tmp ./species_assign_tips.tmp ;
+
+	if [[ -s ./species_assign_names.tmp ]]; then ; fi 
+	if [[ -s ./species_assign_tips.tmp ]]; then ; fi 
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
@@ -289,8 +291,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	153.
 
  Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"

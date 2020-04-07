@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiUncertainty.sh                                                               #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -137,8 +137,8 @@ dadiUncertainty () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiUncertainty, v1.0.1 October 2019  (in PIrANHA v0.3a2) "
-echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | dadiUncertainty, v1.0.2 April 2020                             "
+echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -562,13 +562,13 @@ import json
 ##--them in that directory for safe keeping and analysis:
 	mkdir ./bootstrap_fs/ ;
 	cp ./*.fs ./bootstrap_fs/ ;
-	rm ./*.fs ;
+	if [[ ! -z ./*.fs ]]; then rm ./*.fs ; fi
 
 ##--Also clean up original bootstrapped datasets by creating 'bootstrap_data' folder and 
 ##--placing all bootstrapped datasets in that directory for safe keeping:
 	mkdir ./bootstrap_data/ ;
 	cp ./*dadi.data.boot* ./bootstrap_data/ ;
-	rm ./*dadi.data.boot* ;
+	if [[ ! -z ./*dadi.data.boot* ]]; then rm ./*dadi.data.boot* ; fi
 
 ##--Check to make sure you have the correct number of bootstrap .fs files in the 'bootstrap_fs'
 ##--folder. If not, throw error message to screen out (and save to file) but continue analysis 
@@ -865,7 +865,7 @@ echo "INFO      | $(date) | Step #7: Clean up workspace by removing temporary fi
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):
 echo "INFO      | $(date) |          Removing temporary files... "
 
-	rm ./*.tmp ;
+	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 
 
 ##--Final cleanup:
@@ -989,8 +989,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  	data. PLOS Genetics, 5(10), e1000695.
 
  Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.
- Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

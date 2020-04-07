@@ -4,12 +4,14 @@ As is typical of UNIX/Linux distributions and software, this bin/ directory cont
 
 The full file tree for this directory is as follows:
 
+
 ```
 ..
 └─ bin
    ├── README.md
    ├── 2logeB10.r
    ├── AnouraNEXUSPrepper
+   ├── BEAST_logThinner
    ├── BEAST_PSPrepper
    ├── BEASTPostProc
    ├── BEASTReset
@@ -19,14 +21,15 @@ The full file tree for this directory is as follows:
    ├── completeConcatSeqs
    ├── completeSeqs
    ├── concatenateSeqs
-   ├── concatSeqsPartitions
    ├── dadiPostProc
    ├── dadiRunner
    ├── dadiUncertainty
    ├── dropRandomHap
+   ├── dropTaxa
    ├── ElConcatenero
    ├── ExaBayesPostProc
    ├── FASTA2PHYLIP
+   ├── FASTAsummary
    ├── fastSTRUCTURE
    ├── getBootTrees
    ├── getTaxonNames
@@ -54,6 +57,7 @@ The full file tree for this directory is as follows:
    ├── MrBayesPostProc
    ├── NEXUS2MultiPHYLIP
    ├── NEXUS2PHYLIP
+   ├── nQuireRunner
    ├── PFSubsetSum
    ├── PHYLIP2FASTA
    ├── phylip2fasta.pl
@@ -61,6 +65,7 @@ The full file tree for this directory is as follows:
    ├── PHYLIP2NEXUS
    ├── PHYLIP2PFSubsets
    ├── PHYLIPsubsampler
+   ├── PHYLIPsummary
    ├── PhyloMapperNullProc
    ├── phyNcharSumm
    ├── pyRAD2PartitionFinder
@@ -72,6 +77,7 @@ The full file tree for this directory is as follows:
    ├── RYcoder
    ├── SNAPPRunner
    ├── SpeciesIdentifier
+   ├── splitFASTA
    ├── taxonCompFilter
    ├── test
    ├── treeThinner

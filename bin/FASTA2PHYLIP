@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.2.0"                                                                       #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: March 30, 2020                                                            #
+# Last update: April 6, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.2.0 March 2020  (in PIrANHA v0.3a2)           "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.2.1 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -351,7 +351,7 @@ fi
 	
 			## Remove orig FASTA file and delete temporary files.
 			rm "$MY_FASTA" ;
-			rm ./*.tmp ;
+			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 		
 		fi
 	
@@ -464,7 +464,7 @@ fi
 			## files.
 			mv "$MY_FASTA" ./orig_fasta_files/ ;
 			mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-			rm ./*.tmp ;
+			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 		
 		fi
 		
@@ -521,14 +521,14 @@ fi
 			## files.
 			mv "$MY_FASTA" ./orig_fasta_files/ ;
 			mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-			rm ./*.tmp ;
+			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 		
 		fi
 	
 	fi
 
 
-	rm ./output/fileOrder.list.txt
+	if [[ -s ./output/fileOrder.list.txt ]]; then rm ./output/fileOrder.list.txt ; fi
 
 fi
 #######
@@ -747,7 +747,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 	
 			## Remove orig FASTA file and delete temporary files.
 			rm "$MY_FASTA" ;
-			rm ./*.tmp ;
+			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 		
 		fi
 	
@@ -860,7 +860,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			## files.
 			mv "$MY_FASTA" ./orig_fasta_files/ ;
 			mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-			rm ./*.tmp ;
+			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 		
 		fi
 		
@@ -917,7 +917,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			## files.
 			mv "$MY_FASTA" ./orig_fasta_files/ ;
 			mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-			rm ./*.tmp ;
+			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 		
 		fi
 	
@@ -1096,6 +1096,11 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.
  Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

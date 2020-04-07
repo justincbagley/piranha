@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  VERSION="v1.3.3"                                                                       #
+  VERSION="v1.3.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.3 October 2019  (part of PIrANHA v0.3a2)  "
-echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.4 April 2020    "
+echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -305,7 +305,8 @@ fi
 echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
 ###### Remove temporary or unnecessary files created above:
 	echo "INFO      | $(date) |          Removing temporary files... "
-	rm ./*.tmp ;
+	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 #echo "INFO      | $(date) | Done converting PHYLIP-formatted DNA sequence alignment to NEXUS format using PHYLIP2NEXUS.sh." 
 #echo "Bye.
@@ -402,8 +403,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  	schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
 
  Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.
- Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

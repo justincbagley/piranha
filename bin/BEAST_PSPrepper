@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEAST_PSPrepper.sh                                                               #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.                     #
-# Last update: March 20, 2019                                                            #
-# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,8 +136,8 @@ BEAST_PSPrepper () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEAST_PSPrepper, v1.0.0 March 2019  (in PIrANHA v0.3a2)   "
-echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | BEAST_PSPrepper, v1.0.1 April 2020                             "
+echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -219,8 +219,8 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 " > new_run_element.tmp
 
 				## Make new xml file, replacing original file:
-				rm $i ;
-				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml ;
+				if [[ -s "$i" ]]; then rm "$i" ; fi
+				cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > "$BASENAME".xml ;
 
 				## Clean up the working dir:
 				rm ./*.tmp ./edit1.xml ;
@@ -237,7 +237,7 @@ editXMLFiles
 
 
 	else
-		if [[ $MY_INPUTXMLFILE_VAR != "multiXML" ]]; then
+		if [[ "$MY_INPUTXMLFILE_VAR" != "multiXML" ]]; then
 			echo "INFO      | $(date) |          Detected a single BEAST input XML file. Adding path sampling code to the XML named $MY_INPUTXMLFILE_VAR... "
 
 
@@ -246,7 +246,7 @@ editXMLFiles
 	editXMLFiles () {
 
 		BASENAME="$(ls $MY_INPUTXMLFILE_VAR | sed 's/\.xml$//g')";			## Get basename of input XML file, for later use.
-		sed 's/\<run\ /\<mcmc\ /g; s/\<\/run\>/\<\/mcmc\>\ '$CR'\<\/run\>/g' $MY_INPUTXMLFILE_VAR > edit1.xml;		## Make temporary edited file containing some, but not all, of the text edits needed for path sampling (i.e. renaming the original run element to mcmc).
+		sed 's/\<run\ /\<mcmc\ /g; s/\<\/run\>/\<\/mcmc\>\ '$CR'\<\/run\>/g' "$MY_INPUTXMLFILE_VAR" > edit1.xml;		## Make temporary edited file containing some, but not all, of the text edits needed for path sampling (i.e. renaming the original run element to mcmc).
 
 		NLINES_TO_MCMCELEM=$(sed -n '/\<mcmc\ /{=; q;}' edit1.xml);			## These three lines get pertinent information about the number of lines in the edited XML, which is used below
 		MY_HEADSTOP="$(calc $NLINES_TO_MCMCELEM-1)"	;						## in sed lines creating new tmp files containing the top and bottom portions of the edited XML. The edit1, xmlTop,
@@ -268,11 +268,13 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 " > new_run_element.tmp
 
 		## Make new xml file, replacing original file:
-		rm $MY_INPUTXMLFILE_VAR ;
-		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > $BASENAME.xml ;
+		if [[ -s "$MY_INPUTXMLFILE_VAR" ]]; then rm "$MY_INPUTXMLFILE_VAR" ; fi
+		cat ./xmlTop.tmp ./new_run_element.tmp ./xmlBottom.tmp > "$BASENAME".xml ;
 
 		## Clean up the working dir:
-		rm ./*.tmp ./edit1.xml ;
+		if [[ -s ./edit1.xml ]]; then rm ./edit1.xml ; fi 
+		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
   
 }
 
@@ -360,8 +362,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
  	Bayesian phylogenetic model selection. Systematic Biology, 60, 150–160.
 
  Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.
- Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
+
+#if [[ -z "$*" ]]; then
+#	echo "$USAGE"
+#	exit
+#fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

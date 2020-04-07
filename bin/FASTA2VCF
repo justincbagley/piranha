@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2VCF.sh                                                                     #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.                       #
-# Last update: April 10, 2019                                                            #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -141,8 +141,8 @@ FASTA2VCF () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2VCF, v1.1.0 April 2019  (in PIrANHA v0.3a2)        "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | FASTA2VCF, v1.1.1 April 2020                                   "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -281,8 +281,10 @@ count=1
 		## is as follows:
 		sed ''"$MY_FIRST_MATCH_LINE"'q;d' ./vcf.tmp >> ./vcf.body.tmp;
 
-		rm ./matching_positions.tmp ./matching_lines.tmp
-
+		if [[ -s ./matching_positions.tmp ]] && [[ -s ./matching_lines.tmp ]]; then
+			rm ./matching_positions.tmp ./matching_lines.tmp
+		fi
+		
 		echo "INFO      | $(date) |          Extracting: "
 		echo "INFO      | $(date) |          SNP $MY_FIRST_MATCH_LINE (VCF row), alignment position (nt) $MY_FIRST_MATCH_POSITION "
 		
@@ -310,8 +312,8 @@ fi
 ############ IV. CLEAN UP THE WORKSPACE.
 echo "INFO      | $(date) | Step #4: Clean up working directory by removing temporary files. "
 ## Remove temporary files generated above.
-	rm ./*.tmp
-	rm ./args.txt ;	## Remove arguments file generated when parsing the options.
+	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 
 #echo "INFO      | $(date) | Done converting your multiple sequence FASTA file to VCF format using FASTA2VCF.sh. "
@@ -429,8 +431,13 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 	Genomics, 2(4).
 
  Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"

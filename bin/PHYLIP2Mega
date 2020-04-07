@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2Mega.sh                                                                   #
-  VERSION="v1.2.2"                                                                       #
+  VERSION="v1.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 6, 2020                                                             #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -135,8 +135,8 @@ PHYLIP2Mega () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2Mega, v1.2.2 October 2019  (part of PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | PHYLIP2Mega, v1.2.3 April 2020"
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -298,6 +298,8 @@ fi
 			echo "INFO      | $(date) |          Deleting original PHYLIP files... "
 		fi
 		rm ./*.phy ;
+		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
 	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]] && [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s mega/ ]] && [[ ! -s phylip/ ]]; then
@@ -308,12 +310,17 @@ fi
 		mkdir phylip/ ;
 		mv ./*.phy ./phylip/ ;
 		mv ./*.meg ./mega/ ;
+		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
 	elif [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]] && [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ -s mega/ ]] && [[ -s phylip/ ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) |          Kept original PHYLIP files. Organizing Mega and PHYLIP files into existing subfolders... "
 		fi
 		mv ./*.phy ./phylip/ ;
 		mv ./*.meg ./mega/ ;
+		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
 
@@ -379,8 +386,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	analysis across computing platforms. Molecular Biology and Evolution, 35(6), 1547-1549.
 
  Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
 	echo "$USAGE"
