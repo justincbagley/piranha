@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: SNAPPRunner.sh                                                                   #
-  VERSION="v1.2.2"                                                                       #
+  VERSION="v1.3.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | SNAPPRunner, v1.2.2 April 2020                                 "
+echo "INFO      | $(date) | SNAPPRunner, v1.3.0 April 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -149,6 +149,10 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 
 ## TODO: Try to make this more straightforward to run by considering alleviating the need
@@ -486,6 +490,10 @@ echo "INFO      | $(date) |          Removing temporary files from local machine
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -500,6 +508,7 @@ MY_SC_WALLTIME=71:30:00
 JAVA_MEM_ALLOC=5120M
 MY_SC_PARTITION=NULL
 MY_STARTING_SEED=NULL
+MY_DEBUG_MODE_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
@@ -516,6 +525,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -h   help text (also: -help) echo this help text and exit
   -H   verbose help text (also: -Help) echo verbose help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
   
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates conducting multiple runs of SNAPP (Bryant et al. 2012; part of BEAST2, 
@@ -586,6 +596,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
   -h   help text (also: -help) echo this help text and exit
   -H   verbose help text (also: -Help) echo verbose help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
   
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates conducting multiple runs of SNAPP (Bryant et al. 2012; part of BEAST2, 
@@ -678,7 +689,7 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 'n:w:m:p:s:' opt ; do
+while getopts 'n:w:m:p:s:d:' opt ; do
   case $opt in
 ## SNAPPRunner options:
     n) MY_NUM_INDEP_RUNS=$OPTARG ;;
@@ -686,6 +697,7 @@ while getopts 'n:w:m:p:s:' opt ; do
     m) JAVA_MEM_ALLOC=$OPTARG ;;
     p) MY_SC_PARTITION=$OPTARG ;;
     s) MY_STARTING_SEED=$OPTARG ;;
+    d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
        echo "$USAGE" >&2
