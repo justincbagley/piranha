@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.4.2"                                                                       #
+  VERSION="v1.5.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -142,7 +142,7 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.4.2 April 2020                               "
+echo "INFO      | $(date) | dropRandomHap, v1.5.0 April 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -155,6 +155,10 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 
 echo "INFO      | $(date) | Step #2: Set output file. "
@@ -314,6 +318,10 @@ echo "--------------------------------------------------------------------------
 echo ""
 
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -324,6 +332,7 @@ echo ""
 ############ SCRIPT OPTIONS
 USER_SPEC_TAXNAMES_FILE=NULL
 MY_OUTPUT_FILE_SWITCH=NULL
+MY_DEBUG_MODE_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
@@ -334,6 +343,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
        this name, for example 'output.txt'.
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT takes as input the name of a <taxonNamesFile> with one tip taxon name per 
@@ -401,11 +411,12 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 ############ PARSE THE OPTIONS
-while getopts 't:o:' opt ; do
+while getopts 't:o:d:' opt ; do
   case $opt in
 ## dropRandomHap options:
     t) USER_SPEC_TAXNAMES_FILE=$OPTARG ;;
     o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
+    d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
 ## Missing and illegal options:
     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
        echo "$USAGE" >&2
