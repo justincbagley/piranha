@@ -9,7 +9,7 @@
   VERSION="v1.0.9"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -54,6 +54,9 @@ fi
 ## Set bin/ Location
 # -----------------------------------
 BIN_LOCATION="${SCRIPT_PATH}/bin/" # Update this path to find the piranha bin folder.
+
+## Set debug/ Location
+DEBUG_BIN_LOCATION="${SCRIPT_PATH}/debug/" # Update this path to find the piranha debug folder (=debug bin). 
 
 ## trapCleanup Function
 # -----------------------------------
@@ -137,7 +140,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.9, April 2020  (main script for PIrANHA v0.3a2, post-release update Apr 6 09:42:35 CDT 2020)          "
+piranha v1.0.9, April 2020  (main script for PIrANHA v0.3a2, post-release update Apr 7 00:24:54 CDT 2020)          "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -179,7 +182,6 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Execution path: $MY_EXECUTION_PATH"
 	elif [[ "$debug" = "true" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
-		DEBUG_BIN_LOCATION="${SCRIPT_PATH}/test/debug_bin/" 
 		MY_DEBUG_EXECUTION_PATH="$(echo ${DEBUG_BIN_LOCATION}${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          DEBUG MODE Execution path: $MY_DEBUG_EXECUTION_PATH"
 	elif [[ "$debug" != "true" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
@@ -200,14 +202,14 @@ FUNCTION			   DESCRIPTION
                        (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs.
 AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses (Calderon, 
                        Bagley, and Muchhala, in prep.).
+BEAST_logThinner       Function that conducts downsampling ('thinning') of BEAST2 .log files to every nth line.
+BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal 
+                       likelihood estimation) analyses using BEAST v2+ PathSampler.
 BEASTPostProc          Conducts post-processing of gene trees and species trees output by BEAST (e.g. Drummond
                        et al. 2012; Bouckaert et al. 2014; usually on a remote supercomputer).
 BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST 
                        runs/subfolders (destined for supercomputer).
 BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster.
-BEAST_logThinner       Function that conducts downsampling ('thinning') of BEAST2 .log files to every nth line.
-BEAST_PSPrepper        Function that automates prepping BEAST XML input files for path sampling (marginal 
-                       likelihood estimation) analyses using BEAST v2+ PathSampler.
 calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-
                        informative sites (pis) for all FASTA files in working dir.
 completeConcatSeqs     Function converting series of PHYLIP (Felsenstein 2002) DNA sequence alignments (with or 
@@ -240,10 +242,10 @@ ExaBayesPostProc       Function automating reading and conducting post-processin
 FASTA2PHYLIP           Function that automates converting one or multiple sequential FASTA DNA sequence alignment 
                        files (with sequences either unwrapped or hard-wrapped across multiple lines) to PHYLIP 
                        format (Felsenstein 2002).
-FASTAsummary           Summarizes characteristics (numbers of characters and tip taxa) in one or multiple FASTA 
-                       DNA sequence alignment files in current working directory, and saves to file.
 FASTA2VCF              Shell script function automating conversion of single multiple sequence FASTA alignment to 
                        variant call format (VCF) v4.1, with or without subsampling SNPs per partition/locus.
+FASTAsummary           Summarizes characteristics (numbers of characters and tip taxa) in one or multiple FASTA 
+                       DNA sequence alignment files in current working directory, and saves to file.
 fastSTRUCTURE          Interactive function that automates running fastSTRUCTURE (Raj et al. 2014) on biallelic 
                        SNP datasets.
 getBootTrees           Function that automates organizing bootstrap trees output by RAxML runs conducted in 
@@ -317,6 +319,10 @@ SNAPPRunner            Function that automates running SNAPP (Bryant et al. 2012
                        cluster (with passwordless ssh access set up by user).
 SpeciesIdentifier      Runs the Taxon DNA software program SpeciesIdentifier, which implements methods in the well-
                        known Meier et al. (2006) DNA barcoding paper.
+splitFASTA             Automates splitting a multi-individual FASTA DNA sequence alignment into one FASTA file per
+                       sequence (tip taxon). Works with sequential FASTAs with no text wrapping across lines.
+splitPHYLIP            Splits a sequential PHYLIP DNA sequence alignment into separate PHYLIP sequence alignments,
+                       one per partition (read from a user-specified partition file).
 taxonCompFilter        Function that loops through the multiple sequence alignments and keeps only those alignments 
                        meeting the user-specified taxonomic completeness threshold <taxCompThresh>; alignments that 
                        pass this filter are saved to an output subfolder of the current directory.
@@ -453,7 +459,7 @@ usage() {
   -q, --quiet       Quiet (no output)
   -l, --log         Print log to file
   -v, --verbose     Output more information. (Items echoed to 'verbose')
-  -d, --debug       Runs script in BASH debug mode (set -x)
+  -d, --debug       Runs functions in BASH debug mode (set -x)
   -h, --help        Display this help and exit
       --version     Output version information and exit
 
