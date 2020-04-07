@@ -498,7 +498,7 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #3: Clean up working directory by removing temporary files etc. "
 fi
 ############ CLEANUP: Remove temporary files in working directory, conditional upon user request.
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
