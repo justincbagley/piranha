@@ -78,6 +78,7 @@ The full file tree for this directory is as follows:
    ├── SNAPPRunner
    ├── SpeciesIdentifier
    ├── splitFASTA
+   ├── splitPHYLIP
    ├── taxonCompFilter
    ├── test
    ├── treeThinner
