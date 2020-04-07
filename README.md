@@ -89,6 +89,13 @@ Directory tree...
 │   ├── raxml_runner.cfg
 │   ├── snapp_runner.cfg
 │   └── .gitignore
+├── test
+│   ├── debug_bin
+│   │   └── ...
+│   ├── test.fasta
+│   ├── test.phy
+│   ├── test.nex
+│   └── ...
 └── tmp
     └── .gitignore
 ```
