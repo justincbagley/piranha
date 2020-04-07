@@ -1,0 +1,599 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: splitFASTA.sh                                                                    #
+  VERSION="v1.0.3"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Wed, Apr 1 12:05:32 CDT 2020.                        #
+# Last update: April 7, 2020                                                             #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT SPLITS A MULTI-INDIVIDUAL FASTA DNA SEQUENCE ALIGNMENT FILE INTO     #
+# ONE FASTA FILE PER SEQUENCE (TIP TAXON/INDIVIDUAL)                                     #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+splitFASTA () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | splitFASTA, v1.0.3 April 2020                                  "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting splitFASTA analysis... "
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
+fi
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+checkMachineType
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+## Organize working directory structure:
+	if [[ ! -s ./output/ ]]; then
+		mkdir output ;
+	fi
+
+############ OPTIONAL OUTPUT TO FILE
+	echo "INFO      | $(date) | Step #2: Set output file. "
+	###
+#	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+#		exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
+#		exec 2>&1 ;
+#
+		echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | splitFASTA, v1.0.3 April 2020                                  " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | Starting splitFASTA analysis... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) |          User output file settings. Logging output to file at ./$MY_OUTPUT_FILE_SWITCH ... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | Step #2: Set output file. " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+	fi
+	###
+
+############ STEP #3: SPLIT MULTI-INDIVIDUAL FASTA INTO SEPARATE FASTA FILES.
+	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+		echo "INFO      | $(date) | Step #3: Split input FASTA file, ${MY_FASTA}, into separate FASTAs, one per tip taxon... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+	else
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Step #3: Split input FASTA file, ${MY_FASTA}, into separate FASTAs, one per tip taxon... "
+		fi
+	fi
+	
+	#### Get FASTA characteristics:
+	MY_FASTA_EXTENSION=".${MY_FASTA##*.}";
+	MY_FASTA_BASENAME1="$(echo "${MY_FASTA%%.*}")";
+	MY_FASTA_BASENAME2=$(basename "${MY_FASTA}" "${MY_FASTA_EXTENSION}");
+	#MY_FASTA_BASENAME2="$(basename "$MY_FASTA" "$(echo .$MY_FASTA_EXTENSION)")";
+	# both basename grabbers should work!
+	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+		echo "INFO      | $(date) |          Input FASTA file name extension: ${MY_FASTA_EXTENSION} " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+	else
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) |          Input FASTA file name extension: ${MY_FASTA_EXTENSION} "
+		fi
+	fi
+
+	#### Split a multi-FASTA file into individual FASTA files:
+	## WORKING!!!	
+	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+		echo "INFO      | $(date) |          A. Splitting input FASTA file... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+	else
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) |          A. Splitting input FASTA file... "
+		fi
+	fi
+	awk -v ext_var="$(echo $MY_FASTA_EXTENSION)" '/^>/{close(s); s=++d"."ext_var} {print > s}' "$MY_FASTA"  ;
+
+	#### FASTA renaming loop (<seq_id>.<fasta_extension>):
+	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+		echo "INFO      | $(date) |          B. Renaming output FASTA files using tip taxon labels... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+	else
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) |          B. Renaming output FASTA files using tip taxon labels... "
+		fi
+	fi
+
+
+if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
+	count=1
+	(
+		for i in ./*."$MY_FASTA_EXTENSION"; do
+			MY_SPLIT_FASTA_BASENAME="$(basename "$i" "$(echo .$MY_FASTA_EXTENSION)")";
+			MY_TAXON_ID_LINE="$(head -n1 "$i" | sed 's/\ $//g; s/\ /\_/g; s/\|/\_/g; s/\ \|\ /\_/g; s/\>//g; s/\?//g')";
+			MY_SEQ_LINE="$(tail -n1 "$i" | sed 's/\ $//g')";
+			MY_SEQ_LENGTH="$(echo $MY_SEQ_LINE | perl -pe $'s/\n//g' | perl -pe 's/\ //g' | wc -c | sed 's/\t//g' | sed 's/\ //g')";
+#
+#			echo "INFO      | $(date) |          ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION} (Sequence length: ${MY_SEQ_LENGTH} bp)"
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			if [[ "$count" -lt "10" ]]; then
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "INFO      | $(date) |          ...    Tip taxon $((count++)):    ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+				else
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          ...    Tip taxon $((count++)):    ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+					fi
+				fi
+			fi
+			if [[ "$count" -ge "10" ]] && [[ "$count" -lt "100" ]]; then
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "INFO      | $(date) |          ...    Tip taxon $((count++)):   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+				else
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          ...    Tip taxon $((count++)):   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+					fi
+				fi
+			fi
+			if [[ "$count" -ge "100" ]]; then
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "INFO      | $(date) |          ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+				else
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+					fi
+				fi
+			fi
+			fi
+#			echo "INFO      | $(date) |                                 Sequence length: $MY_SEQ_LENGTH bp "
+#			echo "INFO      | $(date) |                                 ($MY_SEQ_LENGTH bp) "
+#
+			if [[ ! -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
+				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ;
+			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
+				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				mv ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-1 ;
+				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ;
+			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ]]; then 
+				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-3 ;
+			fi
+		done
+	)
+else
+	(
+		for i in ./*."$MY_FASTA_EXTENSION"; do
+			MY_SPLIT_FASTA_BASENAME="$(basename "$i" "$(echo .$MY_FASTA_EXTENSION)")";
+			MY_TAXON_ID_LINE="$(head -n1 "$i" | sed 's/\ $//g; s/\ /\_/g; s/\|/\_/g; s/\ \|\ /\_/g; s/\>//g; s/\?//g')";
+			MY_SEQ_LINE="$(tail -n1 "$i" | sed 's/\ $//g')";
+			MY_SEQ_LENGTH="$(echo $MY_SEQ_LINE | perl -pe $'s/\n//g' | perl -pe 's/\ //g' | wc -c | sed 's/\t//g' | sed 's/\ //g')";
+#
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			if [[ "$count" -lt "10" ]]; then
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "INFO      | $(date) |          ...    Tip taxon:   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+				else
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          ...    Tip taxon:   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+					fi
+				fi
+			fi
+			if [[ "$count" -ge "10" ]] && [[ "$count" -lt "100" ]]; then
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "INFO      | $(date) |          ...    Tip taxon:  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+				else
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          ...    Tip taxon:  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+					fi
+				fi
+			fi
+			if [[ "$count" -ge "100" ]]; then
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "INFO      | $(date) |          ...    Tip taxon: ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+				else
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          ...    Tip taxon: ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+					fi
+				fi
+			fi
+			fi
+#
+			if [[ ! -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
+				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ;
+			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
+				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				mv ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-1 ;
+				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ;
+			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ]]; then 
+				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-3 ;
+			fi
+		done
+	)
+fi
+
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+#echo "INFO      | $(date) | Successfully split input sequential FASTA file $MY_FASTA into separate FASTA files, one per tip taxon. " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+#echo "INFO      | $(date) | Bye.
+#" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+#fi
+
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	echo "----------------------------------------------------------------------------------------------------------" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+	echo "" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+else
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
+fi
+
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
+fi
+
+if [[ "$MY_REMOVE_FASTA_SWITCH" = "1" ]]; then
+	rm "$MY_FASTA" ;
+fi
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename "$0") [OPTION]...
+
+  ${bold}Options:${reset}
+  -i   inputFASTA (def: NULL) input FASTA file name
+  -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
+       name, for example 'output.txt'
+  -v   verbose (def: 0, off; 1, on) specify verbose output to screen (stdout)
+  -r   removeFASTA (def: 0, off; 1, on) whether or not to remove input multi-FASTA file
+  -h   help text (also: --help) echo this help text and exit
+  -H   help text (also: --Help) echo verbose help text and exit
+  -V   version (also: --version) echo version and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates splitting out each sequence (tip taxon) in a multi-individual FASTA 
+ DNA sequence alignment file into separate FASTA files. The user supplies a single FASTA 
+ data file name usingthe -i flag. The starting FASTA file must be sequential in format, with 
+ each sequence consisting of the individual tip taxon name/ID on one line and the sequence 
+ on the next single line. Tip taxon names may include any alphanumeric, space, or special
+ characters. However, individual sequences may NOT be hard wrapped across multiple lines 
+ (e.g. using line breaking to limit sequence text to 60-90 nucleotide characters per line). 
+ The program also accommodates any file extension (although '.fasta', '.fas', or '.fa' are 
+ preferred). 
+	An option (-r 1) is available that allows removing original FASTA files. By default, the
+ program runs quietly with limited stdout or stderr output to screen (only filenames); however, 
+ the -v option causes verbose run information to be redirected to screen for each FASTA file 
+ (warning: highly redundant), and by setting the -o flag users can send output to a file 
+ with the user's preferred filename, saved in ./output/.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag, and has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6 Linux, but should work 
+ on many other versions of macOS or Linux. 
+
+ ${bold}Usage Examples${reset}
+    piranha -f FASTA2PHYLIP --args='-i input.fasta -v 1'  Split input.fasta to multiple FASTAs, 
+                                                          while echoing run output to screen
+    piranha -f FASTA2PHYLIP -a '-i input.fasta -v 1'      Same as above but passing arguments
+                                                          using -a flag
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Wed, Apr 1 12:05:32 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputFASTA (def: NULL) input FASTA file name
+  -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
+       name, for example 'output.txt'
+  -v   verbose (def: 1, off; 1, on) specify verbose output to screen (stdout)
+  -r   removeFASTA (def: 0, off; 1, on) whether or not to remove input multi-FASTA file
+  -h   help text (also: --help) echo this help text and exit
+  -H   help text (also: --Help) echo verbose help text and exit
+  -V   version (also: --version) echo version and exit
+  -d   debug (also: --debug) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates splitting out each sequence (tip taxon) in a multi-individual FASTA 
+ DNA sequence alignment file into separate FASTA files. The user supplies a single FASTA 
+ data file name usingthe -i flag. The starting FASTA file must be sequential in format, with 
+ each sequence consisting of the individual tip taxon name/ID on one line and the sequence 
+ on the next single line. Tip taxon names may include any alphanumeric, space, or special
+ characters. However, individual sequences may NOT be hard wrapped across multiple lines 
+ (e.g. using line breaking to limit sequence text to 60-90 nucleotide characters per line). 
+ The program also accommodates any file extension (although '.fasta', '.fas', or '.fa' are 
+ preferred). 
+	An option (-r 1) is available that allows removing original FASTA files. By default, the
+ program runs quietly with limited stdout or stderr output to screen (only filenames); however, 
+ the -v option causes verbose run information to be redirected to screen for each FASTA file 
+ (warning: highly redundant), and by setting the -o flag users can send output to a file 
+ with the user's preferred filename, saved in ./output/.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag, and has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6 Linux, but should work 
+ on many other versions of macOS or Linux. 
+
+ ${bold}Usage Examples${reset}
+    piranha -f FASTA2PHYLIP --args='-i input.fasta -v 1'  Split input.fasta to multiple FASTAs, 
+                                                          while echoing run output to screen
+    piranha -f FASTA2PHYLIP -a '-i input.fasta -v 1'      Same as above but passing arguments
+                                                          using -a flag
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Wed, Apr 1 12:05:32 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
+	echo "$VERBOSE_USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_FASTA=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_FASTA="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_FILE_SWITCH=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+ 	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+ 		MY_VERBOSE_OUT_SWITCH=0 ;
+ 	else 
+ 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+ 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+ 	fi
+# 
+	if [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_REMOVE_FASTA_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
+		MY_REMOVE_FASTA_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:o:v:r:d:' opt ; do
+#   case $opt in
+# ## FASTA2PHYLIP options:
+#     i) MY_FASTA=$OPTARG ;;
+#     o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+#     r) MY_REMOVE_FASTA_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+#if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+splitFASTA
+
+# Exit cleanly
+safeExit
