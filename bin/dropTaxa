@@ -181,7 +181,7 @@ fi
 ############ CASE #1: SINGLE INPUT SEQUENTIAL PHYLIP FILE
 if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_FILE_TYPE" = "PHYLIP" ]]; then 
 	if [[ "$INPUT_FILE" != "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "0" ]]; then
-		if [[ ! -s "$INPUT_FILE" ]]; then
+		if [[ -s "$INPUT_FILE" ]]; then
 			#### Get PHYLIP characteristics:
 			MY_PHYLIP_EXTENSION=".${INPUT_FILE##*.}";
 			MY_PHYLIP_BASENAME="$(echo "${INPUT_FILE%%.*}")";
@@ -351,7 +351,7 @@ fi
 ############ CASE #3: SINGLE INPUT SEQUENTIAL, NON-WRAPPED FASTA FILE
 if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_FILE_TYPE" = "FASTA" ]] || [[ "$MY_FILE_TYPE" = "FAS" ]]; then 
 	if [[ "$INPUT_FILE" != "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "0" ]]; then
-		if [[ ! -s "$INPUT_FILE" ]]; then
+		if [[ -s "$INPUT_FILE" ]]; then
 			#### Get FASTA characteristics:
 			MY_FASTA_EXTENSION=".${INPUT_FILE##*.}";
 			MY_FASTA_BASENAME="$(echo "${INPUT_FILE%%.*}")";
