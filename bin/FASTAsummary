@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTAsummary.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
-# Last update: April 3, 2020                                                             #
+# Last update: April 6, 2020                                                             #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ FASTAsummary () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTAsummary, v1.0.0 April 2020  (part of PIrANHA v0.3a2)      "
+echo "INFO      | $(date) | FASTAsummary, v1.0.1 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -454,6 +454,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.
  Copyright (c) 2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
