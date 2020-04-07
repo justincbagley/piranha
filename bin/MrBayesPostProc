@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MrBayesPostProc.sh                                                               #
-  version="v1.7.1"                                                                       #
+  version="v1.8.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -143,7 +143,7 @@ MrBayesPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MrBayesPostProc, v1.7.1 April 2020                             "
+echo "INFO      | $(date) | MrBayesPostProc, v1.8.0 April 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2017–2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -157,6 +157,9 @@ echoCDWorkingDir
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 echo "INFO      | $(date) | Step #2: Fix NEXUS filenames, check whether MrBayes is installed, and attempt to set name or path to MrBayes executable. "
 	## First, fix NEXUS filename extensions to conform to the standard ('.nex') expected by
@@ -339,6 +342,10 @@ else
 fi
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -364,6 +371,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
        0 will keep temporary files created during the run for later inspection 
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  Runs a simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012)
@@ -480,6 +488,18 @@ fi
 	else 
 		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
 		MY_TEMP_FILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
 
 # ############ PARSE THE OPTIONS
