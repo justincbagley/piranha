@@ -155,6 +155,10 @@ echoCDWorkingDir
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
 
 echo "INFO      | $(date) |          Checking for 'beast_runner.cfg' configuration file... "
 if [[ -f ./beast_runner.cfg ]]; then 
@@ -354,6 +358,10 @@ echo "INFO      | $(date) |          Cleaning up: removing temporary files from 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -373,6 +381,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -h   help text (also: -help) echo this help text and exit
   -H   verbose help text (also: -Help) echo verbose help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012;
@@ -435,6 +444,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
   -h   help text (also: -help) echo this help text and exit
   -H   verbose help text (also: -Help) echo verbose help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates conducting multiple runs of BEAST1 or BEAST2 (Drummond et al. 2012;
@@ -562,6 +572,18 @@ fi
 	else 
 		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g')";
 		JAVA_MEM_ALLOC="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
 
 
