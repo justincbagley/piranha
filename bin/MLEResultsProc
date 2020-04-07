@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MLEResultsProc.sh                                                                #
-  VERSION="v1.4.1"                                                                       #
+  VERSION="v1.5.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ MLEResultsProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MLEResultsProc, v1.4.1 April 2020                              "
+echo "INFO      | $(date) | MLEResultsProc, v1.5.0 April 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -150,6 +150,10 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 
 	MY_BEAST_OUTPUT_FILES=*.out ;
@@ -290,12 +294,22 @@ if [[ -s ./2logeB10.Rout  ]] && [[ "$(wc -c 2logeB10.Rout | perl -pe 's/\ +([0-9
 	echo "INFO      | $(date) |          R calculations complete. "
 fi
 
+
+echo "INFO      | $(date) | Step #6: Clean up workspace by removing temporary files. "
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
 #echo "INFO      | $(date) | Done summarizing marginal-likelihood estimation results in BEAST using MLEResultsProc. "
 #echo "INFO      | $(date) | Bye.
 #"
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
 
 ##########################################################################################
 ######################################### END ############################################
@@ -314,6 +328,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Options:${reset}
   -h   help text (also: -help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates post-processing of marginal likelihood estimation results from 
@@ -359,6 +374,40 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##
