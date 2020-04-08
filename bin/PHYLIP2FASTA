@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2FASTA.sh                                                                  #
-  VERSION="v1.2.4"                                                                       #
+  VERSION="v1.3.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: April 6, 2020                                                             #
+# Last update: April 7, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -136,15 +136,14 @@ PHYLIP2FASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2FASTA, v1.2.4 April 2020       "
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.3.0 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting PHYLIP2FASTA pipeline... "
-	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful environmental variables and functions, setting working directory, and checking machine type. "
+	echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -153,59 +152,157 @@ echoCDWorkingDir
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #2: Convert PHYLIP multiple sequence alignment (MSA) files to FASTA format. "
-fi
-###### Convert PHYLIP files to FASTA format:
 
+############ CONVERT PHYLIP FILES TO FASTA FORMAT
+
+############ CASE #1: SINGLE INPUT SEQUENTIAL PHYLIP FILE
+if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" != "1" ]]; then
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Step #2: Convert single input PHYLIP alignment file to FASTA format. "
+	fi
 	j="$INPUT_PHYLIP_FILE"; 
 	INPUT_PHYLIP_FILE="$(echo "$j" | sed 's/\.\///g')";
-	
-	if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
-		echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE ... "
-		MY_BASENAME="$(basename $INPUT_PHYLIP_FILE '.phy')" ;
-		sed '1d' "$INPUT_PHYLIP_FILE" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
-	elif [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ ! -s "$INPUT_PHYLIP_FILE" ]]; then
-		echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
-		exit ;
+	MY_BASENAME="$(basename "$INPUT_PHYLIP_FILE" '.phy')" ;
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Converting $INPUT_PHYLIP_FILE ... "
 	fi
+#
+	## Check to make sure PHYLIP header of only numbers (ntax  nchar) is present,
+	## and if present do sed 1d first; if _not_ present, then do not do sed 1d at
+	## all because that would cause you to lose the first sequence/tip taxon.
+	## WORKING - $MY_HEADER_CHECK is 1 (true) for input PHYLIP file _with_ a two-
+	## part, numeric PHYLIP header, 0 (false) for input PHYLIP file starting with
+	## the first sequence (presumably):
+	#
+	# WORKING (this is working, but commented out to see if I can improve it):
+	# MY_HEADER_CHECK="$(grep '^[0-9][[:blank:]]*[0-9]' "$INPUT_PHYLIP_FILE" | wc -l | sed 's/\ //g')";
+	# WORKING 2 (also working, improved code):
+	# MY_HEADER_CHECK="$(grep -v '[A-z\-]' "$INPUT_PHYLIP_FILE" | grep '^[0-9][[:blank:]]*[0-9]' | wc -l | sed 's/\ //g')";
+	# WORKING 3 (even better code):
+	MY_HEADER_CHECK="$(head -n1 "$INPUT_PHYLIP_FILE" | perl -pe $'s/^[0-9]*[[:space:]]*[0-9]*$\n//g' | wc -l | sed 's/\ //g')";
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Header check: $MY_HEADER_CHECK"
+	fi
+	if [[ "$MY_HEADER_CHECK" = "0" ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) |          PHYLIP header detected... "
+		fi
+		sed '1d' "$INPUT_PHYLIP_FILE" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+	fi
+	if [[ "$MY_HEADER_CHECK" = "1" ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "WARNING!  | $(date) |          PHYLIP header NOT detected... "
+		fi
+		sed 's/^/\>/g' "$INPUT_PHYLIP_FILE" | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+	fi
+#
+	## Clean FASTA. Remove any tabs if present from the final FASTA file generated above:
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Cleaning final FASTA file ${MY_BASENAME}.fas... "
+	fi
+	perl -p -i -e 's/\t//g' "$MY_BASENAME".fas  ;
+#
+elif [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ ! -s "$INPUT_PHYLIP_FILE" ]]; then
+	echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
+	exit ;
+fi
 
-	if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+############ CASE #2: MULTIPLE SEQUENTIAL PHYLIP FILES IN CURRENT DIRECTORY
+if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
 	MY_PHYLIP_COUNT="$(ls -1 *.phy 2>/dev/null | wc -l)";
-		if [[ "$MY_PHYLIP_COUNT" != "0" ]]; then
+	if [[ "$MY_PHYLIP_COUNT" != "0" ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Step #2: Convert multiple PHYLIP alignment files in current directory to FASTA format. "
+		fi
 		(
 			for i in ./*.phy; do
-				echo "$i" ;
-				MY_BASENAME="$(basename $i '.phy')" ;
-				sed '1d' "$i" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+				MY_BASENAME="$(basename "$i" '.phy')" ;
+				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) | Converting $i ... "
+				fi
+				# WORKING!
+				MY_HEADER_CHECK="$(head -n1 "$i" | perl -pe $'s/^[0-9]*[[:space:]]*[0-9]*$\n//g' | wc -l | sed 's/\ //g')";
+				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) |          Header check: $MY_HEADER_CHECK"
+				fi
+				if [[ "$MY_HEADER_CHECK" = "0" ]]; then
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) |          PHYLIP header detected. Removing header line... "
+					fi
+					sed '1d' "$i" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+				fi
+				if [[ "$MY_HEADER_CHECK" = "1" ]]; then
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "WARNING!  | $(date) |          PHYLIP header NOT detected. Keeping first line... "
+					fi
+					sed 's/^/\>/g' "$i" | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
+				fi
+#
+				## Clean FASTA. Remove any tabs if present from the final FASTA file generated above:
+				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+					echo "INFO      | $(date) |          Cleaning final FASTA file ${MY_BASENAME}.fas... "
+				fi
+				perl -p -i -e 's/\t//g' "$MY_BASENAME".fas  ;
+#
 			done
 		)
+	else
+		echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP files in current working directory. Quitting... " 
+		exit ;
+	fi
+fi
+
+
+############ CLEAN WORKING DIRECTORY BY ORGANIZING FILES AND REMOVING TEMPORARY FILES.
+if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]; then
+###### SINGLE CLEANUP: 
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files and removing original files per user request. "
 		fi
+		if [[ -s "$INPUT_PHYLIP_FILE" ]]; then rm "$INPUT_PHYLIP_FILE" ; fi
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
-	## Clean FASTA. Remove any tabs if present from the final FASTA file generated above:
-	perl -p -i -e 's/\t//g' "$MY_BASENAME".fas
-
-
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files and removing temporary files per user request. "
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -d fasta/ ]] && [[ ! -d phylip/ ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files while keeping original files per user request. "
+		fi
+		mkdir fasta/ ;
+		mkdir phylip/ ;
+		mv "$INPUT_PHYLIP_FILE" ./phylip/ ;
+		mv "$MY_BASENAME".fas ./fasta/ ;
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+	fi
 fi
-###### CLEANUP: Remove PHYLIP files in <workingDir>, conditional upon user request. Also, 
-## if PHYLIP files kept, then organize output FASTAs into one dir, and original PHYLIPs into
-## a separate dir.
+
+if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+###### MULTI CLEANUP: Remove PHYLIP files in $USER_SPEC_PATH, conditional upon user request. 
+## Also, if PHYLIP files kept, then organize output FASTAs into fasta/ dir, and original 
+## PHYLIPs into a separate phylip/ dir.
 	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files and removing original files per user request. "
+		fi
 		if [[ ! -z ./*.phy ]]; then rm ./*.phy ; fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
-	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s fasta/ ]] && [[ ! -s phylip/ ]]; then
+	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -d fasta/ ]] && [[ ! -d phylip/ ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files while keeping original files per user request. "
+		fi
 		mkdir fasta/ ;
 		mkdir phylip/ ;
 		mv ./*.phy ./phylip/ ;
 		mv ./*.fas ./fasta/ ;
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
+fi
 
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 #	echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment(s) to FASTA format using PHYLIP2FASTA.sh." 
@@ -215,12 +312,16 @@ fi
 
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
-	echo "output file(s): ./${$MY_BASENAME}.fas"
+	echo "output file(s): ./${MY_BASENAME}.fas"
 fi
 if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
-	echo "output file(s): Multiple FASTA DNA sequence alignments in current directory"
+	echo "output file(s): Multiple FASTA DNA sequence alignments in fasta/ subfolder"
 fi
 echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
 
 ##########################################################################################
 ######################################### END ############################################
@@ -233,33 +334,44 @@ echo ""
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputPHYLIP (def: NULL) input PHYLIP filename; run on this individual PHYLIP file
-  -m   multiPHYLIP (def: 1, turned on; 0, off) run on multiple PHYLIP files in current <workingDir>
-  -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
-       converted during the run
-  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to 
-       screen (stdout)
+  -i   inputPHYLIP (def: NULL) name of input PHYLIP DNA sequence alignment file
+  -m   multiPHYLIP (def: 0, turned off; 1, on) convert multiple PHYLIP files in current 
+       working directory to FASTA format
+  -k   keepPHYLIP (def: 1, on, keep; 0, off) whether or not to keep original file(s)
+  -v   verbose (def: 0, off; 1, on) specify verbose output (stdout) to screen
   -h   help text (also: --help) show this help text and exit
   -V   version (also: --version) echo version and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates the conversion of one or multiple PHYLIP (Felsenstein 2002) DNA 
- sequence alignment files into FASTA ('.fas') format. By default, this script converts all
- PHYLIP files in the current working directory to FASTA format. However, to specify to convert 
- a single PHYLIP to FASTA, pass the name of the target PHYLIP file to the program using the 
- -i flag. Also by default, the program will keep (modified) intermediate PHYLIP files generated
- during the run (turn off using -k 0) and print text output to screen (turn off using -v 0). 
- Arguments are passed to the program using the PIrANHA -a | --args flag (see examples below). 
- Sequence names should include alphanumeric, hyphen, and underscore characters but no spaces, 
- or else there could be issues. Also, PHYLIP alignment files must have the extension '.phy'.
+ sequence alignment files into FASTA ('.fas') format, while saving (-k 1) or deleting (-k 0) 
+ the original input file(s). There are two basic workflows for running this script. 1) To 
+ convert a single input PHYLIP file to FASTA format, the user must pass the name of the 
+ target PHYLIP file to the program using the -i flag. 2) To convert all PHYLIP files in the 
+ current working directory to FASTA format, the user must turn on the <multiPHYLIP> option 
+ with -m 1.
+	By default, the program will keep the original PHYLIP files; however, an option (-k 1) 
+ is available that allows removing them. Also by default, the script will run quietly with 
+ little output to screen; however, setting the -v option to 1 redirects verbose run information 
+ to screen for each input file. Arguments are passed to the program using PIrANHA's -a|--args 
+ flag (see examples below). Sequence names should include alphanumeric, hyphen, and underscore 
+ characters but no spaces, or else there could be issues. 
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. There are no other dependencies. 
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
+    piranha -f PHYLIP2FASTA --args='-m 1 -k 1 -v 1'         Run PHYLIP2FASTA on all PHYLIP files in
+                                                            working dir, keep original files, and
+                                                            print stdout to screen
     piranha -f PHYLIP2FASTA --args='-i <inputPHYLIP> -k 1'  Run PHYLIP2FASTA on user file and keep
-     													 	intermediate FASTAs
-    piranha -f PHYLIP2FASTA -a '-i <inputPHYLIP> -k 1'  	Same as above, but passing arguments 
-    													    with -a flag
+                                                            original PHYLIP file
+    piranha -f PHYLIP2FASTA -a '-i <inputPHYLIP> -k 1'      Same as above, but passing arguments 
+                                                            with -a flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -318,14 +430,14 @@ fi
 	fi
 #
 	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MULTIPLE_PHYLIP_SWITCH=1 ;
+		MULTIPLE_PHYLIP_SWITCH=0 ;
 	else 
 		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
 		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
 	fi
 #
 	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		KEEP_ORIG_PHYLIP_SWITCH=0 ;
+		KEEP_ORIG_PHYLIP_SWITCH=1 ;
 	else 
 		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
 		KEEP_ORIG_PHYLIP_SWITCH="$MY_ARG" ;
@@ -338,16 +450,28 @@ fi
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
 	fi
 #
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
 
 
 # ############ PARSE THE OPTIONS
-# while getopts 'i:m:k:v:' opt ; do
+# while getopts 'i:m:k:v:d:' opt ; do
 #   case $opt in
 # ## PHYLIP2FASTA options:
 #     i) INPUT_PHYLIP_FILE=$OPTARG ;;
 #     m) MULTIPLE_PHYLIP_SWITCH=$OPTARG ;;
 #     k) KEEP_ORIG_PHYLIP_SWITCH=$OPTARG ;;
 #     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
 # ## Missing and illegal options:
 #     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
 #        echo "$USAGE" >&2
