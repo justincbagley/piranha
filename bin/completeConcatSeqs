@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeConcatSeqs.sh                                                            #
-  VERSION="v2.0.2"                                                                       #
+  VERSION="v2.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.                       #
-# Last update: April 6, 2020                                                             #
+# Last update: April 8, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ completeConcatSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeConcatSeqs, v2.0.2 April 2020                          "
+echo "INFO      | $(date) | completeConcatSeqs, v2.0.3 April 2020                          "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -158,6 +158,10 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -377,6 +381,11 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 echo ""
 
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -398,6 +407,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
        screen (stdout)
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT runs in a working directory containing a series of PHYLIP (Felsenstein 2002)
@@ -443,6 +453,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.
  Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
@@ -504,6 +519,18 @@ fi
 	else 
 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
 
 
