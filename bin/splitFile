@@ -1,0 +1,442 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: splitFile.sh                                                                     #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.                      #
+# Last update: April 8, 2020                                                             #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT TO SPLIT AN INPUT FILE INTO N EQUAL PARTS (HORIZONTALLY, BY ROWS), WITH   #
+# OPTIONAL USER-SPECIFIED OUTPUT BASENAMES                                               #
+#                                                                                        #
+##########################################################################################
+
+# DESIRED USAGE:
+# splitFile -i <inputFile> -p <partsTotal> -o <output>
+# where -i is single input and -p is mandatory but -o is optional
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+
+splitFile () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | splitFile, v1.0.0 April 2020                                   "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting splitFile script... "
+	echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
+fi
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+#echo "INFO      | $(date) |          Checking machine type... "
+checkMachineType
+#echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+## Clean any temporary files from previous run:
+if [[ -s ./.tmpsed ]]; then rm ./.tmpsed  > /dev/null 2>&1 ; fi
+if [[ -s ./.tmpEnds ]]; then rm ./.tmpEnds  > /dev/null 2>&1 ; fi
+if [[ -s ./.tmpStarts ]]; then rm ./.tmpStarts  > /dev/null 2>&1 ; fi
+if [[ -s ./.DS_Store ]]; then rm ./.DS_Store  > /dev/null 2>&1 ; fi
+
+
+
+############ SPLIT FILE INTO N TOTAL PARTS, WITH ROUNDING WHERE NECESSARY. SAVE SEPARATE PARTS FILES WITH
+############ USER-SPECIFIED BASENAME IF GIVEN
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #2: Split file. "
+fi
+	## Modified from my existing PIrANHA code, as well as ideas from the following URLs:
+	## - https://askubuntu.com/questions/474556/hiding-output-of-a-command
+	## - https://stackoverflow.com/questions/7764755/how-to-split-a-file-into-equal-parts-without-breaking-individual-lines
+	## - https://bits.mdminhazulhaque.io/linux/round-number-in-bash-script.html
+	
+	## Work out line counts:
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Working out line counts... "
+	fi
+	TOTAL_LINES="$(wc -l < "$MY_INPUT_FILE")";
+	LINES="$(calc $TOTAL_LINES+$MY_NUM_PARTS-1)";
+	LINES_PER_FILE="$(calc $LINES/$MY_NUM_PARTS)";
+	LINES_PER_FILE_ROUNDED="$(echo $LINES_PER_FILE | awk '{print int($0)}')";
+
+	## Make line ranges for sed:
+	( for i in $(seq 1 "$LINES_PER_FILE_ROUNDED" "$TOTAL_LINES"); do echo "$i" >> ./.tmpStarts; done );
+	( for i in $(seq "$LINES_PER_FILE_ROUNDED" "$LINES_PER_FILE_ROUNDED" "$TOTAL_LINES"); do echo "$i" >> ./.tmpEnds; done ); 
+	echo "$TOTAL_LINES" >> ./.tmpEnds ;
+	paste ./.tmpStarts ./.tmpEnds | perl -pe $'s/\ +/\t/g' | perl -pe 's/\t/\,/g; s/\,\,/\,/g' > ./.tmpsed ;
+	#perl -p -i -e $'s/\ +/\t/g' ./.tmpsed ;
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Split line ranges: "
+	fi
+	cat ./.tmpsed 
+
+	## Use while loop through tmp file of sed line ranges (./.tmpsed) to make split files:
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Making split file: "
+	fi
+	count=1
+	(
+		while read line; do
+			sed -n "$line"p "$MY_INPUT_FILE" > "$MY_OUTPUT_BASENAME""$count".txt ;
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |          $((count++))... "
+			fi
+		done < ./.tmpsed
+	)
+
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Check split files: "
+		echo "INFO      | $(date) |          "
+	fi
+	wc -l ./"$MY_OUTPUT_BASENAME"*.txt  | perl -pe $'s/^\ +//g' ;
+#
+	MY_NUM_SPLIT_FILES="$(ls ./"$MY_OUTPUT_BASENAME"*.txt | wc -l  | perl -pe $'s/^\ +//g')";
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          "
+		echo "INFO      | $(date) |          $MY_NUM_SPLIT_FILES split files were created. "
+	fi
+	if [[ "$MY_NUM_SPLIT_FILES" = "$MY_NUM_PARTS" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          The number of split files exactly matches user-input <numParts> (${MY_NUM_PARTS}). "
+	elif [[ "$MY_NUM_SPLIT_FILES" != "$MY_NUM_PARTS" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          The number of split files is slightly different from <numParts> (${MY_NUM_PARTS}), due to rounding. "
+	fi
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Step #3: Clean up working directory by removing temporary files etc. "
+fi
+############ CLEAN UP WORKING DIRECTORY BY REMOVING TEMPORARY FILES.
+## Remove temporary files in working directory:
+
+	if [[ -s ./.tmpsed ]]; then rm ./.tmpsed  > /dev/null 2>&1 ; fi
+	if [[ -s ./.tmpEnds ]]; then rm ./.tmpEnds  > /dev/null 2>&1 ; fi
+	if [[ -s ./.tmpStarts ]]; then rm ./.tmpStarts  > /dev/null 2>&1 ; fi
+	if [[ -s ./.DS_Store ]]; then rm ./.DS_Store  > /dev/null 2>&1 ; fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
+#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+#	echo "INFO      | $(date) |          Done splitting $MY_INPUT_FILE using splitFile.sh in PIrANHA." 
+#	echo "Bye.
+#"
+
+echo "----------------------------------------------------------------------------------------------------------"
+echo "output file(s)/folder(s): $MY_NUM_SPLIT_FILES split files in current directory "
+echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename $0) [OPTION]...
+
+ ${bold}Options:${reset}
+  -i   inputFile (def: NULL) name of input file to be split
+  -n   numParts (def: NULL) desired total number of parts, may change due to rounding
+  -o   output (def: split) output basename for split files
+  -v   verbose (def: 0, off; 1, on) step verbose output to screen (stdout)
+  -h   help text (also: --help) show this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT splits an input file (-i flag) into n (-n flag) parts (horizontally, by row).
+ By default, the basename of output files is 'split', so split files will be named split1.txt, 
+ split2.txt, ... , splitn.txt. An option (-o flag) is available that allows the user to 
+ specify an output file basename. Also by default, the program runs quietly with limited 
+ stdout or stderr output to screen; however, setting the -v option to 1 redirects verbose 
+ run information to screen.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. There are no other dependencies. 
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f splitFile --args='-i <inputFile> -n <numParts>'   Generic usage
+    piranha -f splitFile --args='-i input.txt -n 10'             Split input.txt into 10 parts
+    piranha -f splitFile --args='-i input.txt -n 10 -o out'      Split input.txt into 10 parts, 
+                                                                 named out1.txt, out2.txt, etc.
+    piranha -f splitFile -a '-i input.txt -n 10 -o out'          Same as above, but using -a flag
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename $0) $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./*.tmp ]]; then rm ./*.tmp ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#perl -p -i -e $'s/\ /\n/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_INPUT_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NUM_PARTS=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-n' ./args.txt | perl -pe 's/\-n//g' | perl -pe 's/\ //g')";
+		MY_NUM_PARTS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_BASENAME=split ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_BASENAME="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:n:o:v:d:' opt ; do
+#   case $opt in
+# ## splitFile options:
+#     i) MY_INPUT_FILE=$OPTARG ;;
+#     n) MY_NUM_PARTS=$OPTARG ;;
+#     o) MY_OUTPUT_BASENAME=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+
+# Store the remaining part as arguments.
+# args+=("$@")
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+splitFile
+
+# Exit cleanly
+safeExit
