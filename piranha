@@ -9,7 +9,7 @@
   VERSION="v1.0.9"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: April 7, 2020                                                             #
+# Last update: April 8, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -140,7 +140,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.0.9, April 2020  (main script for PIrANHA v0.3a2, post-release update Apr 7 00:24:54 CDT 2020)          "
+piranha v1.0.9, April 2020  (main script for PIrANHA v0.3a2, post-release update Apr 8 21:43:48 CDT 2020)          "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.  "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -321,6 +321,8 @@ SpeciesIdentifier      Runs the Taxon DNA software program SpeciesIdentifier, wh
                        known Meier et al. (2006) DNA barcoding paper.
 splitFASTA             Automates splitting a multi-individual FASTA DNA sequence alignment into one FASTA file per
                        sequence (tip taxon). Works with sequential FASTAs with no text wrapping across lines.
+splitFile              Function that splits an input file into n parts (horizontally, by row) and optionally allows 
+                       the user to specify the output basename for the resulting split files.
 splitPHYLIP            Splits a sequential PHYLIP DNA sequence alignment into separate PHYLIP sequence alignments,
                        one per partition (read from a user-specified partition file).
 taxonCompFilter        Function that loops through the multiple sequence alignments and keeps only those alignments 
