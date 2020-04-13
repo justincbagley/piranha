@@ -9,7 +9,7 @@
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.                        #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -148,7 +148,7 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting dropTaxa script... "
-	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful variables and functions, setting working directory, and checking machine type. "
+	echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -536,7 +536,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFile (def: NULL) name of input DNA sequence alignment file
@@ -546,7 +546,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -t   <taxonList> (def: NULL) name of taxon list file containing the names of tip
        taxa to remove, one per line
   -k   keepFile (def: 0, off; 1, on, keep) whether or not to keep original file(s)
-  -v   verbose (def: 0, off; 1, on) specify verbose filename output to screen (stdout)
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -h   help text (also: --help) show this help text and exit
   -V   version (also: --version) echo version of this script and exit
   -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
@@ -572,21 +572,23 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f dropTaxa --args='-i <inputFile> -f phylip -t <taxonList> -v 1'     Drop taxa in <taxonList> from single PHYLIP file, overwrite 
-                                                                                  original, and print run updates (stdout) to screen
+    piranha -f dropTaxa -h                                               Show dropTaxa help text and exit
 
-    piranha -f dropTaxa --args='-i <inputFile> -f fasta -t <taxonList>'           Drop taxa from single FASTA file, overwrite original file
-    piranha -f dropTaxa --args='-i <inputFile> -f phylip -t <taxonList>'          Drop taxa from single PHYLIP file, overwrite original file
-    piranha -f dropTaxa --args='-i <inputFile> -f fasta -t <taxonList> -k 1'      Drop taxa from single FASTA file, keep original file
-    piranha -f dropTaxa --args='-i <inputFile> -f phylip -t <taxonList> -k 1'     Drop taxa from single PHYLIP file, keep original file
+    piranha -f dropTaxa -i <inputFile> -f phylip -t <taxonList> -v 1     Drop taxa in <taxonList> from single PHYLIP file, overwrite 
+                                                                         original, and print run updates (stdout) to screen
 
-    piranha -f dropTaxa --args='-m 1 -f phylip -t <taxonList> -v 1'               Drop taxa from multiple PHYLIP files, overwrite originals, and
-                                                                                  print run updates (stdout) to screen
+    piranha -f dropTaxa -i <inputFile> -f fasta -t <taxonList>           Drop taxa from single FASTA file, overwrite original file
+    piranha -f dropTaxa -i <inputFile> -f phylip -t <taxonList>          Drop taxa from single PHYLIP file, overwrite original file
+    piranha -f dropTaxa -i <inputFile> -f fasta -t <taxonList> -k 1      Drop taxa from single FASTA file, keep original file
+    piranha -f dropTaxa -i <inputFile> -f phylip -t <taxonList> -k 1     Drop taxa from single PHYLIP file, keep original file
 
-    piranha -f dropTaxa --args='-m 1 -f fasta -t <taxonList>'                     Drop taxa from multiple FASTA files, overwrite original files
-    piranha -f dropTaxa --args='-m 1 -f phylip -t <taxonList>'                    Drop taxa from multiple PHYLIP files, overwrite original files
-    piranha -f dropTaxa --args='-m 1 -f fasta -t <taxonList> -k 1'                Drop taxa from multiple FASTA files, keep original files
-    piranha -f dropTaxa --args='-m 1 -f phylip -t <taxonList> -k 1'               Drop taxa from multiple PHYLIP files, keep original files
+    piranha -f dropTaxa -m 1 -f phylip -t <taxonList> -v 1               Drop taxa from multiple PHYLIP files, overwrite originals, and
+                                                                         print run updates (stdout) to screen
+
+    piranha -f dropTaxa -m 1 -f fasta -t <taxonList>                     Drop taxa from multiple FASTA files, overwrite original files
+    piranha -f dropTaxa -m 1 -f phylip -t <taxonList>                    Drop taxa from multiple PHYLIP files, overwrite original files
+    piranha -f dropTaxa -m 1 -f fasta -t <taxonList> -k 1                Drop taxa from multiple FASTA files, keep original files
+    piranha -f dropTaxa -m 1 -f phylip -t <taxonList> -k 1               Drop taxa from multiple PHYLIP files, keep original files
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

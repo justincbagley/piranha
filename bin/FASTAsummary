@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTAsummary.sh                                                                  #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ FASTAsummary () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTAsummary, v1.1.0 April 2020                                "
+echo "INFO      | $(date) | FASTAsummary, v1.1.1 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -221,14 +221,14 @@ if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 
 
 	echo "INFO      | $(date) |          Calculating number of parsimony-informative sites (PIS) for single input FASTA using piranha's calcAlignmentPIS function..."
-	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR
-	### THE INPUT FASTA (TESTING WITH SINGLE INPUT FASTA)
+	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR THE
+	### INPUT FASTA (TESTING WITH SINGLE INPUT FASTA)
 
 	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
 	
 echo "#!/bin/sh
 
-$MY_PIRANHA_PATH -f calcAlignmentPIS --args='-i $INPUT_FASTA_FILE -k 0'
+$MY_PIRANHA_PATH -f calcAlignmentPIS -i $INPUT_FASTA_FILE -k 0'
 
 " > ./piranha_calcAlignmentPIS.sh
 
@@ -313,42 +313,30 @@ count=1
 	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR
 	### MULTIPLE FASTA FILES IN CURRENT WORKING DIRECTORY
 
-	#echo "A"
 	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
 	echo "INFO      | $(date) |          piranha path: $MY_PIRANHA_PATH"
 
-#echo "B"
 echo "#!/bin/sh
 
-$MY_PIRANHA_PATH -f calcAlignmentPIS --args='-k 0'
+$MY_PIRANHA_PATH -f calcAlignmentPIS -k 0'
 
 " > ./piranha_calcAlignmentPIS.sh
 
-	#echo "C"
 	chmod u+x ./piranha_calcAlignmentPIS.sh ;
 
-	#echo "D"
 	. ./piranha_calcAlignmentPIS.sh  >/dev/null 2>&1 ;
 	
-	#echo "E"
 	#cp ./pis_results_table.txt ./FASTA_PIS.list.txt ;
 	cut -f 1 ./pis_results_table.txt | tail -n+2 | perl -pe $'s/\t//g; s/\ //g' > ./FASTA_PIS.list.txt ;
-	#echo "F"
 
 	### POST-PROCESSING RESULTS
-	#echo "G"
 	echo "File	nTax	nChar	PIS	propChar	propGap	propA	propC	propT	propG" > ./header.tmp ;
 	MY_N_FASTA_FILES="$(wc -l ./FASTA_PIS.list.txt | perl -pe $'s/\ \.\/.*//g; s/\ //g')";
-	#echo "H"
 	cp ./FASTA_order.list.tmp ./FASTA_order.list2.tmp
-	#echo "I"
 	head -n"$MY_N_FASTA_FILES" ./FASTA_order.list2.tmp > ./FASTA_order.list.tmp
 #
-	#echo "J"
 	paste ./FASTA_order.list.tmp ./FASTA_nTax.list.txt ./FASTA_nChar.list.txt ./FASTA_PIS.list.txt ./propChar.list.tmp ./propGap.list.tmp ./propA.list.tmp ./propC.list.tmp ./propT.list.tmp ./propG.list.tmp > ./FASTA_table.tmp ;
-	#echo "K"
 	cat ./header.tmp ./FASTA_table.tmp > ./FASTA_Summary.txt
- 	#echo "L"
 fi
 ###
 
@@ -383,6 +371,7 @@ echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary fi
 		rm ./pis_results_table_revsort.txt ; 
 	fi
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 	echo "input FASTA file: $INPUT_FASTA_FILE "
@@ -428,11 +417,12 @@ USAGE="Usage: $(basename $0) [OPTION]...
  THIS SCRIPT reads one (-i flag) or multiple (-m flag) multi-individual FASTA DNA sequence 
  alignment files and produces a summary of their main characteristics, including number of
  taxa (tips/sequence labels), number of characters (bp), number of parsimony-informative 
- sites (PIS), proportion/percentage nucleotide characters, proportion/percentage gap 
- characters, and proportions/percentages of A, C, T, and G bases in the alignment(s), all 
- of which are saved to file. Count data are saved to separate lists, and all statistics are 
- saved to a single summary table. Specifically, output for an analysis of a single input
- FASTA file is saved to the following files:
+ sites (PIS), proportion nucleotide characters, proportion gap characters, base proportions 
+ (A, C, T, and G), percentage nucleotide characters, percentage gap characters, and base 
+ percentages (A, C, T, and G) in the alignment(s), all of which are saved to file. Count 
+ data are saved to separate lists, and all statistics are saved to a single summary table. 
+ Specifically, output for an analysis of a single input FASTA file is saved to the following 
+ files:
 
  - No. taxa:                               FASTA_nTax.list.txt
  - No. characters:                         FASTA_nChar.list.txt
@@ -451,9 +441,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f FASTAsummary --args='-h'                 Obtain FASTAsummary help text
-    piranha -f FASTAsummary --args='-i <inputFASTA>'    Summarize single FASTA file
-    piranha -f FASTAsummary --args='-m 1'               Summarize multiple FASTA files
+    piranha -f FASTAsummary -h                  Show this help text and exit
+    piranha -f FASTAsummary -i <inputFASTA>     Summarize a single FASTA file
+    piranha -f FASTAsummary -m 1                Summarize multiple FASTA files
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2Mega.sh                                                                   #
-  VERSION="v1.2.3"                                                                       #
+  VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -135,7 +135,7 @@ PHYLIP2Mega () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2Mega, v1.2.3 April 2020"
+echo "INFO      | $(date) | PHYLIP2Mega, v1.2.4 April 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -319,7 +319,7 @@ fi
 		fi
 		mv ./*.phy ./phylip/ ;
 		mv ./*.meg ./mega/ ;
-		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
@@ -347,7 +347,7 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) input PHYLIP filename; run on this individual PHYLIP file
@@ -360,18 +360,21 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -V   version (also: --version) echo version and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT automates converting one or more multiple sequence alignment (MSA) files in
- PHYLIP format (Felsenstein 2002) into the correct input format for Mega (Mega v7+ or X; 
- Kumar et al. 2016, 2018), while saving (-k 1) or writing over (-k 0) the original PHYLIP 
- files. Sequence names should include alphanumeric, hyphen, and underscore characters but 
- no spaces or fully numeric names, or else there could be issues. Also, PHYLIP alignment 
- files must have the extension '.phy'.
+ THIS SCRIPT automates converting one (-i flag) or multiple (-m flag) PHYLIP-formatted 
+ (Felsenstein 2002) multiple sequence alignments (MSAs) into the correct input format for
+ Mega software (Mega v7+ or X; Kumar et al. 2016, 2018), while saving (-k 1) or writing over 
+ (-k 0; default) the original PHYLIP files(s). Sequence names should include alphanumeric, 
+ hyphen, and underscore characters but no spaces or fully numeric names, or else there could 
+ be issues. Also, PHYLIP alignment files must have the extension '.phy'.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f PHYLIP2Mega --args='-i <inputPHYLIP> -k 1'   Convert single PHYLIP to Mega, keeping original file
-    piranha -f PHYLIP2Mega --args='-m1 -k 1'                Convert multiple PHYLIP files to Mega, keeping original files
+    piranha -f PHYLIP2Mega -i <inputPHYLIP>          Convert <inputPHYLIP> file to Mega format
+    piranha -f PHYLIP2Mega -m1                       Convert multiple PHYLIP files to Mega format
+
+    piranha -f PHYLIP2Mega -i <inputPHYLIP> -k 1     Convert <inputPHYLIP> file to Mega format, keeping original file
+    piranha -f PHYLIP2Mega -m1 -k 1                  Convert multiple PHYLIP files to Mega format, keeping original files
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

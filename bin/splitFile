@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitFile.sh                                                                     #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.                      #
-# Last update: April 8, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,7 +141,7 @@ splitFile () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitFile, v1.0.0 April 2020                                   "
+echo "INFO      | $(date) | splitFile, v1.0.1 April 2020                                   "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -242,11 +242,7 @@ fi
 	if [[ -s ./.DS_Store ]]; then rm ./.DS_Store  > /dev/null 2>&1 ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#	echo "INFO      | $(date) |          Done splitting $MY_INPUT_FILE using splitFile.sh in PIrANHA." 
-#	echo "Bye.
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s)/folder(s): $MY_NUM_SPLIT_FILES split files in current directory "
 echo ""
@@ -263,13 +259,13 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFile (def: NULL) name of input file to be split
   -n   numParts (def: NULL) desired total number of parts, may change due to rounding
   -o   output (def: split) output basename for split files
-  -v   verbose (def: 0, off; 1, on) step verbose output to screen (stdout)
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -h   help text (also: --help) show this help text and exit
   -V   version (also: --version) echo version of this script and exit
   -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
@@ -289,11 +285,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f splitFile --args='-i <inputFile> -n <numParts>'   Generic usage
-    piranha -f splitFile --args='-i input.txt -n 10'             Split input.txt into 10 parts
-    piranha -f splitFile --args='-i input.txt -n 10 -o out'      Split input.txt into 10 parts, 
-                                                                 named out1.txt, out2.txt, etc.
-    piranha -f splitFile -a '-i input.txt -n 10 -o out'          Same as above, but using -a flag
+    piranha -f splitFile -i <inputFile> -n <numParts>   Generic usage
+    piranha -f splitFile -i input.txt -n 10             Split input.txt into 10 parts
+    piranha -f splitFile -i input.txt -n 10 -o out      Split input.txt into 10 parts,
+                                                        named out1.txt, out2.txt, etc.
+    piranha -f splitFile -h                             Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -314,7 +310,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

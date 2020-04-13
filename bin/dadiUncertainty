@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiUncertainty.sh                                                               #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ dadiUncertainty () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiUncertainty, v1.0.2 April 2020                             "
+echo "INFO      | $(date) | dadiUncertainty, v1.0.3 April 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -865,7 +865,7 @@ echo "INFO      | $(date) | Step #7: Clean up workspace by removing temporary fi
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):
 echo "INFO      | $(date) |          Removing temporary files... "
 
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 
 
 ##--Final cleanup:
@@ -876,14 +876,8 @@ echo "INFO      | $(date) |          Removing temporary files... "
 		rm ./"$MY_INPUT_VCF" ;
 	fi
 
-
-#echo "INFO      | $(date) | Done creating bootstrapped SNP datasets and conducting uncertainty analysis in ∂a∂i "
-#echo "INFO      | $(date) | using the dadiUncertainty pipeline in PIrANHA." 
-#echo "INFO      | $(date) | Bye.
-#"
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
-
 
 ##########################################################################################
 ######################################### END ############################################
@@ -963,18 +957,18 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Call the program using PIrANHA, as follows:
 
     piranha -f dadiUncertainty
-    piranha -f dadiUncertainty --args='-h'
-    piranha -f dadiUncertainty --args='-V'
+    piranha -f dadiUncertainty -h      Echo this help text and exit
+    piranha -f dadiUncertainty -V      Echo program version and exit
 
 	Example from 'real' analysis of a three-population southwestern white pine dataset
 	containing a downsample of 6330 SNPs (1 per ddRAD-seq contig), in which 250 bootstrapped
 	datasets are generated and analyzed using the GIM approach. 
 	
-    piranha -f dadiUncertainty --args='-a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 1 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf'
+    piranha -f dadiUncertainty -a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 1 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf
  
 	Same as above, except specifying the FIM method for unlinked SNPs:
  
-    piranha -f dadiUncertainty --args='-a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 2 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf'
+    piranha -f dadiUncertainty -a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 2 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf
  
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

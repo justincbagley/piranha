@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: Mega2PHYLIP.sh                                                                   #
-  VERSION="v1.2.0"                                                                       #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.                       #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ Mega2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | Mega2PHYLIP, v1.2.0 April 2020                                 "
+echo "INFO      | $(date) | Mega2PHYLIP, v1.2.1 April 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -329,13 +329,10 @@ fi
 		mv ./*.phy ./phylip/;
 		mv ./*.meg ./mega/;
 	fi
+	
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#	echo "INFO      | $(date) |          Done converting Mega-formatted DNA sequence alignment(s) to PHYLIP format using Mega2PHYLIP.sh." 
-#	echo "Bye.
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ "$MULTIPLE_MEGA_SWITCH" = "0" ]]; then
@@ -345,6 +342,7 @@ if [[ "$MULTIPLE_MEGA_SWITCH" = "1" ]]; then
 	echo "output file(s)/folder(s): Multiple PHYLIP files ('.phy') in current directory"
 fi
 echo ""
+
 
 ## END DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
@@ -358,16 +356,14 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputMega (def: NULL) individual Mega file, user-specified filename
+  -i   inputMega (def: NULL) input Mega file
   -m   multiMega (def: 0, turned on; 1, on) convert multiple Mega files in working dir
   -k   keepMega (def: 0, off; 1, on, keep) whether or not to keep original Mega file(s)
-       converted during the run
-  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to 
-       screen (stdout)
-  -h   help text (also: --help) show this help text and exit
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
+  -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
   -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
@@ -379,8 +375,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f Mega2PHYLIP --args='-i ./<inputMega> -k 1'      Convert single Mega to PHYLIP, keeping original file
-    piranha -f Mega2PHYLIP --args='-m1 -k 1'				   Convert multiple Mega files to PHYLIP, keeping original files
+    piranha -f Mega2PHYLIP -i <inputMega> -k 1      Convert single Mega to PHYLIP, keeping original file
+    piranha -f Mega2PHYLIP -m 1 -k 1                Convert multiple Mega files to PHYLIP, keeping original files
+    piranha -f Mega2PHYLIP -h                       Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

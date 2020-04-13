@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: makePartitions.sh                                                                #
-  VERSION="v1.2.2"                                                                       #
+  VERSION="v1.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -145,7 +145,7 @@ makePartitions () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | makePartitions, v1.2.2 April 2020                              "
+echo "INFO      | $(date) | makePartitions, v1.2.3 April 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -248,6 +248,7 @@ fi
 	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -274,10 +275,8 @@ MY_VERBOSE_OUT_SWITCH=0
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -o   outputFile (def: NULL) send screen output to file in working dir with user-specified 
-       name, for example 'output.txt'
-  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
-       screen (stdout)
+  -o   outputFile (def: 'makePartitions_output.txt') send screen output to file
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
@@ -295,14 +294,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or Linux
- (tested on CentOS 6/7). Besides standard UNIX/Linux command line tools, the only other 
+ (tested on CentOS 5/6/7). Besides standard UNIX/Linux command line tools, the only other 
  dependency is Perl (v5+), which is usually already installed on mac and Linux distributions.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f makePartitions            Run makePartitions in current working directory
-    piranha -f makePartitions --args='-h'    Get this makePartitions-specific help text
+    piranha -f makePartitions         Run makePartitions in current working directory
+    piranha -f makePartitions -h      Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

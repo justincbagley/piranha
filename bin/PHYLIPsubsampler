@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsubsampler.sh                                                              #
-  VERSION="v1.1.6"                                                                       #
+  VERSION="v1.1.7"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -139,7 +139,7 @@ PHYLIPsubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.6 April 2020                            "
+echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.7 April 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -207,7 +207,7 @@ MY_PHYLIP_ALIGNMENTS=./*.phy ;
 				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
 				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
 			fi
-		done < "$MY_ASSIGNMENT_FILE"
+		done < "$MY_ASSIGNMENT_FILE" ;
 
 	done
 )
@@ -274,11 +274,14 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
 
 fi
 
+if [[ ! -z $(ls ./*.tmp) ]]; then 
+	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+	echo "INFO      | $(date) |          Deleting temporary files... "
+	############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.	
+	rm ./*.tmp ; 
+fi
 
-#echo "INFO      | $(date) | Done."
-#echo "INFO      | $(date) | Bye.
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -295,12 +298,12 @@ INPUT_PHYLIP_FILE=NULL
 MY_ASSIGNMENT_FILE=assignments.txt
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) Used in case of subsampling a single input PHYLIP file; 
        otherwise, left blank when analyzing multiple PHYLIP files (default)
-  -a   assignmentFile (def: $MY_ASSIGNMENT_FILE) Name of assignment file containing four-letter
+  -a   assignmentFile (def: $MY_ASSIGNMENT_FILE) assignment file containing four-letter
        population or taxon assignment codes, one per line
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
@@ -340,8 +343,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f PHYLIPsubsampler --args='-a species.txt'    Run on multiple PHYLIP files with user-
-             											   specified assignment file 'species.txt'
+    piranha -f PHYLIPsubsampler -a species.txt      Run on multiple PHYLIP files with user-
+                                                    specified assignment file 'species.txt'
+    piranha -f PHYLIPsubsampler -h                  Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

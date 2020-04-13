@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRAD2PartitionFinder.sh                                                         #
-  VERSION="v1.2.4"                                                                       #
+  VERSION="v1.2.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ pyRAD2PartitionFinder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.4 April 2020 "
+echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.5 April 2020                       "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -339,6 +339,7 @@ fi
 
 fi
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -361,14 +362,13 @@ MY_PF_MODSEL=BIC
 MY_SEARCH_ALGORITHM=rcluster
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputPHYLIP (def: 0, .phy file in pwd; also takes name of .phy file in pwd, or absolute 
-       path to .phy file in another dir) input PHYLIP sequence alignment file 
+  -i   inputPHYLIP (def: NULL, .phy file in pwd) input PHYLIP sequence alignment file 
   -r   runPF (def: 1; opt out: 0) whether or not to run PartitionFinder after prepping 
        input files
-  -v   PFversion (def: 1 = v1.1.1; other: 2 = v2.1.1) specify PartitionFinder version
+  -v   PFversion (def: 1 = v1.1.1; other: 2 = v2.1.1) PartitionFinder version
   -p   PFpath (def: searches for PFversion locally) absolute path to PartitionFinder.py 
        Python script to execute
   -P   rclusterPercent (def: 0.1) --rcluster-percent value for PartitionFinder
@@ -394,6 +394,15 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Because this script was initially developed for use with ddRADseq assemblies or loci output 
  by pyRAD, the -s setting is set to rcluster by default.
  
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    Give full information for basic run:
+    piranha -f pyRAD2PartitionFinder -i <inputPHYLIP> -r 1 -v <PFversion> -p <PFpath> -e <evoModels> -m <modSel> -s <search>
+
+    Show this help text and exit:
+    piranha -f pyRAD2PartitionFinder -h
+
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
@@ -424,7 +433,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

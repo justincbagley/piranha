@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiRunner.sh                                                                    #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -135,7 +135,7 @@ dadiRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiRunner, v1.0.1 April 2020                                  "
+echo "INFO      | $(date) | dadiRunner, v1.0.2 April 2020                                  "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -414,11 +414,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Call the program using PIrANHA, as follows:
 
     piranha -f dadiRunner
-    piranha -f dadiRunner --args='-n 5'
-    piranha -f dadiRunner --args='-i <SNPInput>'
-    piranha -f dadiRunner --args='-i <SNPInput> -n 20'					Changing no. of independent runs.
-    piranha -f dadiRunner --args='-i <SNPInput> -v 1'					Changing to ∂a∂i-mod version (requires virtualenv.txt file).
-    piranha -f dadiRunner --args='-i <SNPInput> -n 20 -w 24:00:00'		Changing run walltime.
+    piranha -f dadiRunner -n 5
+    piranha -f dadiRunner -i <SNPInput>
+    piranha -f dadiRunner -i <SNPInput> -n 20                  Changing no. of independent runs.
+    piranha -f dadiRunner -i <SNPInput> -v 1                   Changing to ∂a∂i-mod version (requires virtualenv.txt file).
+    piranha -f dadiRunner -i <SNPInput> -n 20 -w 24:00:00      Changing run walltime.
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -490,11 +490,11 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  Call the program using PIrANHA, as follows:
 
     piranha -f dadiRunner
-    piranha -f dadiRunner --args='-n 5'
-    piranha -f dadiRunner --args='-i <SNPInput>'
-    piranha -f dadiRunner --args='-i <SNPInput> -n 20'					Changing no. of independent runs.
-    piranha -f dadiRunner --args='-i <SNPInput> -v 1'					Changing to ∂a∂i-mod version (requires virtualenv.txt file).
-    piranha -f dadiRunner --args='-i <SNPInput> -n 20 -w 24:00:00'		Changing run walltime.
+    piranha -f dadiRunner -n 5
+    piranha -f dadiRunner -i <SNPInput>
+    piranha -f dadiRunner -i <SNPInput> -n 20                  Changing no. of independent runs.
+    piranha -f dadiRunner -i <SNPInput> -v 1                   Changing to ∂a∂i-mod version (requires virtualenv.txt file).
+    piranha -f dadiRunner -i <SNPInput> -n 20 -w 24:00:00      Changing run walltime.
 	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

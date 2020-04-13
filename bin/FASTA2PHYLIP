@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.3.0"                                                                       #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.0 April 2020                                "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.1 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -940,6 +940,7 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
 fi
 
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 #echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from input sequential FASTA file $MY_FASTA. "
@@ -973,8 +974,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
        files that replace the original FASTAs
   -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
        name, for example 'output.txt'
-  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
-       screen (stdout)
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -h   help text (also: --help) echo this help text and exit
   -H   help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
@@ -983,8 +983,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  ${bold}OVERVIEW${reset}
  Reads in one or multiple FASTA DNA sequence alignment files in current directory and 
  converts them to PHYLIP ('.phy') format (Felsenstein 2002). If supplied with a single FASTA 
- data file (using '-f1 -i <inputFASTA>' options), then that file is converted into a PHYLIP 
- alignment file. However, if option '-f2' is supplied (without the -i flag), then the 
+ data file (using '-f 1 -i <inputFASTA>' options), then that file is converted into a PHYLIP 
+ alignment file. However, if option '-f 2' is supplied (without the -i flag), then the 
  program will assume that the current directory contains multiple FASTA sequence alignment 
  files and will convert them each to PHYLIP format, with input from other user-specified 
  options.
@@ -1006,11 +1006,10 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  on many earlier versions of macOS or Linux. 
 
  ${bold}Usage Examples${reset}
-    piranha -f FASTA2PHYLIP --args='-f 1 -i input.fasta -v 1'  Convert input.fasta to PHYLIP format, echoing
-                                                               run output to screen
-    piranha -f FASTA2PHYLIP --args='-f 2 -k 1 -v 1'            Convert FASTA files to PHYLIP format, keeping  
-                                                               intermediate FASTAs, and echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-f 2-k 1 -v 1'                 Same as above, but passing arguments with -a flag
+    piranha -f FASTA2PHYLIP -f 1 -i <inputFASTA> -k 1 -v 1    Convert <inputFASTA> to PHYLIP format, keep
+                                                              original FASTA, and echo run output to screen
+    piranha -f FASTA2PHYLIP -f 2 -k 1 -v 1                    Convert multiple FASTA files to PHYLIP format,
+                                                              keep FASTAs, and echo run output to screen
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -1045,8 +1044,8 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  ${bold}OVERVIEW${reset}
  Reads in one or multiple FASTA DNA sequence alignment files in current directory and 
  converts them to PHYLIP ('.phy') format (Felsenstein 2002). If supplied with a single FASTA 
- data file (using '-f1 -i <inputFASTA>' options), then that file is converted into a PHYLIP 
- alignment file. However, if option '-f2' is supplied (without the -i flag), then the 
+ data file (using '-f 1 -i <inputFASTA>' options), then that file is converted into a PHYLIP 
+ alignment file. However, if option '-f 2' is supplied (without the -i flag), then the 
  program will assume that the current directory contains multiple FASTA sequence alignment 
  files and will convert them each to PHYLIP format, with input from other user-specified 
  options.
@@ -1090,11 +1089,10 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  the verbose output is presently highly redundant across alignments, and thus is not preferred.
  
  ${bold}Usage Examples${reset}
-    piranha -f FASTA2PHYLIP --args='-f 1 -i input.fasta -v 1'  Convert input.fasta to PHYLIP format, echoing
-                                                               run output to screen
-    piranha -f FASTA2PHYLIP --args='-f 2 -k 1 -v 1'            Convert FASTA files to PHYLIP format, keeping  
-                                                               intermediate FASTAs, and echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-f 2-k 1 -v 1'                 Same as above, but passing arguments with -a flag
+    piranha -f FASTA2PHYLIP -f 1 -i <inputFASTA> -k 1 -v 1    Convert <inputFASTA> to PHYLIP format, keep
+                                                              original FASTA, and echo run output to screen
+    piranha -f FASTA2PHYLIP -f 2 -k 1 -v 1                    Convert multiple FASTA files to PHYLIP format,
+                                                              keep FASTAs, and echo run output to screen
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

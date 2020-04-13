@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: concatenateSeqs.sh                                                               #
-  VERSION="v1.3.0"                                                                       #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.                       #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ concatenateSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | concatenateSeqs, v1.3.0 April 2020                             "
+echo "INFO      | $(date) | concatenateSeqs, v1.3.1 April 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -270,9 +270,8 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
-
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s): ./concatenated_seqs.phy "
@@ -296,7 +295,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -t   taxonNamesSpaces (def: NULL) mandatory name of taxon 'names and spaces' file
+  -t   taxonNamesSpaces (def: NULL) mandatory taxon 'names and spaces' file
   -o   outputFile (def: NULL) send screen output to file in working dir with user-specified 
        name, for example 'output.txt'
   -v   verbose (def: 0, off; 1, on) specify verbose run, step output to screen (stdout),
@@ -323,16 +322,26 @@ USAGE="Usage: $(basename $0) [OPTION]...
  '.phy'.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
- on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). Besides standard UNIX/Linux command line tools, the only other 
- dependency is Perl (v5+), which is usually already installed on mac and Linux distributions.
+ on macOS High Sierra (v10.13+) and Mojave, and CentOS 5/6/7 Linux, but should work on many
+ other versions. Besides standard UNIX/Linux command line tools, the only other dependency 
+ is Perl (v5+), which is usually already installed on mac and Linux distributions.
 
  ${bold}Usage examples:${reset}
- To run in current directory with a names and spaces file named 'taxon_name_spaces12.txt' 
- containing each tip taxon name followed by x spaces taking the total character count per 
- line out to 12 characters, you would call the program using PIrANHA, as follows:
+ Call the program using PIrANHA, as follows:
 
-    piranha -f concatenateSeqs --args='-t taxon_name_spaces12.txt'
+    piranha -f concatenateSeqs -t <taxonNamesSpaces>
+
+	Suggested usage, starting from scratch:
+	
+		Create <taxonNamesSpaces> file with getTaxonNames function:
+		piranha -f getTaxonNames -n <numTips>	# Creates file: '<numTips>_taxon_names_spaces.txt'
+
+		Concatenate PHYLIP alignments in working dir:
+		piranha -f concatenateSeqs -t <numTips>_taxon_names_spaces.txt
+
+	Suggested usage, starting from existing <taxonNamesSpaces> file, 'taxon_name_spaces12.txt':
+   
+		piranha -f concatenateSeqs -t taxon_name_spaces12.txt -v 1
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

@@ -9,7 +9,7 @@
   VERSION="v1.2.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.                     #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -268,7 +268,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  shell scripts (which must all be the same, or be entered with wildcards to accomodate all 
  names used, e.g. 'beast*.sh'). These options are critical for customizing the run. The -m 
  flag tells the program whether the supercomputer uses a TORQUE/PBS or SLURM manager; if 
- '-mPBS', the shell scripts must have PBS format (be queable using qsub); if '-mSLURM', the 
+ '-m PBS', the shell scripts must have PBS format (be queable using qsub); if '-m SLURM', the 
  shell scripts must have SBATCH format.
 	After detecting the local computing environment with the uname utility, BEASTReset.sh
  will perform one of two general operations, with two sub-options (a or b). (1a) If the 
@@ -289,9 +289,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
  
-    piranha -f BEASTReset			   Run in current working directory
-    piranha -f BEASTReset --args='-i <rerunList> -s <scriptName>'	Run with options
-    piranha -f BEASTReset --args='-h'	  Print help text and exit
+    piranha -f BEASTReset                                   Run with defaults in current directory
+    piranha -f BEASTReset -i <rerunList> -s <scriptName>    Run with options
+    piranha -f BEASTReset -h                                Print help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

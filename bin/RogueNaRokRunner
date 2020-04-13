@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RogueNaRokRunner.sh                                                              #
-  VERSION="v0.1.3"                                                                       #
+  VERSION="v0.1.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.                       #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ RogueNaRokRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RogueNaRokRunner, v0.1.3 April 2020   "
+echo "INFO      | $(date) | RogueNaRokRunner, v0.1.4 April 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -252,6 +252,7 @@ echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary fi
 	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ -s "$FILENAME"_RnR ]]; then 
 	echo "output file(s): One or more files output by RogueNaRok in current directory"
@@ -268,7 +269,7 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFile (def: NULL) input DNA sequence alignment filename
@@ -305,9 +306,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f RogueNaRokRunner --args='-i <inputFile>'        Basic run on single tree file
-    piranha -f RogueNaRokRunner --args='-i <inputFile> -k 1'   Same as above, except keeping
-                                                               temporary files from the run
+    piranha -f RogueNaRokRunner -i <inputFile>         Basic run on single tree file
+    piranha -f RogueNaRokRunner -i <inputFile> -k 1    Same as above, except keeping
+                                                       temporary files from the run
+    piranha -f RogueNaRokRunner -h                     Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -332,7 +334,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

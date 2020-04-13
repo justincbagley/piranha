@@ -9,7 +9,7 @@
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.                     #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -292,10 +292,6 @@ editXMLFiles
 
 fi
 
-#echo "INFO      | $(date) | Finished prepping XML files for path sampling analyses in BEAST PathSampler using BEAST_PSPrepper.sh!!"
-#echo "INFO      | $(date) | Bye.
-#"
-
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -354,8 +350,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f BEAST_PSPrepper
-    piranha -f BEAST_PSPrepper --args='-h'
+    piranha -f BEAST_PSPrepper          Run the program
+    piranha -f BEAST_PSPrepper -h       Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

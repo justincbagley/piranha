@@ -9,7 +9,7 @@
   VERSION="v1.8.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -407,9 +407,6 @@ fi
 	
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-#echo "INFO      | $(date) | Done processing BEAST results using BEASTPostProc. "
-#echo "Bye.
-#"
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -452,8 +449,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
  
-    piranha -f BEASTPostProc -l<loganalyserPath> -t<treeannotatorPath> -b <burninSteps> -p <postburninTrees>
-    piranha -f BEASTPostProc --args='-h'
+    piranha -f BEASTPostProc -l <loganalyserPath> -t <treeannotatorPath> -b <burninSteps> -p <postburninTrees>
+    piranha -f BEASTPostProc -h       Show this help text and exit
+
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

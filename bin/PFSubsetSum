@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PFSubsetSum.sh                                                                   #
-  VERSION="v1.4.1"                                                                       #
+  VERSION="v1.4.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,12 +136,12 @@ PFSubsetSum () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PFSubsetSum, v1.4.1 April 2020 "
+echo "INFO      | $(date) | PFSubsetSum, v1.4.2 April 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
@@ -279,12 +279,9 @@ cat ./table_header.txt ./table.txt > ./sumstats.txt ;
 	if [[ -s ./subset_names.txt ]]; then rm ./subset_names.txt ; fi 
 	if [[ -s ./subsetModels.txt ]]; then rm ./subsetModels.txt ; fi 
 
-#echo "INFO      | $(date) | Done calculating summary statistics for subsets in your best PartitionFinder scheme using PFSubsetSum. "
-#echo "INFO      | $(date) | Bye. 
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
-	echo "output file(s): PartitionFinder subset summary statistics written to ./sumstats.txt"
+echo "output file(s): PartitionFinder subset summary statistics written to ./sumstats.txt"
 echo ""
 
 ##########################################################################################
@@ -295,7 +292,7 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -318,15 +315,15 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). The key dependency is R, the R environment for statistical
+ Linux (tested on CentOS 5/6/7). The key dependency is R, the R environment for statistical
  computing (available at: https://cran.r-project.org), which must be installed and available 
  as 'R' from the command line. Tested using R v3.5+ but should work on older versions.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f PFSubsetSum                 Regular run in directory containing PartitionFinder results
-    piranha -f PFSubsetSum --args='-h'     Obtain this help text and exit
+    piranha -f PFSubsetSum         Regular run in directory containing PartitionFinder results
+    piranha -f PFSubsetSum -h      Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -359,7 +356,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-c" ]] || [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]; then
-	echo " Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+	echo " Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 "
 	exit

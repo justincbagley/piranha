@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2PFSubsets.sh                                                              #
-  VERSION="v1.0.3"                                                                       #
+  VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.                        #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ PHYLIP2PFSubsets () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2PFSubsets, v1.0.3 April 2020                            "
+echo "INFO      | $(date) | PHYLIP2PFSubsets, v1.0.4 April 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -410,10 +410,7 @@ echo "INFO      | $(date) | Step #4: Convert PHYLIP subset files to FASTA format
 	######################### END PHYLIP2FASTA.sh (modified) #############################
 
 
-
-#echo "INFO      | $(date) |          Done making PartitionFinder-identified subset alignments from input partition PHYLIP files using PHYLIP2PFSubsets.sh. "
-#echo "INFO      | $(date) |          Bye.
-#"
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 
 echo "output file(s)/folder(s): Subset folders from the analysis are located in subset_folders/."
@@ -433,7 +430,7 @@ echo ""
 KEEP_ORIG_PHYLIP_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
@@ -451,6 +448,12 @@ USAGE="Usage: $(basename $0) [OPTION]...
  how the loci/partitions should be combined. Sequence names should include alphanumeric, hyphen, 
  and underscore characters but no spaces, or else there could be issues. Also, PHYLIP alignment 
  files must have the extension '.phy'.
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f PHYLIP2PFSubsets
+    piranha -f PHYLIP2PFSubsets -h      Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

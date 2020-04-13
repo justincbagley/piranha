@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: treeThinner.sh                                                                   #
-  VERSION="v1.2.1"                                                                       #
+  VERSION="v1.2.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.                     #
-# Last update: March 17, 2019                                                            #
-# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
+# Last update: April 12, 2020                                                            #
+# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
@@ -148,8 +148,8 @@ treeThinner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | treeThinner, v1.2.1 March 2019  (part of PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | treeThinner, v1.2.2 April 2020                                 "
+echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -179,6 +179,7 @@ read -p "Please enter the frequency (n) of nth lines that you would like to keep
 	if [[ -s ./thinned_trees.txt ]]; then rm ./thinned_trees.txt ; fi
 	if [[ -s ./end.txt ]]; then rm ./end.txt ; fi
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 
 ##########################################################################################
@@ -188,7 +189,7 @@ echo "--------------------------------------------------------------------------
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -205,6 +206,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  in the near future (2019), by allowing it to a) run with options (non-interactively), 
  b) detect tree file type, and c) conduct thinning.
 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f treeThinner
+
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
@@ -215,7 +221,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     space. Systematic Biology, 61, 539-542. 
 
  Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
 
 #if [[ -z "$*" ]]; then

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.6.5"                                                                       #
+  VERSION="v1.6.6"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.5 April 2020                                "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.6 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -396,7 +396,8 @@ fi
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) |          Removing temporary files... "
 	fi
-	rm ./*.tmp ;
+	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 
 echo "----------------------------------------------------------------------------------------------------------"
@@ -416,16 +417,14 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
-  -c   charSets (def: 0, absent; 1, present) whether or not the input NEXUS file contains
-       character sets in a separate 'sets' block
-  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
-       screen (stdout)
-  -o   overwritePHYLIP (def: 0, off; 1, on) whether or not to force overwrite of PHYLIP
-       files in current working directory
+  -c   charSets (def: 0, absent; 1, present) whether or not <inputNEXUS> contains character 
+       sets in a separate 'sets' block
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
+  -o   overwritePHYLIP (def: 0, off; 1, on) force overwrite PHYLIP files in current directory
   -h   help text (also: --help) echo this help text and exit
   -H   verbose help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
@@ -437,14 +436,17 @@ USAGE="Usage: $(basename $0) [OPTION]...
  screen or stderr or stdout files; however, -v option causes verbose run information to be
  output to screen (stdout).
 	The only dependency is Perl (v5+), which is usually already installed on mac and Linux 
- distributions. Tested with Perl v5.1+ on macOS High Sierra (v10.13+).
+ distributions. Tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on 
+ many other versions or Linux.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1'  Run on user NEXUS while echoing output 
-                                                           to screen
-    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1'      Same as above, but with -a flag
+    piranha -f NEXUS2PHYLIP -i <inputNEXUS> -v 1          Run on <inputNEXUS> file while echoing  
+                                                          output to screen
+    piranha -f NEXUS2PHYLIP -i <inputNEXUS> -v 1 -o 1     Run on <inputNEXUS>, echo output to
+                                                          screen, and overwrite existing PHYLIP
+                                                          file (if present)
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -464,8 +466,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
   -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
   -c   charSets (def: 0, absent; 1, present) whether or not the input NEXUS file contains
        character sets in a separate 'sets' block
-  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
-       screen (stdout)
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -o   overwritePHYLIP (def: 0, off; 1, on) whether or not to force overwrite of PHYLIP
        files in current working directory
   -h   help text (also: --help) echo this help text and exit
@@ -503,9 +504,11 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f NEXUS2PHYLIP --args='-i <inputNEXUS> -v 1'  Run on user NEXUS while echoing output 
-                                                           to screen
-    piranha -f NEXUS2PHYLIP -a '-i <inputNEXUS> -v 1'      Same as above, but with -a flag
+    piranha -f NEXUS2PHYLIP -i <inputNEXUS> -v 1          Run on <inputNEXUS> file while echoing  
+                                                          output to screen
+    piranha -f NEXUS2PHYLIP -i <inputNEXUS> -v 1 -o 1     Run on <inputNEXUS>, echo output to
+                                                          screen, and overwrite existing PHYLIP
+                                                          file (if present)
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2FASTA.sh                                                                  #
-  VERSION="v1.3.0"                                                                       #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2FASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2FASTA, v1.3.0 April 2020                                "
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.3.1 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -272,10 +272,10 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files while keeping original files per user request. "
 		fi
-		mkdir fasta/ ;
-		mkdir phylip/ ;
-		mv "$INPUT_PHYLIP_FILE" ./phylip/ ;
-		mv "$MY_BASENAME".fas ./fasta/ ;
+#		mkdir fasta/ ;
+#		mkdir phylip/ ;
+#		mv "$INPUT_PHYLIP_FILE" ./phylip/ ;
+#		mv "$MY_BASENAME".fas ./fasta/ ;
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 fi
@@ -288,7 +288,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files and removing original files per user request. "
 		fi
-		if [[ ! -z ./*.phy ]]; then rm ./*.phy ; fi
+		if [[ ! -z $(ls ./*.phy) ]]; then rm ./*.phy ; fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
@@ -331,14 +331,14 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) name of input PHYLIP DNA sequence alignment file
   -m   multiPHYLIP (def: 0, turned off; 1, on) convert multiple PHYLIP files in current 
        working directory to FASTA format
   -k   keepPHYLIP (def: 1, on, keep; 0, off) whether or not to keep original file(s)
-  -v   verbose (def: 0, off; 1, on) specify verbose output (stdout) to screen
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -h   help text (also: --help) show this help text and exit
   -V   version (also: --version) echo version and exit
   -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
@@ -354,8 +354,8 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	By default, the program will keep the original PHYLIP files; however, an option (-k 1) 
  is available that allows removing them. Also by default, the script will run quietly with 
  little output to screen; however, setting the -v option to 1 redirects verbose run information 
- to screen for each input file. Arguments are passed to the program using PIrANHA's -a|--args 
- flag (see examples below). Sequence names should include alphanumeric, hyphen, and underscore 
+ to screen for each input file. Arguments are passed to the program following the function
+ name (see examples below). Sequence names should include alphanumeric, hyphen, and underscore 
  characters but no spaces, or else there could be issues. 
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag. It has been 
@@ -365,13 +365,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f PHYLIP2FASTA --args='-m 1 -k 1 -v 1'         Run PHYLIP2FASTA on all PHYLIP files in
-                                                            working dir, keep original files, and
-                                                            print stdout to screen
-    piranha -f PHYLIP2FASTA --args='-i <inputPHYLIP> -k 1'  Run PHYLIP2FASTA on user file and keep
-                                                            original PHYLIP file
-    piranha -f PHYLIP2FASTA -a '-i <inputPHYLIP> -k 1'      Same as above, but passing arguments 
-                                                            with -a flag
+    piranha -f PHYLIP2FASTA -i <inputPHYLIP> -k 1      Convert <inputPHYLIP> file to FASTA and
+                                                       keep original file
+    piranha -f PHYLIP2FASTA -m 1 -k 1 -v 1             Convert multiple PHYLIP files in working
+                                                       dir to FASTA, keep original files, and
+                                                       print stdout to screen
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

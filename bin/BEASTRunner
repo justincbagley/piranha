@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: BEASTRunner.sh                                                                   #
-  VERSION="v1.5.1"                                                                       #
+  VERSION="v1.5.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ BEASTRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | BEASTRunner, v1.5.1 April 2020                                 "
+echo "INFO      | $(date) | BEASTRunner, v1.5.2 April 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -351,9 +351,7 @@ echo "INFO      | $(date) |          Cleaning up: removing temporary files from 
 	if [[ -s ./cd_and_qsub_commands.txt]]; then rm ./cd_and_qsub_commands.txt; fi
 	if [[ -s ./batch_qsub_bottom.txt ]]; then rm ./batch_qsub_bottom.txt; fi
 	if [[ -s ./beastrunner_batch_qsub.sh ]]; then rm ./beastrunner_batch_qsub.sh; fi
-
-#echo "INFO      | $(date) |          Bye.
-#"
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
@@ -413,10 +411,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
-    piranha -f BEASTRunner                                      Run with default settings
-    piranha -f BEASTRunner --args='-n 10'                       Change the number of runs to 10
-    piranha -f BEASTRunner --args='-n 10 -w 24:00:00'           Also edit run walltime
-    piranha -f BEASTRunner --args='-n 10 -w 24:00:00 -m 2048M'  Change memory (RAM) allocation to 2GB
+    piranha -f BEASTRunner                                Run with default settings
+    piranha -f BEASTRunner -n 10                          Change the number of runs to 10
+    piranha -f BEASTRunner -n 10 -w 24:00:00              Also edit run walltime
+    piranha -f BEASTRunner -n 10 -w 24:00:00 -m 2048M     Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -491,10 +489,10 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
-    piranha -f BEASTRunner                                      Run with default settings
-    piranha -f BEASTRunner --args='-n 10'                       Change the number of runs to 10
-    piranha -f BEASTRunner --args='-n 10 -w 24:00:00'           Also edit run walltime
-    piranha -f BEASTRunner --args='-n 10 -w 24:00:00 -m 2048M'  Change memory (RAM) allocation to 2GB
+    piranha -f BEASTRunner                                Run with default settings
+    piranha -f BEASTRunner -n 10                          Change the number of runs to 10
+    piranha -f BEASTRunner -n 10 -w 24:00:00              Also edit run walltime
+    piranha -f BEASTRunner -n 10 -w 24:00:00 -m 2048M     Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

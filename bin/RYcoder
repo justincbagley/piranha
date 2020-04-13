@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RYcoder.sh                                                                       #
-  VERSION="v0.1.4"                                                                       #
+  VERSION="v0.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.                       #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ RYcoder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RYcoder, v0.1.4 April 2020                                     "
+echo "INFO      | $(date) | RYcoder, v0.1.5 April 2020                                     "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -362,8 +362,10 @@ echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary fi
 ###### Remove temporary or unnecessary files created above:
 	echo "INFO      | $(date) |          Removing temporary files... "
 	rm ./*.tmp ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ "$ADDITIONAL_OUT_SWITCH" = "NULL" ]]; then
 	echo "output file: ./${INPUT_BASENAME}_RY.${MY_INPUT_EXTENSION}"
@@ -382,11 +384,10 @@ fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputFile (def: NULL) name of input DNA sequence alignment file, in NEXUS or PHYLIP
-       format
+  -i   inputFile (def: NULL) name of input NEXUS or PHYLIP DNA sequence alignment file
   -a   additionalOutput (def: NULL; other: nexus, phylip, fasta) file type of additional 
        RY-coded alignment file to be output by the program
   -h   help text (also: --help) echo this help text and exit
@@ -417,10 +418,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f RYcoder --args='-h'                        Obtain RYcoder help text
-    piranha -f RYcoder --args='-i <inputFile>'            Regular file conversion
-    piranha -f RYcoder --args='-i input.phy -a nexus'     Convert PHYLIP to RY coding, and
-                                                          also save RY-coded NEXUS
+    piranha -f RYcoder -i <inputFile>             Regular file conversion
+    piranha -f RYcoder -i input.phy -a nexus      Convert PHYLIP to RY coding, and also save 
+                                                  an RY-coded NEXUS
+    piranha -f RYcoder -h                         Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -445,7 +446,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

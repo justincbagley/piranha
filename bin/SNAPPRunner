@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: SNAPPRunner.sh                                                                   #
-  VERSION="v1.3.0"                                                                       #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.                     #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | SNAPPRunner, v1.3.0 April 2020                                 "
+echo "INFO      | $(date) | SNAPPRunner, v1.3.1 April 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -483,10 +483,7 @@ echo "INFO      | $(date) |          Removing temporary files from local machine
 	if [[ -s ./qsub_bottom.txt ]]; then rm ./qsub_bottom.txt ; fi
 	if [[ -s ./SNAPPRunner_batch_qsub.sh ]]; then rm ./SNAPPRunner_batch_qsub.sh ; fi
 
-#echo "INFO      | $(date) | Done."
-#echo "INFO      | $(date) | Bye.
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -511,12 +508,11 @@ MY_STARTING_SEED=NULL
 MY_DEBUG_MODE_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent SNAPP runs per model (.xml file)
-  -w   walltime (def: $MY_SC_WALLTIME) wall time (run time; hours:minutes:seconds) passed to 
-       supercomputer 
+  -w   walltime (def: $MY_SC_WALLTIME) run time (hours:minutes:seconds) passed to supercomputer 
   -m   javaMem (def: $JAVA_MEM_ALLOC) memory, i.e. RAM, allocation for Java. Must be an
        appropriate value for the node, with units in M=megabytes or G=gigabytes.  
   -p   partition (def: NULL) name of supercomputer partition (i.e. group of nodes, or job
@@ -558,11 +554,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f SNAPPRunner                 Run program with the defaults and parameters 
-     								  	   extracted from the configuration file
-    piranha -f SNAPPRunner --args='-h'      Print this help text
-    piranha -f SNAPPRunner --args='-n 10'    Pass argument that increases the number of runs to 10
-    piranha -f SNAPPRunner --args='-n 10 -w 24:00:00 -m 2048M'      Also increase the default walltime and memory (RAM) settings
+    piranha -f SNAPPRunner                                 Run program with the defaults and parameters 
+                                                           extracted from the configuration file
+    piranha -f SNAPPRunner -n 10                           Pass argument that increases number of runs to 10
+    piranha -f SNAPPRunner -n 10 -w 24:00:00 -m 2048M      Also increase default walltime and memory (RAM) settings
+    piranha -f SNAPPRunner -h                              Show this help text and exit
 	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -582,12 +578,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
+VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent SNAPP runs per model (.xml file)
-  -w   walltime (def: $MY_SC_WALLTIME) wall time (run time; hours:minutes:seconds) passed to 
-       supercomputer 
+  -w   walltime (def: $MY_SC_WALLTIME) run time (hours:minutes:seconds) passed to supercomputer 
   -m   javaMem (def: $JAVA_MEM_ALLOC) memory, i.e. RAM, allocation for Java. Must be an
        appropriate value for the node, with units in M=megabytes or G=gigabytes.  
   -p   partition (def: NULL) name of supercomputer partition (i.e. group of nodes, or job
@@ -644,11 +639,11 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f SNAPPRunner                 Run program with the defaults and parameters 
-     								  	   extracted from the configuration file
-    piranha -f SNAPPRunner --args='-h'      Print this help text
-    piranha -f SNAPPRunner --args='-n 10'    Pass argument that increases the number of runs to 10
-    piranha -f SNAPPRunner --args='-n 10 -w 24:00:00 -m 2048M'      Also increase the default walltime and memory (RAM) settings
+    piranha -f SNAPPRunner                                 Run program with the defaults and parameters 
+                                                           extracted from the configuration file
+    piranha -f SNAPPRunner -n 10                           Pass argument that increases number of runs to 10
+    piranha -f SNAPPRunner -n 10 -w 24:00:00 -m 2048M      Also increase default walltime and memory (RAM) settings
+    piranha -f SNAPPRunner -h                              Show this help text and exit
 	
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -684,7 +679,7 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeSeqs.sh                                                                  #
-  VERSION="v2.0.2"                                                                       #
+  VERSION="v2.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -142,7 +142,7 @@ completeSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeSeqs, v2.0.2 April 2020            "
+echo "INFO      | $(date) | completeSeqs, v2.0.3 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -292,9 +292,8 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
-
 
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -317,7 +316,7 @@ echo ""
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -t   taxonNamesSpaces (def: NULL) mandatory name of taxon 'names and spaces' file
+  -t   taxonNamesSpaces (def: NULL) mandatory taxon 'names and spaces' file
   -c   missingCharacter (def: N; others: n, ?) character used to make strings of missing 
        data representing sequences for missing individuals
   -o   outputFile (def: NULL) send screen output to file in working dir with user-specified 
@@ -350,16 +349,26 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  Also, PHYLIP alignment files must have the extension '.phy'.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
- on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). Besides standard UNIX/Linux command line tools, the only other 
- dependency is Perl (v5+), which is usually already installed on mac and Linux distributions.
+ on macOS High Sierra (v10.13+) and Mojave, and CentOS 5/6/7 Linux, but should work on many
+ other versions. Besides standard UNIX/Linux command line tools, the only other dependency 
+ is Perl (v5+), which is usually already installed on mac and Linux distributions.
 
  ${bold}Usage examples:${reset}
- To run in current directory with a names and spaces file named 'taxon_name_spaces12.txt' 
- containing each tip taxon name followed by x spaces taking the total character count per 
- line out to 12 characters, you would call the program using PIrANHA, as follows:
+ Call the program using PIrANHA, as follows:
 
-    piranha -f completeSeqs --args='-t taxon_name_spaces12.txt'
+    piranha -f completeSeqs -t <taxonNamesSpaces>
+
+	Suggested usage, starting from scratch:
+	
+		Create <taxonNamesSpaces> file with getTaxonNames function:
+		piranha -f getTaxonNames -n <numTips>	# Creates file: '<numTips>_taxon_names_spaces.txt'
+
+		Complete PHYLIP alignments in working dir:
+		piranha -f completeSeqs -t <numTips>_taxon_names_spaces.txt
+
+	Suggested usage, starting from existing <taxonNamesSpaces> file, 'taxon_name_spaces12.txt':
+   
+		piranha -f completeSeqs -t taxon_name_spaces12.txt -v 1
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

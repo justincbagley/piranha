@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: getBootTrees.sh                                                                  #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before August 20, 2017.                              #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ getBootTrees () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | getBootTrees, v1.0.1 April 2020                                "
+echo "INFO      | $(date) | getBootTrees, v1.0.2 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -190,9 +190,7 @@ echo "INFO      | $(date) |          Making list of ML bootstrap trees generated
 	echo "INFO      | $(date) |          Making final list of ML bootstrap trees in bootstrap_trees directory..."
 	ls ./bootstrap_trees/*.tre > final_bootTrees.list ;
  
-#echo "INFO      | $(date) | Done collating ML bootstrap trees from all RAxML runs (independent sub-folders of pwd) run using getBootTrees.sh."
-#echo "INFO      | $(date) | Bye.
-#"
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s)/folder(s): ./boottrees.tre "
 echo "                          ./final_bootTrees.list "
@@ -232,13 +230,13 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). There are no other dependencies.
+ Linux (tested on CentOS 5/6/7). There are no other dependencies.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f getBootTrees  			    Run the software
-    piranha -f getBootTrees --args='-h'      Print this help text
+    piranha -f getBootTrees  		Run the program
+    piranha -f getBootTrees -h      Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

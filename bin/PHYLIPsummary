@@ -5,17 +5,17 @@
 # |__) | |  ' (__( |  ) |  ) (__(                                                        # 
 # |                                                                                      #
 #                                                                                        #
-# File: RAxMLRunChecker.sh                                                               #
-  VERSION="v1.3.3"                                                                       #
+# File: PHYLIPsummary.sh                                                                 #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
-# Date: Created by Justin Bagley on/before November 29, 2018.                            #
+# Date: Created by Justin Bagley on Wed, Jun 19 14:04:27 CDT 2019.                       #
 # Last update: April 12, 2020                                                            #
-# Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT THAT COUNTS NUMBER OF LOCI/PARTITIONS WITH COMPLETED RAxML RUNS DURING    #
-# OR AFTER A RUN OF THE MAGNET PIPELINE, AND COLLATES RUN INFORMATION                    #
+# SHELL FUNCTION THAT SUMMARIZES THE CHARACTERISTICS OF ONE OR MULTIPLE PHYLIP DNA       #
+# SEQUENCE ALIGNMENT FILES AND SAVES RESULTS TO FILE                                     #
 #                                                                                        #
 ##########################################################################################
 
@@ -130,117 +130,109 @@ gemDependencies=()
 
 
 
-RAxMLRunChecker () {
+PHYLIPsummary () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RAxMLRunChecker, v1.3.3 April 2020                             "
-echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | PHYLIPsummary, v1.0.3 April 2020                               "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Starting RAxMLRunChecker pipeline... "
-echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
-############ I. SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
+echo "INFO      | $(date) | Starting PHYLIPsummary analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
+############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
+###### Set working directory and filetypes as different variables:
+echo "INFO      | $(date) |          Setting user-specified path to: "
+echo "INFO      | $(date) |          $PWD "	
+echo "INFO      | $(date) |          Input file: $INPUT_FILE "
+echo "INFO      | $(date) |          Examining current directory, setting variables... "
+
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-############ II. RUN RAXML RUN CHECKER
-echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current directory (assumed to be a MAGNET run folder). "
 
-	echo "INFO      | $(date) |          Estimating numbers (no.) of loci and RAxML runs... "
-	MY_N_LOCI_FOLD="$(ls -d ./locus*/ | wc -l | sed 's/^[\ ]*//g')"
-	MY_N_COMPLETED="$(ls ./locus*/RAxML_info.raxml_out | wc -l | sed 's/^[\ ]*//g')"
-	MY_N_REMAINING="$(calc $MY_N_LOCI_FOLD - $MY_N_COMPLETED)"
+echo "INFO      | $(date) | Step #2: Check and produce summaries of characteristics of input PHYLIP file(s). "
+############ STEP #2: SUMMARIZE INPUT PHYLIP FILE(S)
 
-	echo "INFO      | $(date) |          Total no. RAxML runs: $TAB$TAB$MY_N_LOCI_FOLD "
-	echo "INFO      | $(date) |          No. completed RAxML runs: $TAB$MY_N_COMPLETED "
-	echo "INFO      | $(date) |          No. remaining RAxML runs:    $TAB$MY_N_REMAINING "
+### RUN ON SINGLE INPUT PHYLIP FILE
+###
+if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
+	#### Get PHYLIP characteristics:
+	MY_BASENAME="$(basename "$INPUT_PHYLIP_FILE" '.phy')";
+#
+	MY_NCHAR="$(head -n1 "$INPUT_PHYLIP_FILE" | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
+	echo "$MY_NCHAR" >> ./PHYLIP_nChar.list.txt ;
+#
+	echo "$MY_BASENAME" >> ./PHYLIP_order.list.tmp ;
+#
+	MY_NTAX="$(head -n1 "$INPUT_PHYLIP_FILE" | sed 's/\ [0-9]*//g; s/\ //g')";
+	echo "$MY_NTAX" >> ./PHYLIP_nTax.list.txt ;
 
-	if [[ -s ./completed_run_info.tmp ]]; then
-		rm ./completed_run_info.tmp;
-	fi
-	if [[ -s ./completed_run_info.txt ]]; then
-		rm ./completed_run_info.txt;
-	fi
-	if [[ -s ./remaining_run_info.tmp ]]; then
-		rm ./remaining_run_info.tmp;
-	fi
-	if [[ -s ./remaining_run_info.txt ]]; then
-		rm ./remaining_run_info.txt;
-	fi
+	echo "File	nTax	nChar" > ./header.tmp ;
+	paste ./PHYLIP_order.list.tmp ./PHYLIP_nChar.list.txt ./PHYLIP_nTax.list.txt > ./PHYLIP_table.tmp ;
+	cat ./header.tmp ./PHYLIP_table.tmp > ./PHYLIP_Summary.txt ;
+fi
+###
 
-	echo "INFO      | $(date) |          Saving RAxML run info to file... "
-
-	count=1
-	echo "INFO      | $(date) |          ...  $count / $MY_N_LOCI_FOLD ..."
+### RUN ON MULTIPLE PHYLIP FILES
+###
+if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+count=0
 (
-	for i in ./locus*/; do 
-		MY_LOCUS="$(echo $i | sed 's/\.\///g; s/\///g; s/\ //g')"; 
-		MY_COUNT_HUND_CHECK="$(calc $count / 100 | sed 's/^[0-9]*\.//g; s/^[0]\{1\}//g')"
-		if [[ "$MY_COUNT_HUND_CHECK" -eq "0" ]]; then
-			echo "INFO      | $(date) |          ...  $count / $MY_N_LOCI_FOLD ..."
-		fi
-		if [[ "$count" -eq "$MY_N_LOCI_FOLD" ]]; then
-			echo "INFO      | $(date) |          ...  $MY_N_LOCI_FOLD / $MY_N_LOCI_FOLD ..."
-		fi
-		cd "$i"; 
-			if [[ -s RAxML_bipartitions.raxml_out ]]; then 
-
-				MY_ALIGN_PATT="$(grep -h '^Alignment\ Patterns\:\ ' ./RAxML_info.raxml_out | sed 's/^.*\:\ //g')";
-				MY_SUBST_MODEL="$(grep -h '^Substitution\ Matrix\:\ ' ./RAxML_info.raxml_out | sed 's/^.*\:\ //g')";
-				MY_OPTIM_LIKE="$(grep -h 'Final\ ML\ Optimization\ Likelihood\:\ ' ./RAxML_info.raxml_out | sed 's/^.*\:\ //g')";
-				MY_ML_RUN_TIME="$(grep -h 'Overall\ execution\ time\ ' ./RAxML_info.raxml_out | sed 's/^Overall\ execution\ time\ [A-Za-z\ ]*\:\ //g; s/or\ .*//g')";
-				
-				echo "$count$TAB$MY_LOCUS$TAB$MY_ALIGN_PATT$TAB$MY_SUBST_MODEL$TAB$MY_OPTIM_LIKE$TAB$MY_ML_RUN_TIME$TAB complete" >> ../completed_run_info.tmp; 
-			fi
-			if [[ ! -s RAxML_bipartitions.raxml_out ]]; then 
-				
-				echo "$count$TAB$MY_LOCUS$TAB$MY_ALIGN_PATT$TAB$MY_SUBST_MODEL$TAB incomplete" >> ../remaining_run_info.tmp; 
-				
-			fi
-		cd ..; 
-		echo "$((count++))" > ./count.tmp ;
+	for i in ./*.phy ; do
+		#### Get PHYLIP characteristics:
+		MY_BASENAME="$(basename "$i" '.phy')";
+#
+		MY_NCHAR="$(head -n1 "$i" | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
+		echo "$MY_NCHAR" >> ./PHYLIP_nChar.list.txt ;
+#
+		echo "$MY_BASENAME" >> ./PHYLIP_order.list.tmp ;
+#
+		MY_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g; s/\ //g')";
+		echo "$MY_NTAX" >> ./PHYLIP_nTax.list.txt ;
+		echo "Done summarizing PHYLIP file: $((count++))... ";
 	done
 )
+#
+	echo "File	nTax	nChar" > ./header.tmp ;
+	paste ./PHYLIP_order.list.tmp ./PHYLIP_nChar.list.txt ./PHYLIP_nTax.list.txt > ./PHYLIP_table.tmp ;
+	cat ./header.tmp ./PHYLIP_table.tmp > ./PHYLIP_Summary.txt ;
+
+#	MY_N_PHY_FILES="$(echo "$count" )";
+	MY_N_PHY_FILES="$(ls ./*.phy | wc -l | sed 's/\ //g')";
+fi
+###
 
 
-	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Likelihood$TAB ML Run Time$TAB Status" > ./header.tmp;
-	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Status" > ./rem_header.tmp;
-	cat ./header.tmp ./completed_run_info.tmp > ./completed_run_info.txt;
-	cat ./rem_header.tmp ./remaining_run_info.tmp > ./remaining_run_info.txt;
+echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
+###### Remove temporary or unnecessary files created above:
+	echo "INFO      | $(date) |          Removing temporary files... "
+	if [[ ! -z "$(ls ./*.tmp)" ]]; then
+		rm ./*.tmp ;
+	fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-
-	echo "INFO      | $(date) |          Editing final RAxML run information files... "
-		if [[ "${machine}" = "Mac" ]]; then
-			sed -i.bak 's/\ //g' ./completed_run_info.txt;
-			sed -i.bak 's/\ //g' ./remaining_run_info.txt;
-			rm ./*.bak;
-		fi
-		if [[ "${machine}" = "Linux" ]]; then
-			sed -i 's/\ //g' ./completed_run_info.txt;
-			sed -i 's/\ //g' ./remaining_run_info.txt;
-		fi
-
-
-############ III. CLEAN UP WORKSPACE BY REMOVING TEMPORARY FILES.
-echo "INFO      | $(date) | Step #3: Clean up workspace. "
-echo "INFO      | $(date) |          Cleaning up workspace by removing temporary files generated during run... "
-
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 
 echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
-echo "output file(s): ./completed_run_info.txt "
-echo "                ./remaining_run_info.txt "
+if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
+	echo "input PHYLIP file: $INPUT_PHYLIP_FILE "
+	echo "output files: ./PHYLIP_nTax.list.txt "
+	echo "              ./PHYLIP_nChar.list.txt "
+	echo "              ./PHYLIP_Summary.txt "
+fi
+if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+	echo "input PHYLIP files: $MY_N_PHY_FILES PHYLIP alignments from current directory"
+	echo "output files: ./PHYLIP_nTax.list.txt "
+	echo "              ./PHYLIP_nChar.list.txt "
+	echo "              ./PHYLIP_Summary.txt "
+fi
 echo ""
-
 
 ##########################################################################################
 ######################################### END ############################################
@@ -249,65 +241,102 @@ echo ""
 
 
 
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-# None at this time.
-
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
+  -i   inputPHYLIP (def: NULL) input PHYLIP filename
+  -m   multiPHYLIP (def: 0, turned off; 1, on) whether to summarize multiple PHYLIP files 
+       in current working directory
   -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version of this script and exit
+  -V   version (also: --version) echo version and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT was designed to run in a current working directory where the MAGNET pipeline
- in PIrANHA v0.3a2 (Bagley 2019) is being run, or has completed a run, to estimate maximum-
- likelihood (ML) gene trees in RAxML v8+ (Stamatakis 2014) for a set of loci from DNA 
- sequence data. Given such a workspace, this script counts the number of loci or data 
- partitions (each assigned a separate RAxML run in MAGNET) with completed RAxML runs and 
- collates run information. Output files include a summary of completed runs and a summary 
- of ongoing runs.
+ THIS SCRIPT reads one (-i flag) or multiple (-m flag) PHYLIP (Felsenstein 2002) DNA sequence 
+ alignment files and produces a summary of their main characteristics, including the numbers of
+ taxa (tips/sequence labels) and characters (bp), which is saved to file. Sequence names 
+ should include alphanumeric, hyphen, and underscore characters but no spaces. Also, PHYLIP
+ alignment files must have the extension '.phy'. Output is saved to the following files:
+
+ - No. taxa:       PHYLIP_nTax.list.txt
+ - No. characters: PHYLIP_nChar.list.txt
+ - PHYLIP summary: PHYLIP_Summary.txt     (table)
+
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
  Linux (tested on CentOS 6/7). There are no other dependencies.
-
+ 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f RAxMLRunChecker         Run the program
-    piranha -f RAxMLRunChecker -h      Print this help text
+    piranha -f PHYLIPsummary -i <inputPHYLIP>      Summarize single PHYLIP file
+    piranha -f PHYLIPsummary -m 1                  Summarize multiple PHYLIP files
+    piranha -f PHYLIPsummary -h                    Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
- Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
-	large phylogenies. Bioinformatics, 30, 1312-1313.
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
- Created by Justin Bagley on/before November 29, 2018.
- Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
+ Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
 
-#if [[ -z "$*" ]]; then
-#	echo "$USAGE"
-#	exit
-#fi
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
-if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
 	exit
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename "$0") $VERSION";
+	echo "$(basename $0) $VERSION";
 	exit
 fi
 
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_PHYLIP_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_PHYLIP_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MULTIPLE_PHYLIP_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
+	fi
+#
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##
@@ -340,7 +369,7 @@ set -o pipefail
 # checkDependencies
 
 # Run the script
-RAxMLRunChecker
+PHYLIPsummary
 
 # Exit cleanly
 safeExit

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RAxMLRunner.sh                                                                   #
-  VERSION="v1.5.0"                                                                       #
+  VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 19 Aug 2016 00:33:27 -0300.                     #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ RAxMLRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RAxMLRunner, v1.5.0 April 2020                                 "
+echo "INFO      | $(date) | RAxMLRunner, v1.5.1 April 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -270,10 +270,7 @@ echo "INFO      | $(date) |          Removing temporary files from local machine
 	##--ssh $MY_SSH_ACCOUNT 'rm ~/bin/raxmlrunner_sbatch_sub.sh;' NOTE: path/to/bin may be different
 	##--on another user's account.
 
-#echo "INFO      | $(date) | Done. "
-#echo "INFO      | $(date) | Bye.
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -293,7 +290,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 # None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -323,9 +320,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f RAxMLRunner                 Run program with the defaults and parameters 
-     								  	   extracted from the configuration file
-    piranha -f RAxMLRunner --args='-h'      Print this help text
+    piranha -f RAxMLRunner         Run program with the defaults and parameters extracted 
+                                   from the configuration file
+    piranha -f RAxMLRunner -h      Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -352,7 +349,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

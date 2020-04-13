@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2MultiPHYLIP.sh                                                             #
-  VERSION="v1.6.2"                                                                       #
+  VERSION="v1.6.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -138,7 +138,7 @@ NEXUS2MultiPHYLIP () {
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.6.2 April 2020  "
+echo "INFO      | $(date) | NEXUS2MultiPHYLIP, v1.6.3 April 2020                           "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 fi
@@ -146,7 +146,7 @@ fi
 ######################################## START ###########################################
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting NEXUS2MultiPHYLIP analysis...  "
-	echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+	echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 fi
 ############ STEP #1: SET UP FUNCTIONS AND ENVIRONMENTAL VARIABLES AND CHECK MACHINE TYPE.
 MY_WORKING_DIR="$(pwd)"
@@ -337,24 +337,19 @@ count=1;
 
 		## Select characters corresponding to first $line characters of all lines of sequence
 		## file, using custom cut command:
-
 		cut -c-"$line" "$MY_DNA_FILE" > ./locus_part_files/locus"$count".dat ;
 
 		## Paste taxon names and selected characters for locus $count to make a preliminary
 		## alignment file:
-
 		paste "$MY_TAXNAMES_FILE" ./locus_part_files/locus"$count".dat > ./locus_part_files/locus"$count".align ;
 
 		## Make PHYLIP header specific to the locus being analyzed:
-
 		echo "$MY_NTAX  $line" > ./locus_part_files/locus"$count".phy.head ;
 
 		## Create PHYLIP file for locus $count:
-		
 		cat ./locus_part_files/locus"$count".phy.head ./locus_part_files/locus"$count".align > ./phylip_files/locus"$count".phy ;
 
 		## Based on machine type, remove all tab characters inserted during paste above:
-
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's/'"$TAB"'//g' ./phylip_files/locus"$count".phy ;
 			rm ./*.bak;
@@ -510,9 +505,10 @@ fi
 ############ STEP #5: CLEAN UP WORKING DIRECTORY OF VARIOUS LOCUS FILES GENERATED ABOVE.
 ## Remove temporary files generated during characterizeNexus function call above.
 
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -524,11 +520,11 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
-  -v   verbose (def: 0, off; 1, on) specify verbose output to screen (info, stderr, and stdout)
+  -i   inputNEXUS (def: NULL) mandatory input NEXUS file in sequential NEXUS format
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
   --experimental   (def: not given) experimental option, causing the resulting PHYLIP 
@@ -558,9 +554,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f NEXUS2MultiPHYLIP --args='-i <inputNEXUS> -v 1'  Run on user NEXUS while printing
-     										   			  	    text output to screen
-    piranha -f NEXUS2MultiPHYLIP -a '-i <inputNEXUS> -v 1'    Same as above, but with -a flag
+    piranha -f NEXUS2MultiPHYLIP -i <inputNEXUS> -v 1      Run on user NEXUS while printing
+                                                           text output to screen
+    piranha -f NEXUS2MultiPHYLIP -h                        Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

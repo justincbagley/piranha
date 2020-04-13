@@ -295,7 +295,6 @@ fi
 	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s): ./concatenated_seqs.phy "
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -347,17 +346,26 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  extension.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
- on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). Besides standard UNIX/Linux command line tools, the only other 
- dependency is Perl (v5+), which is usually already installed on mac and Linux distributions.
+ on macOS High Sierra (v10.13+) and Mojave, and CentOS 5/6/7 Linux, but should work on many
+ other versions. Besides standard UNIX/Linux command line tools, the only other dependency 
+ is Perl (v5+), which is usually already installed on mac and Linux distributions.
 
  ${bold}Usage examples:${reset}
- To run using current directory as <workingDir> with a names and spaces text file named 
- 'taxon_name_spaces12.txt' containing each tip taxon name followed by x number of spaces 
- taking the total character count per line out to 12 characters, you would call the program 
- using PIrANHA as follows:
+ Call the program using PIrANHA, as follows:
 
-    piranha -f concatSeqsPartitions --args='-t taxon_name_spaces12.txt'
+    piranha -f concatSeqsPartitions -t <taxonNamesSpaces>
+
+	Suggested usage, starting from scratch:
+	
+		Create <taxonNamesSpaces> file with getTaxonNames function:
+		piranha -f getTaxonNames -n <numTips>	# Creates file: '<numTips>_taxon_names_spaces.txt'
+
+		Concatenate PHYLIP alignments in working dir:
+		piranha -f concatSeqsPartitions -t <numTips>_taxon_names_spaces.txt
+
+	Suggested usage, starting from existing <taxonNamesSpaces> file, 'taxon_name_spaces12.txt':
+   
+		piranha -f concatSeqsPartitions -t taxon_name_spaces12.txt -v 1
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

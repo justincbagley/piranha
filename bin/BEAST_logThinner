@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.                       #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -227,6 +227,12 @@ USAGE="Usage: $(basename $0) [OPTION]...
  TODO: Extend this script to work with log files from other phylogenetic software programs 
  in the near future (2020), by allowing it to a) run with options (non-interactively), 
  b) detect tree file type, and c) conduct thinning. Also extend to BEAST1 log files.
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f BEAST_logThinner          Run the program
+    piranha -f BEAST_logThinner -h       Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

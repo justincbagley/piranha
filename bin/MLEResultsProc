@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MLEResultsProc.sh                                                                #
-  VERSION="v1.5.0"                                                                       #
+  VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.                     #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ MLEResultsProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MLEResultsProc, v1.5.0 April 2020                              "
+echo "INFO      | $(date) | MLEResultsProc, v1.5.1 April 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -300,12 +300,10 @@ echo "INFO      | $(date) | Step #6: Clean up workspace by removing temporary fi
 	
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-#echo "INFO      | $(date) | Done summarizing marginal-likelihood estimation results in BEAST using MLEResultsProc. "
-#echo "INFO      | $(date) | Bye.
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
+
 
 ## END DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
@@ -323,7 +321,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 # None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: -help) echo this help text and exit
@@ -342,14 +340,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). The main dependencies are R (v3.3+) and Perl (v5+), the later
+ Linux (tested on CentOS 5/6/7). The main dependencies are R (v3.3+) and Perl (v5+), the later
  of which is usually already installed on most mac and Linux distributions. 
  
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f MLEResultsProc                  Run with program defaults in current directory
-    piranha -f MLEResultsProc --args='-h'      Print this help text
+    piranha -f MLEResultsProc         Run with default settings
+    piranha -f MLEResultsProc -h      Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

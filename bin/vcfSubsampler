@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: vcfSubsampler.sh                                                                 #
-  VERSION="v0.2.2"                                                                       #
+  VERSION="v0.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,12 +136,13 @@ vcfSubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | vcfSubsampler, v0.2.2 April 2020  "
+echo "INFO      | $(date) | vcfSubsampler, v0.2.3 April 2020  "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 
+echo "INFO      | $(date) |          Subsamling input VCF file using SNPs file '${MY_SNPS_FILE}' ..."
 ##--Subsample input .vcf file (default name: input.vcf) using snps list:
 (
 	while read j; do
@@ -149,24 +150,30 @@ echo "INFO      | $(date) |-----------------------------------------------------
 	done < ./"$MY_SNPS_FILE"
 )
 
+echo "INFO      | $(date) |          Adding header from original VCF to subsampled VCF file ..."
 ##--Add header from original .vcf to the new, subsampled vcf file:
 	grep -h "\#" ./"$MY_INPUT_VCF" > ./header.tmp ;
 
 	cat ./header.tmp "$MY_OUTPUT_VCF_FILE".tmp > "$MY_OUTPUT_VCF_FILE".vcf ;
 
+echo "INFO      | $(date) |          Cleaning up workspace by removing temporary files generated during run... "
 ##--Cleanup temporary files:
 	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
 
 ##--Final cleanup:
 ##--Delete the original .vcf file if user has specified to do so:
 	if [[ "$DELETE_ORIG_VCF" = 0 ]]; then
+		echo "INFO      | $(date) |          Keeping original VCF file (-d 0)... "
 		echo "" ;
 	elif [[ "$DELETE_ORIG_VCF" = 1 ]]; then
+		echo "INFO      | $(date) |          Removing original VCF file (-d 1 flag set)... "
 		rm ./"$MY_INPUT_VCF" ;
 	fi
 
-
+echo "INFO      | $(date) |          Done. "
 echo "----------------------------------------------------------------------------------------------------------"
+echo "output file: ./${MY_OUTPUT_VCF_FILE}.vcf "
+echo ""
 
 ##########################################################################################
 ######################################### END ############################################
@@ -185,21 +192,23 @@ DELETE_ORIG_VCF=0
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename $0) [OPTION]...
 
- This is vcfSubsampler. It uses a list file (snpsFile) to subsample a variant call
- format (VCF) file, <inputVCFFile>, so that it only contains SNPs in the list.
+ This is vcfSubsampler. It uses a list file of SNP names, <snpsFile>, to subsample a variant 
+ call format (VCF) file, <inputVCFFile>, so that it only contains SNPs in the list.
 
  ${bold}Options:${reset}
   -i   inputVCFFile (def: input.vcf) input VCF file (tested with v4.0+)
   -s   snpsFile (def: $MY_SNPS_FILE) file listing, one per line, names of SNPs that the user
-       wishes to keep, corresponding to 'GENE' column of the input .vcf file
-  -o   output (def: $MY_OUTPUT_FILE) output vcf file basename (root; not including extension)
+       wishes to keep, corresponding to 'GENE' column of the input VCF file
+  -o   output (def: $MY_OUTPUT_FILE) output VCF file basename (root; not including extension)
   -d   deleteOrig (def: 0=no, 1=yes) specifies whether or not to delete the original input
-       .vcf file
+       VCF file
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
  ${bold}Usage examples:${reset}
-    piranha -f vcfSubsampler --args='-i <inputVCFFile> -s <snpsFile>'
+ Call the program using PIrANHA, as follows:
+
+    piranha -f vcfSubsampler -i <inputVCFFile> -s <snpsFile>      
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

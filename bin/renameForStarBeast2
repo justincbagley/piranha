@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: renameForStarBEAST2.sh                                                           #
-  VERSION="v1.2.3"                                                                       #
+  VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,7 +146,7 @@ renameForStarBEAST2 () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameForStarBEAST2, v1.2.3 April 2020 "
+echo "INFO      | $(date) | renameForStarBEAST2, v1.2.4 April 2020 "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -227,6 +227,7 @@ echo "INFO      | $(date) |          Removing temporary files... "
 	if [[ -s ./species_assign_names.tmp ]]; then ; fi 
 	if [[ -s ./species_assign_tips.tmp ]]; then ; fi 
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -243,14 +244,12 @@ MY_INPUT_FILE_TYPE=phylip
 USER_SPEC_ASSIGNMENT_FILE=assignment.txt
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -f   input file type (def: phylip; other: fasta) type of file(s) in current directory
-       to be renamed (assumes '.phy' or '.fas' extensions for PHYLIP or FASTA format files, 
-       respectively)
+  -f   input file type (def: phylip; other: fasta) type of file(s) to be renamed
   -a   assignmentFile (def: assignment.txt) ASTRAL-III style assignment file detailing which
-       individual tips correspond to which species or taxa
+       individual tips correspond to which species/taxa
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
 
@@ -264,14 +263,17 @@ USAGE="Usage: $(basename $0) [OPTION]...
  In this format, information is given on one line per species, with each line containing 
  the species name followed by a space, then the number of individuals, another space,
  and then a space-delimited list of individuals (e.g. 'individual_1 individual_2 ...').
- For best results, species names should be given in <assignmenFile> as simple alphanumeric
- names with no spaces, hyphens, underscores, or nonalphanumeric characters (e.g. the 
- assignment 'unimaculatus' gave no errors in testing).
+	For best results, species names should be given in <assignmenFile> (-a flag) as simple 
+ alphanumeric names with no spaces, hyphens, underscores, or nonalphanumeric characters (e.g. 
+ the assignment 'unimaculatus' gave no errors in testing). Also, the script assumes '.phy'
+ or '.fas' filename extensions for PHYLIP or FASTA input files, respectively, and that the
+ input files are present in the current working directory.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f renameForStarBEAST2 --args='-f phylip -a assignment.txt'
+    piranha -f renameForStarBEAST2 -f phylip -a <assignmentFile>
+    piranha -f renameForStarBEAST2 -f fasta -a <assignmentFile>
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -305,7 +307,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

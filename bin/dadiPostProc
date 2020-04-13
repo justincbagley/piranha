@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dadiPostProc.sh                                                                  #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ dadiPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiPostProc, v1.0.2 April 2020                                "
+echo "INFO      | $(date) | dadiPostProc, v1.0.3 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -365,13 +365,8 @@ echo "INFO      | $(date) |          SAME MODEL, LOOKING FOR SEPARATE M1 (MODEL 
 fi
 ######
 
-
-#echo "INFO      | $(date) | Done post-processing results from one or multiple ∂a∂i runs using the dadiPostProc utility of PIrANHA. "
-#echo "Bye.
-#"
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
-
 
 ##########################################################################################
 ######################################### END ############################################
@@ -409,10 +404,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f dadiPostProc		   	                   	Run using defaults options
-    piranha -f dadiPostProc --args='-n 10 -l 1 -u 10'	A case equal to the defaults
-    piranha -f dadiPostProc --args='-n 5 -l 2 -u 7'		Illustrating that dadiPostProc accomodates model number
-														ranges starting from values other than 1
+    piranha -f dadiPostProc                      Run using defaults options
+    piranha -f dadiPostProc -n 10 -l 1 -u 10     A case equal to the defaults
+    piranha -f dadiPostProc -n 5 -l 2 -u 7       Illustrating that dadiPostProc accomodates model number
+                                                 ranges starting from values other than 1
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -461,10 +456,10 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f dadiPostProc		   	                   	Run using defaults options
-    piranha -f dadiPostProc --args='-n 10 -l 1 -u 10'	A case equal to the defaults
-    piranha -f dadiPostProc --args='-n 5 -l 2 -u 7'		Illustrating that dadiPostProc accomodates model number
-														ranges starting from values other than 1
+    piranha -f dadiPostProc                      Run using defaults options
+    piranha -f dadiPostProc -n 10 -l 1 -u 10     A case equal to the defaults
+    piranha -f dadiPostProc -n 5 -l 2 -u 7       Illustrating that dadiPostProc accomodates model number
+                                                 ranges starting from values other than 1
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

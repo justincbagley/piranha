@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: ExaBayesPostProc.sh                                                              #
-  VERSION="1.3.3"                                                                        #
+  VERSION="1.3.4"                                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:28:02 -0300.                     #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,12 +136,12 @@ ExaBayesPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | ExaBayesPostProc, v1.3.3 April 2020                            "
+echo "INFO      | $(date) | ExaBayesPostProc, v1.3.4 April 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
@@ -351,13 +351,8 @@ echo "INFO      | $(date) |          Removing temporary files... "
 ###### CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	if [[ -s batch.txt ]]; then rm batch.txt ; fi
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
-
-
-#echo "INFO      | $(date) | Done post-processing ExaBayes results. "
-#echo "INFO      | $(date) | Bye. 
-#"
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s): ./ExaBayes_topologies.*.con.tre "
@@ -411,14 +406,14 @@ USAGE="Usage: $(basename $0) [OPTION]...
  trees, their posterior probabilities, and their errors. 
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
- on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). ExaBayesPostProc depends on a working ExaBayes (v1.4+) build, 
- with the ExaBayes utility programs credibleSet, extractBips, and postProcParam being available 
- from the UNIX/Linux command line interface (i.e. in your path). The program also uses MrBayes 
- v3.2+ (Ronquist et al. 2012) to take some shortcuts for summarizing trees, and it is assumed 
- that MrBayes is available from the command line as 'mb' or 'mrbayes'. The program checks
- whether all of the dependencies are available and will print messages and quit if a dependency
- is not found.
+ on macOS High Sierra (v10.13+) and Mojave, and CentOS 5/6/7 Linux, but should work on many
+ other versions. ExaBayesPostProc depends on a working ExaBayes (v1.4+) build, with the ExaBayes 
+ utility programs credibleSet, extractBips, and postProcParam being available from the 
+ UNIX/Linux command line interface (i.e. in your path). The program also uses MrBayes v3.2+ 
+ (Ronquist et al. 2012) to take some shortcuts for summarizing trees, and it is assumed that 
+ MrBayes is available from the command line as 'mb' or 'mrbayes'. The program checks whether 
+ all of the dependencies are available and will print messages and quit if a dependency is 
+ not found.
 	The NEXUS file run in ExaBayes, <inputNEXUS>, should have extension '.nex'. If the file 
  is not found, then the program will use the first NEXUS file with extension '.nex' in the
  working directory, or quit.
@@ -426,10 +421,10 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f ExaBayesPostProc  			 Run the software with the default settings
-    piranha -f ExaBayesPostProc --args='-i data.nex'       Default run while specifying input NEXUS
-    piranha -f ExaBayesPostProc --args='-r 4'       Analyze results from 4 replicate ExaBayes runs
-    piranha -f ExaBayesPostProc --args='-h'       Print this help text
+    piranha -f ExaBayesPostProc                      Run with default settings
+    piranha -f ExaBayesPostProc -i <inputNEXUS>      Default run while specifying input NEXUS
+    piranha -f ExaBayesPostProc -r 4                 Analyze results from 4 replicate ExaBayes runs
+    piranha -f ExaBayesPostProc -h                   Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

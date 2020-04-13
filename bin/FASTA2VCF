@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2VCF.sh                                                                     #
-  VERSION="v1.2.0"                                                                       #
+  VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.                       #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,7 +141,7 @@ FASTA2VCF () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2VCF, v1.2.0 April 2020                                   "
+echo "INFO      | $(date) | FASTA2VCF, v1.2.1 April 2020                                   "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -250,7 +250,6 @@ count=1
 
 		## Put line in env var, separate range start and end values:
 		MY_TEST_LINE="$(echo $line)";
-#		echo "$MY_TEST_LINE"
 		MY_FIRST_VAL="$(echo $MY_TEST_LINE | sed 's/\ .*//g')";
 		MY_SECOND_VAL="$(echo $MY_TEST_LINE | sed 's/^[0-9]*\ //g')";
 		echo "INFO      | $(date) |          Partition start: $MY_FIRST_VAL "
@@ -316,14 +315,10 @@ fi
 ############ IV. CLEAN UP THE WORKSPACE.
 echo "INFO      | $(date) | Step #4: Clean up working directory by removing temporary files. "
 ## Remove temporary files generated above.
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ ! $(ls -z ./*.tmp) ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-
-#echo "INFO      | $(date) | Done converting your multiple sequence FASTA file to VCF format using FASTA2VCF.sh. "
-#echo "INFO      | $(date) | Bye.
-#"
-
+echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ -s "$MY_FASTA_BASENAME".subsampled.vcf ]]; then
 	echo "output file(s): ${MY_FASTA_BASENAME}.vcf "
@@ -340,6 +335,7 @@ if [[ -s "$MY_OUTPUT_FILENAME".vcf ]] && [[ ! -s "$MY_OUTPUT_FILENAME".subsample
 	echo "output file(s): ${MY_OUTPUT_FILENAME}.vcf "
 fi
 echo ""
+
 
 ## END DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
@@ -381,20 +377,17 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputFASTA (def: NULL) mandatory name of input FASTA file in sequential, non-wrapped
-       text format (with 1 line/sequence)
+  -i   inputFASTA (def: NULL) mandatory input FASTA file in sequential, non-wrapped text
+       format (with 1 line/sequence)
   -r   partitionRanges (def: NULL) file with single column of space-, comma-, or tab-
        delimited start and finish values for the ranges (of bases) occupied by each partition
        for corresponding <inputFASTA>
-  -o   output (def: NULL, <inputFASTA> basename) user-specified output basename (=filename
-       minus extension; affects output VCF files)
-  -s   subsampleSNPs (def: NULL; or: number of SNPs) allows user to specify number of SNPs
-       to subsample from each partition (e.g. locus). Currently only working with '-s 1',
-       which extracts 1 SNP per partition.
-  -l   logfile (def: NULL; other: logfile name) send all output (stdout and stderr) to file 
-       in <workingDir> with this name, for example 'FASTA2VCF.output.txt'
-  -p   outputPHYLIP (def: NULL, off; 1, on) optionally convert <inputFASTA> to a PHYLIP-formatted
-       alignment file with extension '.phy'
+  -o   output (def: NULL, <inputFASTA> basename) user-specified output basename (affects 
+       output VCF files)
+  -s   subsampleSNPs (def: NULL; or: number of SNPs) number of SNPs to subsample from each 
+       partition (e.g. locus); currently only working with '-s 1' (extracts 1 SNP/partition)
+  -l   logfile (def: NULL; other: logfile name) log output (stdout and stderr) to file 
+  -p   outputPHYLIP (def: NULL, off; 1, on) convert <inputFASTA> to a PHYLIP alignment
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version of this script and exit
   -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
@@ -421,9 +414,9 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
  
-    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output>'         Run without subsampling SNPs
-    piranha -f FASTA2VCF --args='-i<inputFASTA> -r<partitionRanges> -o<output> -s1'     Subsample 1 SNP per locus/partition
-    piranha -f FASTA2VCF --args='-h'                                                    Print this help text
+    piranha -f FASTA2VCF -i <inputFASTA> -r <partitionRanges> -o <output>           Run without subsampling SNPs
+    piranha -f FASTA2VCF -i <inputFASTA> -r <partitionRanges> -o <output> -s 1      Subsample 1 SNP per locus/partition
+    piranha -f FASTA2VCF -h                                                         Print this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: taxonCompFilter.sh                                                               #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 15 11:20:02 CDT 2019.                       #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ taxonCompFilter () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | taxonCompFilter, v1.0.2 April 2020                             "
+echo "INFO      | $(date) | taxonCompFilter, v1.0.3 April 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -244,10 +244,7 @@ echo "INFO      | $(date) |          STEP #3: SUMMARIZE RESULTS AND CLEAN UP WOR
 	echo "INFO      | $(date) |          Saved $MY_NUM_KEPT_ALIGNS multiple sequence alignments meeting threshold to filter_${USER_TAX_COMP_THRESHOLD}/ subfolder. "
 
 
-#echo "INFO      | $(date) | Done filtering multiple sequence alignments (MSAs) using your threshold criterion of $USER_TAX_COMP_THRESHOLD in taxCompFilter.sh. "
-#echo "INFO      | $(date) | Bye.
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
@@ -267,13 +264,13 @@ MY_NUM_TAX=NULL
 USER_TAX_COMP_THRESHOLD=0.7
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -u   unphased (def: 1, true; other: 0, false) indicates whether input PHYLIP alignments 
+  -u   unphased (def: 1, true; other: 0, false) whether or not input PHYLIP alignments 
        contain unphased DNA sequences.
-  -p   phased (def: 0, false; other: 1, true) indicates whether input PHYLIP alignments 
-       contain phased DNA sequences.
+  -p   phased (def: 0, false; other: 1, true) whether or not input PHYLIP alignments contain
+       phased DNA sequences.
   -o   outputFile (def: NULL) send all output (stdout and stderr) to file in <workingDir> with 
        this name, for example 'output.txt'.
   -n   numTax (def: NULL) mandatory number of tip taxa in the dataset.
@@ -315,9 +312,9 @@ USAGE="Usage: $(basename $0) [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f taxonCompFilter --args='-h'                                      Print this help text
-    piranha -f taxonCompFilter --args='-p 1 -n <numTaxa> -t <taxCompThresh>'    Generic usage with arguments
-    piranha -f taxonCompFilter --args='-p 1 -n 43 -t 0.75'                      Empirical 75% taxon sampling example
+    piranha -f taxonCompFilter -p 1 -n <numTaxa> -t <taxCompThresh>     Generic usage with arguments
+    piranha -f taxonCompFilter -p 1 -n 43 -t 0.75                       Empirical 75% taxon sampling example
+    piranha -f taxonCompFilter -h                                       Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -347,7 +344,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: MrBayesPostProc.sh                                                               #
-  version="v1.8.0"                                                                       #
+  version="v1.9.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -143,7 +143,7 @@ MrBayesPostProc () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | MrBayesPostProc, v1.8.0 April 2020                             "
+echo "INFO      | $(date) | MrBayesPostProc, v1.9.0 April 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2017–2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -161,7 +161,47 @@ checkMachineType
 ## START DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
-echo "INFO      | $(date) | Step #2: Fix NEXUS filenames, check whether MrBayes is installed, and attempt to set name or path to MrBayes executable. "
+
+###
+if [[ "$MY_INPUT_NEXUS" != "NULL" ]] && [[ -s "$MY_INPUT_NEXUS" ]] && [[ "$MY_MRBAYES_FILENAME" != "NULL" ]]; then 
+
+	echo "INFO      | $(date) | Step #2: Prepare input NEXUS, check whether MrBayes is installed, and attempt to set name or path to MrBayes executable. "
+	MY_NEXUS_EXTENSION=".${MY_INPUT_NEXUS##*.}";
+	MY_NEXUS_BASENAME="$(echo "${MY_INPUT_NEXUS%%.*}")";
+	if [[ "$MY_NEXUS_EXTENSION" = ".NEX" ]]; then 
+		mv "$MY_INPUT_NEXUS" "$MY_NEXUS_BASENAME".nex ;
+		MY_INPUT_NEXUS="$MY_NEXUS_BASENAME".nex ;
+	fi
+
+if [[ "$MY_INPUT_NEXUS" != "NULL" ]] && [[ -s "$MY_INPUT_NEXUS" ]] && [[ "$MY_MRBAYES_FILENAME" = "NULL" ]]; then 
+
+	echo "INFO      | $(date) | Step #2: Prepare input NEXUS, check whether MrBayes is installed, and attempt to set name or path to MrBayes executable. "
+	MY_NEXUS_EXTENSION=".${MY_INPUT_NEXUS##*.}";
+	MY_NEXUS_BASENAME="$(echo "${MY_INPUT_NEXUS%%.*}")";
+	if [[ "$MY_NEXUS_EXTENSION" = ".NEX" ]]; then 
+		mv "$MY_INPUT_NEXUS" "$MY_NEXUS_BASENAME".nex ;
+		MY_INPUT_NEXUS="$MY_NEXUS_BASENAME".nex ;
+	fi
+	## $MY_MRBAYES_FILENAME is the name of the output of the run, which will be the root/prefix 
+	## of each output file. Here we have to guess this information because the user did not provide it
+	## with the -m flag as expected. Echo a warning and attempt to guess the correct basename:
+	echo "WARNING!  | $(date) | No MrBayes basename (output file name prefix) provided! "
+	echo "INFO      | $(date) | Guessing input NEXUS file (first file after listing), but this could lead to errors.  "
+	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.*://p' | sed 's/\.mcmc$//g')";
+	
+elif [[ "$MY_INPUT_NEXUS" != "NULL" ]] && [[ ! -s "$MY_INPUT_NEXUS" ]]; then 
+
+	echo "WARNING!  | $(date) | Found no NEXUS file named $MY_INPUT_NEXUS in current directory. "
+	echo "ERROR     | $(date) | Quitting... "
+	exit 1 ;
+
+elif [[ "$MY_INPUT_NEXUS" = "NULL" ]]; then 
+
+	echo "INFO      | $(date) | Step #2: Prepare input NEXUS, check whether MrBayes is installed, and attempt to set name or path to MrBayes executable. "
+	echo "WARNING!  | $(date) | No input NEXUS filename provided! "
+	echo "INFO      | $(date) | Guessing input NEXUS file (first file after listing), but this could lead to errors.  "
+	echo "INFO      | $(date) | Stop this run (Ctrl + C) or check output files carefully... "
+
 	## First, fix NEXUS filename extensions to conform to the standard ('.nex') expected by
 	## the script. For now, this only handles the cases of the '.NEX' extension and the
 	## '.nexus' extension, fixing both of these.
@@ -186,39 +226,26 @@ echo "INFO      | $(date) | Step #2: Fix NEXUS filenames, check whether MrBayes 
 	## This script was written to expect only a single NEXUS file in pwd; however, users 
 	## will probably from time to time mistakenly run the script on a directory with 
 	## multiple NEXUS files. Here, we can account for this by taking the first .nex file
-	## found in the directory, by using the following line instead of MY_NEXUS=./*.nex 
+	## found in the directory, by using the following line instead of MY_INPUT_NEXUS=./*.nex 
 	## (which would only work with 1 file). $MY_MRBAYES_FILENAME is the name of the output
 	## of the run, which will be the root/prefix of each output file. 
 
 	if [[ -s "$(nex_FILES=./*.nex; echo $nex_FILES | head -n1 | sed 's/\ .*//g')" ]]; then 
-		MY_NEXUS="$(ls ./*.nex | head -n1 | sed 's/\ //g')";
+		MY_INPUT_NEXUS="$(ls ./*.nex | head -n1 | sed 's/\ //g')";
 	fi
 	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.*://p' | sed 's/\.mcmc$//g')";
+fi
+###
 
 
-	## In addition to fixing NEXUS filenames and getting only one NEXUS file for use, another
-	## requirement for running this program is having the MrBayes executable name that is 
-	## available from the command line, or having the path to the MrBayes executable. In
-	## previous versions of this program, I had the user add the appropriate path to a 
-	## variable named 'mb_path' in a configuration file named 'mrbayes_post_proc.cfg' in 
-	## the run directory. I think grepped the path from the configuration file as follows:
-	#
-	#	MY_LOC_SC_MB_PATH="$(grep -n "mb_path" ./mrbayes_post_proc.cfg | awk -F"=" '{print $NF}')";
-	#
-	## This simply is not acceptable in a generalized software program that we want anyone
-	## to be able to use, and to use efficiently. I decided to scrap the configuration file,
-	## give the user the option to pass the executable name or path using a new option (-p flag).
-	## If user does not pass a value with the -p flag, then I will attempt to determine whether
-	## MrBayes is available as 'mb' or 'mrbayes' during the MrBayes software check below.
-
-if [[ "$MY_LOC_SC_MB_PATH" != "NULL" ]]; then
+	if [[ "$MY_LOC_SC_MB_PATH" != "NULL" ]]; then
 		echo "INFO      | $(date) |          <MrBayesPath> parameter is _not_ null. Checking user-specified MrBayes executable name or path on your system..."
 		MY_MRBAYES_EXECUT_CHECK="$(which $(echo $MY_LOC_SC_MB_PATH))"
 		if [[ -s "$MY_MRBAYES_EXECUT_CHECK" ]]; then
 			echo "INFO      | $(date) |          Check passed. MrBayes is installed on your machine..."
 		fi
-fi
-if [[ "$MY_LOC_SC_MB_PATH" = "NULL" ]]; then
+	fi
+	if [[ "$MY_LOC_SC_MB_PATH" = "NULL" ]]; then
 		echo "INFO      | $(date) |          <MrBayesPath> parameter is null. Attempting to determine MrBayes executable name or path on your system..."
 		MY_MRBAYES_EXECUT_CHECK1="$(which mb)";
 		MY_MRBAYES_EXECUT_CHECK2="$(which mrbayes)";
@@ -232,25 +259,25 @@ if [[ "$MY_LOC_SC_MB_PATH" = "NULL" ]]; then
 			fi
 			echo "INFO      | $(date) |          <MrBayesPath> parameter was set to: ${MY_LOC_SC_MB_PATH} "
 		else
-			echo "WARNING!  | $(date) |          Check FAILED. MrBayes is apparently _not_ installed on your machine..."
+			echo "WARNING!  | $(date) |          Check FAILED. MrBayes is apparently _not_ installed on your machine."
 			echo "INFO      | $(date) |          Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
 			echo "INFO      | $(date) |          Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
 			echo "INFO      | $(date) |          if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
 			echo "ERROR     | $(date) |          Quitting..."
 			exit 1 ;
 		fi
-fi
+	fi
 
 
 echo "INFO      | $(date) | Step #3: Remove MrBayes block from NEXUS file. "
 
-	MY_MRBAYES_BLOCK_START="$(grep -n "BEGIN MrBayes\|Begin MrBayes\|BEGIN mrbayes\|Begin mrbayes\|begin mrbayes" $MY_NEXUS | sed 's/\:.*//; s/\ //g')";
+	MY_MRBAYES_BLOCK_START="$(grep -n "BEGIN MrBayes\|Begin MrBayes\|BEGIN mrbayes\|Begin mrbayes\|begin mrbayes" $MY_INPUT_NEXUS | sed 's/\:.*//; s/\ //g')";
 	if [[ "$MY_MRBAYES_BLOCK_START" -gt "0" ]] || [[ -s "$MY_MRBAYES_BLOCK_START" ]]; then
 		MY_HEADSTOP="$(calc $MY_MRBAYES_BLOCK_START-1)";
-		head -n"$MY_HEADSTOP" "$MY_NEXUS" > simple.nex ;
+		head -n"$MY_HEADSTOP" "$MY_INPUT_NEXUS" > simple.nex ;
 	elif [[ ! "$MY_MRBAYES_BLOCK_START" -gt "0" ]]; then
 		echo "INFO      | $(date) |          NEXUS file contains no MrBayes block. Renaming NEXUS to 'simple.nex'... "
-		mv "$MY_NEXUS" simple.nex ;
+		mv "$MY_INPUT_NEXUS" simple.nex ;
 	fi	
 
 
@@ -264,7 +291,7 @@ sumt Filename=${MY_MRBAYES_FILENAME} relburnin=yes burninfrac=${MY_RELBURNIN_FRA
 sump Filename=${MY_MRBAYES_FILENAME} relburnin=yes burninfrac=${MY_RELBURNIN_FRAC}
 quit" > ./batch.txt
 
-##--Flow control. Check to make sure MrBayes batch file was successfully created.
+## Flow control. Check to make sure MrBayes batch file was successfully created.
     if [[ -f ./batch.txt ]]; then
         echo "INFO      | $(date) |          MrBayes batch file ('batch.txt') was successfully created. "
     else
@@ -274,10 +301,10 @@ quit" > ./batch.txt
 
 
 echo "INFO      | $(date) | Step #5: Summarize run and compute consensus tree in MrBayes. "
-##--This calls the commands in the batch.txt file to run within MrBayes, opening the 
-##--simplified nexus file and creating summaries of the tree and run parameters as wellas
-##--computing a majority-rule consensus tree with Bayesian posterior probabilities 
-##--annotated along each node.
+## This calls the commands in the batch.txt file to run within MrBayes, opening the 
+## simplified nexus file and creating summaries of the tree and run parameters as wellas
+## computing a majority-rule consensus tree with Bayesian posterior probabilities 
+## annotated along each node.
 
     $MY_LOC_SC_MB_PATH  < ./batch.txt > Mrbayes_sumtp_log.txt &		## Use batch to run MrBayes.
 
@@ -315,14 +342,10 @@ echo "INFO      | $(date) | Step #6: Clean up files in working dir. "
 		if [[ -f ./SS_batch.txt ]]; then rm ./SS_batch.txt; fi
 	fi
 
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-
-#echo "INFO      | $(date) | Done with post-processing of MrBayes results using MrBayesPostProc. "
-#echo "INFO      | $(date) | Bye. 
-#"
-
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ "$MY_SS_ANALYSIS_SWITCH" -eq "1" ]]; then
 	echo "output file(s): ./Mrbayes_sumtp_log.txt  "
@@ -342,6 +365,7 @@ else
 fi
 echo ""
 
+
 ## END DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 ######
@@ -354,14 +378,17 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -p   MrBayesPath (def: NULL) takes name of MrBayes v3.2+ executable as available from the 
-       user's command line, or the absolute path to a working MrBayes executable
+  -i   inputNEXUS (def: NULL) input NEXUS alignment file
+  -m   MrBayesBasename (def: NULL) basename (file minus extension) of .mcmc file output by
+       MrBayes run from which files are being processed
+  -p   MrBayesPath (def: NULL) name of MrBayes v3.2+ executable as available from user's 
+       command line, or absolute path to a working MrBayes executable
   -b   relBurninFrac (def: $MY_RELBURNIN_FRAC) fraction of trees to discard as 'burn-in'
   -s   SS (def: 0, no stepping-stone (SS) analysis conducted; 1, run SS analysis) allows
-       calling stepping-stone analysis starting from NEXUS in current <workingDir>
+       calling stepping-stone analysis starting from NEXUS in current directory
   -g   SSnGen (def: $MY_SS_NGEN) if 1 for SS above, allows specifying the number of total 
        SS sampling iterations (uses default number of steps, 50; total iterations will 
        be split over 50 steps) 
@@ -375,21 +402,35 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}OVERVIEW${reset}
  Runs a simple script for post-processing results of a MrBayes v3.2+ (Ronquist et al. 2012)
- run, whose output files are assumed to be in the current working directory. This script preps 
- the output files in pwd, and then summarizes trees and their posterior probabilities (sumt), 
+ run, whose output files are located in the current working directory. This script prepares
+ the output files, and then it summarizes trees and their posterior probabilities (sumt), 
  and parameters of the specified model (sump), using MrBayes. Options are provided for specifying 
- the burnin fraction, and for calling stepping-stone analysis (Xie et al. 2011; Baele et al.
- 2012) to robustly estimate the log marginal likelihood of the model/analysis, whose details 
- must be provided in a MrBayes block at the end of the input NEXUS file in the current dir.
+ the input NEXUS file (-i flag), MrBayes output file name (basename; -m flag), MrBayes 
+ executable path or filename (-p flag), burn-in fraction (-b flag), and for calling stepping-
+ stone analysis (pass details with -s, -g, and -d flags; Xie et al. 2011; Baele et al. 2012) 
+ to robustly estimate the log marginal likelihood of the model/analysis, whose details must 
+ be provided in a MrBayes block at the end of the input NEXUS file in the current dir.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage obtained by running the script with the -h flag. It has been tested
  on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or
- Linux (tested on CentOS 6/7). The key dependency is MrBayes v3.2+, so the program checks
+ Linux (tested on CentOS 5/6/7). The key dependency is MrBayes v3.2+, so the program checks
  whether MrBayes is installed and available from the command line, and will print messages 
  and quit if MrBayes is not found. The user can pre-emptively solve this problem by passing
  the program the name or absolute path to a working MrBayes executable using the -p flag (e.g.
  on the author's machine, MrBayes is available as simply 'mb', so I add '-p mb' to my call 
  to MrBayesPostProc).
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    Run with default settings (ymmv):
+    piranha -f MrBayesPostProc -i <inputNEXUS> -p <MrBayesPath>
+
+    Give full information for basic run:
+    piranha -f MrBayesPostProc -i <inputNEXUS> -m <MrBayesBasename> -p <MrBayesPath> -b <relBurninFrac>
+
+    Show this help text and exit:
+    piranha -f MrBayesPostProc -h
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -448,6 +489,20 @@ fi
 ############ MANUALLY PARSE THE OPTIONS FROM ARGS
 
 ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_NEXUS=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_INPUT_NEXUS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MRBAYES_FILENAME=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MY_MRBAYES_FILENAME="$MY_ARG" ;
+	fi
+#
 	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_LOC_SC_MB_PATH=NULL ;
 	else 

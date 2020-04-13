@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: phyNcharSumm.sh                                                                  #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on November 9, 2016.                                    #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ phyNcharSumm () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | phyNcharSumm, v1.0.1 April 2020                                "
+echo "INFO      | $(date) | phyNcharSumm, v1.0.2 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -157,20 +157,20 @@ echo "INFO      | $(date) | Step #2: Summarize number of characters in each PHYL
 ## names (containing locus or taxon information) to file, and then echoes the number of 
 ## characters (Nchar) recursively to a file named "nchar.txt" in the working directory.
 
-echo "INFO      | $(date) |          Saving number of characters for each alignment in file named './nchar.txt'. "
+echo "INFO      | $(date) |          Saving number of characters for each alignment in file named 'nchar.txt'. "
 (
 	for i in ./*.phy; do 
-		echo "$i" >> ./phyalign_names.txt; 
+		echo "$i" >> ./phyalign_names.txt ; 
 		echo "$(head -n1 $i | awk -F"[0-9]*\ " '{print $NF}')" >> ./nchar.txt; 
-	done;
+	done ;
 )
 
 ## I would like to build on this by calculating statistics from the nchar list from within
 ## the shell.
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
-
 
 ##########################################################################################
 ######################################### END ############################################
@@ -184,11 +184,16 @@ echo ""
 # None at this time.
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f phyNcharSumm
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -202,7 +207,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

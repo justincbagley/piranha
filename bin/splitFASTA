@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitFASTA.sh                                                                    #
-  VERSION="v1.0.3"                                                                       #
+  VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 1 12:05:32 CDT 2020.                        #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ splitFASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitFASTA, v1.0.3 April 2020                                  "
+echo "INFO      | $(date) | splitFASTA, v1.0.4 April 2020                                  "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -328,20 +328,17 @@ else
 	)
 fi
 
-############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-	
+	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+	echo "INFO      | $(date) |          Deleting temporary files... "
+	############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#echo "INFO      | $(date) | Successfully split input sequential FASTA file $MY_FASTA into separate FASTA files, one per tip taxon. " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
-#echo "INFO      | $(date) | Bye.
-#" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
-#fi
-
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	echo "INFO      | $(date) | Done."
 	echo "----------------------------------------------------------------------------------------------------------" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 	echo "" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 else
+	echo "INFO      | $(date) | Done."
 	echo "----------------------------------------------------------------------------------------------------------"
 	echo ""
 fi
@@ -353,6 +350,7 @@ fi
 if [[ "$MY_REMOVE_FASTA_SWITCH" = "1" ]]; then
 	rm "$MY_FASTA" ;
 fi
+
 
 ## END DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
@@ -369,10 +367,10 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 USAGE="Usage: $(basename "$0") [OPTION]...
 
   ${bold}Options:${reset}
-  -i   inputFASTA (def: NULL) input FASTA file name
+  -i   inputFASTA (def: NULL) input FASTA file
   -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
        name, for example 'output.txt'
-  -v   verbose (def: 0, off; 1, on) specify verbose output to screen (stdout)
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -r   removeFASTA (def: 0, off; 1, on) whether or not to remove input multi-FASTA file
   -h   help text (also: --help) echo this help text and exit
   -H   help text (also: --Help) echo verbose help text and exit
@@ -396,14 +394,14 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  with the user's preferred filename, saved in ./output/.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
- tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6 Linux, but should work 
- on many other versions of macOS or Linux. 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. 
 
  ${bold}Usage Examples${reset}
-    piranha -f FASTA2PHYLIP --args='-i input.fasta -v 1'  Split input.fasta to multiple FASTAs, 
-                                                          while echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-i input.fasta -v 1'      Same as above but passing arguments
-                                                          using -a flag
+
+    piranha -f FASTA2PHYLIP -i input.fasta -v 1      Split input.fasta to multiple FASTAs, 
+                                                     while echoing run output to screen
+    piranha -f FASTA2PHYLIP -h                       Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -416,10 +414,10 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputFASTA (def: NULL) input FASTA file name
+  -i   inputFASTA (def: NULL) input FASTA file
   -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
        name, for example 'output.txt'
-  -v   verbose (def: 1, off; 1, on) specify verbose output to screen (stdout)
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
   -r   removeFASTA (def: 0, off; 1, on) whether or not to remove input multi-FASTA file
   -h   help text (also: --help) echo this help text and exit
   -H   help text (also: --Help) echo verbose help text and exit
@@ -443,14 +441,14 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  with the user's preferred filename, saved in ./output/.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
- tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6 Linux, but should work 
- on many other versions of macOS or Linux. 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. 
 
  ${bold}Usage Examples${reset}
-    piranha -f FASTA2PHYLIP --args='-i input.fasta -v 1'  Split input.fasta to multiple FASTAs, 
-                                                          while echoing run output to screen
-    piranha -f FASTA2PHYLIP -a '-i input.fasta -v 1'      Same as above but passing arguments
-                                                          using -a flag
+
+    piranha -f FASTA2PHYLIP -i input.fasta -v 1      Split input.fasta to multiple FASTAs, 
+                                                     while echoing run output to screen
+    piranha -f FASTA2PHYLIP -h                       Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -476,7 +474,7 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

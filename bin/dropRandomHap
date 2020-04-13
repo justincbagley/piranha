@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.5.0"                                                                       #
+  VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 7, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -142,7 +142,7 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.5.0 April 2020                               "
+echo "INFO      | $(date) | dropRandomHap, v1.5.1 April 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -338,7 +338,7 @@ MY_DEBUG_MODE_SWITCH=0
 USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}Options:${reset}
-  -t   taxonNamesFile (def: NULL) mandatory name of taxon names file
+  -t   taxonNamesFile (def: NULL) mandatory taxon names file
   -o   outputFile (def: NULL) send all output (stdout and stderr) to file in workingDir with 
        this name, for example 'output.txt'.
   -h   help text (also: --help) echo this help text and exit
@@ -370,15 +370,23 @@ USAGE="Usage: $(basename $0) [OPTION]...
  user to optionally specify their own output file name.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
- tested on macOS High Sierra (v10.13+) but should work on many earlier versions of mac, 
- or on Linux platforms. 
+ tested on macOS High Sierra (v10.13+) but should work on many other versions of macOS 
+ and Linux platforms. 
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f dropRandomHap --args='-h'
-    piranha -f dropRandomHap --args='-t <taxonNamesFile>'
-    piranha -f dropRandomHap --args='-t <taxonNamesFile> -o output.txt'
+    piranha -f dropRandomHap -h
+    piranha -f dropRandomHap -t <taxonNamesFile>
+    piranha -f dropRandomHap -t <taxonNamesFile> -o output.txt
+
+	Suggested usage, starting from scratch:
+	
+		Create <taxonNamesFile> with getTaxonNames function:
+		piranha -f getTaxonNames -n <numTips>	# Creates file: '<numTips>_taxon_names.txt'
+
+		Run the program in working dir:
+		piranha -f dropRandomHap -t <numTips>_taxon_names.txt
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:

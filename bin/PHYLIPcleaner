@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPcleaner.sh                                                                 #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
-# Last update: April 6, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -140,7 +140,7 @@ PHYLIPcleaner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPcleaner, v1.0.2 April 2020                               "
+echo "INFO      | $(date) | PHYLIPcleaner, v1.1.1 April 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -155,9 +155,10 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
 fi
 
+############ STEP #1: SETUP 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting PHYLIPcleaner analysis... "
-	echo "INFO      | $(date) | Step #1: Set up workspace by defining useful environmental variables and functions, and check machine type. "
+	echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
@@ -165,6 +166,11 @@ echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
 #echo "INFO      | $(date) |               Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
 
 	if [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] && [[ ! -s ./orig_phylip/ ]]; then
 		mkdir orig_phylip/ ;
@@ -179,15 +185,19 @@ fi
 	(
 		for i in ./*.phy; do 
 
-			echo "INFO      | $(date) |          ###------    ${i}    ------### "
-
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) |          ###------    ${i}    ------### "
+			fi
+			
 			MY_ORIG_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
 
 			if [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]]; then
 				cp -f "$i" orig_phylip/;
 			fi
 
-	echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+	fi
 	## If present, remove empty lines / newlines from current PHYLIP file, $i.
 		if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 			if [[ "${machine}" = "Mac" ]]; then
@@ -211,7 +221,9 @@ fi
 			fi
 		fi
 
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) |          Checking for and removing individuals comprised entirely of undetermined sites (gaps, missing characters)... "
+fi
 	## Check and remove individuals with all missing data:
 			if [[ "${machine}" = "Mac" ]]; then
 				sed -i.bak '/\ [N\-]*$/d' "$i" ;
@@ -262,8 +274,10 @@ fi
 	
 ###
 if [[ "$MY_DEEP_CLEAN_SWITCH" = "1" ]]; then
-echo "WARNING!  | $(date) |          Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
-echo "INFO      | $(date) |          Check results thoroughly, then start over and rerun analysis without -d flag if necessary."
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "WARNING!  | $(date) |          Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
+	echo "INFO      | $(date) |          Check results thoroughly, then start over and rerun analysis without -d flag if necessary."
+fi
 	##### MOSTLY MISSING DATA CHECKER
 	## Check and remove individuals with very few sites at start, finish, or only in middle 
 	## of the alignment (looking to remove indiv's with only 5-20 sites total):
@@ -323,9 +337,14 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	cd .. ;
 fi
 
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
 
 ##########################################################################################
 ######################################### END ############################################
@@ -343,26 +362,31 @@ fi
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -k   keepPHYLIP (def: 0, off; 1, on) whether or not to the original PHYLIP files; if invoked,
-       they are stored in a subfolder named orig_phylip/
+  -i   inputPHYLIP (def: NULL) name of input PHYLIP DNA sequence alignment file
+  -m   multiPHYLIP (def: 0, turned off; 1, on) whether or not to clean multiple PHYLIP DNA 
+       sequence alignment files in current working directory
+  -k   keepPHYLIP (def: 0, off; 1, on) whether or not to keep the original PHYLIP files; if 
+       invoked, originals are stored in orig_phylip/ subfolder
   -o   outputFile (def: NULL) send screen output to file in ./output/ with user-specified 
        name, for example 'output.txt'
-  -v   verbose (def: 0, off; 1, on) step verbose output to screen (stdout)
-  -d   deepClean (def: 0, off; 1, on) **experimental** option specifying whether or not to 
+  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
+  -c   deepClean (def: 0, off; 1, on) **experimental** option specifying whether or not to 
        attempt removal of individuals with _mostly_ missing data (not tested!!!)
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT loops through PHYLIP ('.phy'; Felsenstein 2002) multiple sequence alignments in
- current working directory and removes individuals composed of completely undetermined sites
- (e.g. containing DNA sequences comprised 100% of gaps, '-', or missing characters coded 
- as 'n', 'N', or '?'). Tip taxon names may include alphanumeric, hyphen, and underscore 
- characters but no spaces or pound signs (#), or else there could be issues. If invoked with
- the -d flag set to 1, then the program also attempts a 'deep clean' removing individuals with 
- _mostly_ missing data, including sequences only 5–20 bp in length padded by gaps or missing 
- characters; however, this option is an **experimental** option that has not been adequately 
- tested and thus is *not* recommended (=avoid!!!).
+ THIS SCRIPT cleans one (-i flag) or multiple (-m flag) PHYLIP DNA sequence alignment files 
+ ('.phy' extension; Felsenstein 2002) in the current working directory by removing individuals 
+ composed of completely undetermined sites (e.g. containing DNA sequences comprised 100% of 
+ gaps, '-', or missing characters coded as 'n', 'N', or '?'). 
+	Tip taxon names may include alphanumeric, hyphen, and underscore characters but no spaces 
+ or pound signs (#), or else there could be issues. If invoked with -c flag set to 1, then 
+ the program also attempts a 'deep clean' removing individuals with _mostly_ missing data, 
+ including sequences only 5–20 bp in length padded by gaps or missing characters; however, 
+ this option is an **experimental** option that has not been adequately tested and thus is 
+ *not* recommended (=avoid!!!).
 	An option (-k 1) is available that allows keeping original PHYLIP files. By default, the
  program runs quietly with limited stdout or stderr output to screen (only filenames); however, 
  the -v option causes verbose run information to be redirected to screen for each PHYLIP file, 
@@ -374,10 +398,13 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  or Linux. 
 
  ${bold}Usage Examples${reset}
-    piranha -f PHYLIPcleaner --args='-k 1 -v 1'  Remove individuals with completely undetermined sites,
-                                                 while storing original PHYLIP files in subfolder
-    piranha -f PHYLIPcleaner -a '-k 1 -v 1'      Same as above, but passing arguments with -a flag
-    piranha -f PHYLIPcleaner --args='-h'         Print this help text and exit
+    piranha -f PHYLIPcleaner -i <inputPHYLIP> -v 1     Clean <inputPHYLIP> file and echo run
+                                                       output to screen
+    piranha -f PHYLIPcleaner -m 1 -k 1 -v 1            Clean multiple PHYLIP files in working
+                                                       dir, keep original files (saved to 
+                                                       orig_phylip/ subfolder), and echo run
+                                                       output to screen
+    piranha -f PHYLIPcleaner -h                        Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -450,21 +477,34 @@ fi
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_DEEP_CLEAN_SWITCH=0 ;
 	else 
-		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_ARG="$(grep -h '\-c' ./args.txt | perl -pe 's/\-c//g' | perl -pe 's/\ //g')";
 		MY_DEEP_CLEAN_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
 
 # ############ PARSE THE OPTIONS
-# while getopts 'k:o:v:d:' opt ; do
+# while getopts 'k:o:v:c:d:' opt ; do
 #   case $opt in
 # ## PHYLIPcleaner options:
 #     k) MY_KEEP_PHYLIP_SWITCH=$OPTARG ;;
 #     o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
 #     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
-#     d) MY_DEEP_CLEAN_SWITCH=$OPTARG ;;
+#     c) MY_DEEP_CLEAN_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
 # ## Missing and illegal options:
 #     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
 #        echo "$USAGE" >&2
