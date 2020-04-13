@@ -981,7 +981,7 @@ MY_RAXML_MODEL=GTRGAMMA
 MY_INDIV_MISSING_DATA=1
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
@@ -1049,7 +1049,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
+VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
