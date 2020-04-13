@@ -3,7 +3,7 @@
 ### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
-### Following last release - 2019-2020:
+### PIrANHA v0.4a (official minor pre-release version 0.4-alpha) - April 13, 2020
 
 - **April 12, 2020:** Various minor updates to piranha bin/ functions, and important update to options in main `piranha` script now allows arguments to be passed to the program directly after the function call (after -f flag), without -a|--args flag. This fixes a problem where the previous implementation's reliance on `--args='<args>'` format (arguments passed in quotes) meant that Bash completion would not work while writing out the arguments. 
 - **April 6-7, 2020:** Major `piranha` package update, including edits to main script, all functions, dir structure, and other files (e.g. test files). Bug fixes for errors when no arguments and failed `rm` calls, check and update debug code, plus updates to READMEs and help texts.
