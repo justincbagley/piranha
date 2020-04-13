@@ -9,7 +9,7 @@
   VERSION="v1.1.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.                     #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -224,7 +224,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f fastSTRUCTURE -p <fsPath> -i <fsInput> -l <lowerK> -u <upperK> -o <fsOutput>
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -246,7 +246,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

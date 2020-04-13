@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Oct 17 11:59:08 CDT 2019.                       #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -479,7 +479,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f nQuireRunner -m 1               Multi-bam run on all .bam files in working directory
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
@@ -531,7 +531,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f nQuireRunner -m 1               Multi-bam run on all .bam files in working directory
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
@@ -564,7 +564,7 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "--Help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

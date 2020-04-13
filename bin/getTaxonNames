@@ -9,7 +9,7 @@
   VERSION="v1.1.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 13 17:17:41 CDT 2019.                       #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -250,7 +250,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  characters (equivalent to left side of a proper multiple sequence alignment, where taxon 
  names are padded with spaces so that sequences start on the same column of the file, thus 
  are aligned). The taxon names and spaces file is an important input for other functions in
- the PIrANHA (Bagley 2019) distribution, including the 'concatenateSeqs' function (see 
+ the PIrANHA (Bagley 2020) distribution, including the 'concatenateSeqs' function (see 
  concatenateSeqs help text for further information: piranha -f concatenateSeqs -h). Thus,
  getTaxonNames is a useful companion to other PIrANHA functions.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
@@ -265,7 +265,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f getTaxonNames -h         Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Wed, Mar 13 17:17:41 CDT 2019.
@@ -283,7 +283,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

@@ -9,7 +9,7 @@
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.                        #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,7 +141,7 @@ dropTaxa () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropTaxa, v1.1.0 April 2020  (part of PIrANHA v0.3a2)          "
+echo "INFO      | $(date) | dropTaxa, v1.1.0 April 2020                                    "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -572,7 +572,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f dropTaxa -h                                               Show dropTaxa help text and exit
+    piranha -f dropTaxa -h                                               Show this help text and exit
 
     piranha -f dropTaxa -i <inputFile> -f phylip -t <taxonList> -v 1     Drop taxa in <taxonList> from single PHYLIP file, overwrite 
                                                                          original, and print run updates (stdout) to screen
@@ -591,7 +591,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f dropTaxa -m 1 -f phylip -t <taxonList> -k 1               Drop taxa from multiple PHYLIP files, keep original files
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -613,7 +613,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

@@ -9,7 +9,7 @@
   VERSION="v1.2.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.                     #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -241,7 +241,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   rerunList (def: $MY_RERUN_DIR_LIST) name of BEAST run sub-folders that need to be reset/rerun
@@ -283,7 +283,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  (-i flag), which must contain paths to run sub-folders on the supercomputer, with on path 
  per line). 
 	Currently, the only dependency for BEASTReset is Python v2.7++ or v3.5++. BEASTReset is
- part of the PIrANHA software repository (Bagley 2019). See the BEASTReset and PIrANHA 
+ part of the PIrANHA software repository (Bagley 2020). See the BEASTReset and PIrANHA 
  README files for additional information.
 
  ${bold}Usage examples:${reset}
@@ -294,11 +294,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEASTReset -h                                Print help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.
@@ -317,7 +317,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

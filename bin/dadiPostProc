@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -382,7 +382,7 @@ MY_LOWER_MOD_NUM=1
 MY_UPPER_MOD_NUM=10
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
@@ -410,7 +410,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
                                                  ranges starting from values other than 1
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -423,7 +423,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
 "
 
 ############ CREATE USAGE & HELP TEXTS
-VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
+VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
@@ -462,7 +462,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
                                                  ranges starting from values other than 1
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -490,7 +490,7 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

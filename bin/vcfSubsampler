@@ -9,7 +9,7 @@
   VERSION="v0.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.                     #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -190,7 +190,7 @@ MY_OUTPUT_VCF_FILE=subsample
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  This is vcfSubsampler. It uses a list file of SNP names, <snpsFile>, to subsample a variant 
  call format (VCF) file, <inputVCFFile>, so that it only contains SNPs in the list.
@@ -211,7 +211,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f vcfSubsampler -i <inputVCFFile> -s <snpsFile>      
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.
@@ -229,7 +229,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

@@ -9,7 +9,7 @@
   VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -377,7 +377,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f PHYLIP2Mega -m1 -k 1                  Convert multiple PHYLIP files to Mega format, keeping original files
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -403,7 +403,7 @@ if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
 fi
 
 if [[ "$1" = "-V" ]] || [[ "$1" = "--version" ]]; then
-	echo "$(basename $0) $VERSION"
+	echo "$(basename "$0") $VERSION"
 	exit
 fi
 

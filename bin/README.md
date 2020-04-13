@@ -26,14 +26,13 @@ The full file tree for this directory is as follows:
    ├── dadiUncertainty
    ├── dropRandomHap
    ├── dropTaxa
-   ├── ElConcatenero
    ├── ExaBayesPostProc
    ├── FASTA2PHYLIP
    ├── FASTAsummary
    ├── fastSTRUCTURE
    ├── getBootTrees
    ├── getTaxonNames
-   ├── MAGNET-1.0.0
+   ├── MAGNET-1.1.1
    │   ├── README.md
    │   ├── MAGNET
    │   ├── perl
@@ -78,9 +77,9 @@ The full file tree for this directory is as follows:
    ├── SNAPPRunner
    ├── SpeciesIdentifier
    ├── splitFASTA
+   ├── splitFile
    ├── splitPHYLIP
    ├── taxonCompFilter
-   ├── test
    ├── treeThinner
    ├── vcfSubsampler
    └── virtualenv.txt

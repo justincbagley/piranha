@@ -9,7 +9,7 @@
   VERSION="v1.5.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600.                     #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -368,7 +368,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent BEAST runs per model (.xml file)
@@ -417,7 +417,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEASTRunner -n 10 -w 24:00:00 -m 2048M     Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -431,7 +431,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
  Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
+VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent BEAST runs per model (.xml file)
@@ -495,7 +495,7 @@ VERBOSE_USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f BEASTRunner -n 10 -w 24:00:00 -m 2048M     Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -525,7 +525,7 @@ if [[ "$1" == "-H" ]] || [[ "$1" == "-Help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

@@ -9,7 +9,7 @@
   VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before August 20, 2017.                              #
-# Last update: April 12, 2020                                                            #
+# Last update: April 13, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -210,7 +210,7 @@ echo ""
 # None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -218,7 +218,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT was designed to run in a current working directory where the MAGNET pipeline
- in PIrANHA v0.3a2 (Bagley 2019) has been run to estimate maximum-likelihood (ML) gene trees 
+ in PIrANHA v0.3a2 (Bagley 2020) has been run to estimate maximum-likelihood (ML) gene trees 
  in RAxML v8+ (Stamatakis 2014) for a set of loci from DNA sequence data. Given such a 
  workspace, this script organizes the bootstrap trees resulting from all RAxML runs, in
  subfolders of the current directory. The getBootTrees function is already run during the
@@ -239,11 +239,11 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f getBootTrees -h      Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
  Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
@@ -263,7 +263,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 
