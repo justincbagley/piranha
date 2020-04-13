@@ -1,4 +1,4 @@
-<a href="http://imgur.com/qLNrh5B"><img src="http://i.imgur.com/qLNrh5B.png" title="source: Justin C. Bagley" width=60% height=60% align="center" /></a>
+<a href="https://imgur.com/AQte6eh"><img src="https://i.imgur.com/AQte6eh.png" title="source: Justin C. Bagley" width=60% height=60% align="center" /></a>
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6ebf8b42a35f4b74a6a733312ac1d632)](https://www.codacy.com/app/justincbagley/PIrANHA?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=justincbagley/PIrANHA&amp;utm_campaign=Badge_Grade) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-green.svg?style=flat)](LICENSE)
 
