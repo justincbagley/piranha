@@ -4,40 +4,15 @@
 
 Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
-<!-- ```diff
-- red
-+ green
-! orange
-# gray
-```
--->
-
-<!--
-> <h3>
-> 
-> ```diff
-> ! ** WARNING! ** PIrANHA v0.3a2 is a pre-release alpha version of a new release
-> !   that involved a complete rewrite of PIrANHA and is still under development. 
-> !                  ** PLEASE DO NOT DOWNLOAD THIS RELEASE!!! **
-> ```
-> </h3>
--->
-
-<!--
-<a href="https://imgur.com/xl5sBtp"><img src="https://i.imgur.com/xl5sBtp.png" title="source: Justin C. Bagley" width=250% height=250% align="center" /></a>
-\\
-This release is only available publicly to ease issues related to _lack_ of support for Homebrew taps for private repositories (e.g. deprecated solutions).
--->
-
 ## LICENSE
 
-All code within **PIrANHA v0.3a2** repository is available "AS IS" under a 3-Clause BSD license. See the [LICENSE](LICENSE) file for more information.
+All code within **PIrANHA v0.4a** repository is available "AS IS" under a 3-Clause BSD license. See the [LICENSE](LICENSE) file for more information.
 
 ## CITATION
 
 If you use scripts from this repository as part of your published research, please cite the repository as follows (also see DOI information below): 
   
-- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
+- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, provide the following link to this software repository in your manuscript:
 
@@ -45,11 +20,11 @@ Alternatively, provide the following link to this software repository in your ma
 
 ## DOI
 
-The DOI for PIrANHA, via [Zenodo](https://zenodo.org), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.890815.svg)](https://doi.org/10.5281/zenodo.890815). Here are some examples of citing PIrANHA using the DOI: 
+The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE](https://explore.openaire.eu/)), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.596766.svg)](https://doi.org/10.5281/zenodo.596766). Here are some examples of citing PIrANHA using the DOI: 
   
-  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
+  Bagley, J.C. 2020. PIrANHA v0.4a. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
-  Bagley, J.C. 2019. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
+  Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
 ## DOCUMENTATION
 
