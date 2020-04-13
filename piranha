@@ -460,9 +460,9 @@ usage() {
       --version     Output version information and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT is the 'master' script that runs the PIrANHA software package by specifying the 
- <function> to be run (-f flag) and any arguments to pass to that function (-a, --args flags). 
- If no functions are given, then the program prints the help text and exits.
+ THIS SCRIPT is the 'master' script that runs the PIrANHA software package by specifying 
+ the <function> to be run (-f flag) and passing user-specified arguments to that function. 
+ If no function or arguments are given, then the program prints the help text and exits.
 	Functions are located in the bin/ folder of the PIrANHA distribution. For detailed 
  information on the capabilities of PIrANHA, please refer to documentation posted on the 
  PIrANHA Wiki (https://github.com/justincbagley/piranha/wiki) or the PIrANHA website
@@ -473,10 +473,8 @@ usage() {
     piranha -h                                   Show piranha help text and exit
     piranha -f list                              Get list of available functions
     piranha -f <function> -h                     Show help text for <function> and exit
-
     piranha -f calcAlignmentPIS -h               Show help text for calcAlignmentPIS function and exit
     piranha -f calcAlignmentPIS -t 150           Run calcAlignmentPIS with threshold at N=150 alignments
-    piranha -f calcAlignmentPIS --args='-t 150'  Same as above, but passing arguments with --args flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
