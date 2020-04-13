@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: April 8, 2020                                                             #
+# Last update: April 12, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -54,9 +54,6 @@ fi
 ## Set bin/ Location
 # -----------------------------------
 BIN_LOCATION="${SCRIPT_PATH}/bin/" # Update this path to find the piranha bin folder.
-
-## Set debug/ Location
-DEBUG_BIN_LOCATION="${SCRIPT_PATH}/debug/" # Update this path to find the piranha debug folder (=debug bin). 
 
 ## trapCleanup Function
 # -----------------------------------
@@ -140,8 +137,8 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.1.0, April 2020  (main script for PIrANHA v0.3a2, post-release update Apr 8 21:43:48 CDT 2020)          "
-echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.  "
+piranha v1.1.1, April 2020  (main script for PIrANHA v0.3a2, post-release update Apr 12 14:39:40 CDT 2020)      "
+echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ -z "$FUNCTION_TO_RUN" ]] && [[ -z "$FUNCTION_ARGUMENTS" ]]; then
@@ -178,13 +175,10 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 ############ II. CALL USER-SPECIFIED FUNCTION / SCRIPT IN BIN LOCATION, WITH OR WITHOUT ARGUMENTS.
 
 #### SET / ECHO EXECUTION PATH
-	if [[ "$debug" != "true" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
+	if [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Execution path: $MY_EXECUTION_PATH"
-	elif [[ "$debug" = "true" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
-		MY_DEBUG_EXECUTION_PATH="$(echo ${DEBUG_BIN_LOCATION}${FUNCTION_TO_RUN})"
-		echo "INFO      | $(date) |          DEBUG MODE Execution path: $MY_DEBUG_EXECUTION_PATH"
-	elif [[ "$debug" != "true" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
+	elif [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) |          Execution path: $MY_EXECUTION_PATH"
 	fi
@@ -377,13 +371,13 @@ Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a sta
 		# URL: https://stackoverflow.com/questions/2292847/how-to-silence-output-in-a-bash-script
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" >/dev/null 2>&1 ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
-		# Run main piranha BASH script in DEBUG MODE (for developers) by pointing to debug_bin folder
+		# Warn/acknowledge that user is running function script in DEBUG MODE (for developers) by setting debug=true
 		echo "WARNING!  | $(date) |          Executing function with -a flag arguments in DEBUG MODE..."
-		"$MY_DEBUG_EXECUTION_PATH" "$FUNCTION_ARGUMENTS";
+		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS";
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
-		# Run main piranha BASH script in DEBUG MODE (for developers)  by pointing to debug_bin folder
+		# Warn/acknowledge that user is running function script in DEBUG MODE (for developers) by setting debug=true
 		echo "WARNING!  | $(date) |          Executing function with -a flag arguments in DEBUG MODE..."
-		"$MY_DEBUG_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha.out.log.txt ;
+		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha.out.log.txt ;
 	fi
 
 	## Next set of conditionals below: cases where function run _is_ MAGNET. Need these cases
@@ -453,33 +447,36 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.3a2 (post-release update Apr 6 09:42:35 CDT 2020).
+ This is the main script for PIrANHA v0.3a2 (post-release update Apr 7 09:27:58 CDT 2020).
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
   -a, --args        Function arguments passed to <function>
   -q, --quiet       Quiet (no output)
   -l, --log         Print log to file
-  -v, --verbose     Output more information. (Items echoed to 'verbose')
-  -d, --debug       Runs functions in BASH debug mode (set -x)
+  -v, --verbose     Output more information (items echoed to 'verbose')
+  -d, --debug       Runs script in Bash debug mode (set -x)
   -h, --help        Display this help and exit
       --version     Output version information and exit
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT is the 'master' script that runs the PIrANHA software package by specifying the 
- <function> to be run (-f flag) and any arguments to pass to that function (-a|--args flag). 
+ <function> to be run (-f flag) and any arguments to pass to that function (-a, --args flags). 
  If no functions are given, then the program prints the help text and exits.
 	Functions are located in the bin/ folder of the PIrANHA distribution. For detailed 
  information on the capabilities of PIrANHA, please refer to documentation posted on the 
  PIrANHA Wiki (https://github.com/justincbagley/piranha/wiki) or the PIrANHA website
- (https://justinbagley.org/piranha/). Developers can test scripts by activating BASH debug 
- mode (-d|--debug flag).
+ (https://justinbagley.org/piranha/). Developers can test prianha and its functions by 
+ activating Bash debug mode (-d, --debug flags).
 
  ${bold}Usage examples:${reset}
+    piranha -h                                   Show piranha help text and exit
     piranha -f list                              Get list of available functions
-    piranha -f calcAlignmentPIS --args='-h'      Get help text for calcAlignmentPIS function
-    piranha -f calcAlignmentPIS --args='-t 150'  Run calcAlignmentPIS with threshold at N=150 alignments
-    piranha -f calcAlignmentPIS -a '-t 150'      Same as above, but passing arguments with -a flag
+    piranha -f <function> -h                     Show help text for <function> and exit
+
+    piranha -f calcAlignmentPIS -h               Show help text for calcAlignmentPIS function and exit
+    piranha -f calcAlignmentPIS -t 150           Run calcAlignmentPIS with threshold at N=150 alignments
+    piranha -f calcAlignmentPIS --args='-t 150'  Same as above, but passing arguments with --args flag
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
@@ -491,12 +488,6 @@ usage() {
 }
 
 ############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-# USER_SPEC_PATH=.
-# FUNCTION_TO_RUN=NULL
-# FUNCTION_ARGUMENTS=NULL
-# USER_OUTPUT_DIR=.
-
 # Iterate over options breaking -ab into -a -b when needed and --foo=bar into
 # --foo bar
 optstring=h
@@ -521,14 +512,6 @@ while (($#)); do
       done
       ;;
 
-#      # Special handling of arguments (-a) option, so it's the same with one hyphen
-#      # (-a 'args') as with two hyphens (--args 'args' or --args='args'). Both can now
-#      # use --endopts.
-#      case $1 in
-#        -[!-]a) options+=("${1%%=*}" "${1#*=}") ;;
-#        --) options+=(--endopts) ;;
-#      done
-#      ;;
     -[!-]a) options+=("${1%%=*}" "${1#*=}") ;;
 
     # If option is of type --foo=bar
@@ -551,7 +534,6 @@ unset options
 while [[ ${1} = -?* ]]; do
   case ${1} in
     -f|--func) shift; FUNCTION_TO_RUN="$1" ;;
-#   -a|--args) shift; FUNCTION_ARGUMENTS="$1" ;;
     -a|--args) shift; FUNCTION_ARGUMENTS="$*" ;;
     -o|--output) shift; USER_OUTPUT_DIR="$1" ;;
     --delete) deleteOriginal=true ;;
@@ -562,16 +544,15 @@ while [[ ${1} = -?* ]]; do
     -v|--verbose) verbose=true ;;
     -l|--log) printLog=true ;;
     -q|--quiet) quiet=true ;;
-    -d|--debug) debug=true;;
+    -d|--debug) debug=true ;;
     --endopts) shift; break ;;
     *) die "invalid option: '$1'." ;;
   esac
-  shift
 done
 
 # Store the remaining part as arguments.
 args+=("$@")
-
+shift; FUNCTION_ARGUMENTS="$*" ;
 
 ############## End Options and Usage ###################
 
