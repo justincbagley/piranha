@@ -12,9 +12,9 @@ All code within the PIrANHA repository, including MAGNET v1.1.1 pipeline code, i
 
 If you use scripts from this repository as part of your published research, then I require you to cite the PIrANHA repository and/or MAGNET package as follows (also see DOI information below):
 
-  Bagley, J.C. 2019. PIrANHA v0.3-alpha.2. GitHub repository, Available at: http://github.com/justincbagley/piranha/.
+  Bagley, J.C. 2020. PIrANHA v0.4-alpha. GitHub repository, Available at: http://github.com/justincbagley/piranha/.
   
-  Bagley, J.C. 2019. MAGNET v1.1.1. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
+  Bagley, J.C. 2020. MAGNET v1.1.1. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
 Alternatively, please provide the following link to this software program in your manuscript:
 
@@ -30,7 +30,7 @@ Alternatively, please provide the following link to this software program in you
 
 The DOI for MAGNET, via Zenodo, is as follows:  [![DOI](https://zenodo.org/badge/66839898.svg)](https://zenodo.org/badge/latestdoi/66839898). Here is an example of citing MAGNET using the DOI: 
   
-  Bagley, J.C. 2019. MAGNET v1.1.1. GitHub package, Available at: https://doi.org/10.5281/zenodo.596774.
+  Bagley, J.C. 2020. MAGNET v1.1.1. GitHub package, Available at: https://doi.org/10.5281/zenodo.596774.
 
 ## INTRODUCTION
 
@@ -87,7 +87,7 @@ $ piranha -f MAGNET --args='-H'
 .
 Usage: MAGNET [OPTION]...
 
- ${bold}Options:${reset}
+ Options:
   -f   fileType (def: 1; 1 = single <inputFile>, 2 = multiple PHYLIP files) starting file
        type; if 1, script expects as stdin a single NEXUS or G-PhoCS <inputFile> in the
        current directory; if 2, then script expects multiple PHYLIP files in current dir
@@ -108,8 +108,9 @@ Usage: MAGNET [OPTION]...
   -V   version (also: --version) echo version of this script and exit
   -R   resume (also: --resume) short and long options allowing user to resume a previous 
        MAGNET run in current working directory
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
- ${bold}OVERVIEW${reset}
+ OVERVIEW
  The goal of MAGNET is to infer a maximum-likelihood (ML) gene tree in RAxML for each of 
  multiple loci, starting from one or multiple input files containing aligned DNA sequences.
  If supplied with a single G-PhoCS ('*.gphocs') or NEXUS ('*.nex') data file (using -f1
@@ -157,15 +158,15 @@ Usage: MAGNET [OPTION]...
 	The -g flag supplies a 'gap threshold' to an R script, which deletes all column sites in 
 	the DNA alignment with a proportion of gap characters '-' at or above the threshold value. 
 	If no gap threshold is specified, all sites with gaps are removed by default. If end goal
-	is to produce a file for G-PhoCS, you  will want to leave gapThreshold at the default. 
+	is to produce a file for G-PhoCS, you  will want to leave <gapThreshold> at the default. 
 	However, if the next step in your pipeline involves converting from .gphocs to other data 
-	formats, you will likely want to set gapThreshold=1 (e.g. before converting to PHYLIP 
+	formats, you will likely want to set <gapThreshold> = 1 (e.g. before converting to PHYLIP 
 	format for RAxML). 
 
 	The -m flag allows users to choose their level of tolerance for individuals with missing
-	data. The default is indivMissingData=1, allowing individuals with runs of 10 or more 
+	data. The default is <indivMissingData> = 1, allowing individuals with runs of 10 or more 
 	missing nucleotide characters ('N') to be kept in the alignment. Alternatively, setting
-	indivMissingData=0 removes all such individuals from each locus; thus, while the input
+	<indivMissingData> = 0 removes all such individuals from each locus; thus, while the input
 	file would have had the same number of individuals across loci, the resulting file could
 	have varying numbers of individuals for different loci.
 
@@ -173,30 +174,36 @@ Usage: MAGNET [OPTION]...
  manual, as a single name or as a comma-separated list with no spaces between taxon names. 
  The first name in the list is prioritized, e.g. when members of the list are not monophyletic.
 
- -r | --resume is among the most important options available in MAGNET because it tells the 
+ -R | --resume is among the most important options available in MAGNET because it tells the 
  program to resume a previous run in current directory, including to detect incomplete run 
  subfolders and run RAxML there without overwriting results from run folders with finished 
  runs. The default setting is to run without this option.
 
- ${bold}Usage examples:${reset}
-    piranha -f MAGNET --args='-f2 -b100 -g1 -m1'    	  Run MAGNET with 100 bootstrap replicates
-     											    	  with gaps allowed and missing data allowed
-     											    	  and the GTRGAMMA model
-    piranha -f MAGNET --args='-f2 -b100 -sHKY85 -g1 -m1'  Same as above, but using the simpler
-     											    	  HKY85 substitution model for all loci    
+ The -d flag runs this function in Bash debug mode (set -xv), which is intended for debugging
+ for development purposes. If you find a bug, please contact the author at bagleyj@umsl.edu.
 
- ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3-alpha.2. GitHub repository, Available at:
-	<https://github.com/justincbagley/PIrANHA>.
+ Usage examples:
+ Call the program using PIrANHA, as follows:
 
- ${bold}REFERENCES${reset}
+    piranha -f MAGNET -f 2 -b 100 -g 1 -m 1               Run MAGNET with 100 bootstrap replicates
+                                                          with gaps allowed and missing data allowed
+                                                          and the GTRGAMMA model
+    piranha -f MAGNET -f 2 -b 100 -s HKY85 -g 1 -m 1      Same as above, but using the simpler
+                                                          HKY85 substitution model for all loci    
+    piranha -f MAGNET -h                                  Show this help text and exit
+
+ CITATION
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ REFERENCES
  Gronau, I., Hubisz, M.J., Gulko, B., Danko, C.G., Siepel, A. 2011. Bayesian inference of 
 	ancient human demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
  Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
  Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 ```
 
 ### NOTES ON NEXUS2gphocs USAGE
@@ -277,5 +284,5 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 - Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
 
 
-March 30, 2020
+April 13, 2020
 Justin C. Bagley, St. Louis, MO, USA
