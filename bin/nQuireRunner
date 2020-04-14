@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: nQuireRunner.sh                                                                  #
-  VERSION="v1.0.3"                                                                       #
+  VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Oct 17 11:59:08 CDT 2019.                       #
 # Last update: April 13, 2020                                                            #
@@ -136,7 +136,7 @@ nQuireRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | nQuireRunner, v1.0.3 April 2020                                "
+echo "INFO      | $(date) | nQuireRunner, v1.0.4 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -153,18 +153,16 @@ echo "INFO      | $(date) |-----------------------------------------------------
 
 checkMachineType
 
-# USAGE goal:   nQuireRunner.sh $1   ; OR   nQuireRunner -b $1  , where $1 and -b $1 are the input .bam file
-# MY_BAM_FILE="$1"
-
-# exec >> ./"$MY_BAM_FILE"_nQuireRunner.out.txt ;
-# exec 2>&1 ;
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 
 ####
 ####
 if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 
-############ STEPS #2 & #3: PREP WORK & RUNNING nQuire
+	############ STEPS #2 & #3: PREP WORK & RUNNING nQuire
 
 	echo "INFO      | $(date) | Step #2: Prep input .bam file for model runs in nQuire... "
 	echo "INFO      | $(date) |          Processing .bam file... "
@@ -217,11 +215,11 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	echo "INFO      | $(date) |             "
 
 
-############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
+	############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
 
 	echo "INFO      | $(date) | Step #4: Post-processing of nQuire results for ${MY_BAM_FILE}... "
 
-#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
+	#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
 
 	echo "INFO      | $(date) |             Best ploidy model based on goodness-of-fit... "
 	## Find model / ploidy level with positive slope in histotest check files. These will be
@@ -243,7 +241,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.PLOIDY.txt ;
 
 
-#### Model test ploidy interpretation:
+	#### Model test ploidy interpretation:
 
 	echo "INFO      | $(date) |             Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
 	MY_DENOISE_DIP_LOGLIKE="$(grep -h 'diploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
@@ -284,7 +282,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 				echo "INFO      | $(date) |             Checking for related files... "
 				echo "WARNING!  | $(date) |             File already analyzed by nQuireRunner--SKIPPING!!! "
 			fi
-		###
+			###
 			if [[ ! -s  "$MY_BAM_BASENAME"_base_denoised.bin ]] && [[ ! -s "$MY_BAM_BASENAME"_nQuireRunner.out.txt ]]; then
 
 			echo "$MY_BAM_BASENAME" >> ./nQuireRunner_sample_basenames.list.txt ;
@@ -336,11 +334,11 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			echo "INFO      | $(date) |             "
 		
 		
-		############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
+			############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
 		
 			echo "INFO      | $(date) | Step #4: Initial post-processing of nQuire results for ${MY_BAM_FILE}... "
 		
-		#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
+			#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
 		
 			echo "INFO      | $(date) |             Best ploidy model based on goodness-of-fit... "
 			## Find model / ploidy level with positive slope in histotest check files. These will be
@@ -365,7 +363,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 #
 			sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' >> nQuireRunner_denoised_base_histotest.PLOIDY.list.txt  ; 
 		
-		#### Model test ploidy interpretation:
+			#### Model test ploidy interpretation:
 		
 			echo "INFO      | $(date) |             Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
 			MY_DENOISE_DIP_LOGLIKE="$(grep -h 'diploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
@@ -379,7 +377,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			echo "$MY_MODELTEST_PLOIDY" >> nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt  ;
 				
 			fi
-		###
+			###
 
 	done
 )
@@ -433,6 +431,10 @@ echo "--------------------------------------------------------------------------
 # fi
 echo ""
 
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -450,14 +452,15 @@ USAGE="Usage: $(basename "$0") [OPTION]...
   -h   help text (also: --help) echo this help text and exit
   -H   verbose help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  This function automates running the nQuire software program (Weiß et al. 2018) to estimate 
  sample ploidy levels from next-generation sequencing (NGS; e.g. Illumina) reads for one or 
- multiple samples, starting from BAM file(s) (extension '.bam'; Li et al. 2009) for the 
- sample(s). It is assumed that the .bam input file(s) were output by an aligner such as 
- bwa (Li and Durbin 2009) and contain information on reads mapped to an appropriate 
- reference (draft reference genome, pseudo-reference genome assembly, etc.).
+ multiple samples, starting from one BAM file (extension '.bam'; Li et al. 2009) and one BAM 
+ index file ('.bai') for each sample. It is assumed that the .bam input file(s) were output 
+ by an aligner such as bwa (Li and Durbin 2009) and contain information on reads mapped to 
+ an appropriate reference (draft reference genome, pseudo-reference genome assembly, etc.).
 	The standard way to run this function is to feed it the name of a single input .bam 
  file using the -b flag, which will be read in and used to run several models to determine 
  the ploidy level of the corresponding sample (diploid, triploid, or tetraploid are the only 
@@ -473,7 +476,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  Call the program using PIrANHA, as follows:
 
     piranha -f nQuireRunner -i <inputBAM>      Standard run on single .bam file (one sample)
-    piranha -f nQuireRunner -m 1               Multi-bam run on all .bam files in working directory
+    piranha -f nQuireRunner -m 1               Multi-BAM run on all .bam files in working directory
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
@@ -502,14 +505,15 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
   -h   help text (also: --help) echo this help text and exit
   -H   verbose help text (also: --Help) echo verbose help text and exit
   -V   version (also: --version) echo version and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  This function automates running the nQuire software program (Weiß et al. 2018) to estimate 
  sample ploidy levels from next-generation sequencing (NGS; e.g. Illumina) reads for one or 
- multiple samples, starting from BAM file(s) (extension '.bam'; Li et al. 2009) for the 
- sample(s). It is assumed that the .bam input file(s) were output by an aligner such as 
- bwa (Li and Durbin 2009) and contain information on reads mapped to an appropriate 
- reference (draft reference genome, pseudo-reference genome assembly, etc.).
+ multiple samples, starting from one BAM file (extension '.bam'; Li et al. 2009) and one BAM 
+ index file ('.bai') for each sample. It is assumed that the .bam input file(s) were output 
+ by an aligner such as bwa (Li and Durbin 2009) and contain information on reads mapped to 
+ an appropriate reference (draft reference genome, pseudo-reference genome assembly, etc.).
 	The standard way to run this function is to feed it the name of a single input .bam 
  file using the -b flag, which will be read in and used to run several models to determine 
  the ploidy level of the corresponding sample (diploid, triploid, or tetraploid are the only 
@@ -525,7 +529,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  Call the program using PIrANHA, as follows:
 
     piranha -f nQuireRunner -i <inputBAM>      Standard run on single .bam file (one sample)
-    piranha -f nQuireRunner -m 1               Multi-bam run on all .bam files in working directory
+    piranha -f nQuireRunner -m 1               Multi-BAM run on all .bam files in working directory
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
@@ -610,13 +614,6 @@ fi
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
 	fi
 #
-#	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-#		MY_KEEP_FASTA_SWITCH=0 ;
-#	else 
-#		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
-#		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
-#	fi
-#
 	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_OVERWRITE_SWITCH=0 ;
 	else 
@@ -624,10 +621,21 @@ fi
 		MY_OVERWRITE_SWITCH="$MY_ARG" ;
 	fi
 #
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1 ;
+	fi
 
 
 # ############ PARSE THE OPTIONS
-# while getopts 'b:m:v:k:o:' opt ; do
+# while getopts 'b:m:v:k:o:d:' opt ; do
 #   case $opt in
 # ## nQuireRunner options:
 #     b) MY_BAM_FILE=$OPTARG ;;
@@ -635,6 +643,7 @@ fi
 #     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
 #     k) MY_KEEP_FASTA_SWITCH=$OPTARG ;;
 #     o) MY_OVERWRITE_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
 # ## Missing and illegal options:
 #     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
 #        echo "$USAGE" >&2
