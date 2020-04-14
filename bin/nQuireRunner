@@ -412,9 +412,6 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 
 
 
-	fi
-	###
-
 fi
 ####
 ####
