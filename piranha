@@ -230,7 +230,7 @@ dadiUncertainty        Automates uncertainty analysis in ∂a∂i, including gen
 dropRandomHap          This function randomly drops one phased haplotype (allele) per individual in each of n 
                        PHYLIP gene alignments in current working directory, starting from a 'taxon names' file.
 dropTaxa               Shell script automating removal of taxa from sequential, multi-individual FASTA or PHYLIP
-                       DNA sequence alignments, starting from a list of taxa to remove
+                       DNA sequence alignments, starting from a list of taxa to remove.
 ExaBayesPostProc       Function automating reading and conducting post-processing analyses on phylogenetic results 
                        output from ExaBayes.
 FASTA2PHYLIP           Function that automates converting one or multiple sequential FASTA DNA sequence alignment 
@@ -247,6 +247,7 @@ getBootTrees           Function that automates organizing bootstrap trees output
 getTaxonNames          Utility function that extracts tip taxon names from sequences present in one or multiple 
                        PHYLIP DNA sequence alignments in current directory, using information on maximum taxon 
                        sampling level from user.
+list                   Function that prints a tabulated list of PIrANHA functions and their descriptions.
 MAGNET                 Shell pipeline for automating estimation of a maximum-likelihood (ML) gene tree in RAxML 
                        for each of many loci in a RAD-seq, UCE, or other multilocus dataset. Also contains other 
                        tools.
