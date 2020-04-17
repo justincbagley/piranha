@@ -9,7 +9,7 @@
   VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Aug 29 13:12:45 2016 -0700.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -149,27 +149,27 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_NEXUS" != "NULL" ]]; then
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting MAGNET pipeline... "
-echo "INFO      | $(date) |          Running with the following options: "
-echo "INFO      | $(date) |          - NEXUS file, <inputNEXUS> = ${MY_NEXUS} "
-echo "INFO      | $(date) |          - Starting <fileType> = ${STARTING_FILE_TYPE} "
-echo "INFO      | $(date) |          - RAxML <executable> = ${MY_RAXML_EXECUTABLE} "
-echo "INFO      | $(date) |          - Bootstrap reps, <numBootstraps> = ${MY_NUM_BOOTREPS} "
-echo "INFO      | $(date) |          - RAxML model, <raxmlModel> = ${MY_RAXML_MODEL} "
-echo "INFO      | $(date) |          - <simpleModel> option = ${MY_SIMPLE_MODEL} "
-echo "INFO      | $(date) |          - <gapThreshold> option = ${MY_GAP_THRESHOLD} "
-echo "INFO      | $(date) |          - <indivMissingData> option = ${MY_INDIV_MISSING_DATA} "
-echo "INFO      | $(date) |          - Outgroup taxon, <outgroup> = ${MY_OUTGROUP} "
-echo "INFO      | $(date) |          - RAxML output name = ${MY_OUTPUT_NAME} "
-echo "INFO      | $(date) |          - Resume switch (--resume) = ${MY_RESUME_SWITCH} "
+echo "INFO      | $(date) | Running with the following options: "
+echo "INFO      | $(date) | - NEXUS file, <inputNEXUS> = ${MY_NEXUS} "
+echo "INFO      | $(date) | - Starting <fileType> = ${STARTING_FILE_TYPE} "
+echo "INFO      | $(date) | - RAxML <executable> = ${MY_RAXML_EXECUTABLE} "
+echo "INFO      | $(date) | - Bootstrap reps, <numBootstraps> = ${MY_NUM_BOOTREPS} "
+echo "INFO      | $(date) | - RAxML model, <raxmlModel> = ${MY_RAXML_MODEL} "
+echo "INFO      | $(date) | - <simpleModel> option = ${MY_SIMPLE_MODEL} "
+echo "INFO      | $(date) | - <gapThreshold> option = ${MY_GAP_THRESHOLD} "
+echo "INFO      | $(date) | - <indivMissingData> option = ${MY_INDIV_MISSING_DATA} "
+echo "INFO      | $(date) | - Outgroup taxon, <outgroup> = ${MY_OUTGROUP} "
+echo "INFO      | $(date) | - RAxML output name = ${MY_OUTPUT_NAME} "
+echo "INFO      | $(date) | - Resume switch (--resume) = ${MY_RESUME_SWITCH} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 MY_WORKING_DIR="$(pwd)"
-#echo "INFO      | $(date) |          Checking machine type... "
+#echo "INFO      | $(date) | Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
+#echo "INFO      | $(date) |      Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -186,16 +186,16 @@ fi
 
 
 echo "INFO      | $(date) | Step #2: Input single NEXUS or G-PhoCS file, or multiple PHYLIP files. "
-echo "INFO      | $(date) |          For -f 1 or -f 2f '.gphocs' input file present, continue; else convert NEXUS file to "
-echo "INFO      | $(date) |          G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple PHYLIP files in  "
-echo "INFO      | $(date) |          RAxML."
+echo "INFO      | $(date) | For -f 1 or -f 2f '.gphocs' input file present, continue; else convert NEXUS file to "
+echo "INFO      | $(date) | G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple PHYLIP files in  "
+echo "INFO      | $(date) | RAxML."
 shopt -s nullglob
 if [[ -n $(find . -name "*.gphocs" -type f) ]]; then
-	echo "INFO      | $(date) |          Found '.gphocs' input file... "
+	echo "INFO      | $(date) | Found '.gphocs' input file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs ;	 ## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
-    echo "WARNING!  | $(date) |          No '.gphocs' input file in current working directory... "
-    echo "INFO      | $(date) |          Attempting to convert NEXUS file, if present, to GPho-CS format... "
+    echo "WARNING!  | $(date) | No '.gphocs' input file in current working directory... "
+    echo "INFO      | $(date) | Attempting to convert NEXUS file, if present, to GPho-CS format... "
 fi
 
 
@@ -234,9 +234,9 @@ fi
 	##--The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
 	##--Check to make sure the fasta was created; if so, echo info, if not, echo warning and quit:
 	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
-		echo "INFO      | $(date) |          Input NEXUS was successfully converted to fasta format. Moving forward... "
+		echo "INFO      | $(date) | Input NEXUS was successfully converted to fasta format. Moving forward... "
 	else
-		echo "WARNING!  | $(date) |          NEXUS to fasta file conversion FAILED! Quitting... "
+		echo "WARNING!  | $(date) | NEXUS to fasta file conversion FAILED! Quitting... "
 		exit 1
 	fi
 	
@@ -326,16 +326,16 @@ NEXUS2gphocs_function
 
 
 else
-	echo "INFO      | $(date) |          No NEXUS files in current working directory. Continuing... "
+	echo "INFO      | $(date) | No NEXUS files in current working directory. Continuing... "
 fi
 
 shopt -s nullglob
 if [[ -n $(find . -name "*.gphocs" -type f) ]]; then
-	echo "INFO      | $(date) |          MAGNET successfully created a '.gphocs' input file from the existing NEXUS file... "
+	echo "INFO      | $(date) | MAGNET successfully created a '.gphocs' input file from the existing NEXUS file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs ;	 ## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
-    echo "WARNING!  | $(date) |          Failed to convert NEXUS file into G-PhoCS format... "
-    echo "INFO      | $(date) |          Quitting."
+    echo "WARNING!  | $(date) | Failed to convert NEXUS file into G-PhoCS format... "
+    echo "INFO      | $(date) | Quitting."
     exit
 fi
 
@@ -345,7 +345,7 @@ fi
 	MY_NLOCI="$(head -n1 $MY_GPHOCS_DATA_FILE)";
 
 echo "INFO      | $(date) | Step #3: Make alignments for each locus. "
-echo "INFO      | $(date) |          In a single loop, using info from '.gphocs' file to split each locus block \
+echo "INFO      | $(date) | In a single loop, using info from '.gphocs' file to split each locus block \
 into a separate PHYLIP-formatted alignment file using gphocs2multiPhylip code... "
 	(
 		for (( i=0; i<=$(calc $MY_NLOCI-1); i++ )); do
@@ -398,20 +398,20 @@ if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 	MY_DIRCOUNT="$(find . -type d | wc -l)";
 	MY_NUM_RUN_FOLDERS="$(ls ./*/*.phy | wc -l | perl -pe 's/\t//g; s/\ //g')";
 
-	echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
+	echo "INFO      | $(date) | Number of run folders created: $MY_NUM_RUN_FOLDERS "
 
 	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
-		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
+		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
 	fi
 
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
-		echo "IMPORTANT!| $(date) |          Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
-		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+		echo "IMPORTANT!| $(date) | Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
+		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
+		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
 	fi
 
 fi
@@ -422,7 +422,7 @@ fi
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
 echo "INFO      | $(date) | Step #5: Estimate best maximum-likelihood (ML) gene trees. "
-echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
+echo "INFO      | $(date) | Looping through and analyzing contents of each run folder in RAxML... "
 	##--Each folder is set with the locus name corresponding to the locus' position in the
 	##--original .gphocs alignment (which, if output by pyRAD, is simply in the order in which
 	##--the loci were logged to file by pyRAD, no special order). Also, each folder contains
@@ -542,8 +542,8 @@ elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 fi
 
 	################################## getGeneTrees.sh #######################################
-	echo "INFO      | $(date) |          Organizing gene trees and making final output file containing all trees... "
-	echo "INFO      | $(date) |          Making list of ML gene trees generated by RAxML... "
+	echo "INFO      | $(date) | Organizing gene trees and making final output file containing all trees... "
+	echo "INFO      | $(date) | Making list of ML gene trees generated by RAxML... "
 
 	ls **/RAxML_bestTree.raxml_out > geneTrees.list ;
 
@@ -557,7 +557,7 @@ fi
 	##--folder, i.e. locus. We can rename each file right after downloading it.
 	mkdir ./gene_trees/ ;
 
-	echo "INFO      | $(date) |          Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
+	echo "INFO      | $(date) | Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
 	(
 		for j in ${MY_GENE_TREE_LIST}; do
 			echo "$j"
@@ -568,7 +568,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file 'besttrees.tre' containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) | Making final output file 'besttrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for k in ./gene_trees/*; do
 			echo "$k"
@@ -578,8 +578,8 @@ fi
 
 
 	################################## getBootTrees.sh #######################################
-	echo "INFO      | $(date) |          Organizing bootstrap trees and making final output file containing all trees... "
-	echo "INFO      | $(date) |          Making list of ML bootstrap trees generated by RAxML... "
+	echo "INFO      | $(date) | Organizing bootstrap trees and making final output file containing all trees... "
+	echo "INFO      | $(date) | Making list of ML bootstrap trees generated by RAxML... "
 
 	ls **/RAxML_bootstrap.raxml_out > bootTrees.list ;
 
@@ -593,7 +593,7 @@ fi
 	##--run folder, i.e. locus. We can rename each file right after downloading it.
 	mkdir ./bootstrap_trees ;
 
-	echo "INFO      | $(date) |          Copying *ALL* ML bootstrap trees to 'bootstrap_trees' folder in current directory for post-processing..."
+	echo "INFO      | $(date) | Copying *ALL* ML bootstrap trees to 'bootstrap_trees' folder in current directory for post-processing..."
 	(
 		for l in ${MY_BOOT_TREE_LIST}; do
 			echo "$l"
@@ -604,7 +604,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file 'boottrees.tre' containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) | Making final output file 'boottrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for m in ./bootstrap_trees/*; do
 			echo "$m"
@@ -612,12 +612,12 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final list of ML bootstrap trees ('final_bootTrees.list') in bootstrap_trees directory..."
+	echo "INFO      | $(date) | Making final list of ML bootstrap trees ('final_bootTrees.list') in bootstrap_trees directory..."
 	ls ./bootstrap_trees/*.tre > final_bootTrees.list ;
 
 
 	################################## getBipartTrees.sh #######################################
-	echo "INFO      | $(date) |          Organizing bipartitions trees (with bootstrap proportion labels) and making final output file containing all bipartitions trees... "
+	echo "INFO      | $(date) | Organizing bipartitions trees (with bootstrap proportion labels) and making final output file containing all bipartitions trees... "
 	ls **/RAxML_bipartitions.raxml_out > bipartTrees.list ;
 
 	##--Assign bootstrap tree list to variable
@@ -626,7 +626,7 @@ fi
 	############ ORGANIZE BIPARTITIONS TREES INTO ONE LOCATION
 	mkdir ./bipartitions_trees
 
-	echo "INFO      | $(date) |          Copying *ALL* RAxML bootstrap bipartitions trees to 'bipartitions_trees' folder in current directory for post-processing..."
+	echo "INFO      | $(date) | Copying *ALL* RAxML bootstrap bipartitions trees to 'bipartitions_trees' folder in current directory for post-processing..."
 	(
 		for l in ${MY_BIPART_TREE_LIST}; do
 			echo "$l"
@@ -637,7 +637,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file 'biparttrees.tre' containing RAxML bipartitions trees from all runs/loci..."
+	echo "INFO      | $(date) | Making final output file 'biparttrees.tre' containing RAxML bipartitions trees from all runs/loci..."
 	(
 		for m in ./bipartitions_trees/*; do
 			echo "$m"
@@ -645,7 +645,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final list of RAxML bipartitions trees ('final_bipartTrees.list') in bipartitions_trees directory..."
+	echo "INFO      | $(date) | Making final list of RAxML bipartitions trees ('final_bipartTrees.list') in bipartitions_trees directory..."
 	ls ./bipartitions_trees/*.tre > final_bipartTrees.list ;
 
 
@@ -660,26 +660,26 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting MAGNET pipeline... "
-echo "INFO      | $(date) |          Running with the following options: "
-echo "INFO      | $(date) |          - NEXUS file, <inputNEXUS> = ${MY_NEXUS} "
-echo "INFO      | $(date) |          - Starting <fileType> = ${STARTING_FILE_TYPE} "
-echo "INFO      | $(date) |          - RAxML <executable> = ${MY_RAXML_EXECUTABLE} "
-echo "INFO      | $(date) |          - Bootstrap reps, <numBootstraps> = ${MY_NUM_BOOTREPS} "
-echo "INFO      | $(date) |          - RAxML model, <raxmlModel> = ${MY_RAXML_MODEL} "
-echo "INFO      | $(date) |          - <simpleModel> option = ${MY_SIMPLE_MODEL} "
-echo "INFO      | $(date) |          - <gapThreshold> option = ${MY_GAP_THRESHOLD} "
-echo "INFO      | $(date) |          - <indivMissingData> option = ${MY_INDIV_MISSING_DATA} "
-echo "INFO      | $(date) |          - Outgroup taxon, <outgroup> = ${MY_OUTGROUP} "
-echo "INFO      | $(date) |          - RAxML output name = ${MY_OUTPUT_NAME} "
-echo "INFO      | $(date) |          - Resume switch (--resume) = ${MY_RESUME_SWITCH} "
+echo "INFO      | $(date) | Running with the following options: "
+echo "INFO      | $(date) | - NEXUS file, <inputNEXUS> = ${MY_NEXUS} "
+echo "INFO      | $(date) | - Starting <fileType> = ${STARTING_FILE_TYPE} "
+echo "INFO      | $(date) | - RAxML <executable> = ${MY_RAXML_EXECUTABLE} "
+echo "INFO      | $(date) | - Bootstrap reps, <numBootstraps> = ${MY_NUM_BOOTREPS} "
+echo "INFO      | $(date) | - RAxML model, <raxmlModel> = ${MY_RAXML_MODEL} "
+echo "INFO      | $(date) | - <simpleModel> option = ${MY_SIMPLE_MODEL} "
+echo "INFO      | $(date) | - <gapThreshold> option = ${MY_GAP_THRESHOLD} "
+echo "INFO      | $(date) | - <indivMissingData> option = ${MY_INDIV_MISSING_DATA} "
+echo "INFO      | $(date) | - Outgroup taxon, <outgroup> = ${MY_OUTGROUP} "
+echo "INFO      | $(date) | - RAxML output name = ${MY_OUTPUT_NAME} "
+echo "INFO      | $(date) | - Resume switch (--resume) = ${MY_RESUME_SWITCH} "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 MY_WORKING_DIR="$(pwd)"
-#echo "INFO      | $(date) |          Checking machine type... "
+#echo "INFO      | $(date) | Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
+#echo "INFO      | $(date) |      Found machine type ${machine}. "
 
 ## Set raxml executable name based on machine type:
 if [[ "${machine}" = "Mac" ]]; then
@@ -691,9 +691,9 @@ fi
 
 
 echo "INFO      | $(date) | Step #2: Input single NEXUS or G-PhoCS file, or multiple PHYLIP files. "
-echo "INFO      | $(date) |          For -f 1 or -f 2f '.gphocs' input file present, continue; else convert NEXUS file to "
-echo "INFO      | $(date) |          G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple PHYLIP files in  "
-echo "INFO      | $(date) |          RAxML."
+echo "INFO      | $(date) | For -f 1 or -f 2f '.gphocs' input file present, continue; else convert NEXUS file to "
+echo "INFO      | $(date) | G-PhoCS format using NEXUS2gphocs code. If -f 3, then run multiple PHYLIP files in  "
+echo "INFO      | $(date) | RAxML."
 
 
 	MY_PHYLIP_ALIGNMENTS=./*.phy ;		## Assign PHYLIP-formatted multilocus gene / genomic/SNP / RAD locus sequence alignment files (e.g. output by gphocs2multiPhylip.sh shell script) in run directory to variable.
@@ -722,20 +722,20 @@ echo "INFO      | $(date) | Step #3: Make run folders. "
 	MY_DIRCOUNT="$(find . -type d | wc -l)";
 	MY_NUM_RUN_FOLDERS="$(ls ./*/*.phy | wc -l | perl -pe 's/\t//g; s/\ //g')";
 
-	echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS "
+	echo "INFO      | $(date) | Number of run folders created: $MY_NUM_RUN_FOLDERS "
 
 	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
-		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
+		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
 	fi
 
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
-		echo "IMPORTANT!| $(date) |          Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
-		echo "INFO      | $(date) |          Folder check passed: number of run folders matches number of PHYLIP alignments. "
+		echo "IMPORTANT!| $(date) | Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
+		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) |          Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
+		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
 	fi
 
 fi
@@ -745,7 +745,7 @@ fi
 if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 
 echo "INFO      | $(date) | Step #4: Estimate best maximum-likelihood (ML) gene trees. "
-echo "INFO      | $(date) |          Looping through and analyzing contents of each run folder in RAxML... "
+echo "INFO      | $(date) | Looping through and analyzing contents of each run folder in RAxML... "
 	##--Each folder is set with the locus name corresponding to the locus' position in the
 	##--original .gphocs alignment (which, if output by pyRAD, is simply in the order in which
 	##--the loci were logged to file by pyRAD, no special order). Also, each folder contains
@@ -845,8 +845,8 @@ elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 fi
 
 	################################## getGeneTrees.sh #######################################
-	echo "INFO      | $(date) |          Organizing gene trees and making final output file containing all trees... "
-	echo "INFO      | $(date) |          Making list of ML gene trees generated by RAxML... "
+	echo "INFO      | $(date) | Organizing gene trees and making final output file containing all trees... "
+	echo "INFO      | $(date) | Making list of ML gene trees generated by RAxML... "
 
 	ls **/RAxML_bestTree.raxml_out > geneTrees.list ;
 
@@ -860,7 +860,7 @@ fi
 	##--folder, i.e. locus. We can rename each file right after downloading it.
 	mkdir ./gene_trees/ ;
 
-	echo "INFO      | $(date) |          Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
+	echo "INFO      | $(date) | Copying *ALL* ML gene trees to 'gene_trees' folder in current directory for post-processing..."
 	(
 		for j in ${MY_GENE_TREE_LIST}; do
 			echo "$j"
@@ -871,7 +871,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file 'besttrees.tre' containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) | Making final output file 'besttrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for k in ./gene_trees/*; do
 			echo "$k"
@@ -881,8 +881,8 @@ fi
 
 
 	################################## getBootTrees.sh #######################################
-	echo "INFO      | $(date) |          Organizing bootstrap trees and making final output file containing all trees... "
-	echo "INFO      | $(date) |          Making list of ML bootstrap trees generated by RAxML... "
+	echo "INFO      | $(date) | Organizing bootstrap trees and making final output file containing all trees... "
+	echo "INFO      | $(date) | Making list of ML bootstrap trees generated by RAxML... "
 
 	ls **/RAxML_bootstrap.raxml_out > bootTrees.list ;
 
@@ -896,7 +896,7 @@ fi
 	##--run folder, i.e. locus. We can rename each file right after downloading it.
 	mkdir ./bootstrap_trees/ ;
 
-	echo "INFO      | $(date) |          Copying *ALL* ML bootstrap trees to 'bootstrap_trees' folder in current directory for post-processing..."
+	echo "INFO      | $(date) | Copying *ALL* ML bootstrap trees to 'bootstrap_trees' folder in current directory for post-processing..."
 	(
 		for l in ${MY_BOOT_TREE_LIST}; do
 			echo "$l"
@@ -907,7 +907,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file 'boottrees.tre' containing best ML trees from all runs/loci..."
+	echo "INFO      | $(date) | Making final output file 'boottrees.tre' containing best ML trees from all runs/loci..."
 	(
 		for m in ./bootstrap_trees/*; do
 			echo "$m"
@@ -915,12 +915,12 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final list of ML bootstrap trees ('final_bootTrees.list') in bootstrap_trees directory..."
+	echo "INFO      | $(date) | Making final list of ML bootstrap trees ('final_bootTrees.list') in bootstrap_trees directory..."
 	ls ./bootstrap_trees/*.tre > final_bootTrees.list ;
 
 
 	################################## getBipartTrees.sh #######################################
-	echo "INFO      | $(date) |          Organizing bipartitions trees (with bootstrap proportion labels) and making final output file containing all bipartitions trees... "
+	echo "INFO      | $(date) | Organizing bipartitions trees (with bootstrap proportion labels) and making final output file containing all bipartitions trees... "
 	ls **/RAxML_bipartitions.raxml_out > bipartTrees.list ;
 
 	##--Assign bootstrap tree list to variable
@@ -929,7 +929,7 @@ fi
 	############ ORGANIZE BIPARTITIONS TREES INTO ONE LOCATION
 	mkdir ./bipartitions_trees
 
-	echo "INFO      | $(date) |          Copying *ALL* RAxML bootstrap bipartitions trees to 'bipartitions_trees' folder in current directory for post-processing..."
+	echo "INFO      | $(date) | Copying *ALL* RAxML bootstrap bipartitions trees to 'bipartitions_trees' folder in current directory for post-processing..."
 	(
 		for l in ${MY_BIPART_TREE_LIST}; do
 			echo "$l"
@@ -940,7 +940,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final output file 'biparttrees.tre' containing RAxML bipartitions trees from all runs/loci..."
+	echo "INFO      | $(date) | Making final output file 'biparttrees.tre' containing RAxML bipartitions trees from all runs/loci..."
 	(
 		for m in ./bipartitions_trees/*; do
 			echo "$m"
@@ -948,7 +948,7 @@ fi
 		done
 	)
 
-	echo "INFO      | $(date) |          Making final list of RAxML bipartitions trees ('final_bipartTrees.list') in bipartitions_trees directory..."
+	echo "INFO      | $(date) | Making final list of RAxML bipartitions trees ('final_bipartTrees.list') in bipartitions_trees directory..."
 	ls ./bipartitions_trees/*.tre > final_bipartTrees.list ;
 
 fi
@@ -1208,6 +1208,7 @@ fi
 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
 	perl -p -i -e 's/^\-$//g' ./args.txt
 	perl -p -i -e $'s/\-resume/\-\-resume/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
 	#perl -p -i -e $'s/\ /\n/g' ./args.txt
 	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
 
@@ -1298,12 +1299,13 @@ fi
 		MY_DEBUG_MODE_SWITCH=0 ;
 	else 
 		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
-		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ "$MY_ARG" = "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+		if [[ "$MY_ARG" != "1" ]] && [[ "$MY_ARG" != "0" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
 	fi
 	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_DEBUG_MODE_SWITCH=0 ;
 	else 
-		MY_DEBUG_MODE_SWITCH=1 ;
+		MY_DEBUG_MODE_SWITCH=1
 	fi
 
 # ############# ############# #############
