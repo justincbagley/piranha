@@ -9,7 +9,7 @@
   VERSION="v2.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -144,20 +144,18 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) | Starting completeConcatSeqs analysis... "
-echo "INFO      | $(date) |          Running with the following options: "
-echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
-echo "INFO      | $(date) |          - Missing character option, <missingCharacter> = ${MY_MISSING_CHAR} "	# def: N
-echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "	# def: NULL, saves output to 'completeConcatSeqs_output.txt'
-echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+echo "INFO      | $(date) | Running with the following options: "
+echo "INFO      | $(date) | - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+echo "INFO      | $(date) | - Missing character option, <missingCharacter> = ${MY_MISSING_CHAR} "	# def: N
+echo "INFO      | $(date) | - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "	# def: NULL, saves output to 'completeConcatSeqs_output.txt'
+echo "INFO      | $(date) | - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 #fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -166,8 +164,8 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
-	echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
-	echo "INFO      | $(date) |          Check the output file for additional run details ... "
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
+	echo "INFO      | $(date) | Check the output file for additional run details ... "
 	echo "----------------------------------------------------------------------------------------------------------"
 	echo ""
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
@@ -176,8 +174,8 @@ fi
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
-	echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./completeConcatSeqs_output.txt ... "
-	echo "INFO      | $(date) |          Check the output file for additional run details ... "
+	echo "INFO      | $(date) | Default output file settings. Logging output to file at ./completeConcatSeqs_output.txt ... "
+	echo "INFO      | $(date) | Check the output file for additional run details ... "
 	echo "----------------------------------------------------------------------------------------------------------"
 	echo ""
 	exec >> ./completeConcatSeqs_output.txt ;
@@ -186,7 +184,7 @@ fi
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
-	echo "INFO      | $(date) |          Output file set to zero. Logging output to screen rather than file ... "
+	echo "INFO      | $(date) | Output file set to zero. Logging output to screen rather than file ... "
 fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -201,7 +199,7 @@ count=1
 		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
 		j="$i".tmp ;
 		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*[\ ]*//g; s/[\ ]//g')" ;
-		echo "INFO      | $(date) |          ###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
+		echo "INFO      | $(date) | ###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
 
 			while read line; do
 				MY_TAXON_NAME="$(echo "$line" | sed 's/\ //g')" ;
@@ -366,11 +364,13 @@ count=1
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
-	echo "INFO      | $(date) |          Deleting temporary files... "
+	echo "INFO      | $(date) | Deleting temporary files... "
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "INFO      | $(date) | Done."
