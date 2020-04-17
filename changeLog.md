@@ -3,6 +3,10 @@
 ### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
+### PIrANHA 0.4a2 (official minor pre-release version v0.4-alpha-2) - April 17, 2020
+
+- **April 13-17, 2020:** This update builds on the previous pre-release, v0.4a, by updating the main `prianha` script (including improvements to messaging and help text); addition of a new `phaseAlleles` function that automates phasing of consensus sequences from HTS (e.g. targeted sequence capture) based on a (re)mapped assembly reference FASTA; as well as minor updates to all functions (improved messaging and minor bug fixes).
+
 ### PIrANHA v0.4a (official minor pre-release version 0.4-alpha) - April 13, 2020
 
 - **April 12, 2020:** Various minor updates to piranha bin/ functions, and important update to options in main `piranha` script now allows arguments to be passed to the program directly after the function call (after -f flag), without -a|--args flag. This fixes a problem where the previous implementation's reliance on `--args='<args>'` format (arguments passed in quotes) meant that Bash completion would not work while writing out the arguments. 
