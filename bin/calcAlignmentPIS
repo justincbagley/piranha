@@ -9,7 +9,7 @@
   VERSION="v1.5.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,16 +146,14 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) | Step #2: Create custom Rscript. "
 ############ II. CREATE CUSTOM RSCRIPT FOR ESTIMATING PARSIMONY INFORMATIVE SITES.
-echo "INFO      | $(date) |          Building custom calcAlignmentPIS R script for calculating parsimony-informative sites (PIS) from FASTA files... "
+echo "INFO      | $(date) | Building custom calcAlignmentPIS R script for calculating parsimony-informative sites (PIS) from FASTA files... "
 if [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
-	echo "WARNING!  | $(date) |          NOTE: <keepFiles> switch turned off, so R script and R output files will be removed at the end of this run."
+	echo "WARNING!  | $(date) | NOTE: <keepFiles> switch turned off, so R script and R output files will be removed at the end of this run."
 fi
 if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi
 if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi
@@ -300,7 +298,7 @@ echo "INFO      | $(date) | Step #3: Run the Rscript (which also saves output an
 
 echo "INFO      | $(date) | Step #4: Conduct post-processing of R output. "
 ############ IV. CONDUCT POST-PROCESSING OF R OUTPUT USING A VARIETY OF OPERATIONS.
-echo "INFO      | $(date) |          Editing PIS output table... "
+echo "INFO      | $(date) | Editing PIS output table... "
 	sed 's/\"//g' input_file_order.txt | sed '1d' | perl -p -e 's/^.*\t.*\///g' > input_file_order_filenames.txt ;
 
 	if [[ "${machine}" = "Mac" ]]; then
@@ -321,7 +319,7 @@ echo "INFO      | $(date) |          Editing PIS output table... "
 
 
 if [[ "$MY_PIS_THRESHOLD_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Editing PIS output table... "
+	echo "INFO      | $(date) | Editing PIS output table... "
 
 		keepPISThresholdAlignments () {
 			MY_N_ALIGN_CUTOFF="$(echo $MY_PIS_THRESHOLD_SWITCH | sed 's/\ //g')";
@@ -356,14 +354,14 @@ fi
 
 
 echo "INFO      | $(date) | Step #5: Clean up workspace. "
-echo "INFO      | $(date) |          Cleaning up workspace by removing temporary files generated during run... "
+echo "INFO      | $(date) | Cleaning up workspace by removing temporary files generated during run... "
 ############ V. CLEAN UP WORKSPACE BY REMOVING TEMPORARY FILES.
 	if [[ ! -s ./piranha_calcAlignmentPIS.sh ]]; then 
 		if [[ -s ./header.tmp ]]; then rm ./header.tmp ; fi
 		if [[ -s ./pis.tmp ]]; then rm ./pis.tmp ; fi
 		rm ./pis_results_table_headless_revsort.txt ./pis_results_table_headless.txt ./pis_output_table.txt ./input_file_order_filenames.txt ./input_file_order.txt ;
 	else
-		echo "INFO      | $(date) |          "
+		echo "INFO      | $(date) | "
 	fi
 
 	if [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
@@ -374,8 +372,7 @@ echo "INFO      | $(date) |          Cleaning up workspace by removing temporary
 
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	
-#echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from the existing NEXUS file... "
-#echo "INFO      | $(date) | Done. Bye. "
+echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ "$MY_PIS_THRESHOLD_SWITCH" = "0" ]] && [[ "$KEEP_R_FILES_SWITCH" = "1" ]]; then
 	echo "output file(s): ./pis_results_table.txt"
