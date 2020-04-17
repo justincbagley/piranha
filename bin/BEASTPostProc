@@ -9,7 +9,7 @@
   VERSION="v1.8.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,9 +146,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -205,26 +203,26 @@ echo "INFO      | $(date) | Step #2: Set up BEAST-related environmental variable
 	##--normally take values between 6250 and 12500.
 
 	if [[ ! -z "$MY_BEAST_LOGFILE" ]]; then
-		echo "INFO      | $(date) |          BEAST log file present. Analyzing log file in LogAnalyser... "
+		echo "INFO      | $(date) | BEAST log file present. Analyzing log file in LogAnalyser... "
 		"$LOGANALYSER_PATH" -burnin "$NUM_BURNIN_STEPS" "$MY_BEAST_LOGFILE" LogAnalyser.out.txt ;
 	else
-		echo "WARNING!  | $(date) |          Something went wrong. Found no BEAST log files. "
+		echo "WARNING!  | $(date) | Something went wrong. Found no BEAST log files. "
 	fi
 
 
 ###### Also summarize parameters from ".mle.log" (marginal likelihood estimation) log file, if present, in LogAnalyser (from BEAST v1.8.3):
 	if [[ ! -z "$MY_MARGLIKE_LOGFILE" ]]; then
-		echo "INFO      | $(date) |          Marginal likelihood estimation analysis log file present. Analyzing mle log file in LogAnalyser... "
+		echo "INFO      | $(date) | Marginal likelihood estimation analysis log file present. Analyzing mle log file in LogAnalyser... "
 		"$LOGANALYSER_PATH" -burnin "$NUM_BURNIN_STEPS" "$MY_MARGLIKE_LOGFILE" MLE.LogAnalyser.out.txt ;
 	else
-		echo "WARNING!  | $(date) |          Found no marginal likelihood estimation analysis log files. Moving on... "
+		echo "WARNING!  | $(date) | Found no marginal likelihood estimation analysis log files. Moving on... "
 	fi
 
 
 echo "INFO      | $(date) | Step #3: If species trees file present, conduct species tree analysis. "
 ###### First step is to get $NUM_POSTBURNIN_TREES random post-burnin species trees from the posterior distribution of trees:
 	if [[ ! -z "$MY_STARBEAST_SPECIESTREE_FILE" ]]; then
-		echo "INFO      | $(date) |          BEAST species trees present. Analyzing species trees in TreeAnnotator... "
+		echo "INFO      | $(date) | BEAST species trees present. Analyzing species trees in TreeAnnotator... "
 
 	MY_K_ABBREV_VAL_TENS="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(.*\..\).*/\1/g' | sed 's/.*\.//g' )";
 	if [[ "$MY_K_ABBREV_VAL_TENS" = "0" ]]; then
@@ -236,12 +234,12 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 
 	(
 		for i in $MY_STARBEAST_SPECIESTREE_FILE; do 
-			echo "INFO      | $(date) |               - Name of trees file being analyzed: $i "
+			echo "INFO      | $(date) |      - Name of trees file being analyzed: $i "
 			tail -n "$NUM_POSTBURNIN_TREES" "${i}" > ./"${i}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;
 
 		###### Convert your 5000 post-burnin species trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $i | awk -F"=" '{print $NF}' | sed 's/\;//g')"	## Pull the number of taxa from the species trees file.
-			echo "INFO      | $(date) |               - Number of taxa encountered: $MY_NTAX "
+			echo "INFO      | $(date) |      - Number of taxa encountered: $MY_NTAX "
 
 			NUM1="$MY_NTAX" ;
 			NUM2="$((2*NUM1))" ;
@@ -291,13 +289,13 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 		shopt -s nullglob
 		files=(./*_final_"$MY_K_ABBREV_VAL"k.trees)
 		if [[ "${#files[@]}" -gt 0 ]] ; then
-			echo "INFO      | $(date) |          Renaming final ${MY_K_ABBREV_VAL}k post-burnin species tree files."
+			echo "INFO      | $(date) | Renaming final ${MY_K_ABBREV_VAL}k post-burnin species tree files."
 	        for j in ./*species.trees_final_"$MY_K_ABBREV_VAL"k.trees; do
-	        	echo "$j"
-	            mv "$j" ${j/*/final_"$MY_K_ABBREV_VAL"k.species.trees} ;
+				echo "$j"
+				mv "$j" ${j/*/final_"$MY_K_ABBREV_VAL"k.species.trees} ;
 	        done
 	    else
-	        echo "WARNING!  | $(date) |          Failed to rename final ${MY_K_ABBREV_VAL}k post-burnin species tree files. "
+	        echo "WARNING!  | $(date) | Failed to rename final ${MY_K_ABBREV_VAL}k post-burnin species tree files. "
 	    fi
 	)
 
@@ -306,13 +304,13 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 		shopt -s nullglob
 		folders=(./*.treeannotator)
 		if [[ "${#folders[@]}" -gt 0 ]] ; then
-			echo "INFO      | $(date) |          Previous step succeeded. Renaming folders with TreeAnnotator species tree results. "
+			echo "INFO      | $(date) | Previous step succeeded. Renaming folders with TreeAnnotator species tree results. "
 			for k in ./*species.trees.treeannotator; do
 				echo "$k"
 				mv "$k" ${k/*/treeannotator.species.tree} ;
 			done
 		else
-			echo "WARNING!  | $(date) |          ERROR: Found no folders with TreeAnnotator species tree results. "
+			echo "WARNING!  | $(date) | ERROR: Found no folders with TreeAnnotator species tree results. "
 		fi
 	)
 
@@ -330,7 +328,7 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 
 
 else
-	echo "INFO      | $(date) |          Found no BEAST species trees. Skipping species tree analysis... "
+	echo "INFO      | $(date) | Found no BEAST species trees. Skipping species tree analysis... "
 fi
 
 
@@ -344,7 +342,7 @@ fi
 echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tree analysis. "
 ###### First step is to get $NUM_POSTBURNIN_TREES random post-burnin gene trees from the posterior distribution of trees:
 	if [[ ! -z "$MY_BEAST_GENETREE_FILES" ]]; then
-		echo "INFO      | $(date) |          BEAST gene trees present for one or multiple partitions. Analyzing gene trees in TreeAnnotator... "
+		echo "INFO      | $(date) | BEAST gene trees present for one or multiple partitions. Analyzing gene trees in TreeAnnotator... "
 
 	MY_K_ABBREV_VAL_TENS="$(calc $NUM_POSTBURNIN_TREES/1000 | sed 's/\(.*\..\).*/\1/g' | sed 's/.*\.//g' )";
 	if [[ "$MY_K_ABBREV_VAL_TENS" = "0" ]]; then
@@ -356,12 +354,12 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 
 	(
 		for m in ${MY_BEAST_GENETREE_FILES}; do 
-			echo "INFO      | $(date) |               - Name of trees file being analyzed: $m "
+			echo "INFO      | $(date) |      - Name of trees file being analyzed: $m "
 			tail -n "$NUM_POSTBURNIN_TREES" "${m}" > ./"${m}"_"$MY_K_ABBREV_VAL"k_postburn.trees ;		
 
 		###### Convert your 5000 post-burnin gene trees into NEXUS tree file format:
 			MY_NTAX="$(grep -h 'Dimensions' $m | awk -F"=" '{print $NF}' | sed 's/\;//g')"
-			echo "INFO      | $(date) |               - Number of taxa encountered: $MY_NTAX "
+			echo "INFO      | $(date) |      - Number of taxa encountered: $MY_NTAX "
 			
 			NUM1="$MY_NTAX" ;
 			NUM2="$((2*NUM1))" ;
@@ -400,13 +398,14 @@ echo "INFO      | $(date) | Step #4: If gene trees file present, conduct gene tr
 	)
 
 else
-	echo "INFO      | $(date) |          Found no BEAST gene trees. Skipping gene tree analysis... "
+	echo "INFO      | $(date) | Found no BEAST gene trees. Skipping gene tree analysis... "
 fi
 
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
