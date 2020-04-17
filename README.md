@@ -49,6 +49,11 @@ Directory tree...
 │   ├── PHYLIP2Mega
 │   ├── PHYLIP2PFSubsets
 │   └── ...
+├── install
+│   ├── README.md
+│   ├── INSTALL
+│   ├── brew_piranha
+│   └── local_piranha
 ├── lib
 │   ├── README.md
 │   ├── setupScriptFunctions.sh
