@@ -6,16 +6,16 @@
 # |                                                                                      #
 #                                                                                        #
 # File: AnouraNEXUSPrepper.sh                                                            #
-  VERSION="v1.3.2"                                                                       #
+  VERSION="v1.3.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: October 22, 2019                                                          #
-# Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
+# Last update: April 17, 2020                                                            #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT AUTOMATES A VARIETY OF TEXT MODIFICATIONS TO ANOURA UCE LOCI NEXUS FILES  #
-# IN ORDER TO MAKE THEM CONFORM TO A STANDARD FORMAT                                     #
+# IN ORDER TO CLEAN THEM AND MAKE THEM CONFORM TO A STANDARD FORMAT                      #
 #                                                                                        #
 ##########################################################################################
 
@@ -138,8 +138,8 @@ AnouraNEXUSPrepper () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.2 October 2019  (in PIrANHA v0.3a2)"
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.3 April 2020                          "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -148,13 +148,11 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and r
 ## Nothing to do for working dir because script executes in current working dir (of execution/
 ## sourcing). Only echo cwd to screen:
 MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')"
-echo "INFO      | $(date) |          Current directory: $MY_PATH "
-
+echo "INFO      | $(date) | Current directory: $MY_PATH "
 echoCDWorkingDir
-
-#echo "INFO      | $(date) |          Checking machine type... "
+#echo "INFO      | $(date) | Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
+#echo "INFO      | $(date) |      Found machine type ${machine}. "
 
 ############ READ IN NEXUS FILE.
 ## 1. Read in the input NEXUS file. Only accommodates one file at present, but could easily
@@ -245,6 +243,7 @@ fi
 	# Remove character partition:
 	perl -p -i -e $'s/^charpartition\ [A-Za-z\ +\=\.\,\;0-9\-\_\:]*$\n//g' "$MY_NEXUS_FILENAME"
 
+echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 
 ##########################################################################################
@@ -259,7 +258,7 @@ echo "--------------------------------------------------------------------------
 MY_INPUT_NEXUS_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: 0, uses NEXUS file in current working directory; accommodates .nex,
@@ -268,29 +267,38 @@ USAGE="Usage: $(basename $0) [OPTION]...
   -V   version (also: --version) echo version of this script and exit
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT takes as input a single NEXUS file containing data from one or more UCE loci
- from our Muchhala lab project on Neotropical Anoura bat UCE phylogenomics, and modifies this
- <inputNEXUS> file to make it conform to a standard format. This script is project-specific,
- but is designed to work with NEXUS files output by Brant Faircloth's Phyluce pipeline for
- ultraconserved elements phylogenomics (Faircloth 2015; https://github.com/faircloth-lab/phyluce),
- and thus could easily be modified for use with other datasets from UCE projects. Among other
- things, a variety of capitalization and text changes are made, and missing data are changed
- from '?' coding to 'N' characters.
+ THIS SCRIPT is an in-house function that takes as input a single NEXUS file containing data 
+ from one or more ultraconserved element (UCE) loci from our Muchhala lab project on Neo-
+ tropical Anoura bat UCE phylogenomics (Calderón et al. in prep.), and modifies this 
+ <inputNEXUS> file to make it conform to a standard format. This script is project-specific, 
+ but is designed to work with NEXUS files output by Brant Faircloth's Phyluce pipeline for 
+ UCE phylogenomics (Faircloth 2015; https://github.com/faircloth-lab/phyluce), and thus could 
+ easily be modified for use with other datasets from UCE projects. Among other things, a 
+ variety of capitalization and text changes are made, and missing data are changed from '?' 
+ coding to 'N' characters.
 	By default, the script looks for a single NEXUS file in the current working directory;
  however, the user may specify an inputNEXUS filename using the -i flag. Runs on macOS High
  Sierra (10.13+) and many earlier macOS or OSX versions.
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
+ Calderón–Acevedo, C.A.G., Bagley, J.C., Muchhala, N. (in prep.) Genome-wide ultraconserved 
+	elements resolve phylogenetic relationships among Neotropical leaf- nosed bats in the 
+	genus Anoura Gray 1838. Molecular Phylogenetics and Evolution.
  Faircloth, B.C. 2015. PHYLUCE is a software package for the analysis of conserved genomic
 	loci. Bioinformatics, 32(5), 786-788.
 
  Created by Justin Bagley on Sun, February 24, 2019.
- Copyright (c) 2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 	echo "$USAGE"
@@ -298,7 +306,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 

@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
 
-# ##################################################
-# My Generic BASH tester, test.sh, for PIrANHA shared 
-# variables and functions
-#
-VERSION="1.0.1"               # Sets version variable for this script
-# ##################################################
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: test.sh                                                                          #
+  VERSION="v1.0.2"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley in March 2019.                                          #
+# Last update: April 17, 2020                                                            #
+# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description: My Generic BASH tester, test.sh, for PIrANHA shared variables and         #
+# functions                                                                              #
+#                                                                                        #
+##########################################################################################
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -117,46 +128,47 @@ gemDependencies=()
 
 
 
+
 tester () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | test.sh v1.0, March 2019  (part of PIrANHA v0.1.7+)            "
-echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | test.sh v1.0, April 2020                                       "
+echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) |          This is the first PIrANHA-1.0 repo shared variables & function tester..."
-echo "INFO      | $(date) |          Setting script path to $SCRIPT_PATH "
-echo "INFO      | $(date) |          "
+echo "INFO      | $(date) | This is the first PIrANHA-1.0 repo shared variables & function tester..."
+echo "INFO      | $(date) | Script path: $SCRIPT_PATH "
+echo "INFO      | $(date) | "
 
 ############## I. FUNCTION TESTS
-	echo "INFO      | $(date) |          ###### Testing shared functions (sharedFunctions.sh):"
+	echo "INFO      | $(date) | ###### Testing shared functions (sharedFunctions.sh):"
 ####### I.A.
-	echo "INFO      | $(date) |          Testing echoCDWorkingDir function... "
-	read -p "INPUT     | $(date) |               Enter desired <workingDir> : " $USER_SPEC_PATH
+	echo "INFO      | $(date) | Testing echoCDWorkingDir function... "
+	read -p "INPUT     | $(date) |     Enter desired <workingDir> : " $USER_SPEC_PATH
 	echoCDWorkingDir
 
 ####### I.B. 
-	echo "INFO      | $(date) |          Testing checkMachineType function... "
-	echo "INFO      | $(date) |          Checking machine type... "
+	echo "INFO      | $(date) | Testing checkMachineType function... "
+	echo "INFO      | $(date) | Checking machine type... "
 	checkMachineType
-	echo "INFO      | $(date) |               Found machine type ${machine}. "
+	echo "INFO      | $(date) |     Found machine type ${machine}. "
 
 ####### I.C. 
-	echo "INFO      | $(date) |          Testing calc function... "
-	echo "INFO      | $(date) |               Bash math 1 + 2... "
+	echo "INFO      | $(date) | Testing calc function... "
+	echo "INFO      | $(date) |     Bash math 1 + 2... "
 	MY_TEST_RES="$(calc 1 + 2)"
-	echo "INFO      | $(date) |               Answer: $MY_TEST_RES "
+	echo "INFO      | $(date) |     Answer: $MY_TEST_RES "
 
 ############## II. VARIABLE TESTS
-echo "INFO      | $(date) |          "
-echo "INFO      | $(date) |          ###### Testing shared variables (sharedVariables.sh):"
-echo "INFO      | $(date) |               Script name: $SCRIPT_NAME "
-echo "INFO      | $(date) |               Script basename: $SCRIPT_BASENAME "
-echo "INFO      | $(date) |               Time now: $now "
-echo "INFO      | $(date) |               Time with long date: $longdate "
-echo "INFO      | $(date) |               Current host: $CURRENT_HOST "
+echo "INFO      | $(date) | "
+echo "INFO      | $(date) | ###### Testing shared variables (sharedVariables.sh):"
+echo "INFO      | $(date) |      Script name: $SCRIPT_NAME "
+echo "INFO      | $(date) |      Script basename: $SCRIPT_BASENAME "
+echo "INFO      | $(date) |      Time now: $now "
+echo "INFO      | $(date) |      Time with long date: $longdate "
+echo "INFO      | $(date) |      Current host: $CURRENT_HOST "
 
 
 ##########################################################################################
