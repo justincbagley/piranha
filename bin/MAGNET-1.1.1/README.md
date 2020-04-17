@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2ae9ac0297a54d469fd8b847f798b53f)](https://www.codacy.com/app/justincbagley/MAGNET?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=justincbagley/MAGNET&amp;utm_campaign=Badge_Grade) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-green.svg?style=flat)](LICENSE)
 
-Shell script pipeline for inferring ML gene trees for many loci (e.g. genomic RAD loci)
+Shell script pipeline for inferring ML gene trees for many loci (e.g. RAD loci, UCEs)
 
 ## LICENSE
 
