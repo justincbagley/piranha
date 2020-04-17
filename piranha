@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.1.1"                                                                       #
+  VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 16, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.1.1, April 2020  (main script for PIrANHA v0.4a, update Apr 13 11:27:50 CDT 2020)                    "
+piranha v1.1.2, April 2020  (main script for PIrANHA v0.4a, update Apr 16 10:55:34 CDT 2020)                    "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -149,20 +149,20 @@ fi
 if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 
 ############ I. READ INPUT, SET UP WORKSPACE, AND CHECK / ECHO MACHINE TYPE.
-#	echo "INFO      | $(date) |          Script path: $SCRIPT_PATH/piranha"
-	echo "INFO      | $(date) |          Function: $FUNCTION_TO_RUN "
-	echo "INFO      | $(date) |          Function arguments: $FUNCTION_ARGUMENTS "
-	echo "INFO      | $(date) |          Remaining arguments: $args+ "
+#	echo "INFO      | $(date) | Script path: $SCRIPT_PATH/piranha"
+	echo "INFO      | $(date) | Function: $FUNCTION_TO_RUN "
+	echo "INFO      | $(date) | Function arguments: $FUNCTION_ARGUMENTS "
+#	echo "INFO      | $(date) | Remaining arguments: $args+ "
 	echoCDWorkingDir
-	echo "INFO      | $(date) |          Checking machine type... "
+	echo "INFO      | $(date) | Checking machine type... "
 	checkMachineType
-	echo "INFO      | $(date) |          Found machine type ${machine}. "
+	echo "INFO      | $(date) | Found machine type ${machine}. "
 
 	if [[ "${machine}" = "Linux" ]]; then
-		echo "INFO      | $(date) |          Checking file limits on Linux..."
+		echo "INFO      | $(date) | Checking file limits on Linux..."
 		FILE_LIMIT=$(ulimit -n)
 		export FILE_LIMIT
-		echo "INFO      | $(date) |             ulimit: ${FILE_LIMIT}"
+		echo "INFO      | $(date) |    ulimit: ${FILE_LIMIT}"
 ## Not working on some supercomputer nodes; best solution would involve checking whether 
 ## manual setting of ulimit is allowed from user accounts on machine, and then using a 
 ## method that allows this if possible. Not fixed yet, so this is commented out for now:
@@ -177,16 +177,16 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 #### SET / ECHO EXECUTION PATH
 	if [[ "$FUNCTION_TO_RUN" != "MAGNET" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
-		echo "INFO      | $(date) |          Execution path: $MY_EXECUTION_PATH"
+		echo "INFO      | $(date) | Execution path: $MY_EXECUTION_PATH"
 	elif [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "INFO      | $(date) |          Execution path: $MY_EXECUTION_PATH"
+		echo "INFO      | $(date) | Execution path: $MY_EXECUTION_PATH"
 	fi
 
 #### EXECUTING WITH ARGUMENTS? LIST OR REGULAR FUNCTION?
 	## First sets of conditionals below: cases where function run is not MAGNET.
 	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$FUNCTION_TO_RUN" != "list" ]]; then
-		echo "INFO      | $(date) |          Executing function without additional arguments..."
+		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$FUNCTION_TO_RUN" = "list" ]]; then
 		echo "
@@ -363,7 +363,7 @@ Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a sta
 	fi
 
 	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
-		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
+		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" = "true" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha.out.log.txt ;
@@ -373,11 +373,11 @@ Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a sta
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" >/dev/null 2>&1 ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
 		# Warn/acknowledge that user is running function script in DEBUG MODE (for developers) by setting debug=true
-		echo "WARNING!  | $(date) |          Executing function with -a flag arguments in DEBUG MODE..."
+		echo "WARNING!  | $(date) | Executing function with -a flag arguments in DEBUG MODE..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS";
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
 		# Warn/acknowledge that user is running function script in DEBUG MODE (for developers) by setting debug=true
-		echo "WARNING!  | $(date) |          Executing function with -a flag arguments in DEBUG MODE..."
+		echo "WARNING!  | $(date) | Executing function with -a flag arguments in DEBUG MODE..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha.out.log.txt ;
 	fi
 
@@ -387,41 +387,41 @@ Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a sta
 	## future) to the execution path, $MY_EXECUTION_PATH.
 	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "INFO      | $(date) |          Executing function without additional arguments..."
+		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "WARNING!  | $(date) |          DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
-		echo "INFO      | $(date) |          Executing function without additional arguments..."
+		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
+		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "INFO      | $(date) |          Executing function without additional arguments..."
+		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" &> piranha_MAGNET.out.log.txt ;
 	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "WARNING!  | $(date) |          DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
-		echo "INFO      | $(date) |          Executing function without additional arguments..."
+		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
+		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" &> piranha_MAGNET.out.log.txt ;
 	fi
 
 	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
+		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "WARNING!  | $(date) |          DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
-		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
+		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
+		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
+		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha_MAGNET.out.log.txt ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
-		echo "WARNING!  | $(date) |          DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
-		echo "INFO      | $(date) |          Executing function with -a flag arguments..."
+		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
+		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha_MAGNET.out.log.txt ;
 	fi
 
@@ -448,7 +448,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a (update Apr 13 10:46:09 CDT 2020).
+ This is the main script for PIrANHA v0.4a (update Apr 16 10:55:34 CDT 2020).
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
@@ -458,7 +458,7 @@ usage() {
   -v, --verbose     Output more information (items echoed to 'verbose')
   -d, --debug       Runs script in Bash debug mode (set -x)
   -h, --help        Display this help and exit
-      --version     Output version information and exit
+  -V, --version     Output version information and exit
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT is the 'master' script that runs the PIrANHA software package by specifying 
