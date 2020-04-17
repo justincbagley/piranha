@@ -9,7 +9,7 @@
   VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: April 16, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.1.2, April 2020  (main script for PIrANHA v0.4a, update Apr 16 10:55:34 CDT 2020)                    "
+piranha v1.1.2, April 2020  (main script for PIrANHA v0.4a2, update Apr 17 12:27:41 EDT 2020)                   "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -448,7 +448,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a (update Apr 16 10:55:34 CDT 2020).
+ This is the main script for PIrANHA v0.4a2 (update Apr 17 12:27:41 EDT 2020).
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
@@ -478,7 +478,7 @@ usage() {
     piranha -f calcAlignmentPIS -t 150           Run calcAlignmentPIS with threshold at N=150 alignments
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.
