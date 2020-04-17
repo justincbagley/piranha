@@ -40,6 +40,8 @@ Directory tree...
 ├── README.md
 ├── changeLog.md
 ├── piranha
+├── Quick_Guide.md
+├── Quick_Guide.pdf
 ├── bin
 │   ├── README.md
 │   ├── calcAlignmentPIS
