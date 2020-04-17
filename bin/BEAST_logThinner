@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -162,20 +162,20 @@ read -p "READ      | $(date) | Please enter the frequency (n) of nth lines that 
 
 ###### CONDUCT LOG FILE THINNING:
 
-### STEP #2:
+	### STEP #2:
 	head -n"$MY_NUM_HEADER_LINES" "$MY_LOGFILE" > header.txt ;
 
-### STEP #3:
+	### STEP #3:
 	grep -v '^#' "$MY_LOGFILE" > ./logged.txt ;
 	awk 'NR == 1 || NR % '$NTH_LINES' == 0' ./logged.txt | sed '1d' > thinned_logged.txt ;
 
-### STEP #4:
+	### STEP #4:
 	echo "
 " > ./end.txt ;
 
 	cat ./header.txt ./thinned_logged.txt ./end.txt > ./"$MY_LOGFILE"_nth_line.log.txt ;
 
-### CLEANUP.
+	### CLEANUP.
 	if [[ -s ./header.txt ]]; then rm ./header.txt ; fi
 	if [[ -s ./logged.txt ]]; then rm ./logged.txt ; fi
 	if [[ -s ./thinned_logged.txt ]]; then rm ./thinned_logged.txt ; fi
@@ -199,6 +199,7 @@ read -p "READ      | $(date) | Please enter the frequency (n) of nth lines that 
 	echo "INFO      | $(date) | Number of logged lines: $NUM_LOGGED_LINES "
  	echo "INFO      | $(date) | "
 
+echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"
 echo "Output file: ./${MY_LOGFILE}_nth_line.log.txt 
 "
