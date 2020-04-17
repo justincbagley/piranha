@@ -9,7 +9,7 @@
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,9 +146,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -165,13 +163,13 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 	RUNELEM_SEED_FLAG=$(echo "-seed");
 	RUNELEM_SEED_VAR=$(echo "\$(seed)");
 
-echo "INFO      | $(date) |          Checking rootdir variable..."
+echo "INFO      | $(date) | Checking rootdir variable..."
 if [[ "$ROOT_DIR" = "/tmp" ]]; then
-echo "WARNING!  | $(date) |          ** The rootdir variable has NOT been changed from its default value. Respond to the following prompts: ** "
+echo "WARNING!  | $(date) | ** The rootdir variable has NOT been changed from its default value. Respond to the following prompts: ** "
 	read -p "                                                     Is /tmp an acceptable root directory where path steps can be saved? (y/n) : " TMP_DIR_TEST
 	echo ""
 	if [[ "$TMP_DIR_TEST" = "y" ]]; then 
-		echo "INFO      | $(date) |          Moving forward with /tmp as rootdir... " 
+		echo "INFO      | $(date) | Moving forward with /tmp as rootdir... " 
 	fi
 	if [[ "$TMP_DIR_TEST" = "n" ]]; then
 		read -p "                                                     Enter the absolute path to a more suitable root directory (on local machine or supercomputer) : " ROOT_DIR
@@ -189,7 +187,7 @@ echo "INFO      | $(date) | STEP #2: MAKE AND RUN FUNCTION TO EDIT XML FILES SO 
 	## Functions and commands are split up depending on whether a single or multiple XMLs 
 	## were specified for manipulation, using if-the-else-fi conditional flow control:
 	if [[ $MY_INPUTXMLFILE_VAR = "multiXML" ]]; then
-		echo "INFO      | $(date) |          Multiple BEAST input XML files present. Adding path sampling code to XMLs... "
+		echo "INFO      | $(date) | Multiple BEAST input XML files present. Adding path sampling code to XMLs... "
 
 ###### SECTION A. MAKE AND RUN FUNCTION WITH CODE FOR MANIPULATING MULTIPLE XML FILES:
 	editXMLFiles () {
@@ -241,7 +239,7 @@ editXMLFiles
 
 	else
 		if [[ "$MY_INPUTXMLFILE_VAR" != "multiXML" ]]; then
-			echo "INFO      | $(date) |          Detected a single BEAST input XML file. Adding path sampling code to the XML named $MY_INPUTXMLFILE_VAR... "
+			echo "INFO      | $(date) | Detected a single BEAST input XML file. Adding path sampling code to the XML named $MY_INPUTXMLFILE_VAR... "
 
 
 
@@ -276,7 +274,9 @@ java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_
 
 		## Clean up the working dir:
 		if [[ -s ./edit1.xml ]]; then rm ./edit1.xml ; fi 
-		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.tmp ; 
+		fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
   
 }
@@ -287,11 +287,12 @@ editXMLFiles
 
 
 	else
-		echo "WARNING!  | $(date) |          Something went wrong. Found no BEAST XML files. "
+		echo "WARNING!  | $(date) | Something went wrong. Found no BEAST XML files. "
 	fi
 
 fi
 
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
