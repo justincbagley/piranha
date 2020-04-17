@@ -390,7 +390,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f PHYLIP2NEXUS -m 1 
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

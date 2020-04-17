@@ -58,6 +58,7 @@ The full file tree for this directory is as follows:
    ├── NEXUS2PHYLIP
    ├── nQuireRunner
    ├── PFSubsetSum
+   ├── phaseAlleles
    ├── PHYLIP2FASTA
    ├── phylip2fasta.pl
    ├── PHYLIP2Mega
@@ -80,6 +81,7 @@ The full file tree for this directory is as follows:
    ├── splitFile
    ├── splitPHYLIP
    ├── taxonCompFilter
+   ├── test
    ├── treeThinner
    ├── vcfSubsampler
    └── virtualenv.txt

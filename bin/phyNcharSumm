@@ -194,7 +194,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f phyNcharSumm
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on November 9, 2016.
@@ -210,7 +210,7 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 if [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]; then
-	echo " Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+	echo " Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 "
 	exit

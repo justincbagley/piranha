@@ -1009,7 +1009,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
                                                               keep FASTAs, and echo run output to screen
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -1092,7 +1092,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
                                                               keep FASTAs, and echo run output to screen
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

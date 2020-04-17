@@ -480,7 +480,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f nQuireRunner -m 1               Multi-BAM run on all .bam files in working directory
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
@@ -533,7 +533,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f nQuireRunner -m 1               Multi-BAM run on all .bam files in working directory
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}

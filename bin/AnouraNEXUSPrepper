@@ -281,7 +281,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  Sierra (10.13+) and many earlier macOS or OSX versions.
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

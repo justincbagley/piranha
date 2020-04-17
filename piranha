@@ -271,6 +271,9 @@ nQuireRunner           Function that automates running nQuire software (Weiß et
                        starting from BAM file(s) for the sample(s)
 PFSubsetSum            Calculates summary statistics for DNA subsets within the optimum partitioning scheme 
                        identified for the data by PartitionFinder v1 or v2 (Lanfear et al. 2012, 2014).
+phaseAlleles           Automates phasing alleles of HTS data from targeted sequence capture experiments (or similar), 
+                       including optionally transferring indel gaps from reference to the final phased FASTAs of 
+                       consensus sequences, by masking
 PHYLIP2FASTA           Automates converting each of one or multiple PHYLIP DNA sequence alignments into FASTA 
                        format.
 phylip2fasta.pl        Nayoki Takebayashi utility Perl script for converting from PHYLIP to FASTA format.

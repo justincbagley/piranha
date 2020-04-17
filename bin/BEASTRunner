@@ -418,7 +418,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f BEASTRunner -n 10 -w 24:00:00 -m 2048M     Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -496,7 +496,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f BEASTRunner -n 10 -w 24:00:00 -m 2048M     Change memory (RAM) allocation to 2GB
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

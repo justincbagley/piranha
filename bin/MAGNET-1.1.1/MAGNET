@@ -1036,7 +1036,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f MAGNET -h                                  Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -1157,7 +1157,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f MAGNET -h                                  Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
