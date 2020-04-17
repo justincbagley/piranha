@@ -9,7 +9,7 @@
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -153,9 +153,7 @@ fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -188,18 +186,18 @@ if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_
 			#echo "$MY_PHYLIP_BASENAME"
 #
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |          Input file: $INPUT_FILE ... ";
-				echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
-				echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+				echo "INFO      | $(date) | Input file: $INPUT_FILE ... ";
+				echo "INFO      | $(date) | File type: $MY_FILE_TYPE ... ";
+				echo "INFO      | $(date) | List of taxa to remove: $MY_TAXON_LIST ... ";
 				if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) |          <keepFile> switch activated. Saving original PHYLIP input file to ./orig_phylip/ ... ";
+					echo "INFO      | $(date) | <keepFile> switch activated. Saving original PHYLIP input file to ./orig_phylip/ ... ";
 					if [[ ! -s ./orig_phylip/  ]]; then mkdir ./orig_phylip/ ; fi 
 					cp "$INPUT_FILE" ./orig_phylip/ 
 				fi
-				echo "INFO      | $(date) |          Removing unwanted taxa from PHYLIP input file ... ";
+				echo "INFO      | $(date) | Removing unwanted taxa from PHYLIP input file ... ";
 			fi
 #
-			echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+			echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 			## If present, remove empty lines / newlines from current PHYLIP file, $INPUT_FILE.
 			if [[ "$(grep -n '^[\s]*$' $INPUT_FILE | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 				if [[ "${machine}" = "Mac" ]]; then
@@ -256,7 +254,7 @@ if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_
 			if [[ -s ./_reduced.phy ]]; then rm ./_reduced.phy ; fi
 #
 		else
-			echo "WARNING!  | $(date) |          ERROR: Found no file named $INPUT_FILE in working directory. Quitting... " 
+			echo "WARNING!  | $(date) | ERROR: Found no file named $INPUT_FILE in working directory. Quitting... " 
 			exit
 		fi
 	fi
@@ -275,19 +273,19 @@ if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_
 			#echo "$MY_PHYLIP_BASENAME"
 #
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |          ###-----   PHYLIP File $count   -----### "
-				echo "INFO      | $(date) |          Input file: $i ... ";
-				echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
-				echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+				echo "INFO      | $(date) | ###-----   PHYLIP File $count   -----### "
+				echo "INFO      | $(date) | Input file: $i ... ";
+				echo "INFO      | $(date) | File type: $MY_FILE_TYPE ... ";
+				echo "INFO      | $(date) | List of taxa to remove: $MY_TAXON_LIST ... ";
 				if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) |          <keepFile> switch activated. Saving original PHYLIP input file to ./orig_phylip/ ... ";
+					echo "INFO      | $(date) | <keepFile> switch activated. Saving original PHYLIP input file to ./orig_phylip/ ... ";
 					if [[ ! -s ./orig_phylip/  ]]; then mkdir ./orig_phylip/ ; fi 
 					cp "$i" ./orig_phylip/ 
 				fi
-				echo "INFO      | $(date) |          Removing unwanted taxa from PHYLIP input file $((count++)) ... ";
+				echo "INFO      | $(date) | Removing unwanted taxa from PHYLIP input file $((count++)) ... ";
 			fi
 #
-			echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+			echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 			## If present, remove empty lines / newlines from current PHYLIP file, $i.
 			if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 				if [[ "${machine}" = "Mac" ]]; then
@@ -357,18 +355,18 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 			MY_FASTA_BASENAME="$(echo "${INPUT_FILE%%.*}")";
 			#echo "$MY_FASTA_BASENAME"
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |          Input file: $INPUT_FILE ... ";
-				echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
-				echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+				echo "INFO      | $(date) | Input file: $INPUT_FILE ... ";
+				echo "INFO      | $(date) | File type: $MY_FILE_TYPE ... ";
+				echo "INFO      | $(date) | List of taxa to remove: $MY_TAXON_LIST ... ";
 				if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) |          <keepFile> switch activated. Saving original FASTA input file to ./orig_fasta/ ... ";
+					echo "INFO      | $(date) | <keepFile> switch activated. Saving original FASTA input file to ./orig_fasta/ ... ";
 					if [[ ! -s ./orig_fasta/  ]]; then mkdir ./orig_fasta/ ; fi 
 					cp "$INPUT_FILE" ./orig_fasta/ 
 				fi
-				echo "INFO      | $(date) |          Removing unwanted taxa from FASTA input file ... ";
+				echo "INFO      | $(date) | Removing unwanted taxa from FASTA input file ... ";
 			fi
 #
-			echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+			echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 			## If present, remove empty lines / newlines from current FASTA file, $INPUT_FILE.
 			if [[ "$(grep -n '^[\s]*$' $INPUT_FILE | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 				if [[ "${machine}" = "Mac" ]]; then
@@ -412,7 +410,7 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 			)
 			fi
 		else
-			echo "WARNING!  | $(date) |          ERROR: Found no file named $INPUT_FILE in working directory. Quitting... " 
+			echo "WARNING!  | $(date) | ERROR: Found no file named $INPUT_FILE in working directory. Quitting... " 
 			exit
 		fi
 	fi
@@ -431,20 +429,20 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 				#echo "$MY_FASTA_BASENAME"
 #
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) |          ###-----   FASTA File $count   -----### "
-					echo "INFO      | $(date) |          Input file: $i ... ";
-					echo "INFO      | $(date) |          File type: $MY_FILE_TYPE ... ";
-					echo "INFO      | $(date) |          File extension: $MY_FASTA_EXTENSION ... ";
-					echo "INFO      | $(date) |          List of taxa to remove: $MY_TAXON_LIST ... ";
+					echo "INFO      | $(date) | ###-----   FASTA File $count   -----### "
+					echo "INFO      | $(date) | Input file: $i ... ";
+					echo "INFO      | $(date) | File type: $MY_FILE_TYPE ... ";
+					echo "INFO      | $(date) | File extension: $MY_FASTA_EXTENSION ... ";
+					echo "INFO      | $(date) | List of taxa to remove: $MY_TAXON_LIST ... ";
 					if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          <keepFile> switch activated. Saving original FASTA input file to ./orig_fasta/ ... ";
+						echo "INFO      | $(date) | <keepFile> switch activated. Saving original FASTA input file to ./orig_fasta/ ... ";
 						if [[ ! -s ./orig_fasta/  ]]; then mkdir ./orig_fasta/ ; fi 
 						cp "$i" ./orig_fasta/ 
 					fi
-					echo "INFO      | $(date) |          Removing unwanted taxa from FASTA input file $((count++)) ... ";
+					echo "INFO      | $(date) | Removing unwanted taxa from FASTA input file $((count++)) ... ";
 				fi
 #
-				echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+				echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 				## If present, remove empty lines / newlines from current FASTA file, $i.
 				if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 					if [[ "${machine}" = "Mac" ]]; then
@@ -501,11 +499,7 @@ fi
 
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#	echo "INFO      | $(date) |          Done removing unwanted taxa from FASTA or PHYLIP files using dropTaxa.sh." 
-#	echo "Bye.
-#"
-
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ "$MY_FILE_TYPE" = "phylip" ]] || [[ "$MY_FILE_TYPE" = "phy" ]] || [[ "$MY_FILE_TYPE" = "PHYLIP" ]] && [[ "$INPUT_FILE" != "NULL" ]] && [[ "$MULTIPLE_FILE_SWITCH" = "0" ]]; then

@@ -9,7 +9,7 @@
   VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -148,9 +148,7 @@ fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -168,7 +166,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 	INPUT_PHYLIP_FILE="$(echo "$j" | sed 's/\.\///g')";
 	MY_BASENAME="$(basename "$INPUT_PHYLIP_FILE" '.phy')" ;
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Converting $INPUT_PHYLIP_FILE ... "
+		echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE ... "
 	fi
 #
 	## Check to make sure PHYLIP header of only numbers (ntax  nchar) is present,
@@ -185,29 +183,29 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 	# WORKING 3 (even better code):
 	MY_HEADER_CHECK="$(head -n1 "$INPUT_PHYLIP_FILE" | perl -pe $'s/^[0-9]*[[:space:]]*[0-9]*$\n//g' | wc -l | sed 's/\ //g')";
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Header check: $MY_HEADER_CHECK"
+		echo "INFO      | $(date) | Header check: $MY_HEADER_CHECK"
 	fi
 	if [[ "$MY_HEADER_CHECK" = "0" ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |          PHYLIP header detected... "
+			echo "INFO      | $(date) | PHYLIP header detected... "
 		fi
 		sed '1d' "$INPUT_PHYLIP_FILE" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 	fi
 	if [[ "$MY_HEADER_CHECK" = "1" ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "WARNING!  | $(date) |          PHYLIP header NOT detected... "
+			echo "WARNING!  | $(date) | PHYLIP header NOT detected... "
 		fi
 		sed 's/^/\>/g' "$INPUT_PHYLIP_FILE" | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 	fi
 #
 	## Clean FASTA. Remove any tabs if present from the final FASTA file generated above:
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Cleaning final FASTA file ${MY_BASENAME}.fas... "
+		echo "INFO      | $(date) | Cleaning final FASTA file ${MY_BASENAME}.fas... "
 	fi
 	perl -p -i -e 's/\t//g' "$MY_BASENAME".fas  ;
 #
 elif [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ ! -s "$INPUT_PHYLIP_FILE" ]]; then
-	echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
+	echo "WARNING!  | $(date) | ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
 	exit ;
 fi
 
@@ -227,31 +225,31 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 				# WORKING!
 				MY_HEADER_CHECK="$(head -n1 "$i" | perl -pe $'s/^[0-9]*[[:space:]]*[0-9]*$\n//g' | wc -l | sed 's/\ //g')";
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) |          Header check: $MY_HEADER_CHECK"
+					echo "INFO      | $(date) | Header check: $MY_HEADER_CHECK"
 				fi
 				if [[ "$MY_HEADER_CHECK" = "0" ]]; then
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          PHYLIP header detected. Removing header line... "
+						echo "INFO      | $(date) | PHYLIP header detected. Removing header line... "
 					fi
 					sed '1d' "$i" | sed 's/^/\>/g' | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 				fi
 				if [[ "$MY_HEADER_CHECK" = "1" ]]; then
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "WARNING!  | $(date) |          PHYLIP header NOT detected. Keeping first line... "
+						echo "WARNING!  | $(date) | PHYLIP header NOT detected. Keeping first line... "
 					fi
 					sed 's/^/\>/g' "$i" | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 				fi
 #
 				## Clean FASTA. Remove any tabs if present from the final FASTA file generated above:
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) |          Cleaning final FASTA file ${MY_BASENAME}.fas... "
+					echo "INFO      | $(date) | Cleaning final FASTA file ${MY_BASENAME}.fas... "
 				fi
 				perl -p -i -e 's/\t//g' "$MY_BASENAME".fas  ;
 #
 			done
 		)
 	else
-		echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP files in current working directory. Quitting... " 
+		echo "WARNING!  | $(date) | ERROR: Found no PHYLIP files in current working directory. Quitting... " 
 		exit ;
 	fi
 fi
@@ -288,7 +286,9 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files and removing original files per user request. "
 		fi
-		if [[ ! -z $(ls ./*.phy) ]]; then rm ./*.phy ; fi
+		if [[ "$(ls -1 ./*.phy 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.phy ; 
+		fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
@@ -304,12 +304,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 	fi
 fi
 
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#	echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment(s) to FASTA format using PHYLIP2FASTA.sh." 
-#	echo "Bye.
-#"
-#fi
-
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]]; then
 	echo "output file(s): ./${MY_BASENAME}.fas"

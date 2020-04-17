@@ -9,7 +9,7 @@
   VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on November 9, 2016.                                    #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,9 +146,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) | Step #2: Summarize number of characters in each PHYLIP DNA sequence alignment in current directory. "
@@ -157,7 +155,7 @@ echo "INFO      | $(date) | Step #2: Summarize number of characters in each PHYL
 ## names (containing locus or taxon information) to file, and then echoes the number of 
 ## characters (Nchar) recursively to a file named "nchar.txt" in the working directory.
 
-echo "INFO      | $(date) |          Saving number of characters for each alignment in file named 'nchar.txt'. "
+echo "INFO      | $(date) | Saving number of characters for each alignment in file named 'nchar.txt'. "
 (
 	for i in ./*.phy; do 
 		echo "$i" >> ./phyalign_names.txt ; 

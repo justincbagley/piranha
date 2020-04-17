@@ -9,7 +9,7 @@
   VERSION="v0.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -144,14 +144,11 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
 ###### Set working directory and filetypes as different variables:
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "INFO      | $(date) |          $PWD "	
-echo "INFO      | $(date) |          Input file: $INPUT_FILE "
-echo "INFO      | $(date) |          Examining current directory, setting variables... "
-
-#echo "INFO      | $(date) |          Checking machine type... "
+echo "INFO      | $(date) | Setting user-specified path to: "
+echo "INFO      | $(date) | $PWD "	
+echo "INFO      | $(date) | Input file: $INPUT_FILE "
+echo "INFO      | $(date) | Examining current directory, setting variables... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) | Step #2: Infer input file type (NEXUS or PHYLIP), set file type environmental variable. "
@@ -163,10 +160,10 @@ INPUT_BASENAME="${MY_INPUT_FILENAME%.*}";
 
 if [[ "$(grep -h 'NEXUS'\''nexus'\''Nexus' ${MY_INPUT_FILENAME} | wc -l | sed 's/\ //g' )" = "1" ]] || [[ "$MY_INPUT_EXTENSION" = "nex" ]] || [[ "$MY_INPUT_EXTENSION" = "NEX" ]] || [[ "$MY_INPUT_EXTENSION" = "nexus" ]] || [[ "$MY_INPUT_EXTENSION" = "NEXUS" ]] || [[ "$MY_INPUT_EXTENSION" = "Nexus" ]]; then
 	MY_FILE_TYPE=NEXUS
-	echo "INFO      | $(date) |          Input file format: NEXUS"
+	echo "INFO      | $(date) | Input file format: NEXUS"
 elif [[ "$MY_NEXUS_CHECK" != "1" ]] && [[ "$MY_INPUT_EXTENSION" = "phy" ]] || [[ "$MY_INPUT_EXTENSION" = "phylip" ]] || [[ "$MY_INPUT_EXTENSION" = "PHY" ]] || [[ "$MY_INPUT_EXTENSION" = "PHYLIP" ]]; then
 	MY_FILE_TYPE=PHYLIP
-	echo "INFO      | $(date) |          Input file format: PHYLIP"
+	echo "INFO      | $(date) | Input file format: PHYLIP"
 fi
 
 echo "INFO      | $(date) | Step #3: Convert file to RY-coded alignment and save new alignment to file."
@@ -174,7 +171,7 @@ echo "INFO      | $(date) | Step #3: Convert file to RY-coded alignment and save
 
 ### HANDLE NEXUS FILE
 if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE" = "NEXUS" ]]; then
-	echo "INFO      | $(date) |          Generating RY-coded NEXUS file..."
+	echo "INFO      | $(date) | Generating RY-coded NEXUS file..."
 
 	MY_HEADER_MAT_LINE="$(grep -n 'MATRIX\|Matrix\|matrix' "$INPUT_FILE" | sed 's/\:.*//g')";
 	MY_NTAX="$(grep -h 'ntax\|Ntax\|NTAX' "$INPUT_FILE" | sed 's/.*\=\([0-9]*\)\ .*/\1/g')";
@@ -240,7 +237,7 @@ fi
 
 ### HANDLE PHYLIP FILE
 if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE" = "PHYLIP" ]]; then
-	echo "INFO      | $(date) |          Generating RY-coded PHYLIP file..."
+	echo "INFO      | $(date) | Generating RY-coded PHYLIP file..."
 
 	cp "$INPUT_FILE" phylip.tmp ;
 	if [[ "${machine}" = "Mac" ]]; then
@@ -284,8 +281,8 @@ fi
 if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ]]; then
 	### MAKE RY PHYLIP FROM RY NEXUS:
 	if [[ "$MY_FILE_TYPE" = "NEXUS" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "phylip" ]]; then
-		echo "INFO      | $(date) |          Additional output switch activated."
-		echo "INFO      | $(date) |          Also generating RY-coded PHYLIP file..."
+		echo "INFO      | $(date) | Additional output switch activated."
+		echo "INFO      | $(date) | Also generating RY-coded PHYLIP file..."
 		## convert NEXUS to PHYLIP
 		# We have MY_NTAX from above. Need to get NCHAR and make temp PHYLIP header file:
 		MY_NCHAR="$(grep -h 'nchar\|Nchar\|NCHAR' ./nexus_header.tmp | sed 's/^.*=//g; s/\;//g; s/\ //g')";
@@ -316,8 +313,8 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 	
 	### MAKE RY FASTA FROM RY NEXUS:
 	if [[ "$MY_FILE_TYPE" = "NEXUS" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "fasta" ]]; then
-		echo "INFO      | $(date) |          Additional output switch activated."
-		echo "INFO      | $(date) |          Also generating RY-coded FASTA file..."
+		echo "INFO      | $(date) | Additional output switch activated."
+		echo "INFO      | $(date) | Also generating RY-coded FASTA file..."
 		## convert NEXUS to FASTA
 		# Make FASTA file
 		# (note: file with taxon names and spaces, and RY matrix:  ./matrixRY.tmp)
@@ -337,8 +334,8 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 
 	### MAKE RY NEXUS FROM RY PHYLIP:
 	if [[ "$MY_FILE_TYPE" = "PHYLIP" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "phylip" ]]; then
-		echo "INFO      | $(date) |          Additional output switch activated."
-		echo "INFO      | $(date) |          Also generating RY-coded NEXUS file..."
+		echo "INFO      | $(date) | Additional output switch activated."
+		echo "INFO      | $(date) | Also generating RY-coded NEXUS file..."
 
 		# convert PHYLIP to NEXUS
 		echo ""
@@ -347,8 +344,8 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 	
 	### MAKE RY FASTA FROM RY PHYLIP:
 	if [[ "$MY_FILE_TYPE" = "PHYLIP" ]] && [[ "$ADDITIONAL_OUT_SWITCH" = "fasta" ]]; then
-		echo "INFO      | $(date) |          Additional output switch activated."
-		echo "INFO      | $(date) |          Also generating RY-coded FASTA file..."
+		echo "INFO      | $(date) | Additional output switch activated."
+		echo "INFO      | $(date) | Also generating RY-coded FASTA file..."
 
 		# convert PHYLIP to FASTA
 		echo ""
@@ -360,8 +357,10 @@ fi
 
 echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
 ###### Remove temporary or unnecessary files created above:
-	echo "INFO      | $(date) |          Removing temporary files... "
-	rm ./*.tmp ;
+	echo "INFO      | $(date) | Removing temporary files... "
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 

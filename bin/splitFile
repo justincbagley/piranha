@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.                      #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -153,9 +153,7 @@ fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -181,7 +179,7 @@ fi
 	
 	## Work out line counts:
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Working out line counts... "
+		echo "INFO      | $(date) | Working out line counts... "
 	fi
 	TOTAL_LINES="$(wc -l < "$MY_INPUT_FILE")";
 	LINES="$(calc $TOTAL_LINES+$MY_NUM_PARTS-1)";
@@ -195,39 +193,39 @@ fi
 	paste ./.tmpStarts ./.tmpEnds | perl -pe $'s/\ +/\t/g' | perl -pe 's/\t/\,/g; s/\,\,/\,/g' > ./.tmpsed ;
 	#perl -p -i -e $'s/\ +/\t/g' ./.tmpsed ;
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Split line ranges: "
+		echo "INFO      | $(date) | Split line ranges: "
 	fi
 	cat ./.tmpsed 
 
 	## Use while loop through tmp file of sed line ranges (./.tmpsed) to make split files:
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Making split file: "
+		echo "INFO      | $(date) | Making split file: "
 	fi
 	count=1
 	(
 		while read line; do
 			sed -n "$line"p "$MY_INPUT_FILE" > "$MY_OUTPUT_BASENAME""$count".txt ;
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |          $((count++))... "
+				echo "INFO      | $(date) | $((count++))... "
 			fi
 		done < ./.tmpsed
 	)
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Check split files: "
-		echo "INFO      | $(date) |          "
+		echo "INFO      | $(date) | Check split files: "
+		echo "INFO      | $(date) | "
 	fi
 	wc -l ./"$MY_OUTPUT_BASENAME"*.txt  | perl -pe $'s/^\ +//g' ;
 #
 	MY_NUM_SPLIT_FILES="$(ls ./"$MY_OUTPUT_BASENAME"*.txt | wc -l  | perl -pe $'s/^\ +//g')";
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          "
-		echo "INFO      | $(date) |          $MY_NUM_SPLIT_FILES split files were created. "
+		echo "INFO      | $(date) | "
+		echo "INFO      | $(date) | $MY_NUM_SPLIT_FILES split files were created. "
 	fi
 	if [[ "$MY_NUM_SPLIT_FILES" = "$MY_NUM_PARTS" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          The number of split files exactly matches user-input <numParts> (${MY_NUM_PARTS}). "
+		echo "INFO      | $(date) | The number of split files exactly matches user-input <numParts> (${MY_NUM_PARTS}). "
 	elif [[ "$MY_NUM_SPLIT_FILES" != "$MY_NUM_PARTS" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          The number of split files is slightly different from <numParts> (${MY_NUM_PARTS}), due to rounding. "
+		echo "INFO      | $(date) | The number of split files is slightly different from <numParts> (${MY_NUM_PARTS}), due to rounding. "
 	fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -246,6 +244,7 @@ echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s)/folder(s): $MY_NUM_SPLIT_FILES split files in current directory "
 echo ""
+
 
 ## END DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi

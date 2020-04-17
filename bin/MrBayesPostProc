@@ -9,7 +9,7 @@
   version="v1.9.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -153,9 +153,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -207,18 +205,18 @@ elif [[ "$MY_INPUT_NEXUS" = "NULL" ]]; then
 	## '.nexus' extension, fixing both of these.
 	
 	if [[ -s "$(NEX_FILES=./*.NEX; echo $NEX_FILES | head -n1)" ]]; then 
-        echo "INFO      | $(date) |          Fixing NEXUS filename(s)... "
+        echo "INFO      | $(date) | Fixing NEXUS filename(s)... "
     (
         for file in *.NEX; do
-            mv "$file" "`basename "$file" .NEX`.nex" ;
+			mv "$file" "`basename "$file" .NEX`.nex" ;
         done
     )
 	fi
 	if [[ -s "$(NEX_FILES=./*.nexus; echo $NEX_FILES | head -n1)" ]]; then 
-        echo "INFO      | $(date) |          Fixing NEXUS filename(s)... "
+        echo "INFO      | $(date) | Fixing NEXUS filename(s)... "
     (
         for file in *.nexus; do
-            mv "$file" "`basename "$file" .nexus`.nex" ;
+			mv "$file" "`basename "$file" .nexus`.nex" ;
         done
     )
 	fi
@@ -239,31 +237,31 @@ fi
 
 
 	if [[ "$MY_LOC_SC_MB_PATH" != "NULL" ]]; then
-		echo "INFO      | $(date) |          <MrBayesPath> parameter is _not_ null. Checking user-specified MrBayes executable name or path on your system..."
+		echo "INFO      | $(date) | <MrBayesPath> parameter is _not_ null. Checking user-specified MrBayes executable name or path on your system..."
 		MY_MRBAYES_EXECUT_CHECK="$(which $(echo $MY_LOC_SC_MB_PATH))"
 		if [[ -s "$MY_MRBAYES_EXECUT_CHECK" ]]; then
-			echo "INFO      | $(date) |          Check passed. MrBayes is installed on your machine..."
+			echo "INFO      | $(date) | Check passed. MrBayes is installed on your machine..."
 		fi
 	fi
 	if [[ "$MY_LOC_SC_MB_PATH" = "NULL" ]]; then
-		echo "INFO      | $(date) |          <MrBayesPath> parameter is null. Attempting to determine MrBayes executable name or path on your system..."
+		echo "INFO      | $(date) | <MrBayesPath> parameter is null. Attempting to determine MrBayes executable name or path on your system..."
 		MY_MRBAYES_EXECUT_CHECK1="$(which mb)";
 		MY_MRBAYES_EXECUT_CHECK2="$(which mrbayes)";
 		if [[ -s "$MY_MRBAYES_EXECUT_CHECK1" ]] || [[ -s "$MY_MRBAYES_EXECUT_CHECK2"  ]]; then 
-			echo "INFO      | $(date) |          Check passed. MrBayes is installed on your machine..."
+			echo "INFO      | $(date) | Check passed. MrBayes is installed on your machine..."
 			if [[ -s "$MY_MRBAYES_EXECUT_CHECK1" ]]; then
 				MY_LOC_SC_MB_PATH="$(which mb)";
 			fi
 			if [[ -s "$MY_MRBAYES_EXECUT_CHECK2" ]]; then 
 				MY_LOC_SC_MB_PATH="$(which mrbayes)";
 			fi
-			echo "INFO      | $(date) |          <MrBayesPath> parameter was set to: ${MY_LOC_SC_MB_PATH} "
+			echo "INFO      | $(date) | <MrBayesPath> parameter was set to: ${MY_LOC_SC_MB_PATH} "
 		else
-			echo "WARNING!  | $(date) |          Check FAILED. MrBayes is apparently _not_ installed on your machine."
-			echo "INFO      | $(date) |          Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
-			echo "INFO      | $(date) |          Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
-			echo "INFO      | $(date) |          if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
-			echo "ERROR     | $(date) |          Quitting..."
+			echo "WARNING!  | $(date) | Check FAILED. MrBayes is apparently _not_ installed on your machine."
+			echo "INFO      | $(date) | Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
+			echo "INFO      | $(date) | Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
+			echo "INFO      | $(date) | if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
+			echo "ERROR     | $(date) | Quitting..."
 			exit 1 ;
 		fi
 	fi
@@ -276,14 +274,14 @@ echo "INFO      | $(date) | Step #3: Remove MrBayes block from NEXUS file. "
 		MY_HEADSTOP="$(calc $MY_MRBAYES_BLOCK_START-1)";
 		head -n"$MY_HEADSTOP" "$MY_INPUT_NEXUS" > simple.nex ;
 	elif [[ ! "$MY_MRBAYES_BLOCK_START" -gt "0" ]]; then
-		echo "INFO      | $(date) |          NEXUS file contains no MrBayes block. Renaming NEXUS to 'simple.nex'... "
+		echo "INFO      | $(date) | NEXUS file contains no MrBayes block. Renaming NEXUS to 'simple.nex'... "
 		mv "$MY_INPUT_NEXUS" simple.nex ;
 	fi	
 
 
 echo "INFO      | $(date) | Step #4: Create batch file to run in MrBayes. "
 
-echo "INFO      | $(date) |          Making batch file... "
+echo "INFO      | $(date) | Making batch file... "
 
 echo "set autoclose=yes nowarn=yes
 execute simple.nex
@@ -293,9 +291,9 @@ quit" > ./batch.txt
 
 ## Flow control. Check to make sure MrBayes batch file was successfully created.
     if [[ -f ./batch.txt ]]; then
-        echo "INFO      | $(date) |          MrBayes batch file ('batch.txt') was successfully created. "
+        echo "INFO      | $(date) | MrBayes batch file ('batch.txt') was successfully created. "
     else
-        echo "WARNING!  | $(date) |          Something went wrong. MrBayes batch file ('batch.txt') not created. Quitting... "
+        echo "WARNING!  | $(date) | Something went wrong. MrBayes batch file ('batch.txt') not created. Quitting... "
         exit 1 ;
     fi
 
@@ -342,7 +340,9 @@ echo "INFO      | $(date) | Step #6: Clean up files in working dir. "
 		if [[ -f ./SS_batch.txt ]]; then rm ./SS_batch.txt; fi
 	fi
 
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "INFO      | $(date) | Done."

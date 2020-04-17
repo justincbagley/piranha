@@ -9,7 +9,7 @@
   VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.                      #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -174,7 +174,7 @@ fi
 ##--.loci file.
 	(
 		echo "INFO      | $(date) | Step #2: Calculate variable site metrics and output to file. "
-		echo "INFO      | $(date) |          Calculating numbers of variable sites (S) and parsimony-informative sites (PIS) for SNP loci... "
+		echo "INFO      | $(date) | Calculating numbers of variable sites (S) and parsimony-informative sites (PIS) for SNP loci... "
 		for i in $(find . -name "*.loci" -type f); do
 			echo "INFO      | $(date) |      $i ";
 			NUM_LINES="$(grep -h '^\/\/' "$i" | wc -l)";
@@ -189,7 +189,7 @@ fi
 			echo locus > locus.tmp; echo varSites > varSites.tmp; echo parsInfSites > parsInfSites.tmp;
 #		
 			## OUTPUT S AND PIS ESTIMATES TO FILES.
-			echo "INFO      | $(date) |          Writing regular (unsorted) results to summary text files... "
+			echo "INFO      | $(date) | Writing regular (unsorted) results to summary text files... "
 			## 3-column summary file:
 				paste locus.tmp varSites.tmp parsInfSites.tmp > header.tmp ;
 				cat header.tmp "$i"_summTable.tmp > "$i"_varSitesSummary.txt ;
@@ -206,19 +206,23 @@ fi
 
 			## Make ranked/sorted S and PIS table files:
 			echo "INFO      | $(date) | Step #3: Rank loci by numbers of variable sites. "
-			echo "INFO      | $(date) |          Ranking loci by number of variable and parsimony-informative sites, and writing tables with ranked loci... "
+			echo "INFO      | $(date) | Ranking loci by number of variable and parsimony-informative sites, and writing tables with ranked loci... "
 				sort -nrk2 "$i"_varSitesTable.tmp > Ssorted.tmp ;
 				cat Sheader.tmp Ssorted.tmp > "$i"_S_table-ranked.txt ;
 				sort -nrk2 "$i"_parsInfSitesTable.tmp > PISsorted.tmp ;
 				cat PISheader.tmp PISsorted.tmp > "$i"_PIS_table-ranked.txt ;
 #
 		echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files created during run. "
-		echo "INFO      | $(date) |          Removing temporary files and intermediate text files... "
+		echo "INFO      | $(date) | Removing temporary files and intermediate text files... "
 		############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+
+			if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+				rm ./*.tmp ; 
+			fi
 			if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 			if [[ -s ./"$i"_varSites.txt ]]; then rm ./"$i"_varSites.txt ; fi
 			if [[ -s ./"$i"_parsInformSites.txt ]]; then rm ./"$i"_parsInformSites.txt ; fi
+
 		done
 	)
 

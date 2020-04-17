@@ -9,7 +9,7 @@
   VERSION="v1.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -157,9 +157,7 @@ fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -170,14 +168,14 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	exec 2>&1 ;
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
+		echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 	fi
 elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
 	exec >> ./makePartitions_output.txt ;
 	exec 2>&1 ;
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./makePartitions_output.txt ... "
+		echo "INFO      | $(date) | Default output file settings. Logging output to file at ./makePartitions_output.txt ... "
 	fi
 fi
 
@@ -241,11 +239,13 @@ count=1
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
-	echo "INFO      | $(date) |          Deleting temporary files... "
+	echo "INFO      | $(date) | Deleting temporary files... "
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "INFO      | $(date) | Done."

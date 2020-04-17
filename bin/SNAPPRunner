@@ -9,7 +9,7 @@
   VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,9 +146,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace, and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -163,23 +161,23 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 ## FOR NOW... we start by checking for the .cfg file. If not found, we add the default to 
 ## the cwd and message user to fill it out before running again.
 
-echo "INFO      | $(date) |          Checking for 'snapp_runner.cfg' configuration file... "
+echo "INFO      | $(date) | Checking for 'snapp_runner.cfg' configuration file... "
 if [[ -f ./snapp_runner.cfg ]]; then 
-	echo "INFO      | $(date) |          Configuration file check passed. Moving forward with .cfg file in current directory... "
+	echo "INFO      | $(date) | Configuration file check passed. Moving forward with .cfg file in current directory... "
 elif [[ ! -f ./snapp_runner.cfg ]]; then 
-	echo "WARNING!  | $(date) |          Configuration file check FAILED. Copying default .cfg file into current directory... "
+	echo "WARNING!  | $(date) | Configuration file check FAILED. Copying default .cfg file into current directory... "
 	cp "$CONFIG_FILE_LOCATION" . ;
-	echo "INFO      | $(date) |          Please edit the default 'snapp_runner.cfg' configuration file just added so that \
+	echo "INFO      | $(date) | Please edit the default 'snapp_runner.cfg' configuration file just added so that \
 it includes all pertinent information (first 3 variables) before rerunning SNAPPRunner from this directory. "
-	echo "INFO      | $(date) |          Quitting... "
+	echo "INFO      | $(date) | Quitting... "
 	safeExit ;
 fi
 
 
-echo "INFO      | $(date) |          Setting up variables, including those specified in the .cfg file..."
+echo "INFO      | $(date) | Setting up variables, including those specified in the .cfg file..."
 	MY_XML_FILES=./*.xml ;
 	MY_NUM_XML="$(ls . | grep "\.xml$" | wc -l)";
-echo "INFO      | $(date) |          Number of XML files read: $MY_NUM_XML"	## Check number of input files read into program.
+echo "INFO      | $(date) | Number of XML files read: $MY_NUM_XML"	## Check number of input files read into program.
 
 	MY_SSH_ACCOUNT="$(grep -n "ssh_account" ./snapp_runner.cfg | \
 	awk -F"=" '{print $NF}')";
@@ -196,9 +194,9 @@ echo "INFO      | $(date) |          Number of XML files read: $MY_NUM_XML"	## C
 
 
 echo "INFO      | $(date) | Step #2: Make $(calc $MY_NUM_INDEP_RUNS - 1) copies per input XML file, for a total of $MY_NUM_INDEP_RUNS runs of each model/XML in SNAPP with different random seeds. "
-echo "INFO      | $(date) |          Looping through original .xml's and making $(calc $MY_NUM_INDEP_RUNS - 1) copies per file, renaming \
+echo "INFO      | $(date) | Looping through original .xml's and making $(calc $MY_NUM_INDEP_RUNS - 1) copies per file, renaming \
 each copy with an extension of '_#.xml'"
-echo "INFO      | $(date) |          where # ranges from 2 - $MY_NUM_INDEP_RUNS. *** IMPORTANT ***: The starting .xml files MUST \
+echo "INFO      | $(date) | where # ranges from 2 - $MY_NUM_INDEP_RUNS. *** IMPORTANT ***: The starting .xml files MUST \
 end in 'run.xml'."
 
 (
@@ -396,10 +394,10 @@ exit 0" > ./snapp_sbatch.sh
 
 fi
 
-echo "INFO      | $(date) |          Setup and run check on the number of run folders created by the program..."
+echo "INFO      | $(date) | Setup and run check on the number of run folders created by the program..."
 	MY_DIRCOUNT="$(find . -type d | wc -l)";
 	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)";
-echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS"
+echo "INFO      | $(date) | Number of run folders created: $MY_NUM_RUN_FOLDERS"
 
 
 echo "INFO      | $(date) | Step #4: Create batch submission file, move all run folders created in previous step and submission file to supercomputer. "
@@ -414,7 +412,7 @@ echo "INFO      | $(date) | Step #4: Create batch submission file, move all run 
 #	* https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/ 
 #	* https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
 
-echo "INFO      | $(date) |          Copying run folders to working dir on supercomputer..."
+echo "INFO      | $(date) | Copying run folders to working dir on supercomputer..."
 
 echo "#!/bin/bash
 " > ./qsub_top.txt
@@ -440,16 +438,16 @@ cat ./qsub_top.txt ./cd_and_qsub_commands.txt ./qsub_bottom.txt > ./SNAPPRunner_
 
 ##--More flow control. Check to make sure sbatch.sh file was successfully created.
 if [ -f ./SNAPPRunner_batch_qsub.sh ]; then
-    echo "INFO      | $(date) |          Batch queue submission file ('SNAPPRunner_batch_qsub.sh') successfully created. "
+    echo "INFO      | $(date) | Batch queue submission file ('SNAPPRunner_batch_qsub.sh') successfully created. "
 else
-    echo "WARNING!  | $(date) |          Something went wrong. Batch queue submission file ('SNAPPRunner_batch_qsub.sh') not created. Exiting... "
+    echo "WARNING!  | $(date) | Something went wrong. Batch queue submission file ('SNAPPRunner_batch_qsub.sh') not created. Exiting... "
     exit
 fi
 
-echo "INFO      | $(date) |          Also copying configuration file to supercomputer..."
+echo "INFO      | $(date) | Also copying configuration file to supercomputer..."
 scp ./snapp_runner.cfg $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
 
-echo "INFO      | $(date) |          Also copying sbatch_file to supercomputer..."
+echo "INFO      | $(date) | Also copying sbatch_file to supercomputer..."
 scp ./SNAPPRunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
 
 
@@ -473,10 +471,11 @@ exit
 HERE
 
 
-echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting SNAPP jobs to queue!!"
+echo "INFO      | $(date) | Finished copying run folders to supercomputer and submitting SNAPP jobs to queue!!"
 
 echo "INFO      | $(date) | Step #5: Clean up temporary files generated during SNAPPRunner run to this point. "
-echo "INFO      | $(date) |          Removing temporary files from local machine..."
+echo "INFO      | $(date) | Removing temporary files from local machine..."
+
 	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".xml; done ;
 	if [[ -s ./qsub_top.txt ]]; then rm ./qsub_top.txt ; fi
 	if [[ -s ./cd_and_qsub_commands.txt ]]; then rm ./cd_and_qsub_commands.txt ; fi

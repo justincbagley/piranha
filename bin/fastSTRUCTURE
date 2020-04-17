@@ -9,7 +9,7 @@
   VERSION="v1.1.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:48:14 -0300.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -147,7 +147,7 @@ echo "INFO      | $(date) | Step #1: Setup. Read user input, set environmental v
 	RUN_SEED=$RANDOM
 
 echo "INFO      | $(date) | Step #2: Run fastSTRUCTURE on range of K specified by user. "
-echo "INFO      | $(date) |          Modeling K = $LOWER_K_VAL to $UPPER_K_VAL clusters in fastSTRUCTURE. "
+echo "INFO      | $(date) | Modeling K = $LOWER_K_VAL to $UPPER_K_VAL clusters in fastSTRUCTURE. "
 
 (
 	for (( i=$LOWER_K_VAL; i<=$UPPER_K_VAL; i++ )); do
@@ -156,7 +156,7 @@ echo "INFO      | $(date) |          Modeling K = $LOWER_K_VAL to $UPPER_K_VAL c
 	done
 )
 
-echo "INFO      | $(date) |          fastSTRUCTURE runs completed. "
+echo "INFO      | $(date) | fastSTRUCTURE runs completed. "
 
 
 echo "INFO      | $(date) | Step #3: Estimate model complexity. "
@@ -165,13 +165,13 @@ echo "INFO      | $(date) | Step #3: Estimate model complexity. "
 
 	python "$MY_CHOOSEK_PATH" --input="$FASTSTRUCTURE_OUTPUT" > chooseK.out.txt ;
 
-echo "INFO      | $(date) |          Finished estimating model complexity. "
+echo "INFO      | $(date) | Finished estimating model complexity. "
 	cat chooseK.out.txt ;
 
 
 echo "INFO      | $(date) | Step #4: Visualize results. "
 ###### Use DISTRUCT to create graphical output of results corresponding to the best K value modeled.
-	read -p "INPUT     | $(date) |          Enter the value of K that you want to visualize : " bestK ;
+	read -p "INPUT     | $(date) | Enter the value of K that you want to visualize : " bestK ;
 
 	MY_DISTRUCT_PATH="$(echo $FASTSTRUCTURE_PATH | sed 's/structure.py//g' | sed 's/$/distruct.py/g')" ;
 

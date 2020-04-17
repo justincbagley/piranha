@@ -9,7 +9,7 @@
   VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -155,15 +155,13 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) | Step #2: Read and process ASTRAL-III style taxon-assignment file. "
 ## Split input ASTRAL-III-type taxon-assignment file into separate .tmp files for species
 ## (*_assign_names.tmp) and individuals or tips (*_assign_tips.tmp)
-echo "INFO      | $(date) |          Splitting up assignment file... "
+echo "INFO      | $(date) | Splitting up assignment file... "
 perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 1 > ./species_assign_names.tmp
 perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 3- > ./species_assign_tips.tmp
 
@@ -174,12 +172,12 @@ MY_NUM_TIP_INDS="$(perl -pe $'s/\ /\n/g; s/\t/\n/g' ./species_assign_tips.tmp | 
 echo "INFO      | $(date) | Step #3: Run main parts of script that conduct renaming. "
 ## Main script loop sets run conditional on input file type:
 if [[ "$MY_INPUT_FILE_TYPE" = "phylip" ]]; then
-echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
-echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
-echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
-echo "INFO      | $(date) |          Renaming PHYLIP MSAs in current working directory... "
+echo "INFO      | $(date) | Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
+echo "INFO      | $(date) | Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
+echo "INFO      | $(date) | Number of tips: $MY_NUM_TIP_INDS "
+echo "INFO      | $(date) | Renaming PHYLIP MSAs in current working directory... "
 for i in ./*.phy; do
-	echo "INFO      | $(date) |          $i "
+	echo "INFO      | $(date) | $i "
 	MY_COUNT=1
 	(
 		while read TIP_NAME; do 
@@ -190,20 +188,20 @@ for i in ./*.phy; do
 					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
 				done; 
 
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
+			echo "INFO      | $(date) | Finished processing species $((MY_COUNT++))... " 
 		done < ./species_assign_tips.tmp
 	)
 done
 fi
 
 if [[ "$MY_INPUT_FILE_TYPE" = "fasta" ]]; then
-echo "INFO      | $(date) |          Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
-echo "INFO      | $(date) |          Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
-echo "INFO      | $(date) |          Number of tips: $MY_NUM_TIP_INDS "
-echo "INFO      | $(date) |          Renaming FASTA MSAs in current working directory... "
+echo "INFO      | $(date) | Assignment file: $USER_SPEC_ASSIGNMENT_FILE "
+echo "INFO      | $(date) | Number of species assignments: $MY_NUM_SPECIES_ASSIGN "
+echo "INFO      | $(date) | Number of tips: $MY_NUM_TIP_INDS "
+echo "INFO      | $(date) | Renaming FASTA MSAs in current working directory... "
 
 for i in ./*.fas; do
-	echo "INFO      | $(date) |          $i "
+	echo "INFO      | $(date) | $i "
 	MY_COUNT=1
 	(
 		while read TIP_NAME; do 
@@ -214,14 +212,14 @@ for i in ./*.fas; do
 					perl -p -i -e 's/'"$j"'/'"$MY_SPECIES"'\_'"$j"'/g' "$i" ; 
 				done; 
 
-			echo "INFO      | $(date) |          Finished processing species $((MY_COUNT++))... " 
+			echo "INFO      | $(date) | Finished processing species $((MY_COUNT++))... " 
 		done < ./species_assign_tips.tmp
 	)
 done
 fi
 
 echo "INFO      | $(date) | Step #4: Clean up workspace by deleting temporary files created during run. "
-echo "INFO      | $(date) |          Removing temporary files... "
+echo "INFO      | $(date) | Removing temporary files... "
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 
 	if [[ -s ./species_assign_names.tmp ]]; then ; fi 

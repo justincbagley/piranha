@@ -9,7 +9,7 @@
   VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -189,11 +189,11 @@ fi
 
 	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
 
-	echo "INFO      | $(date) |          ###------    $MY_FASTA    ------### "
+	echo "INFO      | $(date) | ###------    $MY_FASTA    ------### "
 
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |               A. Clean file, get FASTA file and data characteristics. "
+		echo "INFO      | $(date) |      A. Clean file, get FASTA file and data characteristics. "
 	fi
 	
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
@@ -227,13 +227,13 @@ fi
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
+			echo "INFO      | $(date) |      B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
-			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
@@ -257,7 +257,7 @@ fi
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -269,7 +269,7 @@ fi
 			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -317,7 +317,7 @@ fi
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')"
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -329,7 +329,7 @@ fi
 			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -398,13 +398,13 @@ fi
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
+			echo "INFO      | $(date) |      B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
-			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
@@ -428,7 +428,7 @@ fi
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' ./fasta.tmp | wc -l | perl -pe 's/^\ +//g')";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -440,7 +440,7 @@ fi
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -478,14 +478,14 @@ fi
 		
 		if [[ "$MY_FORMAT_METRIC" -eq "2" ]]; then
 		
-		echo "INFO      | $(date) |          Sequential FASTA format detected. Converting to PHYLIP..."
+		echo "INFO      | $(date) | Sequential FASTA format detected. Converting to PHYLIP..."
 		##--The FASTA file has DNA sequences in sequential, unwrapped format already; no need to 
 		##--convert it, so use file as is.
 		
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' ./fasta.tmp | wc -l | perl -pe 's/^\ +//g')";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -497,7 +497,7 @@ fi
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -585,11 +585,11 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 
 	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
 
-	echo "INFO      | $(date) |          ###------    $MY_FASTA    ------### "
+	echo "INFO      | $(date) | ###------    $MY_FASTA    ------### "
 
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |               A. Clean file, get FASTA file and data characteristics. "
+		echo "INFO      | $(date) |      A. Clean file, get FASTA file and data characteristics. "
 	fi
 	
 	if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
@@ -623,13 +623,13 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
+			echo "INFO      | $(date) |      B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
-			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
@@ -653,7 +653,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -665,7 +665,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -713,7 +713,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')"
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -725,7 +725,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -794,13 +794,13 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |               B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
+			echo "INFO      | $(date) |      B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
 		fi
 		#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 		
 		if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
 		
-			echo "INFO      | $(date) |          Hard wrapped sequences detected. Converting to sequential FASTA format..."
+			echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
 			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
@@ -824,7 +824,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' ./fasta.tmp | wc -l | perl -pe 's/^\ +//g')";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -836,7 +836,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -874,14 +874,14 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		
 		if [[ "$MY_FORMAT_METRIC" -eq "2" ]]; then
 		
-		echo "INFO      | $(date) |          Sequential FASTA format detected. Converting to PHYLIP..."
+		echo "INFO      | $(date) | Sequential FASTA format detected. Converting to PHYLIP..."
 		##--The FASTA file has DNA sequences in sequential, unwrapped format already; no need to 
 		##--convert it, so use file as is.
 		
 			## Count number of taxa/tips present in FASTA file:
 			MY_NTAXA="$(grep -n '^>' ./fasta.tmp | wc -l | perl -pe 's/^\ +//g')";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of taxa: $MY_NTAXA "
+				echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 			fi
 		
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
@@ -893,7 +893,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
 			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |               Number of characters: $MY_CORRECTED_NCHAR bp "
+				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
 		
 			## Convert sequential, unwrapped FASTA file to PHYLIP format:
@@ -922,7 +922,10 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 			## files.
 			mv "$MY_FASTA" ./orig_fasta_files/ ;
 			mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+			if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+				rm ./*.tmp ; 
+			fi
+
 		
 		fi
 	
@@ -935,19 +938,13 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 fi
 #######
 
-
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ;
 fi
 
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#echo "INFO      | $(date) | Successfully created PHYLIP ('.phy') input file from input sequential FASTA file $MY_FASTA. "
-#echo "INFO      | $(date) | Bye.
-#"
-#fi
-
+echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 

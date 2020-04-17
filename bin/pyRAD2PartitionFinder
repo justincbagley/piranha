@@ -9,7 +9,7 @@
   VERSION="v1.2.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -145,9 +145,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) | Step #2: Modify pyRAD / ipyrad data file for PartitionFinder. "
@@ -169,7 +167,7 @@ MY_PYRAD_PARTITION=./*.partitions  ;         				## Assign "partition" files in 
 	done
 )
 
-	rm *_1.tmp ;
+	rm ./*_1.tmp ;
 
 
 echo "INFO      | $(date) | Step #3: Prepare PartitionFinder configuration ('.cfg') file. "
@@ -261,7 +259,7 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
 	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
-		rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+		rm ./PF_top.tmp ./PF_bottom.tmp;  											## Remove unnecessary files.
 	fi
 
 
@@ -314,7 +312,7 @@ echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
 	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
-		rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+		rm ./PF_top.tmp ./PF_bottom.tmp;  											## Remove unnecessary files.
 	fi
 
 if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then

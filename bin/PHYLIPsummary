@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Jun 19 14:04:27 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -145,14 +145,11 @@ echo "INFO      | $(date) | Starting PHYLIPsummary analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
 ###### Set working directory and filetypes as different variables:
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "INFO      | $(date) |          $PWD "	
-echo "INFO      | $(date) |          Input file: $INPUT_FILE "
-echo "INFO      | $(date) |          Examining current directory, setting variables... "
-
-#echo "INFO      | $(date) |          Checking machine type... "
+echo "INFO      | $(date) | Setting user-specified path to: "
+echo "INFO      | $(date) | $PWD "	
+echo "INFO      | $(date) | Input file: $INPUT_FILE "
+echo "INFO      | $(date) | Examining current directory, setting variables... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 
@@ -211,9 +208,9 @@ fi
 
 echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
 ###### Remove temporary or unnecessary files created above:
-	echo "INFO      | $(date) |          Removing temporary files... "
-	if [[ ! -z "$(ls ./*.tmp)" ]]; then
-		rm ./*.tmp ;
+	echo "INFO      | $(date) | Removing temporary files... "
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
 	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 

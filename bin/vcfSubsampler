@@ -9,7 +9,7 @@
   VERSION="v0.2.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,41 +136,43 @@ vcfSubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | vcfSubsampler, v0.2.3 April 2020  "
+echo "INFO      | $(date) | vcfSubsampler, v0.2.3 April 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 
-echo "INFO      | $(date) |          Subsamling input VCF file using SNPs file '${MY_SNPS_FILE}' ..."
-##--Subsample input .vcf file (default name: input.vcf) using snps list:
+echo "INFO      | $(date) | Subsamling input VCF file using SNPs file '${MY_SNPS_FILE}' ..."
+## Subsample input .vcf file (default name: input.vcf) using snps list:
 (
 	while read j; do
 		grep -h "$(echo $j)" ./"$MY_INPUT_VCF" >> "$MY_OUTPUT_VCF_FILE".tmp ;
 	done < ./"$MY_SNPS_FILE"
 )
 
-echo "INFO      | $(date) |          Adding header from original VCF to subsampled VCF file ..."
-##--Add header from original .vcf to the new, subsampled vcf file:
+echo "INFO      | $(date) | Adding header from original VCF to subsampled VCF file ..."
+## Add header from original .vcf to the new, subsampled vcf file:
 	grep -h "\#" ./"$MY_INPUT_VCF" > ./header.tmp ;
 
 	cat ./header.tmp "$MY_OUTPUT_VCF_FILE".tmp > "$MY_OUTPUT_VCF_FILE".vcf ;
 
-echo "INFO      | $(date) |          Cleaning up workspace by removing temporary files generated during run... "
-##--Cleanup temporary files:
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+echo "INFO      | $(date) | Cleaning up workspace by removing temporary files generated during run... "
+## Cleanup temporary files:
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 
-##--Final cleanup:
-##--Delete the original .vcf file if user has specified to do so:
+## Final cleanup:
+## Delete the original .vcf file if user has specified to do so:
 	if [[ "$DELETE_ORIG_VCF" = 0 ]]; then
-		echo "INFO      | $(date) |          Keeping original VCF file (-d 0)... "
+		echo "INFO      | $(date) | Keeping original VCF file (-d 0)... "
 		echo "" ;
 	elif [[ "$DELETE_ORIG_VCF" = 1 ]]; then
-		echo "INFO      | $(date) |          Removing original VCF file (-d 1 flag set)... "
+		echo "INFO      | $(date) | Removing original VCF file (-d 1 flag set)... "
 		rm ./"$MY_INPUT_VCF" ;
 	fi
 
-echo "INFO      | $(date) |          Done. "
+echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file: ./${MY_OUTPUT_VCF_FILE}.vcf "
 echo ""

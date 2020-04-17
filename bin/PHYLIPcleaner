@@ -9,7 +9,7 @@
   VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -163,9 +163,7 @@ fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -186,7 +184,7 @@ fi
 		for i in ./*.phy; do 
 
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |          ###------    ${i}    ------### "
+				echo "INFO      | $(date) | ###------    ${i}    ------### "
 			fi
 			
 			MY_ORIG_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
@@ -196,7 +194,7 @@ fi
 			fi
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Removing empty lines (newlines) and lines that have been commented out, if present... "
+		echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 	fi
 	## If present, remove empty lines / newlines from current PHYLIP file, $i.
 		if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
@@ -222,7 +220,7 @@ fi
 		fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Checking for and removing individuals comprised entirely of undetermined sites (gaps, missing characters)... "
+	echo "INFO      | $(date) | Checking for and removing individuals comprised entirely of undetermined sites (gaps, missing characters)... "
 fi
 	## Check and remove individuals with all missing data:
 			if [[ "${machine}" = "Mac" ]]; then
@@ -261,7 +259,7 @@ fi
 			MY_FINAL_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
 			if [[ "$MY_FINAL_NTAX" != "$MY_ORIG_NTAX" ]]; then
 				MY_NUM_PROBLEM_IND="$(calc $MY_ORIG_NTAX-$MY_FINAL_NTAX)"
-				echo "INFO      | $(date) |          Removed ${MY_NUM_PROBLEM_IND} individuals comprised entirely of undetermined sites (gaps, missing characters)... "
+				echo "INFO      | $(date) | Removed ${MY_NUM_PROBLEM_IND} individuals comprised entirely of undetermined sites (gaps, missing characters)... "
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 					echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./output/cleanedPHYLIP.summary.txt ;
 				else
@@ -275,8 +273,8 @@ fi
 ###
 if [[ "$MY_DEEP_CLEAN_SWITCH" = "1" ]]; then
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "WARNING!  | $(date) |          Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
-	echo "INFO      | $(date) |          Check results thoroughly, then start over and rerun analysis without -d flag if necessary."
+	echo "WARNING!  | $(date) | Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
+	echo "INFO      | $(date) | Check results thoroughly, then start over and rerun analysis without -d flag if necessary."
 fi
 	##### MOSTLY MISSING DATA CHECKER
 	## Check and remove individuals with very few sites at start, finish, or only in middle 
@@ -339,6 +337,7 @@ fi
 
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 

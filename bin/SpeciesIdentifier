@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -145,18 +145,15 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) | Step #2: Check for SpeciesIdentifier install and attempt to install if not present. "
 ## Conduct various checks for SpeciesIdentifier directory and jar file:
 
-
 #
 if [[ "${machine}" = "Mac" ]]; then
-	echo "INFO      | $(date) |          Checking for SpeciesIdentifier... "
+	echo "INFO      | $(date) | Checking for SpeciesIdentifier... "
 	cd $HOME;
 		## checks 1 & 2:
 		MY_SPECIESIDENT_DIR_CHECK1="$(locate SpeciesIdentifier-1.8)"
@@ -177,7 +174,7 @@ if [[ "${machine}" = "Mac" ]]; then
 	
 		##
 		if [[ -z "$MY_SPECIESIDENT_DIR_CHECK1"  ]] && [[ -z "$MY_SPECIESIDENT_DIR_CHECK2"  ]] && [[ "$MY_SPECIESIDENT_DIR_CHECK3" = "1" ]] && [[ -z "$MY_SPECIESIDENT_JAR_CHECK1"  ]] && [[ -z "$MY_SPECIESIDENT_JAR_CHECK2"  ]] && [[ "$MY_SPECIESIDENT_JAR_CHECK3" = "1" ]] && [[ "$MY_SPECIESIDENT_JAR_CHECK4" = "1" ]]; then
-			echo "WARNING!  | $(date) |          Found no SpeciesIdentifier v1.8 directory or executable (jar file) on your machine... "
+			echo "WARNING!  | $(date) | Found no SpeciesIdentifier v1.8 directory or executable (jar file) on your machine... "
 			## No SpeciesIdentifier dir or jar file on machine. Next, do curl download of v1.8 executable
 			## and complete install. SpeciesIdentifier is part of the Taxon DNA package/repository
 			## and is available on GitHub at https://github.com/gaurav/taxondna/ (see below).
@@ -186,9 +183,9 @@ if [[ "${machine}" = "Mac" ]]; then
 			## check for homebrew, attempt brew install of curl and then curl SpeciesIdentifier...
 
 			###
-			echo "INFO      | $(date) |          Luckily, SpeciesIdentifier v1.8 is available for your machine type (Mac). Attempting to install it from GitHub... "
+			echo "INFO      | $(date) | Luckily, SpeciesIdentifier v1.8 is available for your machine type (Mac). Attempting to install it from GitHub... "
 			if [[ -s "$(which curl)" ]]; then
-				echo "INFO      | $(date) |          Found curl... "
+				echo "INFO      | $(date) | Found curl... "
 			
 				## Sequence Matrix software details/method (saving here for future reference):
 				#curl -O -J -L https://github.com/gaurav/taxondna/releases/download/1.8/SequenceMatrix-MacOSX-1.8.zip ;
@@ -197,7 +194,7 @@ if [[ "${machine}" = "Mac" ]]; then
 				#ls Sequence\ Matrix.app/
 				#open Sequence\ Matrix.app/
 
-				echo "INFO      | $(date) |          Downloading SpeciesIdentifier, unzipping, granting permissions, and moving to /Applications/SpeciesIdentifier-1.8/... "
+				echo "INFO      | $(date) | Downloading SpeciesIdentifier, unzipping, granting permissions, and moving to /Applications/SpeciesIdentifier-1.8/... "
 				curl -O -J -L https://github.com/gaurav/taxondna/releases/download/1.8/SpeciesIdentifier-1.8.zip ;
 				unzip SpeciesIdentifier-1.8.zip
 				ls ./SpeciesIdentifier*
@@ -209,18 +206,18 @@ if [[ "${machine}" = "Mac" ]]; then
 				fi
 				####
 			elif [[ -z "$(which curl)" ]]; then
-				echo "INFO      | $(date) |          No curl available from cli... "
+				echo "INFO      | $(date) | No curl available from cli... "
 
 				## Try homebrew install of curl, then curl download then install routine
 				####
 				if [[ -s "$(which brew)" ]]; then
-					echo "INFO      | $(date) |          Attempting a fresh homebrew install of curl... "
+					echo "INFO      | $(date) | Attempting a fresh homebrew install of curl... "
 
 					brew install curl ;
 
 					if [[ -s "$(which curl)" ]]; then
-						echo "INFO      | $(date) |          Found curl... "
-						echo "INFO      | $(date) |          Downloading SpeciesIdentifier, unzipping, granting permissions, and moving to /Applications/SpeciesIdentifier-1.8/... "
+						echo "INFO      | $(date) | Found curl... "
+						echo "INFO      | $(date) | Downloading SpeciesIdentifier, unzipping, granting permissions, and moving to /Applications/SpeciesIdentifier-1.8/... "
 						curl -O -J -L https://github.com/gaurav/taxondna/releases/download/1.8/SpeciesIdentifier-1.8.zip ;
 						unzip SpeciesIdentifier-1.8.zip
 						ls ./SpeciesIdentifier*
@@ -239,8 +236,8 @@ if [[ "${machine}" = "Mac" ]]; then
 
 elif [[ "${machine}" = "Linux" ]]; then
 
-	echo "WARNING!  | $(date) |          Cannot install SpeciesIdentifier v1.8 on Linux because it is only available for Mac and Windows platforms, sorry."
-	echo "WARNING!  | $(date) |          Quitting... "
+	echo "WARNING!  | $(date) | Cannot install SpeciesIdentifier v1.8 on Linux because it is only available for Mac and Windows platforms, sorry."
+	echo "WARNING!  | $(date) | Quitting... "
 	exit 1 ;
 
 fi

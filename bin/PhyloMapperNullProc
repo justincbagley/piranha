@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -145,21 +145,18 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
-
 
 
 echo "INFO      | $(date) | Step #2: Run PhyloMapperNullProc. "
 MY_LOGFILE=$(echo ./*.log)
-echo "INPUT     | $(date) |          Reading files... "
-echo "INPUT     | $(date) |          Read in the following PhyloMapper log file: $MY_LOGFILE "
+echo "INPUT     | $(date) | Reading files... "
+echo "INPUT     | $(date) | Read in the following PhyloMapper log file: $MY_LOGFILE "
 MY_LOGFILE_BASENAME="$(echo $MY_LOGFILE | sed 's/\.\///g; s/\.log//g')"
 
 
-echo "INPUT     | $(date) |          Focal clade: "
-	read -p "INPUT     | $(date) |          Enter the name of the focal clade in your PhyloMapper analysis, \
+echo "INPUT     | $(date) | Focal clade: "
+	read -p "INPUT     | $(date) | Enter the name of the focal clade in your PhyloMapper analysis, \
 e.g. 'ingroup' : " focalClade 
 
 
@@ -168,7 +165,7 @@ e.g. 'ingroup' : " focalClade
 	##	sed 's/.*'$focalClade'//g' ./"$MY_LOGFILE_BASENAME"_ancest.tmp > ./"$MY_LOGFILE_BASENAME"_ancestLocs.txt
 
 
-echo "INPUT     | $(date) |          Extracting information on PhyloMapper ancestral locations for focal clade... "
+echo "INPUT     | $(date) | Extracting information on PhyloMapper ancestral locations for focal clade... "
 	## File processing steps coded w/new output file names:
 	grep '\t'$focalClade'' $(echo $MY_LOGFILE) > ./pm_"$focalClade"_ancest.tmp ;
 	sed 's/.*'$focalClade'//g; s/^	//g' ./pm_"$focalClade"_ancest.tmp > pm_"$focalClade"_ancest_2.tmp ;
@@ -177,7 +174,7 @@ echo "INPUT     | $(date) |          Extracting information on PhyloMapper ances
 	cat header.tmp pm_"$focalClade"_ancest_2.tmp > ./pm_"$focalClade"_ancestLocs.txt ;
 
 echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
-echo "INFO      | $(date) |          Deleting temporary files... "
+echo "INFO      | $(date) | Deleting temporary files... "
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	rm ./*.tmp ;

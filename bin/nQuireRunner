@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Oct 17 11:59:08 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,11 +146,10 @@ echo "INFO      | $(date) |-----------------------------------------------------
 
 ############ STEP #1: SET UP VARIABLES AND USEFUL FUNCTIONS
 ###### Set working directory and filetypes as different variables:
-	echo "INFO      | $(date) |          Setting user-specified path to: "
-	echo "INFO      | $(date) |          $PWD "	
-	echo "INFO      | $(date) |          Input file: $MY_BAM_FILE "
-	echo "INFO      | $(date) |          Examining current directory, setting variables... "
-
+	echo "INFO      | $(date) | Setting user-specified path to: "
+	echo "INFO      | $(date) | $PWD "	
+	echo "INFO      | $(date) | Input file: $MY_BAM_FILE "
+	echo "INFO      | $(date) | Examining current directory, setting variables... "
 checkMachineType
 
 ######
@@ -165,34 +164,34 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	############ STEPS #2 & #3: PREP WORK & RUNNING nQuire
 
 	echo "INFO      | $(date) | Step #2: Prep input .bam file for model runs in nQuire... "
-	echo "INFO      | $(date) |          Processing .bam file... "
-	echo "INFO      | $(date) |             Storing filename... "
+	echo "INFO      | $(date) | Processing .bam file... "
+	echo "INFO      | $(date) |    Storing filename... "
 	MY_BAM_BASENAME="$(basename "$MY_BAM_FILE" '.bam')";
 
-	echo "INFO      | $(date) |             Creating base file ${MY_BAM_BASENAME}_base.bin... "
+	echo "INFO      | $(date) |    Creating base file ${MY_BAM_BASENAME}_base.bin... "
 	nQuire create -b "$MY_BAM_FILE" -o "$MY_BAM_BASENAME"_base 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-	echo "INFO      | $(date) |             Creating base file histogram... "
+	echo "INFO      | $(date) |    Creating base file histogram... "
 	nQuire histo "$MY_BAM_BASENAME"_base.bin > "$MY_BAM_BASENAME"_base.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-	echo "INFO      | $(date) |             "
-	echo "INFO      | $(date) |             Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
+	echo "INFO      | $(date) |    "
+	echo "INFO      | $(date) |    Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
 	nQuire denoise -o "$MY_BAM_BASENAME"_base_denoised "$MY_BAM_BASENAME"_base.bin 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-	echo "INFO      | $(date) |             Creating denoised base file histogram... "
+	echo "INFO      | $(date) |    Creating denoised base file histogram... "
 	nQuire histo "$MY_BAM_BASENAME"_base_denoised.bin > "$MY_BAM_BASENAME"_base_denoised.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 
 
 	echo "INFO      | $(date) | Step #3: Running nQuire... "
-	echo "INFO      | $(date) |          Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
+	echo "INFO      | $(date) | Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.lrdmodel.out.txt ;
 
-	echo "INFO      | $(date) |             "
+	echo "INFO      | $(date) |    "
 
-	echo "INFO      | $(date) |          Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
+	echo "INFO      | $(date) | Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.lrdmodel.out.txt ;
 
 
-	echo "INFO      | $(date) |          Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
+	echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
 	nQuire modeltest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire estmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -201,9 +200,9 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	nQuire estmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.estmodel.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.histotest.out.txt ;
 
-	echo "INFO      | $(date) |             "
+	echo "INFO      | $(date) |    "
 
-	echo "INFO      | $(date) |          Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
+	echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
 	nQuire modeltest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -212,7 +211,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.estmodel.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt ;
 
-	echo "INFO      | $(date) |             "
+	echo "INFO      | $(date) |    "
 
 
 	############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
@@ -221,7 +220,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 
 	#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
 
-	echo "INFO      | $(date) |             Best ploidy model based on goodness-of-fit... "
+	echo "INFO      | $(date) |    Best ploidy model based on goodness-of-fit... "
 	## Find model / ploidy level with positive slope in histotest check files. These will be
 	## the best-fit model(s), and should be the same for regular and denoised base.bin files. 
 	## Here, we first get the line where the positive slope model is reported in each file. 
@@ -230,20 +229,20 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	## the entire procedure for both the regular and denoised base.bin files, as follows:
 	MY_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 	MY_CORR_HIST_PLOIDY_LINE="$(calc $MY_POS_SLOPE_LINE-2)";
-	echo "INFO      | $(date) |             Best-fit ploidy model from regular base file: "
+	echo "INFO      | $(date) |    Best-fit ploidy model from regular base file: "
 	sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 	sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base.bin.histotest.PLOIDY.txt ;
 #
 	MY_DENOISE_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 	MY_CORR_DENOISE_HIST_PLOIDY_LINE="$(calc $MY_DENOISE_POS_SLOPE_LINE-2)";
-	echo "INFO      | $(date) |             Best-fit ploidy model from denoised base file: "
+	echo "INFO      | $(date) |    Best-fit ploidy model from denoised base file: "
 	sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 	sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.PLOIDY.txt ;
 
 
 	#### Model test ploidy interpretation:
 
-	echo "INFO      | $(date) |             Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
+	echo "INFO      | $(date) |    Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
 	MY_DENOISE_DIP_LOGLIKE="$(grep -h 'diploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 	MY_DENOISE_TRIP_LOGLIKE="$(grep -h 'triploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 	MY_DENOISE_TETRA_LOGLIKE="$(grep -h 'tetraploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
@@ -269,18 +268,18 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 		echo "INFO      | $(date) | #############################  "
 		echo "INFO      | $(date) | #############################  Current .bam file: ${MY_BAM_FILE} "
 		echo "INFO      | $(date) | #############################  "
-		echo "INFO      | $(date) |             "
+		echo "INFO      | $(date) |    "
 
 		############ STEPS #2 & #3: PREP WORK & RUNNING nQuire
 		
 			echo "INFO      | $(date) | Step #2: Prep input .bam file for model runs in nQuire... "
-			echo "INFO      | $(date) |          Processing .bam file... "
-			echo "INFO      | $(date) |             Storing filename... "
+			echo "INFO      | $(date) | Processing .bam file... "
+			echo "INFO      | $(date) |    Storing filename... "
 			MY_BAM_BASENAME="$(basename "$MY_BAM_FILE" '.bam')";
 
 			if [[ -s  "$MY_BAM_BASENAME"_base_denoised.bin ]] && [[ -s "$MY_BAM_BASENAME"_nQuireRunner.out.txt ]] && [[ -s "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt ]]; then
-				echo "INFO      | $(date) |             Checking for related files... "
-				echo "WARNING!  | $(date) |             File already analyzed by nQuireRunner--SKIPPING!!! "
+				echo "INFO      | $(date) |    Checking for related files... "
+				echo "WARNING!  | $(date) |    File already analyzed by nQuireRunner--SKIPPING!!! "
 			fi
 			###
 			if [[ ! -s  "$MY_BAM_BASENAME"_base_denoised.bin ]] && [[ ! -s "$MY_BAM_BASENAME"_nQuireRunner.out.txt ]]; then
@@ -288,30 +287,30 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			echo "$MY_BAM_BASENAME" >> ./nQuireRunner_sample_basenames.list.txt ;
 			echo "$MY_BAM_FILE" >> ./nQuireRunner_sample_bamfiles.list.txt ;
 
-			echo "INFO      | $(date) |             Creating base file ${MY_BAM_BASENAME}_base.bin... "
+			echo "INFO      | $(date) |    Creating base file ${MY_BAM_BASENAME}_base.bin... "
 			nQuire create -b "$MY_BAM_FILE" -o "$MY_BAM_BASENAME"_base 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-			echo "INFO      | $(date) |             Creating base file histogram... "
+			echo "INFO      | $(date) |    Creating base file histogram... "
 			nQuire histo "$MY_BAM_BASENAME"_base.bin > "$MY_BAM_BASENAME"_base.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-			echo "INFO      | $(date) |             "
-			echo "INFO      | $(date) |             Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
+			echo "INFO      | $(date) |    "
+			echo "INFO      | $(date) |    Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
 			nQuire denoise -o "$MY_BAM_BASENAME"_base_denoised "$MY_BAM_BASENAME"_base.bin 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-			echo "INFO      | $(date) |             Creating denoised base file histogram... "
+			echo "INFO      | $(date) |    Creating denoised base file histogram... "
 			nQuire histo "$MY_BAM_BASENAME"_base_denoised.bin > "$MY_BAM_BASENAME"_base_denoised.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 		
 		
 			echo "INFO      | $(date) | Step #3: Running nQuire... "
-			echo "INFO      | $(date) |          Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
+			echo "INFO      | $(date) | Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.lrdmodel.out.txt ;
 		
-			echo "INFO      | $(date) |             "
+			echo "INFO      | $(date) |    "
 		
-			echo "INFO      | $(date) |          Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
+			echo "INFO      | $(date) | Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.lrdmodel.out.txt ;
 		
 		
-			echo "INFO      | $(date) |          Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
+			echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
 			nQuire modeltest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire estmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -320,9 +319,9 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			nQuire estmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.estmodel.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.histotest.out.txt ;
 		
-			echo "INFO      | $(date) |             "
+			echo "INFO      | $(date) |    "
 		
-			echo "INFO      | $(date) |          Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
+			echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
 			nQuire modeltest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -331,7 +330,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.estmodel.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt ;
 		
-			echo "INFO      | $(date) |             "
+			echo "INFO      | $(date) |    "
 		
 		
 			############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
@@ -340,7 +339,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 		
 			#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
 		
-			echo "INFO      | $(date) |             Best ploidy model based on goodness-of-fit... "
+			echo "INFO      | $(date) |    Best ploidy model based on goodness-of-fit... "
 			## Find model / ploidy level with positive slope in histotest check files. These will be
 			## the best-fit model(s), and should be the same for regular and denoised base.bin files. 
 			## Here, we first get the line where the positive slope model is reported in each file. 
@@ -349,7 +348,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			## the entire procedure for both the regular and denoised base.bin files, as follows:
 			MY_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 			MY_CORR_HIST_PLOIDY_LINE="$(calc $MY_POS_SLOPE_LINE-2)";
-			echo "INFO      | $(date) |             Best-fit ploidy model from regular base file: "
+			echo "INFO      | $(date) |    Best-fit ploidy model from regular base file: "
 			sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 			sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base.bin.histotest.PLOIDY.txt ;
 #
@@ -357,7 +356,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 #
 			MY_DENOISE_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 			MY_CORR_DENOISE_HIST_PLOIDY_LINE="$(calc $MY_DENOISE_POS_SLOPE_LINE-2)";
-			echo "INFO      | $(date) |             Best-fit ploidy model from denoised base file: "
+			echo "INFO      | $(date) |    Best-fit ploidy model from denoised base file: "
 			sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 			sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.PLOIDY.txt ;
 #
@@ -365,7 +364,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 		
 			#### Model test ploidy interpretation:
 		
-			echo "INFO      | $(date) |             Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
+			echo "INFO      | $(date) |    Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
 			MY_DENOISE_DIP_LOGLIKE="$(grep -h 'diploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 			MY_DENOISE_TRIP_LOGLIKE="$(grep -h 'triploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 			MY_DENOISE_TETRA_LOGLIKE="$(grep -h 'tetraploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
@@ -383,10 +382,10 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 )
 
 
-	echo "INFO      | $(date) |             "
+	echo "INFO      | $(date) |    "
 	echo "INFO      | $(date) | Step #5: Summarize results and clean up workspace by organizing list and summary files... "
 	###### Remove temporary or unnecessary files created above:
-	#		echo "INFO      | $(date) |          Removing temporary files... "
+	#		echo "INFO      | $(date) | Removing temporary files... "
 	#	rm ./*.tmp ;
 
 	paste ./nQuireRunner_sample_basenames.list.txt nQuireRunner_reg_base_histotest.PLOIDY.list.txt > nQuireRunner_reg_base_histotest.PLOIDY.Summary.txt ;
@@ -416,9 +415,11 @@ fi
 
 echo "INFO      | $(date) | Step #5: Clean up workspace by removing temporary files generated during run. "
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-	echo "INFO      | $(date) |          Removing temporary files... "
+echo "INFO      | $(date) | Removing temporary files... "
 	
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "INFO      | $(date) | Done."

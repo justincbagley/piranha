@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 1 12:05:32 CDT 2020.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -173,7 +173,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 		echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 		echo "INFO      | $(date) | Starting splitFASTA analysis... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 		echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
-		echo "INFO      | $(date) |          User output file settings. Logging output to file at ./$MY_OUTPUT_FILE_SWITCH ... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | User output file settings. Logging output to file at ./$MY_OUTPUT_FILE_SWITCH ... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 		echo "INFO      | $(date) | Step #2: Set output file. " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 	fi
 	###
@@ -194,30 +194,30 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 	#MY_FASTA_BASENAME2="$(basename "$MY_FASTA" "$(echo .$MY_FASTA_EXTENSION)")";
 	# both basename grabbers should work!
 	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-		echo "INFO      | $(date) |          Input FASTA file name extension: ${MY_FASTA_EXTENSION} " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | Input FASTA file name extension: ${MY_FASTA_EXTENSION} " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 	else
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |          Input FASTA file name extension: ${MY_FASTA_EXTENSION} "
+			echo "INFO      | $(date) | Input FASTA file name extension: ${MY_FASTA_EXTENSION} "
 		fi
 	fi
 
 	#### Split a multi-FASTA file into individual FASTA files:
 	## WORKING!!!	
 	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-		echo "INFO      | $(date) |          A. Splitting input FASTA file... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | A. Splitting input FASTA file... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 	else
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |          A. Splitting input FASTA file... "
+			echo "INFO      | $(date) | A. Splitting input FASTA file... "
 		fi
 	fi
 	awk -v ext_var="$(echo $MY_FASTA_EXTENSION)" '/^>/{close(s); s=++d"."ext_var} {print > s}' "$MY_FASTA"  ;
 
 	#### FASTA renaming loop (<seq_id>.<fasta_extension>):
 	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-		echo "INFO      | $(date) |          B. Renaming output FASTA files using tip taxon labels... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | B. Renaming output FASTA files using tip taxon labels... " | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 	else
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |          B. Renaming output FASTA files using tip taxon labels... "
+			echo "INFO      | $(date) | B. Renaming output FASTA files using tip taxon labels... "
 		fi
 	fi
 
@@ -231,47 +231,47 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
 			MY_SEQ_LINE="$(tail -n1 "$i" | sed 's/\ $//g')";
 			MY_SEQ_LENGTH="$(echo $MY_SEQ_LINE | perl -pe $'s/\n//g' | perl -pe 's/\ //g' | wc -c | sed 's/\t//g' | sed 's/\ //g')";
 #
-#			echo "INFO      | $(date) |          ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION} (Sequence length: ${MY_SEQ_LENGTH} bp)"
+#			echo "INFO      | $(date) | ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION} (Sequence length: ${MY_SEQ_LENGTH} bp)"
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			if [[ "$count" -lt "10" ]]; then
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-					echo "INFO      | $(date) |          ...    Tip taxon $((count++)):    ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+					echo "INFO      | $(date) | ...    Tip taxon $((count++)):    ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 				else
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          ...    Tip taxon $((count++)):    ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+						echo "INFO      | $(date) | ...    Tip taxon $((count++)):    ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
 					fi
 				fi
 			fi
 			if [[ "$count" -ge "10" ]] && [[ "$count" -lt "100" ]]; then
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-					echo "INFO      | $(date) |          ...    Tip taxon $((count++)):   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+					echo "INFO      | $(date) | ...    Tip taxon $((count++)):   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 				else
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          ...    Tip taxon $((count++)):   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+						echo "INFO      | $(date) | ...    Tip taxon $((count++)):   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
 					fi
 				fi
 			fi
 			if [[ "$count" -ge "100" ]]; then
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-					echo "INFO      | $(date) |          ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+					echo "INFO      | $(date) | ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 				else
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+						echo "INFO      | $(date) | ...    Tip taxon $((count++)):  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
 					fi
 				fi
 			fi
 			fi
-#			echo "INFO      | $(date) |                                 Sequence length: $MY_SEQ_LENGTH bp "
-#			echo "INFO      | $(date) |                                 ($MY_SEQ_LENGTH bp) "
+#			echo "INFO      | $(date) |                        Sequence length: $MY_SEQ_LENGTH bp "
+#			echo "INFO      | $(date) |                        ($MY_SEQ_LENGTH bp) "
 #
 			if [[ ! -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
-				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-1 ;
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ]]; then 
-				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-3 ;
 			fi
 		done
@@ -287,28 +287,28 @@ else
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			if [[ "$count" -lt "10" ]]; then
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-					echo "INFO      | $(date) |          ...    Tip taxon:   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+					echo "INFO      | $(date) | ...    Tip taxon:   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 				else
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          ...    Tip taxon:   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+						echo "INFO      | $(date) | ...    Tip taxon:   ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
 					fi
 				fi
 			fi
 			if [[ "$count" -ge "10" ]] && [[ "$count" -lt "100" ]]; then
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-					echo "INFO      | $(date) |          ...    Tip taxon:  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+					echo "INFO      | $(date) | ...    Tip taxon:  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 				else
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          ...    Tip taxon:  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+						echo "INFO      | $(date) | ...    Tip taxon:  ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
 					fi
 				fi
 			fi
 			if [[ "$count" -ge "100" ]]; then
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-					echo "INFO      | $(date) |          ...    Tip taxon: ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
+					echo "INFO      | $(date) | ...    Tip taxon: ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})" | tee -a ./"$MY_OUTPUT_FILE_SWITCH"
 				else
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          ...    Tip taxon: ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
+						echo "INFO      | $(date) | ...    Tip taxon: ${MY_TAXON_ID_LINE} ($MY_SEQ_LENGTH bp; file: ${MY_TAXON_ID_LINE}${MY_FASTA_EXTENSION})"
 					fi
 				fi
 			fi
@@ -317,11 +317,11 @@ else
 			if [[ ! -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
-				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-1 ;
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ]]; then 
-				echo "WARNING!  | $(date) |          ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-3 ;
 			fi
 		done
@@ -329,8 +329,9 @@ else
 fi
 
 	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
-	echo "INFO      | $(date) |          Deleting temporary files... "
+	echo "INFO      | $(date) | Deleting temporary files... "
 	############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then

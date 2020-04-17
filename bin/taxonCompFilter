@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 15 11:20:02 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,9 +146,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 ############ OPTIONAL OUTPUT TO FILE
@@ -159,8 +157,8 @@ fi
 
 
 ###### RUN TAXON COMPLETENESS FILTER.
-echo "INFO      | $(date) |          Step #2: Interpret threshold criterion and then run taxon completeness filter. "
-echo "INFO      | $(date) |          Checking the following loci: "
+echo "INFO      | $(date) | Step #2: Interpret threshold criterion and then run taxon completeness filter. "
+echo "INFO      | $(date) | Checking the following loci: "
 
 	## Convert user-specified taxonomic completeness threshold from decimal to whole 
 	## number for testing:
@@ -168,10 +166,10 @@ echo "INFO      | $(date) |          Checking the following loci: "
 	MY_THRESH_CRIT_RAW_FRACTIONAL="$(echo $MY_THRESH_CRIT_RAW | sed 's/.*\.//g')"
 	if [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "5" ]] || [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "50" ]]; then
 		MY_THRESH_CRIT="$(calc $MY_THRESH_CRIT_RAW-0.5 | sed 's/\..*//g')"
-		echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+		echo "INFO      | $(date) | Using critical threshold of $MY_THRESH_CRIT. "
 	else
 		MY_THRESH_CRIT="$(awk  'BEGIN { rounded = sprintf("%.0f", '$MY_NUM_TAX'*'$USER_TAX_COMP_THRESHOLD'); print rounded }')"
-		echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+		echo "INFO      | $(date) | Using critical threshold of $MY_THRESH_CRIT. "
 	fi
 
 		mkdir filter_"$USER_TAX_COMP_THRESHOLD"/;
@@ -180,8 +178,8 @@ count=1
 (
 	for i in ./*.phy; do
 		## Loop through each MSA; save it into a temporary file msa.tmp or "$MY_PHY_BASENAME".tmp:
-#		echo "INFO      | $(date) |          Count: $((count++)) "
-		echo "INFO      | $(date) |          ###--------------   $((count++)). $i   --------------###"
+#		echo "INFO      | $(date) | Count: $((count++)) "
+		echo "INFO      | $(date) | ###--------------   $((count++)). $i   --------------###"
 		MY_PHY_BASENAME="$(basename $i .phy)"
 		cp "$i" "$MY_PHY_BASENAME".tmp
 #
@@ -205,9 +203,9 @@ count=1
 #
 		## Count number of nonredundant taxa, our metric for applying the user-specified 
 		## taxonomic completeness threshold:
-		echo "INFO      | $(date) |          Counting nonredundant taxa... "
+		echo "INFO      | $(date) | Counting nonredundant taxa... "
 		MY_NUM_NONREDUND_TAX="$(sort -u "$MY_PHY_BASENAME".tmp | wc -l | perl -pe 's/\ //g')"
-		echo "INFO      | $(date) |          Num. nonredundant taxa: $MY_NUM_NONREDUND_TAX "
+		echo "INFO      | $(date) | Num. nonredundant taxa: $MY_NUM_NONREDUND_TAX "
 #
 #		## Convert user-specified taxonomic completeness threshold from decimal to whole 
 #		## number for testing:
@@ -215,21 +213,23 @@ count=1
 #		MY_THRESH_CRIT_RAW_FRACTIONAL="$(echo $MY_THRESH_CRIT_RAW | sed 's/.*\.//g')"
 #		if [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "5" ]] || [[ "$MY_THRESH_CRIT_RAW_FRACTIONAL" -eq "50" ]]; then
 #			MY_THRESH_CRIT="$(calc $MY_THRESH_CRIT_RAW-0.5 | sed 's/\..*//g')"
-#			echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+#			echo "INFO      | $(date) | Using critical threshold of $MY_THRESH_CRIT. "
 #		else
 #			MY_THRESH_CRIT="$(awk  'BEGIN { rounded = sprintf("%.0f", '$MY_NUM_TAX'*'$USER_TAX_COMP_THRESHOLD'); print rounded }')"
-#			echo "INFO      | $(date) |          Using critical threshold of $MY_THRESH_CRIT. "
+#			echo "INFO      | $(date) | Using critical threshold of $MY_THRESH_CRIT. "
 #		fi
 #
-		echo "INFO      | $(date) |          Checking against user-specified criterion... "
+		echo "INFO      | $(date) | Checking against user-specified criterion... "
 		if [[ "$MY_NUM_NONREDUND_TAX" -ge "$MY_THRESH_CRIT" ]]; then
 			cp "$i" filter_"$USER_TAX_COMP_THRESHOLD"/;
-			echo "INFO      | $(date) |          Kept."
+			echo "INFO      | $(date) | Kept."
 		else
-			echo "INFO      | $(date) |          Not kept."
+			echo "INFO      | $(date) | Not kept."
 		fi	
 #
-		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.tmp ; 
+		fi
 #		echo "Count: $((count++)) "
 	done
 )
@@ -237,11 +237,11 @@ count=1
 
 
 ###### EVALUATE RESULTS AND CLEAN UP THE WORKSPACE AS NEEDED.
-echo "INFO      | $(date) |          STEP #3: SUMMARIZE RESULTS AND CLEAN UP WORKSPACE. "
+echo "INFO      | $(date) | STEP #3: SUMMARIZE RESULTS AND CLEAN UP WORKSPACE. "
 
 	cd filter_"$USER_TAX_COMP_THRESHOLD"/;
 	MY_NUM_KEPT_ALIGNS="$(ls . | wc -l)"
-	echo "INFO      | $(date) |          Saved $MY_NUM_KEPT_ALIGNS multiple sequence alignments meeting threshold to filter_${USER_TAX_COMP_THRESHOLD}/ subfolder. "
+	echo "INFO      | $(date) | Saved $MY_NUM_KEPT_ALIGNS multiple sequence alignments meeting threshold to filter_${USER_TAX_COMP_THRESHOLD}/ subfolder. "
 
 
 echo "INFO      | $(date) | Done."

@@ -9,7 +9,7 @@
   VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,7 +141,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 
 ######################################## START ###########################################
 #echo "INFO      | $(date) | My verbose out switch: $MY_VERBOSE_OUT_SWITCH ..."
-
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting PHYLIP2Mega script... "
 	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful variables and functions, setting working directory, and checking machine type. "
@@ -149,13 +148,11 @@ fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 MY_ARGS_CHECK="$(cat args.txt | wc -c | sed 's/\ //g')";
 if [[ "$MY_ARGS_CHECK" = "1" ]]; then 
-	echo "WARNING!  | $(date) |          ERROR: Found no arguments, which could break/delete things. Quitting and printing usage text... " 
+	echo "WARNING!  | $(date) | ERROR: Found no arguments, which could break/delete things. Quitting and printing usage text... " 
 	echo "$USAGE"
 	exit
 fi
@@ -169,7 +166,7 @@ fi
 #			MY_INPUT_PHYLIP_FILE="$(echo $INPUT_PHYLIP_FILE | sed 's/\.\///g' | perl -pe 's/\ +//g; s/\-.*//g' )";
 			MY_INPUT_PHYLIP_FILE="$(echo $INPUT_PHYLIP_FILE | sed 's/\.\///g' | perl -pe 's/\ +//g; s/\t//g' )";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) |          Converting $MY_INPUT_PHYLIP_FILE ... ";
+				echo "INFO      | $(date) | Converting $MY_INPUT_PHYLIP_FILE ... ";
 			fi
 			###### Copy PHYLIP to tmp file:
 				cp "$MY_INPUT_PHYLIP_FILE" ./phylip.tmp;
@@ -195,7 +192,7 @@ fi
 			
 			###### Make Mega-formatted file:
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) |          Making Mega-formatted file... "
+					echo "INFO      | $(date) | Making Mega-formatted file... "
 				fi
 			
 				echo "#Mega
@@ -219,7 +216,7 @@ fi
 				
 			rm ./*.tmp ;
 		else
-			echo "WARNING!  | $(date) |          ERROR: Found no PHYLIP file named $MY_INPUT_PHYLIP_FILE in working directory. Quitting... " 
+			echo "WARNING!  | $(date) | ERROR: Found no PHYLIP file named $MY_INPUT_PHYLIP_FILE in working directory. Quitting... " 
 			exit
 		fi
 	fi
@@ -230,7 +227,7 @@ fi
 			(
 				for i in ./*.phy; do
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "INFO      | $(date) |          $i";
+						echo "INFO      | $(date) | $i";
 					fi
 
 					###### Copy PHYLIP to tmp file:
@@ -257,7 +254,7 @@ fi
 					
 					###### Make Mega-formatted file:
 						if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-							echo "INFO      | $(date) |          Making Mega-formatted file... "
+							echo "INFO      | $(date) | Making Mega-formatted file... "
 						fi
 
 				echo "#Mega
@@ -295,40 +292,44 @@ fi
 ## a separate dir.
 	if [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "0" ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |          Deleting original PHYLIP files... "
+			echo "INFO      | $(date) | Deleting original PHYLIP files... "
 		fi
-		rm ./*.phy ;
-		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ "$(ls -1 ./*.phy 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.phy ; 
+		fi
+		if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.tmp ; 
+		fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
 	if [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]] && [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ ! -s mega/ ]] && [[ ! -s phylip/ ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |          Kept original PHYLIP files. Organizing Mega and PHYLIP files into subfolders... "
+			echo "INFO      | $(date) | Kept original PHYLIP files. Organizing Mega and PHYLIP files into subfolders... "
 		fi
 		mkdir mega/ ;
 		mkdir phylip/ ;
 		mv ./*.phy ./phylip/ ;
 		mv ./*.meg ./mega/ ;
-		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+		if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.tmp ; 
+		fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 	elif [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]] && [[ "$KEEP_ORIG_PHYLIP_SWITCH" = "1" ]] && [[ -s mega/ ]] && [[ -s phylip/ ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "INFO      | $(date) |          Kept original PHYLIP files. Organizing Mega and PHYLIP files into existing subfolders... "
+			echo "INFO      | $(date) | Kept original PHYLIP files. Organizing Mega and PHYLIP files into existing subfolders... "
 		fi
 		mv ./*.phy ./phylip/ ;
 		mv ./*.meg ./mega/ ;
-		if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+		if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.tmp ; 
+		fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 
 
-#if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-#	echo "INFO      | $(date) |          Done converting PHYLIP-formatted DNA sequence alignment(s) to Mega format using PHYLIP2Mega.sh." 
-#	echo "Bye.
-#"
-
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]; then

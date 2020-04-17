@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -147,12 +147,10 @@ echo "INFO      | $(date) | Step #1: Set up workspace with useful environmental 
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-echo "INFO      | $(date) |          Making concatenateAlignments function (completeSeqs + concatenateSeqs_mod routines combined into one)... "
+echo "INFO      | $(date) | Making concatenateAlignments function (completeSeqs + concatenateSeqs_mod routines combined into one)... "
 
 	############################ concatenateAlignments.sh ################################
 
@@ -170,7 +168,7 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 			cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
 			j="$i".tmp ;
 			MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')";
-			echo "INFO      | $(date) |             $i,  $MY_PHYLIP_NCHAR bp "
+			echo "INFO      | $(date) |    $i,  $MY_PHYLIP_NCHAR bp "
 
 				while read k; do
 					MY_TAXON_NAME="$(echo $k | sed 's/\ //g')";
@@ -270,7 +268,7 @@ echo "INFO      | $(date) |          Making concatenateAlignments function (comp
 
 
 echo "INFO      | $(date) | Step #2: Make and run makePFSubsetAlignments function on PHYLIP files in current working directory. "
-echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
+echo "INFO      | $(date) | Making makePFSubsetAlignments function... "
 
 ## Goal is to start from locus (i.e. UCE) PHYLIP alignments in current working directory,
 ## <workingDir>, and then to loop through the PartitionFinder-identified partitions and 
@@ -289,13 +287,13 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 	
 	makePFSubsetAlignments () {
 
-	echo "INFO      | $(date) |          A. Grepping subsets from 'best_scheme.txt' PartitionFinder output file... "
+	echo "INFO      | $(date) | A. Grepping subsets from 'best_scheme.txt' PartitionFinder output file... "
 	
 	## Grep only the partitions from the PartitionFinder (v1 or v2) "best_scheme.txt" output
 	## file, and place in local temporary file.
 	grep -h "^[0-9]*\ " best_scheme.txt | sed 's/^[0-9]*.*\|\ //g' > ./best_scheme_partitions.txt ;
 	
-	echo "INFO      | $(date) |          B. Loop through partition subset list, making partitions by combining the contained loci... "
+	echo "INFO      | $(date) | B. Loop through partition subset list, making partitions by combining the contained loci... "
 	## Each line is now a partition telling you which loci (original data pieces specified to
 	## PartitionFinder) are grouped into each partition. We can loop through the partitions.tmp
 	## file created above and use the information content on each line to assemble partitions,
@@ -305,10 +303,10 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 		while read line; do 
 			## Get loci in subset/partition "$MY_PARTITION_COUNT":
 			MY_LOCI_THIS_PARTITION="$(echo $line | perl -pe $'s/\,\ /\n/g')"; 
-			echo "INFO      | $(date) |          ###----------   Subset $MY_PARTITION_COUNT  ----------###";
-			echo "INFO      | $(date) |             Subset $MY_PARTITION_COUNT contents: ";
-			echo "INFO      | $(date) |             $MY_LOCI_THIS_PARTITION";
-			echo "INFO      | $(date) |             Making Subset $MY_PARTITION_COUNT from input PHYLIP files... ";
+			echo "INFO      | $(date) | ###----------   Subset $MY_PARTITION_COUNT  ----------###";
+			echo "INFO      | $(date) |    Subset $MY_PARTITION_COUNT contents: ";
+			echo "INFO      | $(date) |    $MY_LOCI_THIS_PARTITION";
+			echo "INFO      | $(date) |    Making Subset $MY_PARTITION_COUNT from input PHYLIP files... ";
 	#
 			## Make subfolder for subset of current while loop iteration, move all corresponding loci 
 			## into subfolder:
@@ -343,7 +341,9 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 				###### CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES AND REORGANIZING THE
 				###### TAXON NAMES FILES INTO THEIR OWN SUBFOLDER. ALSO GIVE THE FINAL 
 				###### CONCATENATED SUBSET ALIGNMENT A NAME REFLECTING THE SUBSET NUMBER.
-					if [[ ! -z ./*.tmp ]]; then rm ./*.tmp; fi
+					if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+						rm ./*.tmp ; 
+					fi
 					mkdir taxon_name_files/;
 					mv ./*taxon_names_spaces.txt ./*taxon_names.txt taxon_name_files/;
 					mv ./concatenated_seqs.phy Subset"$MY_PARTITION_COUNT"_concat.phy;
@@ -357,8 +357,8 @@ echo "INFO      | $(date) |          Making makePFSubsetAlignments function... "
 				#########################################
 			cd ..;
 	#
-			echo "INFO      | $(date) |             Subset $((MY_PARTITION_COUNT++)) completed. "
-			echo "INFO      | $(date) |             Results output to file $n with $MY_FINAL_SUBSET_PHY_NCHAR bp data for $MY_CORRECTED_FINAL_SUBSET_PHY_NTAX tip taxa. "
+			echo "INFO      | $(date) |    Subset $((MY_PARTITION_COUNT++)) completed. "
+			echo "INFO      | $(date) |    Results output to file $n with $MY_FINAL_SUBSET_PHY_NCHAR bp data for $MY_CORRECTED_FINAL_SUBSET_PHY_NTAX tip taxa. "
 			echo "$MY_FINAL_SUBSET_PHY_NTAX" >> ./subset_nTax.list.txt;
 			echo "$MY_FINAL_SUBSET_PHY_NCHAR" >> ./subset_nChar.list.txt;
 	#
@@ -378,11 +378,11 @@ echo "INFO      | $(date) | Step #3: Organize subsets output in working dir. "
 ############ SUBFOLDER IN <workingDIR>, AND BY COPYING ALL FINAL SUBSET ALIGNMENTS INTO A
 ############ PHYLIP_subsets/ SUBFOLDER.
 
-	echo "INFO      | $(date) |          Making PHYLIP_subsets/ dir containing all PHYLIP-formatted subset alignments..."
+	echo "INFO      | $(date) | Making PHYLIP_subsets/ dir containing all PHYLIP-formatted subset alignments..."
 	mkdir PHYLIP_subsets/;
 	cp ./Subset*/*_concat.phy ./PHYLIP_subsets/;
 
-	echo "INFO      | $(date) |          Making subset_folders/ dir containing all subset subfolders..."
+	echo "INFO      | $(date) | Making subset_folders/ dir containing all subset subfolders..."
 	mkdir subset_folders/;
 	mv Subset*/ subset_folders/;
 

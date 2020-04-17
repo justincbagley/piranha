@@ -9,7 +9,7 @@
   VERSION="1.3.4"                                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:28:02 -0300.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -146,56 +146,54 @@ echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working d
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 MY_WORKING_DIR="$(pwd -P)";
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 echo "INFO      | $(date) | Step #2: Check whether dependencies, including ExaBayes utility programs and MrBayes, are available from command line. "
 
 MY_CREDSET_EXECUT_CHECK="$(which credibleSet)"
 if [[ -s "$MY_CREDSET_EXECUT_CHECK"  ]]; then 
-	echo "INFO      | $(date) |          Check #1 passed, credibleSet is installed..."
+	echo "INFO      | $(date) | Check #1 passed, credibleSet is installed..."
 else
-	echo "WARNING!  | $(date) |          Check #1 FAILED, credibleSet _not_ installed..."
-	echo "INFO      | $(date) |          Please install or reinstall ExaBayes, including credibleSet and other utilities."
-	echo "INFO      | $(date) |          Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
-	echo "ERROR     | $(date) |          Quitting..."
+	echo "WARNING!  | $(date) | Check #1 FAILED, credibleSet _not_ installed..."
+	echo "INFO      | $(date) | Please install or reinstall ExaBayes, including credibleSet and other utilities."
+	echo "INFO      | $(date) | Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
+	echo "ERROR     | $(date) | Quitting..."
 	exit 1 ;
 fi
 
 MY_EXTRACTBIPS_EXECUT_CHECK="$(which extractBips)"
 if [[ -s "$MY_EXTRACTBIPS_EXECUT_CHECK"  ]]; then 
-	echo "INFO      | $(date) |          Check #2 passed, extractBips is installed..."
+	echo "INFO      | $(date) | Check #2 passed, extractBips is installed..."
 else
-	echo "WARNING!  | $(date) |          Check #1 FAILED, extractBips _not_ installed..."
-	echo "INFO      | $(date) |          Please install or reinstall ExaBayes, including extractBips and other utilities."
-	echo "INFO      | $(date) |          Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
-	echo "ERROR     | $(date) |          Quitting..."
+	echo "WARNING!  | $(date) | Check #1 FAILED, extractBips _not_ installed..."
+	echo "INFO      | $(date) | Please install or reinstall ExaBayes, including extractBips and other utilities."
+	echo "INFO      | $(date) | Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
+	echo "ERROR     | $(date) | Quitting..."
 	exit 1 ;
 fi
 
 MY_POSTPROC_EXECUT_CHECK="$(which postProcParam)"
 if [[ -s "$MY_POSTPROC_EXECUT_CHECK"  ]]; then 
-	echo "INFO      | $(date) |          Check #3 passed, postProcParam is installed..."
+	echo "INFO      | $(date) | Check #3 passed, postProcParam is installed..."
 else
-	echo "WARNING!  | $(date) |          Check #1 FAILED, postProcParam _not_ installed..."
-	echo "INFO      | $(date) |          Please install or reinstall ExaBayes, including postProcParam and other utilities."
-	echo "INFO      | $(date) |          Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
-	echo "ERROR     | $(date) |          Quitting..."
+	echo "WARNING!  | $(date) | Check #1 FAILED, postProcParam _not_ installed..."
+	echo "INFO      | $(date) | Please install or reinstall ExaBayes, including postProcParam and other utilities."
+	echo "INFO      | $(date) | Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
+	echo "ERROR     | $(date) | Quitting..."
 	exit 1 ;
 fi
 
 MY_MRBAYES_EXECUT_CHECK1="$(which mb)"
 MY_MRBAYES_EXECUT_CHECK2="$(which mrbayes)"
 if [[ -s "$MY_MRBAYES_EXECUT_CHECK1"  ]] || [[ -s "$MY_MRBAYES_EXECUT_CHECK2"  ]] ; then 
-	echo "INFO      | $(date) |          Check #4 passed, MrBayes is installed..."
+	echo "INFO      | $(date) | Check #4 passed, MrBayes is installed..."
 else
-	echo "WARNING!  | $(date) |          Check #1 FAILED, MrBayes apparently _not_ installed..."
-	echo "INFO      | $(date) |          Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
-	echo "INFO      | $(date) |          Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
-	echo "INFO      | $(date) |          if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
-	echo "ERROR     | $(date) |          Quitting..."
+	echo "WARNING!  | $(date) | Check #1 FAILED, MrBayes apparently _not_ installed..."
+	echo "INFO      | $(date) | Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
+	echo "INFO      | $(date) | Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
+	echo "INFO      | $(date) | if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
+	echo "ERROR     | $(date) | Quitting..."
 	exit 1 ;
 fi
 
@@ -203,16 +201,16 @@ fi
 echo "INFO      | $(date) | Step #3: Read ExaBayes output file names in current directory and call utility programs to conduct ExaBayes post-processing. "
 
 
-echo "INFO      | $(date) |          A. Read ExaBayes results files into environmental variables... "
+echo "INFO      | $(date) | A. Read ExaBayes results files into environmental variables... "
 	MY_EXABAYES_TREEFILES=./ExaBayes_topologies.*		## Assign "topologies" files in current directory to variable.
 	MY_EXABAYES_PARAMFILES=./ExaBayes_parameters.*		## Assign "parameters" files in current directory to variable.
 
 
-echo "INFO      | $(date) |          B. Conduct ExaBayes run summary... "
+echo "INFO      | $(date) | B. Conduct ExaBayes run summary... "
 ###### RUN SUMMARY:
 
-echo "INFO      | $(date) |         TREE SUMMARY: "
-echo "INFO      | $(date) |         Getting ${MY_CREDIBLE_INT}% percentile credible set of trees from ExaBayes analysis... "
+echo "INFO      | $(date) |     TREE SUMMARY: "
+echo "INFO      | $(date) |     Getting ${MY_CREDIBLE_INT}% percentile credible set of trees from ExaBayes analysis... "
 (
 	for i in $MY_EXABAYES_TREEFILES; do
 		echo "$i";
@@ -220,7 +218,7 @@ echo "INFO      | $(date) |         Getting ${MY_CREDIBLE_INT}% percentile credi
 	done
 )
 
-echo "INFO      | $(date) |          Getting bipartitions, plus branch lengths and ESS scores for all bipartitions, of ExaBayes trees... "
+echo "INFO      | $(date) | Getting bipartitions, plus branch lengths and ESS scores for all bipartitions, of ExaBayes trees... "
 ###### Get bipartitions, plus branch lengths & ESS scores for all bipartitions, of ExaBayes trees:
 (
 	for i in $MY_EXABAYES_TREEFILES; do 
@@ -229,10 +227,10 @@ echo "INFO      | $(date) |          Getting bipartitions, plus branch lengths a
 	done
 )
 
-echo "INFO      | $(date) |          C. Conduct parameters summary... "
+echo "INFO      | $(date) | C. Conduct parameters summary... "
 ###### PARAMETERS SUMMARY: 
 ###### Summarize parameters of each run using postProcParam utility:
-echo "INFO      | $(date) |          Summarizing parameters of each ExaBayes run in current working directory using postProcParam utility... "
+echo "INFO      | $(date) | Summarizing parameters of each ExaBayes run in current working directory using postProcParam utility... "
 (
 	for j in $MY_EXABAYES_PARAMFILES; do
 		echo "$j";
@@ -253,7 +251,7 @@ echo "INFO      | $(date) | Step #3: Reformat ExaBayes output files and conduct 
 ### accordingly (so that if -n 2 , then the loop goes through the first two lines, through
 ### .run2.t, and if -n3, then the loop goes through .run3.t, etc.)
 
-echo "INFO      | $(date) |          Renaming tree files for $MY_NUM_REPLICATE_RUNS replicate runs... "
+echo "INFO      | $(date) | Renaming tree files for $MY_NUM_REPLICATE_RUNS replicate runs... "
 
 if [[ "$MY_NUM_REPLICATE_RUNS" = "1"]]; then
 (
@@ -311,27 +309,27 @@ echo "INFO      | $(date) | Step #4: Prep files and then summarize trees, their 
 	## First check for NEXUS files, because everything from here down relies upon the availability
 	## of a NEXUS file presumably corresponding to an ExaBayes run in current working directory.
 
-	echo "INFO      | $(date) |          Checking availability of NEXUS files... "
+	echo "INFO      | $(date) | Checking availability of NEXUS files... "
 
 	MY_NEXUS_FILE_CHECK="$(echo ./*.nex | wc -l | perl -pe 's/\ //g')";
 
 if [[ "$MY_NEXUS" != "NULL" ]] && [[ "$MY_NEXUS_FILE_CHECK" -gt "0" ]]; then
 	MY_NEXUS_FILENAME="$(echo $MY_NEXUS | sed -n 's/.\///p')";
-	echo "INFO      | $(date) |          NEXUS check passed. Using NEXUS file ${MY_NEXUS_FILENAME}... "
+	echo "INFO      | $(date) | NEXUS check passed. Using NEXUS file ${MY_NEXUS_FILENAME}... "
 	MY_MRBAYES_FILENAME="$(ls | sed -n 's/\.0$//p' | grep -n "topologies" | sed -n 's/.://p')";
 elif [[ "$MY_NEXUS" = "NULL" ]] && [[ "$MY_NEXUS_FILE_CHECK" -gt "0" ]]; then
 	MY_NEXUS=./*.nex
 	MY_NEXUS_FILENAME="$(echo ./*.nex | head -n1 | sed -n 's/.\///p')";		## Takes first NEXUS file in working directory with .nex extension, using head -n1, and assumes it to correspond to the ExaBayes NEXUS input file, because best practices dictate that separate runs should be in independent run folders/subfolders.
-	echo "INFO      | $(date) |          NEXUS check passed, but found multiple NEXUS files. Using NEXUS file ${MY_NEXUS_FILENAME}... "
+	echo "INFO      | $(date) | NEXUS check passed, but found multiple NEXUS files. Using NEXUS file ${MY_NEXUS_FILENAME}... "
 	MY_MRBAYES_FILENAME="$(ls | sed -n 's/\.0$//p' | grep -n "topologies" | sed -n 's/.://p')";
 elif [[ "$MY_NEXUS" = "NULL" ]] && [[ "$MY_NEXUS_FILE_CHECK" = "0" ]]; then
-	echo "WARNING!  | $(date) |          NEXUS check FAILED. No NEXUS file in current working directory"
-	echo "WARNING!  | $(date) |          Cannot conduct MrBayes summaries. Quitting..."
+	echo "WARNING!  | $(date) | NEXUS check FAILED. No NEXUS file in current working directory"
+	echo "WARNING!  | $(date) | Cannot conduct MrBayes summaries. Quitting..."
 	exit 1 ;
 fi
 
 
-	echo "INFO      | $(date) |          Creating batch file to run in MrBayes... "
+	echo "INFO      | $(date) | Creating batch file to run in MrBayes... "
 
 ###### Create batch file for MrBayes:
 echo "set autoclose=yes nowarn=yes
@@ -340,18 +338,21 @@ sumt Filename=${MY_MRBAYES_FILENAME} relburnin=yes burninfrac= ${MY_REL_BURNIN_P
 quit" > ./batch.txt
 
 	
-	echo "INFO      | $(date) |          Running tree summaries (sumt function) in MrBayes... "
+	echo "INFO      | $(date) | Running tree summaries (sumt function) in MrBayes... "
 
 	mb <./batch.txt > Mrbayes_sumt_log.txt &
 
 	## The '&' calls a batch run of mrbayes on the batch file we created above. What a nice and convenient way to do things. :)
 
 echo "INFO      | $(date) | Step #5: Clean up workspace by deleting temporary files generated during run. "
-echo "INFO      | $(date) |          Removing temporary files... "
+echo "INFO      | $(date) | Removing temporary files... "
+
 ###### CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
 	if [[ -s batch.txt ]]; then rm batch.txt ; fi
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "----------------------------------------------------------------------------------------------------------"

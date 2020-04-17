@@ -9,7 +9,7 @@
   VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -145,18 +145,15 @@ echo "INFO      | $(date) | Starting FASTAsummary analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
 ###### Set working directory and filetypes as different variables:
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "INFO      | $(date) |          $PWD "	
+echo "INFO      | $(date) | Setting user-specified path to: "
+echo "INFO      | $(date) | $PWD "	
 if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
-	echo "INFO      | $(date) |          Input file: $INPUT_FILE "
+	echo "INFO      | $(date) | Input file: $INPUT_FILE "
 elif [[ "$INPUT_FASTA_FILE" = "NULL" ]]; then
-	echo "INFO      | $(date) |          Input file: Multiple FASTA alignments in current directory "
+	echo "INFO      | $(date) | Input file: Multiple FASTA alignments in current directory "
 fi
-echo "INFO      | $(date) |          Examining current directory, setting variables... "
-
-#echo "INFO      | $(date) |          Checking machine type... "
+echo "INFO      | $(date) | Examining current directory, setting variables... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -181,7 +178,7 @@ if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 	MY_NTAX="$(grep -h '^>' "$INPUT_FASTA_FILE" | wc -l | sed 's/\ //g')";
 	echo "$MY_NTAX" >> ./FASTA_nTax.list.txt ;
 #
-	echo "INFO      | $(date) |          Investigating character content of the alignment..."
+	echo "INFO      | $(date) | Investigating character content of the alignment..."
 	MY_TOT_CHAR_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 	MY_CHAR_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/\-//g' | sed 's/\?//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 	MY_GAP_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[A-Za-z\?]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
@@ -190,7 +187,7 @@ if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 	MY_T_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[A-SU-Za-su-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 	MY_G_COUNT="$(grep -v '^>' "$INPUT_FASTA_FILE" | perl -pe $'s/\n//g' | sed 's/[A-FH-Za-fh-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 #
-	echo "INFO      | $(date) |          Calculating character proportions (prop. character, prop. gap, prop. A, ...)..."
+	echo "INFO      | $(date) | Calculating character proportions (prop. character, prop. gap, prop. A, ...)..."
 	MY_PROP_CHAR="$(calc $MY_CHAR_COUNT / $MY_TOT_CHAR_COUNT)";
 	echo "$MY_PROP_CHAR" >> ./propChar.list.tmp ;
 	MY_PROP_GAP="$(calc $MY_GAP_COUNT / $MY_TOT_CHAR_COUNT)";
@@ -204,7 +201,7 @@ if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 	MY_PROP_G="$(calc $MY_G_COUNT / $MY_TOT_CHAR_COUNT)";
 	echo "$MY_PROP_G" >> ./propG.list.tmp ;
 #
-	echo "INFO      | $(date) |          Calculating character percentages (% character, % gap, % A, ...)..."
+	echo "INFO      | $(date) | Calculating character percentages (% character, % gap, % A, ...)..."
 	MY_PERCENT_CHAR="$(calc $MY_PROP_CHAR*100)";
 	echo "$MY_PERCENT_CHAR" >> ./percChar.list.tmp ;
 	MY_PERCENT_GAP="$(calc $MY_PROP_GAP*100)";
@@ -220,7 +217,7 @@ if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 #	
 
 
-	echo "INFO      | $(date) |          Calculating number of parsimony-informative sites (PIS) for single input FASTA using piranha's calcAlignmentPIS function..."
+	echo "INFO      | $(date) | Calculating number of parsimony-informative sites (PIS) for single input FASTA using piranha's calcAlignmentPIS function..."
 	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR THE
 	### INPUT FASTA (TESTING WITH SINGLE INPUT FASTA)
 
@@ -265,7 +262,7 @@ count=1
 		MY_NTAX="$(grep -h '^>' "$i" | wc -l | sed 's/\ //g')";
 		echo "$MY_NTAX" >> ./FASTA_nTax.list.txt ;
 #
-		echo "INFO      | $(date) |          Investigating character content of the alignment..."
+		echo "INFO      | $(date) | Investigating character content of the alignment..."
 		MY_TOT_CHAR_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 		MY_CHAR_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/\-//g' | sed 's/\?//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 		MY_GAP_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[A-Za-z\?]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
@@ -274,7 +271,7 @@ count=1
 		MY_T_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[A-SU-Za-su-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 		MY_G_COUNT="$(grep -v '^>' "$i" | perl -pe $'s/\n//g' | sed 's/[A-FH-Za-fh-z\?\-]//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
 #
-		echo "INFO      | $(date) |          Calculating character proportions (prop. character, prop. gap, prop. A, ...)..."
+		echo "INFO      | $(date) | Calculating character proportions (prop. character, prop. gap, prop. A, ...)..."
 		MY_PROP_CHAR="$(calc $MY_CHAR_COUNT / $MY_TOT_CHAR_COUNT)";
 		echo "$MY_PROP_CHAR" >> ./propChar.list.tmp ;
 		MY_PROP_GAP="$(calc $MY_GAP_COUNT / $MY_TOT_CHAR_COUNT)";
@@ -288,7 +285,7 @@ count=1
 		MY_PROP_G="$(calc $MY_G_COUNT / $MY_TOT_CHAR_COUNT)";
 		echo "$MY_PROP_G" >> ./propG.list.tmp ;
 #
-		echo "INFO      | $(date) |          Calculating character percentages (% character, % gap, % A, ...)..."
+		echo "INFO      | $(date) | Calculating character percentages (% character, % gap, % A, ...)..."
 		MY_PERCENT_CHAR="$(calc $MY_PROP_CHAR*100)";
 		echo "$MY_PERCENT_CHAR" >> ./percChar.list.tmp ;
 		MY_PERCENT_GAP="$(calc $MY_PROP_GAP*100)";
@@ -302,19 +299,19 @@ count=1
 		MY_PERCENT_G="$(calc $MY_PROP_G*100)";
 		echo "$MY_PERCENT_G" >> ./percG.list.tmp ;
 #	
-		echo "INFO      | $(date) |          Done summarizing FASTA file $((count++)): ${i} ";
+		echo "INFO      | $(date) | Done summarizing FASTA file $((count++)): ${i} ";
 		fi
 	done
 )
 #
 
 
-	echo "INFO      | $(date) |          Calculating number of parsimony-informative sites (PIS) for multiple FASTAs using piranha calcAlignmentPIS function..."
+	echo "INFO      | $(date) | Calculating number of parsimony-informative sites (PIS) for multiple FASTAs using piranha calcAlignmentPIS function..."
 	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR
 	### MULTIPLE FASTA FILES IN CURRENT WORKING DIRECTORY
 
 	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
-	echo "INFO      | $(date) |          piranha path: $MY_PIRANHA_PATH"
+	echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH"
 
 echo "#!/bin/sh
 
@@ -343,7 +340,8 @@ fi
 
 echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
 ###### Remove temporary or unnecessary files created above:
-	echo "INFO      | $(date) |          Removing temporary files... "
+	echo "INFO      | $(date) | Removing temporary files... "
+
 	if [[ -s ./piranha_calcAlignmentPIS.sh ]]; then rm ./piranha_calcAlignmentPIS.sh ; fi
 	if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi
 	if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi
@@ -355,8 +353,8 @@ echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary fi
 	if [[ -s ./input_file_order_filenames.txt ]]; then rm ./input_file_order_filenames.txt ; fi 
 	if [[ -s ./input_file_order.txt ]]; then rm ./input_file_order.txt ; fi
 #
-	if [[ ! -z "$(ls ./*.tmp)" ]]; then
-		rm ./*.tmp ;
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
 	fi
 #
 	if [[ -s ./pis_results_table.txt ]] && [[ "$INPUT_FASTA_FILE" = "NULL" ]]; then 

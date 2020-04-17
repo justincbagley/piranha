@@ -9,7 +9,7 @@
   VERSION="v1.3.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.5 April 2020    "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.5 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -144,14 +144,11 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
 ###### Set working directory and filetypes as different variables:
-echo "INFO      | $(date) |          Setting user-specified path to: "
-echo "INFO      | $(date) |          $PWD "	
-echo "INFO      | $(date) |          Input PHYLIP file: $INPUT_PHYLIP_FILE "
-echo "INFO      | $(date) |          Examining current directory, setting variables... "
-
-#echo "INFO      | $(date) |          Checking machine type... "
+echo "INFO      | $(date) | Setting user-specified path to: "
+echo "INFO      | $(date) | $PWD "	
+echo "INFO      | $(date) | Input PHYLIP file: $INPUT_PHYLIP_FILE "
+echo "INFO      | $(date) | Examining current directory, setting variables... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 ###
@@ -166,7 +163,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 
 echo "INFO      | $(date) | Step #2: Make NEXUS-formatted alignment file. "
 ###### Make NEXUS format file:
-	echo "INFO      | $(date) |          Making NEXUS file... "
+	echo "INFO      | $(date) | Making NEXUS file... "
 
 echo "#NEXUS
 
@@ -181,14 +178,14 @@ END;
 
 	MY_PHYLIP_BASENAME="$(echo $INPUT_PHYLIP_FILE | sed 's/\.phy//g')" ;
 
-echo "INFO      | $(date) |          If available, add partition information to NEXUS... "
+echo "INFO      | $(date) | If available, add partition information to NEXUS... "
 if [[ "$MY_PARTITIONS_FILE" = "NULL" ]]; then
-	echo "INFO      | $(date) |          No partitions file detected... "
+	echo "INFO      | $(date) | No partitions file detected... "
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME".nex ;
-	echo "INFO      | $(date) |          Final, simple NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
+	echo "INFO      | $(date) | Final, simple NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml" ]]; then
-	echo "INFO      | $(date) |          Read RAxML-style partitions file. Adding partition information to final NEXUS file... "
+	echo "INFO      | $(date) | Read RAxML-style partitions file. Adding partition information to final NEXUS file... "
 	echo "begin sets;" > ./begin.tmp
 	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp ;
 	echo "end;" > ./end.tmp
@@ -203,18 +200,18 @@ elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml"
 		fi
 #
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./begin.tmp ./NEXUS_charsets.tmp ./end.tmp > ./"$MY_PHYLIP_BASENAME".nex ;
-	echo "INFO      | $(date) |          Final, partitioned NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
+	echo "INFO      | $(date) | Final, partitioned NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "nexus" ]] || [[ "$MY_PARTFILE_FORMAT" = "nex" ]] || [[ "$MY_PARTFILE_FORMAT" = "NEX" ]]; then
-	echo "INFO      | $(date) |          Read NEXUS-style charset file. Adding partition information to final NEXUS file... "
+	echo "INFO      | $(date) | Read NEXUS-style charset file. Adding partition information to final NEXUS file... "
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex ;
-	echo "INFO      | $(date) |          Making final, partitioned NEXUS file... "
+	echo "INFO      | $(date) | Making final, partitioned NEXUS file... "
 #
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "SVDquartets" ]] || [[ "$MY_PARTFILE_FORMAT" = "SVDq" ]]; then
-	echo "INFO      | $(date) |          Read SVDquartets-style NEXUS charset file. Adding partition information to final NEXUS file... "
+	echo "INFO      | $(date) | Read SVDquartets-style NEXUS charset file. Adding partition information to final NEXUS file... "
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex ;
-	echo "INFO      | $(date) |          Making final, partitioned NEXUS file... "
+	echo "INFO      | $(date) | Making final, partitioned NEXUS file... "
 
 fi
 
@@ -240,7 +237,7 @@ echo "INFO      | $(date) | Step #2: Convert multiple PHYLIP files in working di
 		MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
 
 	###### Make NEXUS format file:
-		echo "INFO      | $(date) |          Converting $INPUT_PHYLIP_FILE to NEXUS format... "
+		echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE to NEXUS format... "
 
 	echo "#NEXUS
 
@@ -255,14 +252,14 @@ END;
 
 	MY_PHYLIP_BASENAME="$(echo $INPUT_PHYLIP_FILE | sed 's/\.phy//g')" ;
 
-	echo "INFO      | $(date) |          If available, add partition information to NEXUS... "
+	echo "INFO      | $(date) | If available, add partition information to NEXUS... "
 	if [[ "$MY_PARTITIONS_FILE" = "NULL" ]]; then
-		echo "INFO      | $(date) |          No partitions file detected... "
+		echo "INFO      | $(date) | No partitions file detected... "
 		cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME".nex ;
-		echo "INFO      | $(date) |          Final, simple NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
+		echo "INFO      | $(date) | Final, simple NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
 
 	elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml" ]]; then
-		echo "INFO      | $(date) |          Read RAxML-style partitions file. Adding partition information to final NEXUS file... "
+		echo "INFO      | $(date) | Read RAxML-style partitions file. Adding partition information to final NEXUS file... "
 		echo "begin sets;" > ./begin.tmp
 		sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp ;
 		echo "end;" > ./end.tmp
@@ -277,18 +274,18 @@ END;
 			fi
 #
 		cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./begin.tmp ./NEXUS_charsets.tmp ./end.tmp > ./"$MY_PHYLIP_BASENAME".nex ;
-		echo "INFO      | $(date) |          Final, partitioned NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
+		echo "INFO      | $(date) | Final, partitioned NEXUS written to ${MY_PHYLIP_BASENAME}.nex "
 
 	elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "nexus" ]] || [[ "$MY_PARTFILE_FORMAT" = "nex" ]] || [[ "$MY_PARTFILE_FORMAT" = "NEX" ]]; then
-		echo "INFO      | $(date) |          Read NEXUS-style charset file. Adding partition information to final NEXUS file... "
+		echo "INFO      | $(date) | Read NEXUS-style charset file. Adding partition information to final NEXUS file... "
 		cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex ;
-		echo "INFO      | $(date) |          Making final, partitioned NEXUS file... "
+		echo "INFO      | $(date) | Making final, partitioned NEXUS file... "
 #
 
 	elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "SVDquartets" ]] || [[ "$MY_PARTFILE_FORMAT" = "SVDq" ]]; then
-		echo "INFO      | $(date) |          Read SVDquartets-style NEXUS charset file. Adding partition information to final NEXUS file... "
+		echo "INFO      | $(date) | Read SVDquartets-style NEXUS charset file. Adding partition information to final NEXUS file... "
 		cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp ./"$MY_PARTITIONS_FILE" > ./"$MY_PHYLIP_BASENAME".nex ;
-		echo "INFO      | $(date) |          Making final, partitioned NEXUS file... "
+		echo "INFO      | $(date) | Making final, partitioned NEXUS file... "
 
 	fi
 
@@ -304,14 +301,14 @@ fi
 
 echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
 ###### Remove temporary or unnecessary files created above:
-	echo "INFO      | $(date) |          Removing temporary files... "
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	echo "INFO      | $(date) | Removing temporary files... "
+
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-#echo "INFO      | $(date) | Done converting PHYLIP-formatted DNA sequence alignment to NEXUS format using PHYLIP2NEXUS.sh." 
-#echo "Bye.
-#"
-
+echo "INFO      | $(date) | Done. " 
 echo "----------------------------------------------------------------------------------------------------------"
 MY_PHYLIP_BASENAME="$(echo $MY_PHYLIP_BASENAME | sed 's/\.\///g' )"
 if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]; then

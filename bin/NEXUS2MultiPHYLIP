@@ -9,7 +9,7 @@
   VERSION="v1.6.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -150,13 +150,11 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ############ STEP #1: SET UP FUNCTIONS AND ENVIRONMENTAL VARIABLES AND CHECK MACHINE TYPE.
 MY_WORKING_DIR="$(pwd)"
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo"INFO      | $(date) |          Setting working directory to: $MY_WORKING_DIR "
+	echo"INFO      | $(date) | Setting working directory to: $MY_WORKING_DIR "
 fi
 
 
@@ -190,10 +188,10 @@ characterizeNexus () {
 	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')";
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Input NEXUS filename: $MY_NEXUS "
-	echo "INFO      | $(date) |          Input NEXUS basename: $MY_NEXUS_BASENAME "
-	echo "INFO      | $(date) |          N tip taxa in NEXUS: $MY_NTAX "
-	echo "INFO      | $(date) |          N loci (charsets) in NEXUS: $MY_NLOCI "
+	echo "INFO      | $(date) | Input NEXUS filename: $MY_NEXUS "
+	echo "INFO      | $(date) | Input NEXUS basename: $MY_NEXUS_BASENAME "
+	echo "INFO      | $(date) | N tip taxa in NEXUS: $MY_NTAX "
+	echo "INFO      | $(date) | N loci (charsets) in NEXUS: $MY_NLOCI "
 fi
 
 ## Get start/end lines for header, data, and charsets, and then send 1) taxa and spaces/tabs
@@ -301,13 +299,13 @@ characterizeNexus
 alignmentSplitter () {
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Checking alignmentSplitter environment... "
+	echo "INFO      | $(date) | Checking alignmentSplitter environment... "
 fi
 ############ alignmentSplitter STEP #1: SETUP FUNCTIONS AND ENVIRONMENTAL VARIABLES.
 ## Done automatically when functions are loaded at top of script from piranha lib/.
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Preparing current working directory for alignmentSplitter... "
+	echo "INFO      | $(date) | Preparing current working directory for alignmentSplitter... "
 fi
 ############ alignmentSplitter STEP #2: CWD PREP.
 ## Make a copy of the original DNA sequence file, because the original will be modified
@@ -323,7 +321,7 @@ fi
 
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Splitting alignment into multiple PHYLIP files, one per locus in locus lengths file (from charsets). "
+	echo "INFO      | $(date) | Splitting alignment into multiple PHYLIP files, one per locus in locus lengths file (from charsets). "
 fi
 ############ alignmentSplitter STEP #3: SPLIT ALIGNMENT INTO MULTIPLE PHYLIP FILES, ONE PER LOCUS IN LOCUS LENGTHS FILE (FROM CHARSETS).
 ## Of course, the locusLengths file has to be made prior to running the script, and at present
@@ -382,7 +380,7 @@ count=1;
 			## code within the present loop: cut -c 134- "$MY_DNA_FILE".
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Done processing locus $((count++))... "
+		echo "INFO      | $(date) | Done processing locus $((count++))... "
 	fi
 
 	done < "$MY_LOCUS_LENGTHS_FILE"
@@ -500,12 +498,14 @@ fi
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #5: Clean up workspace. "
-	echo "INFO      | $(date) |          Removing temporary files created during run... "
+	echo "INFO      | $(date) | Removing temporary files created during run... "
 fi
 ############ STEP #5: CLEAN UP WORKING DIRECTORY OF VARIOUS LOCUS FILES GENERATED ABOVE.
 ## Remove temporary files generated during characterizeNexus function call above.
 
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "INFO      | $(date) | Done."

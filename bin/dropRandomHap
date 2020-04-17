@@ -9,7 +9,7 @@
   VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -152,9 +152,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -165,11 +163,11 @@ echo "INFO      | $(date) | Step #2: Set output file. "
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
-	echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
 	exec >> ./dropRandomHap_output.txt ;
 	exec 2>&1 ;
-	echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./dropRandomHap_output.txt ... "
+	echo "INFO      | $(date) | Default output file settings. Logging output to file at ./dropRandomHap_output.txt ... "
 fi
 
 
@@ -314,6 +312,7 @@ echo "INFO      | $(date) | Step #4: Run main dropRandomHap function to randomly
 	done
 )
 
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 

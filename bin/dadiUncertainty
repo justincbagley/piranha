@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -148,9 +148,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 MY_WORKING_DIR="$(pwd -P)";  	## Keep, this is used a few places below.
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 ################# SECTION I. PREP BOOTSTRAPPED SNP DATA FILES, AND FREQUENCY SPECTRA FOR UNCERTAINTY ANALYSIS:
@@ -452,7 +450,7 @@ echo "INFO      | $(date) | Step #4: Fix bootstrapped data files so that all gen
 
 
 echo "INFO      | $(date) | Step #5: Generate and use custom Python scripts to make site frequency spectra (.fs files) "
-echo "INFO      | $(date) |          for each bootstrapped data file. "
+echo "INFO      | $(date) | for each bootstrapped data file. "
 #######
 ##--Make frequency spectra for all bootstrapped data files:
 
@@ -575,10 +573,10 @@ import json
 ##--with/despite error(s)...
 	MY_NUM_BOOT_FS_FILES="$(ls ./bootstrap_fs/* | wc -l)"
 	if [[ "$MY_NUM_BOOT_FS_FILES" = "$MY_NUM_BOOT_DATASETS" ]]; then 
-		echo "INFO      | $(date) |          $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check PASSED! Continuing without errors... "
+		echo "INFO      | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check PASSED! Continuing without errors... "
 	elif [[ "$MY_NUM_BOOT_FS_FILES" != "$MY_NUM_BOOT_DATASETS" ]]; then
-		echo "WARNING!  | $(date) |          $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... "
-		echo "WARNING!  | $(date) |          $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... " >> errors.txt
+		echo "WARNING!  | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... "
+		echo "WARNING!  | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... " >> errors.txt
 	fi
 
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):
@@ -616,7 +614,7 @@ echo "INFO      | $(date) | Step #6: Conduct final ∂a∂i uncertainty analyses
 	##--a good idea [though not required] for this variable name to be some variation that starts 
 	##--with the string 'pts').
 
-	echo "INFO      | $(date) |          Prepping custom Python script for GIM-based uncertainty analysis in ∂a∂i... "
+	echo "INFO      | $(date) | Prepping custom Python script for GIM-based uncertainty analysis in ∂a∂i... "
 	##--Line at which the preamble of .py file starts is assumed to be 2nd line or 3rd line,
 	##--but start with 2nd by default:
 	MY_PY_PREAMBLE_START=2 ;
@@ -715,7 +713,7 @@ np.savetxt('uncerts_GIM.tmp', uncerts_GIM, fmt='%2.10f', delimiter=',')
 	cat ./py_shebang_header.tmp ./py_preamble.tmp ./popt*tmp ./all_boot_runGIM.tmp ./printResults.tmp > ./customGIM.py
 
 ##--RUN CUSTOM GIM SCRIPT:
-	echo "INFO      | $(date) |          Running uncertainty analysis using the GIM... "
+	echo "INFO      | $(date) | Running uncertainty analysis using the GIM... "
 	python ./customGIM.py
 
 ##--Fix output uncerts_GIM.tmp file so that it contains each parameter name followed by its 
@@ -744,7 +742,7 @@ fi
 	##--Rules for files are the same as for the GIM analysis, only the uncertainty estimation
 	##--and output files differ.
 
-	echo "INFO      | $(date) |          Prepping custom Python script for FIM-based uncertainty analysis in ∂a∂i... "
+	echo "INFO      | $(date) | Prepping custom Python script for FIM-based uncertainty analysis in ∂a∂i... "
 	##--Line at which the preamble of .py file starts is assumed to be 2nd line or 3rd line,
 	##--but start with 2nd by default:
 	MY_PY_PREAMBLE_START=2 ;
@@ -842,7 +840,7 @@ np.savetxt('uncerts_FIM.tmp', uncerts_FIM, fmt='%2.10f', delimiter=',')
 	cat ./py_shebang_header.tmp ./py_preamble.tmp ./popt*tmp ./all_boot_runFIM.tmp ./printResults.tmp > ./customFIM.py ;
 
 ##--RUN CUSTOM GIM SCRIPT:
-	echo "INFO      | $(date) |          Running uncertainty analysis using the FIM... "
+	echo "INFO      | $(date) | Running uncertainty analysis using the FIM... "
 	python ./customFIM.py ;
 
 ##--Fix output uncerts_GIM.tmp file so that it contains each parameter name followed by its 
@@ -863,9 +861,11 @@ fi
 
 echo "INFO      | $(date) | Step #7: Clean up workspace by removing temporary files generated during run. "
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):
-echo "INFO      | $(date) |          Removing temporary files... "
+echo "INFO      | $(date) | Removing temporary files... "
 
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 
 
 ##--Final cleanup:
@@ -876,6 +876,7 @@ echo "INFO      | $(date) |          Removing temporary files... "
 		rm ./"$MY_INPUT_VCF" ;
 	fi
 
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 

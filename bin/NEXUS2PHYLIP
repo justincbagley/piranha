@@ -9,7 +9,7 @@
   VERSION="v1.6.6"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -148,12 +148,11 @@ fi
 ############ STEP #1: SET UP VARIABLES AND USEFUL FUNCTIONS
 ###### Set working directory and filetypes as different variables:
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) |          Setting user-specified path to: "
-	echo "INFO      | $(date) |          $PWD "	
-	echo "INFO      | $(date) |          Input file: $MY_NEXUS "
-	echo "INFO      | $(date) |          Examining current directory, setting variables... "
+	echo "INFO      | $(date) | Setting user-specified path to: "
+	echo "INFO      | $(date) | $PWD "	
+	echo "INFO      | $(date) | Input file: $MY_NEXUS "
+	echo "INFO      | $(date) | Examining current directory, setting variables... "
 fi
-
 checkMachineType
 
 
@@ -167,14 +166,14 @@ fi
 ## This is the base name of the original nexus file, so you have it. This WILL work regardless
 ## of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
 	MY_NEXUS_BASENAME="$(echo "$MY_NEXUS" | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')" ;
-		#	echo "INFO      | $(date) |          Basename check:"
-		#	echo "INFO      | $(date) |          ${MY_NEXUS_BASENAME}"
+		#	echo "INFO      | $(date) | Basename check:"
+		#	echo "INFO      | $(date) | ${MY_NEXUS_BASENAME}"
 
 ## Check for character sets in the input NEXUS file.
 	MY_NEXUS_CHARSETS_CHECK="$(awk '/charset/ || /CHARSET/ { count++ } END { print count }' ./nexus.tmp )";
 	if [[ -z "$MY_NEXUS_CHARSETS_CHECK" ]]; then MY_NEXUS_CHARSETS_CHECK="0"; fi
-		#	echo "INFO      | $(date) |          Charsets check:"
-		#	echo "INFO      | $(date) |          ${MY_NEXUS_CHARSETS_CHECK}"
+		#	echo "INFO      | $(date) | Charsets check:"
+		#	echo "INFO      | $(date) | ${MY_NEXUS_CHARSETS_CHECK}"
 
 ##################
 ##################
@@ -394,12 +393,15 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 ###### Remove temporary or unnecessary files created above:
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Removing temporary files... "
+		echo "INFO      | $(date) | Removing temporary files... "
 	fi
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 if [[ -s "$MY_NEXUS_BASENAME".charsets.txt ]] && [[ -s "$MY_NEXUS_BASENAME" ]]; then
 	echo "output files: ./${MY_NEXUS_BASENAME}.phy"

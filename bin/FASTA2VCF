@@ -9,7 +9,7 @@
   VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -147,21 +147,19 @@ echo "INFO      | $(date) |-----------------------------------------------------
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting FASTA2VCF analysis... "
-echo "INFO      | $(date) |          Running with the following options: "
-echo "INFO      | $(date) |          - FASTA file, <inputFASTA> = ${MY_INPUT_FASTA} "
-echo "INFO      | $(date) |          - <partitionRanges> option = ${MY_PART_RANGES_FILE} "
-echo "INFO      | $(date) |          - Output file basename, <output> = ${MY_OUTPUT_FILENAME} (yields '${MY_OUTPUT_FILENAME}.vcf')"
-echo "INFO      | $(date) |          - Subsample SNPs switch, <subsampleSNPs> = ${MY_SUBSAMPLE_SNPS_SWITCH} "
-echo "INFO      | $(date) |          - Log file option, <logfile> = ${MY_LOGFILE_SWITCH} "
-echo "INFO      | $(date) |          - <outputPHYLIP> option = ${MY_OUTPUT_PHYLIP_SWITCH} "
+echo "INFO      | $(date) | Running with the following options: "
+echo "INFO      | $(date) | - FASTA file, <inputFASTA> = ${MY_INPUT_FASTA} "
+echo "INFO      | $(date) | - <partitionRanges> option = ${MY_PART_RANGES_FILE} "
+echo "INFO      | $(date) | - Output file basename, <output> = ${MY_OUTPUT_FILENAME} (yields '${MY_OUTPUT_FILENAME}.vcf')"
+echo "INFO      | $(date) | - Subsample SNPs switch, <subsampleSNPs> = ${MY_SUBSAMPLE_SNPS_SWITCH} "
+echo "INFO      | $(date) | - Log file option, <logfile> = ${MY_LOGFILE_SWITCH} "
+echo "INFO      | $(date) | - <outputPHYLIP> option = ${MY_OUTPUT_PHYLIP_SWITCH} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -171,7 +169,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
 	exec >> ./"$MY_LOGFILE_SWITCH"
 	exec 2>&1
-	echo "INFO      | $(date) |          Redirecting all screen output to a logfile named $MY_LOGFILE_SWITCH... "
+	echo "INFO      | $(date) | Redirecting all screen output to a logfile named $MY_LOGFILE_SWITCH... "
 fi
 
 
@@ -216,10 +214,10 @@ if [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "NULL" ]]; then
 echo "INFO      | $(date) | Step #3: Subsample to N SNPs per locus/partition (-s flag specified by user). "
 
 if [[ "$MY_SUBSAMPLE_SNPS_SWITCH" = "1" ]]; then
-	echo "INFO      | $(date) |          Found subsampleSNPs (-s) n set to 1. Continuing with this value... "
+	echo "INFO      | $(date) | Found subsampleSNPs (-s) n set to 1. Continuing with this value... "
 elif [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "NULL" ]] && [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "1" ]]; then
-	echo "WARNING!  | $(date) |          Incorrect specification: found subsampleSNPs (-s) n set >1; however, under current implementation, -s can only be used with "
-	echo "WARNING!  | $(date) |                                   n=1. See Usage (-h). Forcing continue with a value of 1... "
+	echo "WARNING!  | $(date) | Incorrect specification: found subsampleSNPs (-s) n set >1; however, under current implementation, -s can only be used with "
+	echo "WARNING!  | $(date) |                          n=1. See Usage (-h). Forcing continue with a value of 1... "
 fi
 
 	## MAKE A TEMPORARY COPY OF THE VCF FILE TO DO SUBSEQUENT MANIPULATIONS WITH SO THAT
@@ -245,15 +243,15 @@ count=1
 (
 	while read line; do
 	#line=line with space-separated range, e.g. 1 594 is the first range for the first partition
-		echo "INFO      | $(date) |          ###----    Partition $((count++)), SNP $MY_SUBSAMPLE_SNPS_SWITCH...    ----### "
+		echo "INFO      | $(date) | ###----    Partition $((count++)), SNP $MY_SUBSAMPLE_SNPS_SWITCH...    ----### "
 		# Note: Currently only supporting / assuming cases with $MY_SUBSAMPLE_SNPS_SWITCH=1
 
 		## Put line in env var, separate range start and end values:
 		MY_TEST_LINE="$(echo $line)";
 		MY_FIRST_VAL="$(echo $MY_TEST_LINE | sed 's/\ .*//g')";
 		MY_SECOND_VAL="$(echo $MY_TEST_LINE | sed 's/^[0-9]*\ //g')";
-		echo "INFO      | $(date) |          Partition start: $MY_FIRST_VAL "
-		echo "INFO      | $(date) |          Partition end: $MY_SECOND_VAL "
+		echo "INFO      | $(date) | Partition start: $MY_FIRST_VAL "
+		echo "INFO      | $(date) | Partition end: $MY_SECOND_VAL "
 		
 			## Loop through SNP positions in SNPpositions.tmp. For each position, if it matches
 			## the range then it is a match and can be echoed to a tmp match file:
@@ -288,8 +286,8 @@ count=1
 			rm ./matching_positions.tmp ./matching_lines.tmp
 		fi
 		
-		echo "INFO      | $(date) |          Extracting: "
-		echo "INFO      | $(date) |          SNP $MY_FIRST_MATCH_LINE (VCF row), alignment position (nt) $MY_FIRST_MATCH_POSITION "
+		echo "INFO      | $(date) | Extracting: "
+		echo "INFO      | $(date) | SNP $MY_FIRST_MATCH_LINE (VCF row), alignment position (nt) $MY_FIRST_MATCH_POSITION "
 		
 	done < "$MY_PART_RANGES_FILE"
 )
@@ -299,14 +297,14 @@ count=1
 	grep '\#' "$MY_INPUT_VCF_FILE" > ./header.tmp
 
 	if [[ "$MY_OUTPUT_FILENAME" = "NULL" ]] && [[ -s ./vcf.body.tmp ]]; then
-		echo "INFO      | $(date) |          Saving subsampled SNPs to file ${MY_FASTA_BASENAME}.subsampled.vcf "
+		echo "INFO      | $(date) | Saving subsampled SNPs to file ${MY_FASTA_BASENAME}.subsampled.vcf "
 		cat ./header.tmp ./vcf.body.tmp > "$MY_FASTA_BASENAME".subsampled.vcf
 	elif [[ "$MY_OUTPUT_FILENAME" != "NULL" ]] && [[ -s ./vcf.body.tmp ]]; then
-		echo "INFO      | $(date) |          Saving subsampled SNPs to file ${MY_OUTPUT_FILENAME}.subsampled.vcf "
+		echo "INFO      | $(date) | Saving subsampled SNPs to file ${MY_OUTPUT_FILENAME}.subsampled.vcf "
 		cat ./header.tmp ./vcf.body.tmp > "$MY_OUTPUT_FILENAME".subsampled.vcf 
 	elif [[ "$MY_OUTPUT_FILENAME" = "NULL" ]] || [[ "$MY_OUTPUT_FILENAME" != "NULL" ]] && [[ ! -s ./vcf.body.tmp ]]; then
-		echo "WARNING!  | $(date) |          Failed to save subsampled SNPs to file. This is probably because your FASTA file has one locus, or too few "
-		echo "WARNING!  | $(date) |             loci/variable sites. Please try with another FASTA file. "
+		echo "WARNING!  | $(date) | Failed to save subsampled SNPs to file. This is probably because your FASTA file has one locus, or too few "
+		echo "WARNING!  | $(date) |    loci/variable sites. Please try with another FASTA file. "
 	fi
 
 fi
@@ -315,7 +313,10 @@ fi
 ############ IV. CLEAN UP THE WORKSPACE.
 echo "INFO      | $(date) | Step #4: Clean up working directory by removing temporary files. "
 ## Remove temporary files generated above.
-	if [[ ! $(ls -z ./*.tmp) ]]; then rm ./*.tmp ; fi
+
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
 echo "INFO      | $(date) | Done. "

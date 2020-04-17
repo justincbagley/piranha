@@ -9,7 +9,7 @@
   VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -147,9 +147,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and r
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -258,24 +256,24 @@ echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files
 ## BEAST2 runs are present in current working directory (=NOT ALLOWED!), then the BEAST1 
 ## results will simply be overwritten. 
 if [[ "$MY_BEAST1_VER_CHECK" -gt "0" ]] || [[ "$MY_BEAST1_VER_CHECK2" -gt "0" ]]; then
-	echo "INFO      | $(date) |          BEAST v1+ output files detected; conducting post-processing accordingly... "
-	echo "INFO      | $(date) |          Extracting MLE results from the following output files: "
+	echo "INFO      | $(date) | BEAST v1+ output files detected; conducting post-processing accordingly... "
+	echo "INFO      | $(date) | Extracting MLE results from the following output files: "
 	extractB1Results
 fi
 if [[ "$MY_BEAST2_VER_CHECK" -gt "0" ]] || [[ "$MY_BEAST2_VER_CHECK2" -gt "0" ]]; then
-	echo "INFO      | $(date) |          BEAST v2+ output files detected; conducting post-processing accordingly... "
-	echo "INFO      | $(date) |          Extracting MLE results from the following output files: "
+	echo "INFO      | $(date) | BEAST v2+ output files detected; conducting post-processing accordingly... "
+	echo "INFO      | $(date) | Extracting MLE results from the following output files: "
 	extractB2Results
 fi
 
 
 
 echo "INFO      | $(date) | Step #4: Arrange MLE results in tab-delimited file with header. "
-	echo "INFO      | $(date) |          Placing results into 'MLE.output.txt' in current working directory. "
+	echo "INFO      | $(date) | Placing results into 'MLE.output.txt' in current working directory. "
 	echo "File	PS_MLE	SS_MLE" > header.txt ;	## Make header row. Change these codes as needed.
 	cat header.txt data.tmp | sed 's/\_filename.tmp//g; s/\ /	/g' > MLE.output.txt ;
 
-	echo "INFO      | $(date) |          Cleaning up... "
+	echo "INFO      | $(date) | Cleaning up... "
 	if [[ -s ./header.txt ]]; then rm header.txt ; fi
 	if [[ -s ./data.tmp ]]; then rm data.tmp ; fi
 
@@ -287,11 +285,11 @@ echo "INFO      | $(date) | Step #5: Load MLE results into R and compute Bayes f
 ## different (users') machines by calling from ${2LOGEB10_RSCRIPT_LOCATION} defined at the 
 ## top of this script (line 56).
 
-	echo "INFO      | $(date) |          Calculating Bayes factors in R using '2logeB10.R' script... "
+	echo "INFO      | $(date) | Calculating Bayes factors in R using '2logeB10.R' script... "
 	R CMD BATCH "${2LOGEB10_RSCRIPT_LOCATION}"
 
 if [[ -s ./2logeB10.Rout  ]] && [[ "$(wc -c 2logeB10.Rout | perl -pe 's/\ +([0-9]{4}).*$/$1/g')" -gt "3960" ]]; then
-	echo "INFO      | $(date) |          R calculations complete. "
+	echo "INFO      | $(date) | R calculations complete. "
 fi
 
 

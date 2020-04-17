@@ -9,7 +9,7 @@
   VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.                     #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -145,15 +145,13 @@ echo "INFO      | $(date) | Step #1: Set up workspace, read configuration inform
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
-echo "INFO      | $(date) |          Setting up variables, including those specified in the cfg file..."
+echo "INFO      | $(date) | Setting up variables, including those specified in the cfg file..."
 	MY_INPUT_PY_FILES=./*.py;
 	MY_NUM_PY_FILES="$(ls . | grep "\.py$" | wc -l)";
-echo "INFO      | $(date) |          Number of .py ∂a∂i input files read: $MY_NUM_PY_FILES"	## Check number of input files read into program.
+echo "INFO      | $(date) | Number of .py ∂a∂i input files read: $MY_NUM_PY_FILES"	## Check number of input files read into program.
 	MY_SSH_ACCOUNT="$(grep -n "ssh_account" ./dadi_runner.cfg | \
 	awk -F"=" '{print $NF}')";
 	MY_SC_DESTINATION="$(grep -n "destination_path" ./dadi_runner.cfg | \
@@ -167,10 +165,10 @@ echo "INFO      | $(date) |          Number of .py ∂a∂i input files read: $M
 
 
 echo "INFO      | $(date) | Step #2: Make n copies per input .py file for a total of $MY_NUM_INDEP_RUNS runs of each model (= "
-echo "INFO      | $(date) |          .py file) using different random seeds. "
-echo "INFO      | $(date) |          Looping through original .py's and making n copies per file, renaming \
+echo "INFO      | $(date) | .py file) using different random seeds. "
+echo "INFO      | $(date) | Looping through original .py's and making n copies per file, renaming \
 each copy with an extension of '_#.py'"
-echo "INFO      | $(date) |          where # ranges from 2 - $MY_NUM_INDEP_RUNS. *** IMPORTANT ***: The starting .py files MUST \
+echo "INFO      | $(date) | where # ranges from 2 - $MY_NUM_INDEP_RUNS. *** IMPORTANT ***: The starting .py files MUST \
 end in 'run.py'."
 	(
 		for (( i=2; i<="$MY_NUM_INDEP_RUNS"; i++ )); do
@@ -189,7 +187,7 @@ end in 'run.py'."
 	)
 
 	rm ./*run.py ;		## Remove the original "run.py" input files so that only .py files
-	            		## annotated with their run numbers 1 - $MY_NUM_INDEP_RUNS remain.
+						## annotated with their run numbers 1 - $MY_NUM_INDEP_RUNS remain.
 
 
 echo "INFO      | $(date) | Step #3: Make directories for runs and generate shell scripts unique to each input file for directing \
@@ -272,10 +270,10 @@ exit 0" > dadi_pbs.sh
 fi
 
 
-echo "INFO      | $(date) |          Setup and run check on the number of run folders created by the program..."
+echo "INFO      | $(date) | Setup and run check on the number of run folders created by the program..."
 	MY_DIRCOUNT="$(find . -type d | wc -l)";
 	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)";
-	echo "INFO      | $(date) |          Number of run folders created: $MY_NUM_RUN_FOLDERS"
+	echo "INFO      | $(date) | Number of run folders created: $MY_NUM_RUN_FOLDERS"
 
 
 echo "INFO      | $(date) | Step #4: Create batch submission file, move all run folders and submission files to supercomputer. "
@@ -289,7 +287,7 @@ echo "INFO      | $(date) | Step #4: Create batch submission file, move all run 
 #	* https://www.msi.umn.edu/support/faq/how-do-i-setup-ssh-keys
 #	* https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/ 
 #	* https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
-echo "INFO      | $(date) |          Copying run folders to working dir on supercomputer..."
+echo "INFO      | $(date) | Copying run folders to working dir on supercomputer..."
 
 echo "#!/bin/bash
 
@@ -318,16 +316,16 @@ cat batch_qsub_top.txt cd_and_qsub_commands.txt batch_qsub_bottom.txt > dadirunn
 
 ##--More flow control. Check to make sure batch_qsub.sh file was successfully created.
 if [ -f ./dadirunner_batch_qsub.sh ]; then
-    echo "INFO      | $(date) |          Batch queue submission file ('dadirunner_batch_qsub.sh') successfully created. "
+    echo "INFO      | $(date) | Batch queue submission file ('dadirunner_batch_qsub.sh') successfully created. "
 else
-    echo "WARNING!  | $(date) |          Something went wrong. Batch queue submission file ('dadirunner_batch_qsub.sh') not created. Exiting... "
+    echo "WARNING!  | $(date) | Something went wrong. Batch queue submission file ('dadirunner_batch_qsub.sh') not created. Exiting... "
     exit
 fi
 
-echo "INFO      | $(date) |          Also copying configuration file to supercomputer..."
+echo "INFO      | $(date) | Also copying configuration file to supercomputer..."
 scp ./dadi_runner.cfg $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;
 
-echo "INFO      | $(date) |          Also copying batch_qsub_file to supercomputer..."
+echo "INFO      | $(date) | Also copying batch_qsub_file to supercomputer..."
 scp ./dadirunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;
 
 
@@ -348,21 +346,19 @@ chmod u+x ./dadirunner_batch_qsub.sh
 #
 exit
 HERE
-echo "INFO      | $(date) |          Finished copying run folders to supercomputer and submitting ∂a∂i jobs to queue!!"
+echo "INFO      | $(date) | Finished copying run folders to supercomputer and submitting ∂a∂i jobs to queue!!"
 
 
 echo "INFO      | $(date) | Step #6: Clean up workspace by removing unnecessary files generated during run. "
-echo "INFO      | $(date) |          Cleaning up: removing temporary files from local machine..."
+echo "INFO      | $(date) | Cleaning up: removing temporary files from local machine..."
+
 	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".py; done;
 	if [[ -s ./batch_qsub_top.txt ]]; then rm ./batch_qsub_top.txt ; fi
 	if [[ -s ./cd_and_qsub_commands.txt ]]; then rm ./cd_and_qsub_commands.txt ; fi
 	if [[ -s ./batch_qsub_bottom.txt ]]; then rm ./batch_qsub_bottom.txt ; fi
 	if [[ -s ./dadirunner_batch_qsub.sh ]]; then rm ./dadirunner_batch_qsub.sh ; fi
 
-#echo "INFO      | $(date) | Done organizing and copying SNP data and model files to supercomputer and submitting ∂a∂i "
-#echo "INFO      | $(date) | jobs to the queue, using the dadiRunner pipeline. "
-#echo "INFO      | $(date) | Bye.
-#"
+echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"
 echo ""
 
