@@ -12,7 +12,7 @@ All code within the PIrANHA repository, including MAGNET v1.1.1 pipeline code, i
 
 If you use scripts from this repository as part of your published research, then I require you to cite the PIrANHA repository and/or MAGNET package as follows (also see DOI information below):
 
-  Bagley, J.C. 2020. PIrANHA v0.4-alpha. GitHub repository, Available at: http://github.com/justincbagley/piranha/.
+  Bagley, J.C. 2020. PIrANHA v0.4-alpha2. GitHub repository, Available at: http://github.com/justincbagley/piranha/.
   
   Bagley, J.C. 2020. MAGNET v1.1.1. GitHub package, Available at: http://github.com/justincbagley/MAGNET. 
 
@@ -193,7 +193,7 @@ Usage: MAGNET [OPTION]...
     piranha -f MAGNET -h                                  Show this help text and exit
 
  CITATION
- Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  REFERENCES
@@ -284,5 +284,5 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 - Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
 
 
-April 13, 2020
+April 17, 2020
 Justin C. Bagley, St. Louis, MO, USA
