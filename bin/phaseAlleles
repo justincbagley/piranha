@@ -355,8 +355,6 @@ MY_LIST=./sample_runOrder.list.txt
 	
 				########### Generate the vcf file
 				echo "INFO      | $(date) | Generating phased VCF files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
-				#samtools mpileup -uv -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_0_sorted.bam > "$MY_BAM_BASENAME"_allele_0.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
-				#samtools mpileup -uv -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_1_sorted.bam > "$MY_BAM_BASENAME"_allele_1.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
 				bcftools mpileup -Ov -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_0_sorted.bam -o "$MY_BAM_BASENAME"_allele_0.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
 				bcftools mpileup -Ov -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_1_sorted.bam -o "$MY_BAM_BASENAME"_allele_1.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
 				
