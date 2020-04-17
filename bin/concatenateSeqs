@@ -9,7 +9,7 @@
   VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 21:23:30 CDT 2019.                       #
-# Last update: April 13, 2020                                                            #
+# Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -143,19 +143,17 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) | Starting concatenateSeqs analysis... "
-echo "INFO      | $(date) |          Running with the following options: "
-echo "INFO      | $(date) |          - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
-echo "INFO      | $(date) |          - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
-echo "INFO      | $(date) |          - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+echo "INFO      | $(date) | Running with the following options: "
+echo "INFO      | $(date) | - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+echo "INFO      | $(date) | - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "
+echo "INFO      | $(date) | - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
 #fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -170,14 +168,14 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	exec 2>&1 ;
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
+		echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 	fi
 elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
 	exec >> ./concatenateSeqs_output.txt ;
 	exec 2>&1 ;
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) |          Default output file settings. Logging output to file at ./concatenateSeqs_output.txt ... "
+		echo "INFO      | $(date) | Default output file settings. Logging output to file at ./concatenateSeqs_output.txt ... "
 	fi
 fi
 
@@ -266,13 +264,16 @@ count=1
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
-	echo "INFO      | $(date) |          Deleting temporary files... "
+	echo "INFO      | $(date) | Deleting temporary files... "
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	if [[ ! -z $(ls ./*.tmp) ]]; then rm ./*.tmp ; fi
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
+echo "INFO      | $(date) | Done." 
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s): ./concatenated_seqs.phy "
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
