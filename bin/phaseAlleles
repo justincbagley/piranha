@@ -1,0 +1,728 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: phaseAlleles.sh                                                                  #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Wed, Apr 15 17:10:14 CDT 2020.                       #
+# Last update: April 16, 2020                                                            #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# Script for phasing alleles, while optionally transferring (masking) indel gaps from    #
+# the reference sequence to the output phased consensus sequences                        #
+#                                                                                        #
+##########################################################################################
+
+# Modified from code for phasing targeted sequence capture data from plant species, originally 
+# written and posted to Biostars.org by Vincent Manzanilla (https://www.biostars.org/p/262439/).
+# Uses several programs, including samtools, grep, bcftools, and bedtools; does phasing 
+# and indel masking; and saves stderr and stdout from all calls to log file 'phasing_log.txt'.
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi
+  if [[ -s ./args.txt ]]; then rm ./args.txt ; fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+phaseAlleles () {
+
+######################################## START ###########################################
+##########################################################################################
+
+# echo "
+# ##########################################################################################
+# #                            phaseAlleles v1.0.0, April 2020                             #
+# ##########################################################################################
+# "
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | phaseAlleles, v1.0.0 April 2020                                   "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting phaseAlleles analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
+################################# SETUP
+
+	###### A. START DEBUG MODE IF SET:
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	###### B. HANDLE WORKING DIRECTORY, INPUT DIRECTORY, OUTPUT DIRECTORY, AND REFERENCE ABSOLUTE PATH:
+	## Starting directory:
+	MY_STARTING_DIR="$(printf '%q\n' "$(pwd)")";
+	
+	## cwd & input directory:
+	if [[ -s "$MY_INPUT_DIR" ]] && [[ "$MY_INPUT_DIR" != "NULL" ]]; then 
+		cd "$MY_INPUT_DIR" ;
+		echo "INFO      | $(date) | User-specified input path is: "
+		echo "INFO      | $(date) | $PWD"
+		MY_INPUT_DIR="$(printf '%q\n' "$(pwd)")";  # get absolute path to input dir
+		MY_INPUT_DIR="$(echo $(realpath "$MY_INPUT_DIR")/$f)";
+	elif [[ "$MY_INPUT_DIR" = "NULL" ]] || [[ "$MY_INPUT_DIR" = "." ]] || [[ "$MY_INPUT_DIR" = "./" ]] || [[ "$MY_INPUT_DIR" = "$PWD" ]] ; then
+		MY_INPUT_DIR="$(printf '%q\n' "$(pwd)")";  # set absolute path to default input dir (when none is specified)
+		MY_INPUT_DIR="$(echo $(realpath "$MY_INPUT_DIR")/$f)";
+		echo "INFO      | $(date) | Starting input directory (using current dir): "
+		echo "INFO      | $(date) | $PWD"	
+	fi
+
+	## Output directory:
+	if [[ -s "$MY_OUTPUT_DIR" ]] && [[ "$MY_OUTPUT_DIR" != "NULL" ]]; then 
+		MY_OUTPUT_DIR="$(echo $(realpath "$MY_OUTPUT_DIR")/$f)";
+		echo "INFO      | $(date) | User-specified output path is: $MY_OUTPUT_DIR"
+	elif [[ ! -s "$MY_OUTPUT_DIR" ]] && [[ "$MY_OUTPUT_DIR" != "NULL" ]] && [[ "$MY_OUTPUT_DIR" != "." ]] && [[ "$MY_OUTPUT_DIR" != "./" ]] && [[ "$MY_OUTPUT_DIR" != "$PWD" ]]; then 
+		mkdir "$MY_OUTPUT_DIR" ;
+		MY_OUTPUT_DIR="$(echo $(realpath "$MY_OUTPUT_DIR")/$f)";
+		echo "INFO      | $(date) | Output directory (<output> doesn't exist, making it): "
+		echo "INFO      | $(date) | $MY_OUTPUT_DIR"		
+	elif [[ "$MY_OUTPUT_DIR" = "NULL" ]] || [[ "$MY_OUTPUT_DIR" = "." ]] || [[ "$MY_OUTPUT_DIR" = "./" ]] || [[ "$MY_OUTPUT_DIR" = "$PWD" ]] ; then
+		mkdir ./allele_sequences/ ;
+		MY_OUTPUT_DIR="$(realpath ./allele_sequences/)";
+		MY_OUTPUT_DIR="$(echo $(realpath "$MY_OUTPUT_DIR")/$f)";
+		echo "INFO      | $(date) | Using default output directory (current dir): "
+		echo "INFO      | $(date) | $MY_OUTPUT_DIR"	
+	fi
+
+	## Get absolute path to reference:
+	MY_REFERENCE_FASTA="$(realpath "$MY_REFERENCE_FASTA")";
+	echo "INFO      | $(date) | Reference FASTA: "
+	echo "INFO      | $(date) | $MY_REFERENCE_FASTA"
+
+	## Echo other settings:
+	echo "INFO      | $(date) | Base quality setting: $MY_MIN_BASE_QUAL (def: 20) "
+	echo "INFO      | $(date) | Mask indels setting:  $MY_MASK_INDELS_SWITCH (0, off; 1, on) "
+	echo "INFO      | $(date) | Log file:             $MY_LOGFILE_SWITCH (def: phasing_log.txt) "
+	echo "INFO      | $(date) | Verbose mode:         $MY_VERBOSE_OUT_SWITCH (0, off; 1, on) "
+	echo "INFO      | $(date) | Debug mode:           $MY_DEBUG_MODE_SWITCH (0, off; 1, on) "
+
+	###### C. CALC FUNCTION:
+	calc () { 
+		bc -l <<< "$@"  
+}
+
+	####### D. CHECK MACHINE TYPE:
+	checkMachineType
+
+
+echo "INFO      | $(date) | Step #2: Create list of BAM (=sample) folders in input dir... "
+################################# PREP WORK:
+## NOTE:  Starting dir: $MY_INPUT_DIR  (think: SECAPR remapped_reads_alldata/ subfolder)
+
+	####### A. MAKE SUBFOLDER LIST:
+	## Make BAM (=sample) folder list file and clean the file:
+(
+	for i in ./*/; do 
+		if [[ "$i" != "./backup/" ]] && [[ "$i" != "./reference_seqs/" ]] && [[ "$i" != "$(dirname "$MY_REFERENCE_FASTA")" ]] && [[ "$i" != "./allele_sequences/" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR")" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR" | sed 's/.*\///g; s/^/\.\//g; s/$/\//g')" ]]; then 
+			echo "$i" | sed 's/\.\///g; s/\///g' >> ./sample_runOrder.list.txt ; 
+		fi
+	done
+)
+
+
+echo "INFO      | $(date) | Step #3: Run main program, phase alleles and create phased consensus FASTAs... "
+################################# MAIN SCRIPT:
+
+count=1
+MY_LIST=./sample_runOrder.list.txt
+(
+	for i in $(cat "$MY_LIST"); do
+		
+		cd "$i";
+			echo "INFO      | $(date) | #################### Current directory - No. $((count++)) - $i/ "
+			
+			########### Check for BAM file:
+			if [[ "$(ls -1 ./*.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+				echo "INFO      | $(date) | BAM file check PASSED... "
+			else
+				echo "WARNING!  | $(date) | BAM file check FAILED! No BAM file detected in current subfolder!"
+				echo "INFO      | $(date) | ($PWD)"
+				echo "INFO      | $(date) | The expected directory structure is one BAM subfolder per sample. Please fix your file structure so there is "
+				echo "INFO      | $(date) |  a (remapped) .bam file in each BAM subfolder, and then try re-running phaseAlleles."
+				echo "ERROR     | $(date) | Quitting... "
+				exit 1 ;
+			fi
+#
+			########### Get BAM basename:
+			MY_BAM_FILE="$(ls ./*.bam | sed 's/\.\///g; s/\ //g')";
+			MY_BAM_BASENAME="$(basename "$MY_BAM_FILE" '.bam')";
+#
+			## Make phased files output dir, which will be a sample-specific subfolder _within_
+			## the default/user-spec $MY_OUTPUT_DIR, where resulting phased files are saved.
+			if [[ ! -d "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/ ]]; then 
+				mkdir "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/ ; 
+			fi
+			if [[ ! -d "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/intermediate_files/ ]]; then 
+				mkdir "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/intermediate_files/ ; 
+			fi
+#
+			########### Make phasing log file (overwrites existing file, if present):
+			echo "" > "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+#			
+			if [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
+			######################
+			########### ~~~ RELATIVELY QUIET RUN ~~~
+			###################### 
+
+				########### Echo BAM file name for user:
+				echo "INFO      | $(date) | Current BAM file: ${MY_BAM_FILE} " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				########### Phase alleles
+				echo "INFO      | $(date) | Phasing alleles from remapped BAM file.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				samtools phase -A -F -Q "$MY_MIN_BASE_QUAL" -b "$MY_BAM_BASENAME"_allele "$MY_BAM_FILE" >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ;
+				
+				# The above creates the following 3 BAM files (plus the phasing_log.txt file):
+				# - "$MY_BAM_BASENAME"_allele.0.bam
+				# - "$MY_BAM_BASENAME"_allele.1.bam
+				# - "$MY_BAM_BASENAME"_allele.chimera.bam
+				
+				########### Sort phased bam files
+				echo "INFO      | $(date) | Sorting phased BAM files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				samtools sort -@ 32 "$MY_BAM_BASENAME"_allele.0.bam -o "$MY_BAM_BASENAME"_allele_0_sorted.bam >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ;
+				samtools sort -@ 32 "$MY_BAM_BASENAME"_allele.1.bam -o "$MY_BAM_BASENAME"_allele_1_sorted.bam >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ;
+				
+				## NOT WORKING!
+				## exec idea for hiding `samtools mpileup` -u and -v errors, as well as 
+				## `bedtools maskfasta` ploidy errors, none of which actually affect the results:
+				## exec >> ./"$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				## exec 2>&1 ;
+	
+				########### Generate the vcf file
+				echo "INFO      | $(date) | Generating phased VCF files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				#samtools mpileup -uv -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_0_sorted.bam > "$MY_BAM_BASENAME"_allele_0.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				#samtools mpileup -uv -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_1_sorted.bam > "$MY_BAM_BASENAME"_allele_1.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools mpileup -Ov -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_0_sorted.bam -o "$MY_BAM_BASENAME"_allele_0.vcf >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ; # | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools mpileup -Ov -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_1_sorted.bam -o "$MY_BAM_BASENAME"_allele_1.vcf >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ; # | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				########### Generate the bed files
+				echo "INFO      | $(date) | Generating bed positions files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				grep DP=0 "$MY_BAM_BASENAME"_allele_0.vcf | awk '{OFS="\t"; if ($0 !~ /\#/); print $1, $2-1, $2}' > "$MY_BAM_BASENAME"_allele_0.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				grep DP=0 "$MY_BAM_BASENAME"_allele_1.vcf | awk '{OFS="\t"; if ($0 !~ /\#/); print $1, $2-1, $2}' > "$MY_BAM_BASENAME"_allele_1.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				
+				########### Generate the FASTA files
+				echo "INFO      | $(date) | Generating phased FASTA files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools call -c "$MY_BAM_BASENAME"_allele_0.vcf | vcfutils.pl vcf2fq | seqtk seq -a - > "$MY_BAM_BASENAME"_allele_0.fasta | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools call -c "$MY_BAM_BASENAME"_allele_1.vcf | vcfutils.pl vcf2fq | seqtk seq -a - > "$MY_BAM_BASENAME"_allele_1.fasta | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				
+				if [[ "$MY_MASK_INDELS_SWITCH" = "1" ]]; then
+					########### Mask reference indel(s) from the FASTA files
+					echo "INFO      | $(date) | Masking indel(s) from the phased FASTA files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+					bedtools maskfasta -fi "$MY_BAM_BASENAME"_allele_0.fasta -fo "$MY_BAM_BASENAME"_indel_0.fasta -bed "$MY_BAM_BASENAME"_allele_0.bed >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ;
+					bedtools maskfasta -fi "$MY_BAM_BASENAME"_allele_1.fasta -fo "$MY_BAM_BASENAME"_indel_1.fasta -bed "$MY_BAM_BASENAME"_allele_1.bed >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ;
+				fi
+
+			elif [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			######################
+			########### ~~~ VERBOSE RUN ~~~
+			###################### 
+
+				########### Echo BAM file name for user:
+				echo "INFO      | $(date) | #################### Current BAM file: ${MY_BAM_FILE} " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				########### Phase alleles
+				echo "INFO      | $(date) | Phasing alleles from remapped BAM file.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				samtools phase -A -F -Q "$MY_MIN_BASE_QUAL" -b "$MY_BAM_BASENAME"_allele "$MY_BAM_FILE" | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				# The above creates the following 3 BAM files (plus the phasing_log.txt file):
+				# - "$MY_BAM_BASENAME"_allele.0.bam
+				# - "$MY_BAM_BASENAME"_allele.1.bam
+				# - "$MY_BAM_BASENAME"_allele.chimera.bam
+				
+				########### Sort phased bam files
+				echo "INFO      | $(date) | Sorting phased BAM files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				samtools sort -@ 32 "$MY_BAM_BASENAME"_allele.0.bam -o "$MY_BAM_BASENAME"_allele_0_sorted.bam | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				samtools sort -@ 32 "$MY_BAM_BASENAME"_allele.1.bam -o "$MY_BAM_BASENAME"_allele_1_sorted.bam | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				## NOT WORKING!
+				## exec idea for hiding `samtools mpileup` -u and -v errors, as well as 
+				## `bedtools maskfasta` ploidy errors, none of which actually affect the results:
+				## exec >> ./"$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				## exec 2>&1 ;
+	
+				########### Generate the vcf file
+				echo "INFO      | $(date) | Generating phased VCF files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				#samtools mpileup -uv -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_0_sorted.bam > "$MY_BAM_BASENAME"_allele_0.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				#samtools mpileup -uv -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_1_sorted.bam > "$MY_BAM_BASENAME"_allele_1.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools mpileup -Ov -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_0_sorted.bam -o "$MY_BAM_BASENAME"_allele_0.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools mpileup -Ov -f "$MY_REFERENCE_FASTA" "$MY_BAM_BASENAME"_allele_1_sorted.bam -o "$MY_BAM_BASENAME"_allele_1.vcf | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				########### Generate the bed file
+				echo "INFO      | $(date) | Generating phased bed files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				grep DP=0 "$MY_BAM_BASENAME"_allele_0.vcf | awk '{OFS="\t"; if ($0 !~ /\#/); print $1, $2-1, $2}' > "$MY_BAM_BASENAME"_allele_0.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				grep DP=0 "$MY_BAM_BASENAME"_allele_1.vcf | awk '{OFS="\t"; if ($0 !~ /\#/); print $1, $2-1, $2}' > "$MY_BAM_BASENAME"_allele_1.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				
+				########### Generate the FASTA file
+				echo "INFO      | $(date) | Generating phased FASTA files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools call -c "$MY_BAM_BASENAME"_allele_0.vcf | vcfutils.pl vcf2fq | seqtk seq -a - > "$MY_BAM_BASENAME"_allele_0.fasta | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				bcftools call -c "$MY_BAM_BASENAME"_allele_1.vcf | vcfutils.pl vcf2fq | seqtk seq -a - > "$MY_BAM_BASENAME"_allele_1.fasta | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				
+				
+				if [[ "$MY_MASK_INDELS_SWITCH" = "1" ]]; then
+					########### Mask reference indel(s) from the FASTA files
+					echo "INFO      | $(date) | Masking indel(s) from the phased FASTA files.......... " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+					bedtools maskfasta -fi "$MY_BAM_BASENAME"_allele_0.fasta -fo "$MY_BAM_BASENAME"_indel_0.fasta -bed "$MY_BAM_BASENAME"_allele_0.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+					bedtools maskfasta -fi "$MY_BAM_BASENAME"_allele_1.fasta -fo "$MY_BAM_BASENAME"_indel_1.fasta -bed "$MY_BAM_BASENAME"_allele_1.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				fi
+			fi
+
+			########### Organize remaining files
+			if [[ "$(ls -1 ./*_allele_0* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele_0* "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/  ;  fi
+			if [[ "$(ls -1 ./*_allele_1* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele_1* "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/  ;  fi
+			if [[ "$(ls -1 ./*_indel_0.fasta 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_indel_0.fasta "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/  ;  fi
+			if [[ "$(ls -1 ./*_indel_1.fasta 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_indel_1.fasta "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/  ;  fi
+			if [[ "$(ls -1 ./*_allele.0.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele.0.bam "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/intermediate_files/ ;  fi
+			if [[ "$(ls -1 ./*_allele.1.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele.1.bam "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/intermediate_files/ ;  fi 
+			if [[ "$(ls -1 ./*_allele.chimera.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele.chimera.bam "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/intermediate_files/ ;  fi
+
+			## Delete files remaining in sample BAM folder:
+			if [[ "$(ls -1 ./*_allele_0* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then rm ./*_allele_0* ; fi
+			if [[ "$(ls -1 ./*_allele_1* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then rm ./*_allele_1* ; fi
+			if [[ "$(ls -1 ./*_indel_0.fasta 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then rm ./*_indel_0.fasta ; fi
+			if [[ "$(ls -1 ./*_indel_1.fasta 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then rm ./*_indel_1.fasta ; fi
+			
+		cd ..;
+	done
+)
+
+	if [[ -s ./sample_runOrder.list.txt ]]; then mv ./sample_runOrder.list.txt "$MY_OUTPUT_DIR"; fi 
+
+
+echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+###### Remove temporary or unnecessary files created above:
+echo "INFO      | $(date) | Removing temporary files... "
+	
+	## Figured out why my previous `if [[ ! -z $(ls ./*.tmp) ]]; then` solution was always failing and giving error message when
+	## ./*.tmp didn't exist: URL: https://stackoverflow.com/questions/3856747/check-whether-a-certain-file-type-extension-exists-in-directory
+	## Here is the fix that I prefer:
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
+echo "INFO      | Done."
+echo "----------------------------------------------------------------------------------------------------------"
+echo "output file location: $MY_OUTPUT_DIR "
+echo ""
+
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+###### END DEBUG MODE
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+
+# ############ SCRIPT OPTIONS
+# ## OPTION DEFAULTS ##
+# MY_INPUT_DIR=NULL                          # Input dir containing remapped reads BAM file folders (1 '_remapped/' folder per sample, containing remapped read BAMs and regular unphased consensus)
+# MY_OUTPUT_DIR=NULL                         # Output dir where phased files will be stored, including phasing_lot.txt (output log file)
+# MY_MIN_BASE_QUAL=20                        # Minimum base quality to be used in het calling
+# MY_REFERENCE_FASTA=NULL                    # Name of reference fasta (e.g. from remapped_reads_alldata/ SECAPR folder (output of SECAPR step #5 - "Reference-based assembly" to remap reads; see https://htmlpreview.github.io/?https://raw.githubusercontent.com/AntonelliLab/seqcap_processor/master/docs/documentation/subdocs/reference_assembly.html   AND   https://github.com/AntonelliLab/seqcap_processor))
+# MY_MASK_INDELS_SWITCH=0
+# MY_LOGFILE_SWITCH=phasing_log.txt          # Log file name, acts as switch to turn on loggin to file (default: on; specification would in implementation allow the user to change the name of this file, but this is not _really_ important so currently not implemented.)
+# MY_VERBOSE_OUT_SWITCH=1
+# MY_DEBUG_MODE_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="
+Usage: piranha -f $(basename "$0") [Options]...
+
+ ${bold}Options:${reset}
+  -i, --input     input (def: NULL) Mandatory path to input directory of BAM file subfolders
+                  (one per sample)
+  -o, --output    output (def: NULL) Mandatory path to output directory
+  -q, --quality   baseQuality (def: 20) Minimum base quality (Phred) to be used in calling 
+                  heterozygotes
+  -r, --ref       reference (def: NULL) Mandatory name or path to faidx-indexed reference
+                  assembly FASTA file (accompanying .fai file should be in same directory)
+  -m, --mask      maskIndels (def: 0, off; 1, on) mask indels from reference in final FASTAs
+  -l, --logfile   logFile (def: phasing_log.txt) log screen output to file in working dir 
+                  with user-specified name (default is on, so allows changing log file name)
+  -v, --verbose   verbose (def: 0, off; 1, on) output more information to screen (stdout)
+  -h, --help      help text (also: --help) echo this help text and exit
+  -V, --version   version (also: --version) echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates phasing alleles of HTS data from targeted sequence capture experiments
+ (or similar), including optionally transferring indel gaps from reference to the final phased 
+ FASTAs of consensus sequences, by masking (-m, --mask flag). Three inputs are mandatory: 1) 
+ input directory path (-i, --input), 2) output directory path (-o, --output), and 3) reference
+ FASTA sequence name or path (-r, --ref).
+	The program assumes that the input directory contains one subfolder of (re)mapped reads per 
+ sample, each containing the corresponding BAM file ('.bam' extension) and BAM index file ('.bai') 
+ (Li et al. 2009). It is also assumed that the BAM subfolders are named using the sample name or 
+ ID label.
+	By default, the program runs quietly with limited output to screen, and stderr and stdout
+ are redirected to a log file in the output directory named 'phasing_log.txt'. Using the -v
+ (or --verbose) option sends verbose output (more information) to screen during the run. However,
+ a verbose run could produce 10s–100s of megabytes of screen output, so this is not always 
+ recommended, and it will usually be better to simply check the log file (e.g. if there are 
+ many samples your dataset) instead of running with in verbose mode. Optionally, the user may
+ supply their own name for the log file (-l, --logfile flag), their own minimum base quality 
+ setting for SNP calls (-q, --quality), or to run in debug mode (-d, --debug flag).
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. Other than standard UNIX/Linux utility software,
+ the main dependencies are BEDtools (Quinlan & Hall 2020; Quinlan et al. 2014), SAMtools/bcftools 
+ (Li et al. 2009), and seqtk (Li 2012), all of which can be installed automatically using the
+ conda package management system. 
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f phaseAlleles -i <input> -o <output> -r <reference>                 Run program with user <reference> assembly
+                                                                                  and default settings
+    piranha -f phaseAlleles --input <input> --output <output> --ref <reference>   Same as above but using long option flags
+    piranha -f phaseAlleles -i <input> -o <output> -q 33 -r <reference> -v 1      Run program with user <reference> assembly,
+                                                                                  while using more stringent base quality threshold
+                                                                                  for phasing and echoing verbose output to screen
+    piranha -f phaseAlleles -h                                                    Show this help text and exit
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Li, H., 2012. seqtk: Toolkit for processing sequences in FASTA/Q formats. GitHub repository,
+	Available at: <https://github.com/lh3/seqtk>.
+ Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., Marth, G., Abecasis, 
+	G., & Durbin, R., 2009. The sequence alignment/map format and SAMtools. Bioinformatics, 
+	25(16), 2078–2079.
+ Quinlan, A.R., 2014. BEDTools: the Swiss-army tool for genome feature analysis. Current 
+	Protocols in Bioinformatics, 47(1), 11–12.
+ Quinlan, A.R. and Hall, I.M., 2010. BEDTools: a flexible suite of utilities for comparing 
+	genomic features. Bioinformatics, 26(6), 841–842.
+
+ Created by Justin Bagley on Wed, Apr 15 17:10:14 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "--Help" ]]; then
+	echo "$VERBOSE_USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename "$0") $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./sample_runOrder.list.txt ]]; then rm sample_runOrder.list.txt ; fi ;
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-output/\-\-output/g' ./args.txt
+	perl -p -i -e $'s/\-quality/\-\-quality/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-ref/\-\-ref/g' ./args.txt
+	perl -p -i -e $'s/\-mask/\-\-mask/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+
+
+# ############ SCRIPT OPTIONS
+# ## OPTION DEFAULTS ##
+# MY_INPUT_DIR=NULL                          # Input dir containing remapped reads BAM file folders (1 '_remapped/' folder per sample, containing remapped read BAMs and regular unphased consensus)
+# MY_OUTPUT_DIR=NULL                         # Output dir where phased files will be stored, including phasing_lot.txt (output log file)
+# MY_MIN_BASE_QUAL=20                        # Minimum base quality to be used in het calling
+# MY_REFERENCE_FASTA=NULL                    # Name of reference fasta (e.g. from remapped_reads_alldata/ SECAPR folder (output of SECAPR step #5 - "Reference-based assembly" to remap reads; see https://htmlpreview.github.io/?https://raw.githubusercontent.com/AntonelliLab/seqcap_processor/master/docs/documentation/subdocs/reference_assembly.html   AND   https://github.com/AntonelliLab/seqcap_processor))
+# MY_MASK_INDELS_SWITCH=0
+# MY_LOGFILE_SWITCH=phasing_log.txt          # Log file name, acts as switch to turn on loggin to file (default: on; specification would in implementation allow the user to change the name of this file, but this is not _really_ important so currently not implemented.)
+# MY_VERBOSE_OUT_SWITCH=0
+# MY_DEBUG_MODE_SWITCH=0
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_DIR=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_INPUT_DIR="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_DIR=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
+		MY_INPUT_DIR="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_DIR=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_DIR="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_DIR=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-\-output' ./args.txt | perl -pe 's/\-\-output//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_DIR="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MIN_BASE_QUAL=20 ;
+	else 
+		MY_ARG="$(grep -h '\-q' ./args.txt | perl -pe 's/\-q//g' | perl -pe 's/\ //g')";
+		MY_MIN_BASE_QUAL="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MIN_BASE_QUAL=20 ;
+	else 
+		MY_ARG="$(grep -h '\-\-quality' ./args.txt | perl -pe 's/\-\-quality//g' | perl -pe 's/\ //g')";
+		MY_MIN_BASE_QUAL="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_REFERENCE_FASTA=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
+		MY_REFERENCE_FASTA="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-ref' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_REFERENCE_FASTA=NULL ;
+		echo "WARNING!  | $(date) | No reference FASTA path given! Cannot proceed!"
+		echo "INFO      | $(date) | Please re-run phaseAlleles, while providing the relative or absolute path to your "
+		echo "INFO      | $(date) | indexed reference FASTA file using the -r | --ref flag. "
+		echo "ERROR     | $(date) | Quitting... "
+		safeExit ;
+	else 
+		MY_ARG="$(grep -h '\-\-ref' ./args.txt | perl -pe 's/\-\-ref//g' | perl -pe 's/\ //g')";
+		MY_REFERENCE_FASTA="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MASK_INDELS_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		if [[ "$MY_ARG" = "0" ]]; then MY_MASK_INDELS_SWITCH=0 ; fi
+		if [[ "$MY_ARG" = "1" ]]; then MY_MASK_INDELS_SWITCH=1 ; fi
+		if [[ "$MY_ARG" != "1" ]] && [[ "$MY_ARG" != "0" ]]; then MY_MASK_INDELS_SWITCH=1 ; fi
+	fi
+	if [[  "$(grep -h '\-\-mask' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MASK_INDELS_SWITCH=0 ;
+	else 
+		MY_MASK_INDELS_SWITCH=1 ;
+	fi
+#
+
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=phasing_log.txt ;
+	else 
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+	if [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=phasing_log.txt ;
+	else 
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		if [[ "$MY_ARG" = "0" ]]; then MY_VERBOSE_OUT_SWITCH=0 ; fi
+		if [[ "$MY_ARG" = "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+		if [[ "$MY_ARG" != "1" ]] && [[ "$MY_ARG" != "0" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+	fi
+	if [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	else 
+		MY_VERBOSE_OUT_SWITCH=1 ;
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		if [[ "$MY_ARG" = "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+		if [[ "$MY_ARG" != "1" ]] && [[ "$MY_ARG" != "0" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	else 
+		MY_DEBUG_MODE_SWITCH=1
+	fi
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages. Uncomment if needed.
+# checkDependencies
+
+# Run the script
+phaseAlleles
+
+# Exit cleanly
+safeExit
