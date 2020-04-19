@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 15 17:10:14 CDT 2020.                       #
-# Last update: April 16, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -247,7 +247,7 @@ MY_LIST=./sample_runOrder.list.txt
 			if [[ "$(ls -1 ./*.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
 				echo "INFO      | $(date) | BAM file check PASSED... "
 			else
-				echo "WARNING!  | $(date) | BAM file check FAILED! No BAM file detected in current subfolder!"
+				echo "WARNING   | $(date) | BAM file check FAILED! No BAM file detected in current subfolder."
 				echo "INFO      | $(date) | ($PWD)"
 				echo "INFO      | $(date) | The expected directory structure is one BAM subfolder per sample. Please fix your file structure so there is "
 				echo "INFO      | $(date) |  a (remapped) .bam file in each BAM subfolder, and then try re-running phaseAlleles."
@@ -437,7 +437,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 # MY_REFERENCE_FASTA=NULL                    # Name of reference fasta (e.g. from remapped_reads_alldata/ SECAPR folder (output of SECAPR step #5 - "Reference-based assembly" to remap reads; see https://htmlpreview.github.io/?https://raw.githubusercontent.com/AntonelliLab/seqcap_processor/master/docs/documentation/subdocs/reference_assembly.html   AND   https://github.com/AntonelliLab/seqcap_processor))
 # MY_MASK_INDELS_SWITCH=0
 # MY_LOGFILE_SWITCH=phasing_log.txt          # Log file name, acts as switch to turn on loggin to file (default: on; specification would in implementation allow the user to change the name of this file, but this is not _really_ important so currently not implemented.)
-# MY_VERBOSE_OUT_SWITCH=1
+# MY_VERBOSE_OUT_SWITCH=0
 # MY_DEBUG_MODE_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
@@ -456,9 +456,9 @@ Usage: piranha -f $(basename "$0") [Options]...
   -l, --logfile   logFile (def: phasing_log.txt) log screen output to file in working dir 
                   with user-specified name (default is on, so allows changing log file name)
   -v, --verbose   verbose (def: 0, off; 1, on) output more information to screen (stdout)
-  -h, --help      help text (also: --help) echo this help text and exit
-  -V, --version   version (also: --version) echo version and exit
-  -d, --debug     debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
+  -h, --help      echo this help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT automates phasing alleles of HTS data from targeted sequence capture experiments
@@ -562,132 +562,97 @@ fi
 	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
 
 
-# ############ SCRIPT OPTIONS
-# ## OPTION DEFAULTS ##
-# MY_INPUT_DIR=NULL                          # Input dir containing remapped reads BAM file folders (1 '_remapped/' folder per sample, containing remapped read BAMs and regular unphased consensus)
-# MY_OUTPUT_DIR=NULL                         # Output dir where phased files will be stored, including phasing_lot.txt (output log file)
-# MY_MIN_BASE_QUAL=20                        # Minimum base quality to be used in het calling
-# MY_REFERENCE_FASTA=NULL                    # Name of reference fasta (e.g. from remapped_reads_alldata/ SECAPR folder (output of SECAPR step #5 - "Reference-based assembly" to remap reads; see https://htmlpreview.github.io/?https://raw.githubusercontent.com/AntonelliLab/seqcap_processor/master/docs/documentation/subdocs/reference_assembly.html   AND   https://github.com/AntonelliLab/seqcap_processor))
-# MY_MASK_INDELS_SWITCH=0
-# MY_LOGFILE_SWITCH=phasing_log.txt          # Log file name, acts as switch to turn on loggin to file (default: on; specification would in implementation allow the user to change the name of this file, but this is not _really_ important so currently not implemented.)
-# MY_VERBOSE_OUT_SWITCH=0
-# MY_DEBUG_MODE_SWITCH=0
-
 ############ MANUALLY PARSE THE OPTIONS FROM ARGS
 
 ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
-	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_INPUT_DIR=NULL ;
-	else 
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
 		MY_INPUT_DIR="$MY_ARG" ;
-	fi
-	if [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_INPUT_DIR=NULL ;
-	else 
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
 		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
 		MY_INPUT_DIR="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_OUTPUT_DIR=NULL ;
-	else 
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
 		MY_OUTPUT_DIR="$MY_ARG" ;
-	fi
-	if [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_OUTPUT_DIR=NULL ;
-	else 
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
 		MY_ARG="$(grep -h '\-\-output' ./args.txt | perl -pe 's/\-\-output//g' | perl -pe 's/\ //g')";
 		MY_OUTPUT_DIR="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_MIN_BASE_QUAL=20 ;
-	else 
-		MY_ARG="$(grep -h '\-q' ./args.txt | perl -pe 's/\-q//g' | perl -pe 's/\ //g')";
-		MY_MIN_BASE_QUAL="$MY_ARG" ;
-	fi
-	if [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_MIN_BASE_QUAL=20 ;
-	else 
-		MY_ARG="$(grep -h '\-\-quality' ./args.txt | perl -pe 's/\-\-quality//g' | perl -pe 's/\ //g')";
-		MY_MIN_BASE_QUAL="$MY_ARG" ;
-	fi
-#
-	if [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-ref' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_REFERENCE_FASTA=NULL ;
-	else 
-		MY_ARG="$(grep -h '\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
-		MY_REFERENCE_FASTA="$MY_ARG" ;
-	fi
-	if [[  "$(grep -h '\-\-ref' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_REFERENCE_FASTA=NULL ;
-		echo "WARNING!  | $(date) | No reference FASTA path given! Cannot proceed!"
+		echo "WARNING   | $(date) | No reference FASTA path given. Cannot proceed."
 		echo "INFO      | $(date) | Please re-run phaseAlleles, while providing the relative or absolute path to your "
 		echo "INFO      | $(date) | indexed reference FASTA file using the -r | --ref flag. "
 		echo "ERROR     | $(date) | Quitting... "
 		safeExit ;
-	else 
+	elif [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-ref' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
+		MY_REFERENCE_FASTA="$MY_ARG" ;
+	elif [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-ref' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
 		MY_ARG="$(grep -h '\-\-ref' ./args.txt | perl -pe 's/\-\-ref//g' | perl -pe 's/\ //g')";
 		MY_REFERENCE_FASTA="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_MASK_INDELS_SWITCH=0 ;
-	else 
-		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
-		if [[ "$MY_ARG" = "0" ]]; then MY_MASK_INDELS_SWITCH=0 ; fi
-		if [[ "$MY_ARG" = "1" ]]; then MY_MASK_INDELS_SWITCH=1 ; fi
-		if [[ "$MY_ARG" != "1" ]] && [[ "$MY_ARG" != "0" ]]; then MY_MASK_INDELS_SWITCH=1 ; fi
-	fi
-	if [[  "$(grep -h '\-\-mask' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_MASK_INDELS_SWITCH=0 ;
-	else 
-		MY_MASK_INDELS_SWITCH=1 ;
+	if [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MIN_BASE_QUAL=20 ;
+	elif [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-q' ./args.txt | perl -pe 's/\-q//g' | perl -pe 's/\ //g')";
+		MY_MIN_BASE_QUAL="$MY_ARG" ;
+	elif [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-quality' ./args.txt | perl -pe 's/\-\-quality//g' | perl -pe 's/\ //g')";
+		MY_MIN_BASE_QUAL="$MY_ARG" ;
 	fi
 #
-
-	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_LOGFILE_SWITCH=phasing_log.txt ;
-	else 
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-mask' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MASK_INDELS_SWITCH=0 ;
+	elif [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-mask' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MY_MASK_INDELS_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-mask' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-mask' ./args.txt | perl -pe 's/\-\-mask//g' | perl -pe 's/\ //g')";
+		MY_MASK_INDELS_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_MASK_INDELS_SWITCH" ]] && [[ "$MY_MASK_INDELS_SWITCH" != "0" ]] && [[ "$MY_MASK_INDELS_SWITCH" != "1" ]]; then MY_MASK_INDELS_SWITCH=1 ; fi
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=phasing_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
 		MY_LOGFILE_SWITCH="$MY_ARG" ;
-	fi
-	if [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_LOGFILE_SWITCH=phasing_log.txt ;
-	else 
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
 		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
 		MY_LOGFILE_SWITCH="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_VERBOSE_OUT_SWITCH=0 ;
-	else 
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
-		if [[ "$MY_ARG" = "0" ]]; then MY_VERBOSE_OUT_SWITCH=0 ; fi
-		if [[ "$MY_ARG" = "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
-		if [[ "$MY_ARG" != "1" ]] && [[ "$MY_ARG" != "0" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
-	fi
-	if [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_VERBOSE_OUT_SWITCH=0 ;
-	else 
-		MY_VERBOSE_OUT_SWITCH=1 ;
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
 	fi
 #
-	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_DEBUG_MODE_SWITCH=0 ;
-	else 
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
-		if [[ "$MY_ARG" = "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
-		if [[ "$MY_ARG" != "1" ]] && [[ "$MY_ARG" != "0" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
 	fi
-	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_DEBUG_MODE_SWITCH=0 ;
-	else 
-		MY_DEBUG_MODE_SWITCH=1
-	fi
-
+#
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##

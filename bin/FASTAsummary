@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTAsummary.sh                                                                  #
-  VERSION="v1.1.1"                                                                       #
+  VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ FASTAsummary () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTAsummary, v1.1.1 April 2020                                "
+echo "INFO      | $(date) | FASTAsummary, v1.1.2 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -225,7 +225,7 @@ if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 	
 echo "#!/bin/sh
 
-$MY_PIRANHA_PATH -f calcAlignmentPIS -i $INPUT_FASTA_FILE -k 0'
+$MY_PIRANHA_PATH -f calcAlignmentPIS -i $INPUT_FASTA_FILE -k 0
 
 " > ./piranha_calcAlignmentPIS.sh
 
@@ -315,7 +315,7 @@ count=1
 
 echo "#!/bin/sh
 
-$MY_PIRANHA_PATH -f calcAlignmentPIS -k 0'
+$MY_PIRANHA_PATH -f calcAlignmentPIS -k 0
 
 " > ./piranha_calcAlignmentPIS.sh
 
