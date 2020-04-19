@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Oct 17 11:59:08 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -279,7 +279,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 
 			if [[ -s  "$MY_BAM_BASENAME"_base_denoised.bin ]] && [[ -s "$MY_BAM_BASENAME"_nQuireRunner.out.txt ]] && [[ -s "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt ]]; then
 				echo "INFO      | $(date) |    Checking for related files... "
-				echo "WARNING!  | $(date) |    File already analyzed by nQuireRunner--SKIPPING!!! "
+				echo "WARNING   | $(date) |    File already analyzed by nQuireRunner. ~~~ SKIPPING ~~~ "
 			fi
 			###
 			if [[ ! -s  "$MY_BAM_BASENAME"_base_denoised.bin ]] && [[ ! -s "$MY_BAM_BASENAME"_nQuireRunner.out.txt ]]; then

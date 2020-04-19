@@ -9,7 +9,7 @@
   VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Aug 29 13:12:45 2016 -0700.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -194,7 +194,7 @@ if [[ -n $(find . -name "*.gphocs" -type f) ]]; then
 	echo "INFO      | $(date) | Found '.gphocs' input file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs ;	 ## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
-    echo "WARNING!  | $(date) | No '.gphocs' input file in current working directory... "
+    echo "WARNING   | $(date) | No '.gphocs' input file in current working directory... "
     echo "INFO      | $(date) | Attempting to convert NEXUS file, if present, to GPho-CS format... "
 fi
 
@@ -218,25 +218,25 @@ fi
 	##--This is the base name of the original nexus file, so you have it. This will not work if NEXUS file name is written in all caps, ".NEX", in the file name.
 	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.nex//g')";
 	
-	##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
-	##--However, if alignment is too long (>100,000 bp), then need to convert to fasta using my 
+	##--Convert data file from NEXUS to FASTA format using bioscripts.convert v0.4 Python package:
+	##--However, if alignment is too long (>100,000 bp), then need to convert to FASTA using my 
 	##--script and then wrap to 60 characters with fold function (as suggested at stackexchange
 	##--post URL: https://unix.stackexchange.com/questions/25173/how-can-i-wrap-text-at-a-certain-column-size).
 	##--If this conversion failes because the alignment is too long, then the code to follow 
-	##--will have nothing to work with. So, I am here adding a conditional quit if the fasta
+	##--will have nothing to work with. So, I am here adding a conditional quit if the FASTA
 	##--file is not generated.
 
-	#---------TODO: ADD IF/THEN CONDITIONAL AND MY OWN NEXUS2fasta SCRIPT HERE!!!!----------#
+	#---------TODO: ADD IF/THEN CONDITIONAL AND MY OWN NEXUS2FASTA SCRIPT HERE!!!!----------#
 
 	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta ;
 	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')";
 	
 	##--The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
-	##--Check to make sure the fasta was created; if so, echo info, if not, echo warning and quit:
+	##--Check to make sure the FASTA was created; if so, echo info, if not, echo warning and quit:
 	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
-		echo "INFO      | $(date) | Input NEXUS was successfully converted to fasta format. Moving forward... "
+		echo "INFO      | $(date) | Input NEXUS was successfully converted to FASTA format. Moving forward... "
 	else
-		echo "WARNING!  | $(date) | NEXUS to fasta file conversion FAILED! Quitting... "
+		echo "WARNING   | $(date) | NEXUS to FASTA file conversion FAILED! Quitting... "
 		exit 1
 	fi
 	
@@ -334,7 +334,7 @@ if [[ -n $(find . -name "*.gphocs" -type f) ]]; then
 	echo "INFO      | $(date) | MAGNET successfully created a '.gphocs' input file from the existing NEXUS file... "
     MY_GPHOCS_DATA_FILE=./*.gphocs ;	 ## Assign G-PhoCS-formatted genomic/SNP data file (originally produced/output by pyRAD) in run directory to variable.
 else
-    echo "WARNING!  | $(date) | Failed to convert NEXUS file into G-PhoCS format... "
+    echo "WARNING   | $(date) | Failed to convert NEXUS file into G-PhoCS format... "
     echo "INFO      | $(date) | Quitting."
     exit
 fi
@@ -403,7 +403,7 @@ if [[ "$MY_RESUME_SWITCH" = "0" ]]; then
 	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
 		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
+		echo "WARNING   | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
 	fi
 
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
@@ -411,7 +411,7 @@ elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 		echo "IMPORTANT!| $(date) | Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
 		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
+		echo "WARNING   | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
 	fi
 
 fi
@@ -727,7 +727,7 @@ echo "INFO      | $(date) | Step #3: Make run folders. "
 	if [[ "$MY_NUM_RUN_FOLDERS" = "$MY_N_PHYLIP_FILES" ]]; then
 		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
+		echo "WARNING   | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. This may cause errors. "
 	fi
 
 elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
@@ -735,7 +735,7 @@ elif [[ "$MY_RESUME_SWITCH" = "1" ]]; then
 		echo "IMPORTANT!| $(date) | Resuming a previous/existing run in current working dir. Skipping MultiRAxMLPrepper, using available run folders... "
 		echo "INFO      | $(date) | Folder check passed: number of run folders matches number of PHYLIP alignments. "
 	else
-		echo "WARNING!  | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
+		echo "WARNING   | $(date) | Folder check FAILED: number of run folders does NOT match the number of PHYLIP alignments. There may be errors. "
 	fi
 
 fi
