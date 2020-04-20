@@ -542,7 +542,9 @@ count=1
 	fi 
 	if [[ -s ./BIG_concat_unalign_allele_seqs.fasta ]]; then 
 		echo "INFO      | $(date) | ./BIG_concat_unalign_allele_seqs.fasta " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
-		mv ./BIG_concat_unalign_allele_seqs.fasta "$MY_OUTPUT_DIR"; 
+		echo "INFO      | $(date) | New location: ${MY_OUTPUT_DIR}sequence_database/ " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		if [[ ! -s  "$MY_OUTPUT_DIR"sequence_database/ ]]; then mkdir "$MY_OUTPUT_DIR"sequence_database/; fi ; 
+		mv ./BIG_concat_unalign_allele_seqs.fasta "$MY_OUTPUT_DIR"sequence_database/ ; 
 	fi 
 	if [[ -s ./aligning_log.txt ]]; then 
 		echo "INFO      | $(date) | ./aligning_log.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
