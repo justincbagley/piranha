@@ -9,7 +9,7 @@
   VERSION="v0.1.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Jul 25 10:16:37 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -161,8 +161,8 @@ echo "INFO      | $(date) | Checking availability of RogueNaRok programs from th
 	if [[ ! -z "$MY_RNR_LSI_CHECK" ]] && [[ ! -z "$MY_RNR_MAST_CHECK" ]] && [[ ! -z "$MY_RNR_TII_CHECK" ]]; then
 		echo "INFO      | $(date) | Check PASSED... "	
 	elif [[ -z "$MY_RNR_LSI_CHECK" ]] || [[ -z "$MY_RNR_MAST_CHECK" ]] || [[ -z "$MY_RNR_TII_CHECK" ]]; then
-		echo "WARNING!  | $(date) | Check FAILED! "
-		echo "WARNING!  | $(date) | One or more RogueNaRok programs (rnr-lsi, rnr-mast, rnr-tii) are NOT available from the command line. "
+		echo "WARNING   | $(date) | Check FAILED. "
+		echo "WARNING   | $(date) | One or more RogueNaRok programs (rnr-lsi, rnr-mast, rnr-tii) are NOT available from the command line. "
 		echo "INFO      | $(date) |    Please (re)install the software and try again. Quitting... "
 		exit
 	fi
@@ -204,11 +204,11 @@ echo "INFO      | $(date) | Checking numbers of trees and taxa... "
 		echo "INFO      | $(date) |    Found one tree per line. Everything's good... "
 		MY_NUM_TREES="$MY_NUM_SEMICOLONS" ;
 	elif [[ "$MY_NUM_SEMICOLONS" != "$MY_NUM_LINES" ]]; then
-		echo "WARNING!  | $(date) |    Found more than one tree per line. There could be issues... "
+		echo "WARNING   | $(date) |    Found more than one tree per line. There could be issues... "
 		# Try to get trees arranged as one per line by replacing '\,$\n' (comma-ending lines) 
 		# with nothing; replacing all '\n' with nothing; and then adding carriage returns
 		# back in after each semicolon.
-		echo "WARNING!  | $(date) |    Attempting reorganization to one tree per line... "
+		echo "WARNING   | $(date) |    Attempting reorganization to one tree per line... "
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's/\,$\n//g' ./trees.tmp ;
 			sed -i.bak 's/\n//g' ./trees.tmp ;

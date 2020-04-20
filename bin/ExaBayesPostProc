@@ -9,7 +9,7 @@
   VERSION="1.3.4"                                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:28:02 -0300.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -155,7 +155,7 @@ MY_CREDSET_EXECUT_CHECK="$(which credibleSet)"
 if [[ -s "$MY_CREDSET_EXECUT_CHECK"  ]]; then 
 	echo "INFO      | $(date) | Check #1 passed, credibleSet is installed..."
 else
-	echo "WARNING!  | $(date) | Check #1 FAILED, credibleSet _not_ installed..."
+	echo "WARNING   | $(date) | Check #1 FAILED, credibleSet _not_ installed..."
 	echo "INFO      | $(date) | Please install or reinstall ExaBayes, including credibleSet and other utilities."
 	echo "INFO      | $(date) | Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
 	echo "ERROR     | $(date) | Quitting..."
@@ -166,7 +166,7 @@ MY_EXTRACTBIPS_EXECUT_CHECK="$(which extractBips)"
 if [[ -s "$MY_EXTRACTBIPS_EXECUT_CHECK"  ]]; then 
 	echo "INFO      | $(date) | Check #2 passed, extractBips is installed..."
 else
-	echo "WARNING!  | $(date) | Check #1 FAILED, extractBips _not_ installed..."
+	echo "WARNING   | $(date) | Check #1 FAILED, extractBips _not_ installed..."
 	echo "INFO      | $(date) | Please install or reinstall ExaBayes, including extractBips and other utilities."
 	echo "INFO      | $(date) | Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
 	echo "ERROR     | $(date) | Quitting..."
@@ -177,7 +177,7 @@ MY_POSTPROC_EXECUT_CHECK="$(which postProcParam)"
 if [[ -s "$MY_POSTPROC_EXECUT_CHECK"  ]]; then 
 	echo "INFO      | $(date) | Check #3 passed, postProcParam is installed..."
 else
-	echo "WARNING!  | $(date) | Check #1 FAILED, postProcParam _not_ installed..."
+	echo "WARNING   | $(date) | Check #1 FAILED, postProcParam _not_ installed..."
 	echo "INFO      | $(date) | Please install or reinstall ExaBayes, including postProcParam and other utilities."
 	echo "INFO      | $(date) | Find more information in the ExaBayes manual, here: https://cme.h-its.org/exelixis/web/software/exabayes/manual/index.html "
 	echo "ERROR     | $(date) | Quitting..."
@@ -189,7 +189,7 @@ MY_MRBAYES_EXECUT_CHECK2="$(which mrbayes)"
 if [[ -s "$MY_MRBAYES_EXECUT_CHECK1"  ]] || [[ -s "$MY_MRBAYES_EXECUT_CHECK2"  ]] ; then 
 	echo "INFO      | $(date) | Check #4 passed, MrBayes is installed..."
 else
-	echo "WARNING!  | $(date) | Check #1 FAILED, MrBayes apparently _not_ installed..."
+	echo "WARNING   | $(date) | Check #1 FAILED, MrBayes apparently _not_ installed..."
 	echo "INFO      | $(date) | Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
 	echo "INFO      | $(date) | Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
 	echo "INFO      | $(date) | if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
@@ -323,8 +323,8 @@ elif [[ "$MY_NEXUS" = "NULL" ]] && [[ "$MY_NEXUS_FILE_CHECK" -gt "0" ]]; then
 	echo "INFO      | $(date) | NEXUS check passed, but found multiple NEXUS files. Using NEXUS file ${MY_NEXUS_FILENAME}... "
 	MY_MRBAYES_FILENAME="$(ls | sed -n 's/\.0$//p' | grep -n "topologies" | sed -n 's/.://p')";
 elif [[ "$MY_NEXUS" = "NULL" ]] && [[ "$MY_NEXUS_FILE_CHECK" = "0" ]]; then
-	echo "WARNING!  | $(date) | NEXUS check FAILED. No NEXUS file in current working directory"
-	echo "WARNING!  | $(date) | Cannot conduct MrBayes summaries. Quitting..."
+	echo "WARNING   | $(date) | NEXUS check FAILED. No NEXUS file in current working directory. "
+	echo "WARNING   | $(date) | Cannot conduct MrBayes summaries. Quitting..."
 	exit 1 ;
 fi
 

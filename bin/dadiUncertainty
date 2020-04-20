@@ -575,8 +575,8 @@ import json
 	if [[ "$MY_NUM_BOOT_FS_FILES" = "$MY_NUM_BOOT_DATASETS" ]]; then 
 		echo "INFO      | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check PASSED! Continuing without errors... "
 	elif [[ "$MY_NUM_BOOT_FS_FILES" != "$MY_NUM_BOOT_DATASETS" ]]; then
-		echo "WARNING!  | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... "
-		echo "WARNING!  | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... " >> errors.txt
+		echo "WARNING   | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... "
+		echo "WARNING   | $(date) | $MY_NUM_BOOT_FS_FILES files present in bootstrap_fs directory: Bootstrap .fs file check FAILED! Continuing WITH ERRORS... " >> errors.txt
 	fi
 
 ##--Cleanup temporary files (i.e. delete Matz perl scripts and any tmp files):

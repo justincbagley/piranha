@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -174,7 +174,7 @@ if [[ "${machine}" = "Mac" ]]; then
 	
 		##
 		if [[ -z "$MY_SPECIESIDENT_DIR_CHECK1"  ]] && [[ -z "$MY_SPECIESIDENT_DIR_CHECK2"  ]] && [[ "$MY_SPECIESIDENT_DIR_CHECK3" = "1" ]] && [[ -z "$MY_SPECIESIDENT_JAR_CHECK1"  ]] && [[ -z "$MY_SPECIESIDENT_JAR_CHECK2"  ]] && [[ "$MY_SPECIESIDENT_JAR_CHECK3" = "1" ]] && [[ "$MY_SPECIESIDENT_JAR_CHECK4" = "1" ]]; then
-			echo "WARNING!  | $(date) | Found no SpeciesIdentifier v1.8 directory or executable (jar file) on your machine... "
+			echo "WARNING   | $(date) | Found no SpeciesIdentifier v1.8 directory or executable (jar file) on your machine... "
 			## No SpeciesIdentifier dir or jar file on machine. Next, do curl download of v1.8 executable
 			## and complete install. SpeciesIdentifier is part of the Taxon DNA package/repository
 			## and is available on GitHub at https://github.com/gaurav/taxondna/ (see below).
@@ -236,8 +236,8 @@ if [[ "${machine}" = "Mac" ]]; then
 
 elif [[ "${machine}" = "Linux" ]]; then
 
-	echo "WARNING!  | $(date) | Cannot install SpeciesIdentifier v1.8 on Linux because it is only available for Mac and Windows platforms, sorry."
-	echo "WARNING!  | $(date) | Quitting... "
+	echo "WARNING   | $(date) | Cannot install SpeciesIdentifier v1.8 on Linux because it is only available for Mac and Windows platforms, sorry."
+	echo "WARNING   | $(date) | Quitting... "
 	exit 1 ;
 
 fi

@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 1 12:05:32 CDT 2020.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -267,11 +267,11 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
 			if [[ ! -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
-				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING   | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-1 ;
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ]]; then 
-				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING   | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-3 ;
 			fi
 		done
@@ -317,11 +317,11 @@ else
 			if [[ ! -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ]]; then 
-				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING   | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-1 ;
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ;
 			elif [[ -s ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-2 ]]; then 
-				echo "WARNING!  | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
+				echo "WARNING   | $(date) | ISSUE: Duplicate tip taxon name, ${MY_TAXON_ID_LINE}. Check sequences... "
 				mv "$i" ./output/"$MY_TAXON_ID_LINE""$MY_FASTA_EXTENSION"-3 ;
 			fi
 		done

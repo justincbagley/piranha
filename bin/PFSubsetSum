@@ -9,7 +9,7 @@
   VERSION="v1.4.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -156,7 +156,7 @@ if [[ -n $(echo ./best_scheme.txt) ]]; then
 	echo "INFO      | $(date) | Found PartitionFinder 'best_scheme.txt' results file... "
     MY_BEST_SCHEME_FILE=./best_scheme.txt ;
 else
-    echo "WARNING!  | $(date) | No PartitionFinder 'best_scheme.txt' results file in current working directory. Quitting... "
+    echo "WARNING   | $(date) | No PartitionFinder 'best_scheme.txt' results file in current working directory. Quitting... "
 	safeExit;
 fi
 

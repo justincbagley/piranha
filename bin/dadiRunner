@@ -318,7 +318,7 @@ cat batch_qsub_top.txt cd_and_qsub_commands.txt batch_qsub_bottom.txt > dadirunn
 if [ -f ./dadirunner_batch_qsub.sh ]; then
     echo "INFO      | $(date) | Batch queue submission file ('dadirunner_batch_qsub.sh') successfully created. "
 else
-    echo "WARNING!  | $(date) | Something went wrong. Batch queue submission file ('dadirunner_batch_qsub.sh') not created. Exiting... "
+    echo "WARNING   | $(date) | Something went wrong. Batch queue submission file ('dadirunner_batch_qsub.sh') not created. Exiting... "
     exit
 fi
 

@@ -9,7 +9,7 @@
   VERSION="v1.2.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -152,7 +152,7 @@ checkMachineType
 
 MY_ARGS_CHECK="$(cat args.txt | wc -c | sed 's/\ //g')";
 if [[ "$MY_ARGS_CHECK" = "1" ]]; then 
-	echo "WARNING!  | $(date) | ERROR: Found no arguments, which could break/delete things. Quitting and printing usage text... " 
+	echo "WARNING   | $(date) | ERROR: Found no arguments, which could break/delete things. Quitting and printing usage text... " 
 	echo "$USAGE"
 	exit
 fi
@@ -216,7 +216,7 @@ fi
 				
 			rm ./*.tmp ;
 		else
-			echo "WARNING!  | $(date) | ERROR: Found no PHYLIP file named $MY_INPUT_PHYLIP_FILE in working directory. Quitting... " 
+			echo "WARNING   | $(date) | ERROR: Found no PHYLIP file named $MY_INPUT_PHYLIP_FILE in working directory. Quitting... " 
 			exit
 		fi
 	fi

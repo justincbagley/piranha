@@ -9,7 +9,7 @@
   VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -273,7 +273,7 @@ fi
 ###
 if [[ "$MY_DEEP_CLEAN_SWITCH" = "1" ]]; then
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "WARNING!  | $(date) | Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
+	echo "WARNING   | $(date) | Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
 	echo "INFO      | $(date) | Check results thoroughly, then start over and rerun analysis without -d flag if necessary."
 fi
 	##### MOSTLY MISSING DATA CHECKER

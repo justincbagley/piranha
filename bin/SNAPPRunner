@@ -9,7 +9,7 @@
   VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 11 May 2017 07:48:55 -0400.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -165,7 +165,7 @@ echo "INFO      | $(date) | Checking for 'snapp_runner.cfg' configuration file..
 if [[ -f ./snapp_runner.cfg ]]; then 
 	echo "INFO      | $(date) | Configuration file check passed. Moving forward with .cfg file in current directory... "
 elif [[ ! -f ./snapp_runner.cfg ]]; then 
-	echo "WARNING!  | $(date) | Configuration file check FAILED. Copying default .cfg file into current directory... "
+	echo "WARNING   | $(date) | Configuration file check FAILED. Copying default .cfg file into current directory... "
 	cp "$CONFIG_FILE_LOCATION" . ;
 	echo "INFO      | $(date) | Please edit the default 'snapp_runner.cfg' configuration file just added so that \
 it includes all pertinent information (first 3 variables) before rerunning SNAPPRunner from this directory. "
@@ -440,7 +440,7 @@ cat ./qsub_top.txt ./cd_and_qsub_commands.txt ./qsub_bottom.txt > ./SNAPPRunner_
 if [ -f ./SNAPPRunner_batch_qsub.sh ]; then
     echo "INFO      | $(date) | Batch queue submission file ('SNAPPRunner_batch_qsub.sh') successfully created. "
 else
-    echo "WARNING!  | $(date) | Something went wrong. Batch queue submission file ('SNAPPRunner_batch_qsub.sh') not created. Exiting... "
+    echo "WARNING   | $(date) | Something went wrong. Batch queue submission file ('SNAPPRunner_batch_qsub.sh') not created. Exiting... "
     exit
 fi
 

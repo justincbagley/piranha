@@ -9,7 +9,7 @@
   VERSION="v1.8.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -206,7 +206,7 @@ echo "INFO      | $(date) | Step #2: Set up BEAST-related environmental variable
 		echo "INFO      | $(date) | BEAST log file present. Analyzing log file in LogAnalyser... "
 		"$LOGANALYSER_PATH" -burnin "$NUM_BURNIN_STEPS" "$MY_BEAST_LOGFILE" LogAnalyser.out.txt ;
 	else
-		echo "WARNING!  | $(date) | Something went wrong. Found no BEAST log files. "
+		echo "WARNING   | $(date) | Something went wrong. Found no BEAST log files. "
 	fi
 
 
@@ -215,7 +215,7 @@ echo "INFO      | $(date) | Step #2: Set up BEAST-related environmental variable
 		echo "INFO      | $(date) | Marginal likelihood estimation analysis log file present. Analyzing mle log file in LogAnalyser... "
 		"$LOGANALYSER_PATH" -burnin "$NUM_BURNIN_STEPS" "$MY_MARGLIKE_LOGFILE" MLE.LogAnalyser.out.txt ;
 	else
-		echo "WARNING!  | $(date) | Found no marginal likelihood estimation analysis log files. Moving on... "
+		echo "WARNING   | $(date) | Found no marginal likelihood estimation analysis log files. Moving on... "
 	fi
 
 
@@ -295,7 +295,7 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 				mv "$j" ${j/*/final_"$MY_K_ABBREV_VAL"k.species.trees} ;
 	        done
 	    else
-	        echo "WARNING!  | $(date) | Failed to rename final ${MY_K_ABBREV_VAL}k post-burnin species tree files. "
+	        echo "WARNING   | $(date) | Failed to rename final ${MY_K_ABBREV_VAL}k post-burnin species tree files. "
 	    fi
 	)
 
@@ -310,7 +310,7 @@ echo "INFO      | $(date) | Step #3: If species trees file present, conduct spec
 				mv "$k" ${k/*/treeannotator.species.tree} ;
 			done
 		else
-			echo "WARNING!  | $(date) | ERROR: Found no folders with TreeAnnotator species tree results. "
+			echo "WARNING   | $(date) | ERROR: Found no folders with TreeAnnotator species tree results. "
 		fi
 	)
 

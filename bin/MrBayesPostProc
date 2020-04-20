@@ -9,7 +9,7 @@
   version="v1.9.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -183,20 +183,20 @@ if [[ "$MY_INPUT_NEXUS" != "NULL" ]] && [[ -s "$MY_INPUT_NEXUS" ]] && [[ "$MY_MR
 	## $MY_MRBAYES_FILENAME is the name of the output of the run, which will be the root/prefix 
 	## of each output file. Here we have to guess this information because the user did not provide it
 	## with the -m flag as expected. Echo a warning and attempt to guess the correct basename:
-	echo "WARNING!  | $(date) | No MrBayes basename (output file name prefix) provided! "
+	echo "WARNING   | $(date) | No MrBayes basename (output file name prefix) provided. "
 	echo "INFO      | $(date) | Guessing input NEXUS file (first file after listing), but this could lead to errors.  "
 	MY_MRBAYES_FILENAME="$(ls | grep -n ".mcmc" | sed -n 's/.*://p' | sed 's/\.mcmc$//g')";
 	
 elif [[ "$MY_INPUT_NEXUS" != "NULL" ]] && [[ ! -s "$MY_INPUT_NEXUS" ]]; then 
 
-	echo "WARNING!  | $(date) | Found no NEXUS file named $MY_INPUT_NEXUS in current directory. "
+	echo "WARNING   | $(date) | Found no NEXUS file named $MY_INPUT_NEXUS in current directory. "
 	echo "ERROR     | $(date) | Quitting... "
 	exit 1 ;
 
 elif [[ "$MY_INPUT_NEXUS" = "NULL" ]]; then 
 
 	echo "INFO      | $(date) | Step #2: Prepare input NEXUS, check whether MrBayes is installed, and attempt to set name or path to MrBayes executable. "
-	echo "WARNING!  | $(date) | No input NEXUS filename provided! "
+	echo "WARNING   | $(date) | No input NEXUS filename provided. "
 	echo "INFO      | $(date) | Guessing input NEXUS file (first file after listing), but this could lead to errors.  "
 	echo "INFO      | $(date) | Stop this run (Ctrl + C) or check output files carefully... "
 
@@ -257,7 +257,7 @@ fi
 			fi
 			echo "INFO      | $(date) | <MrBayesPath> parameter was set to: ${MY_LOC_SC_MB_PATH} "
 		else
-			echo "WARNING!  | $(date) | Check FAILED. MrBayes is apparently _not_ installed on your machine."
+			echo "WARNING   | $(date) | Check FAILED. MrBayes is apparently _not_ installed on your machine."
 			echo "INFO      | $(date) | Please install or reinstall MrBayes, or make it available from the command line (e.g. using an alias) as 'mb' or 'mrbayes'. "
 			echo "INFO      | $(date) | Find more information at the MrBayes v3.2+ website, here: http://nbisweden.github.io/MrBayes/, or "
 			echo "INFO      | $(date) | if you have Anaconda/Miniconda installed, you could try a Bioconda install of MrBayes as follows: $ conda install -c bioconda mrbayes ; ## info: https://anaconda.org/bioconda/mrbayes"
@@ -293,7 +293,7 @@ quit" > ./batch.txt
     if [[ -f ./batch.txt ]]; then
         echo "INFO      | $(date) | MrBayes batch file ('batch.txt') was successfully created. "
     else
-        echo "WARNING!  | $(date) | Something went wrong. MrBayes batch file ('batch.txt') not created. Quitting... "
+        echo "WARNING   | $(date) | Something went wrong. MrBayes batch file ('batch.txt') not created. Quitting... "
         exit 1 ;
     fi
 

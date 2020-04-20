@@ -9,7 +9,7 @@
   VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 29 12:49:36 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -216,8 +216,8 @@ echo "INFO      | $(date) | Step #3: Subsample to N SNPs per locus/partition (-s
 if [[ "$MY_SUBSAMPLE_SNPS_SWITCH" = "1" ]]; then
 	echo "INFO      | $(date) | Found subsampleSNPs (-s) n set to 1. Continuing with this value... "
 elif [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "NULL" ]] && [[ "$MY_SUBSAMPLE_SNPS_SWITCH" != "1" ]]; then
-	echo "WARNING!  | $(date) | Incorrect specification: found subsampleSNPs (-s) n set >1; however, under current implementation, -s can only be used with "
-	echo "WARNING!  | $(date) |                          n=1. See Usage (-h). Forcing continue with a value of 1... "
+	echo "WARNING   | $(date) | Incorrect specification: found subsampleSNPs (-s) n set >1; however, under current implementation, -s can only be used with "
+	echo "WARNING   | $(date) |                          n=1. See Usage (-h). Forcing continue with a value of 1... "
 fi
 
 	## MAKE A TEMPORARY COPY OF THE VCF FILE TO DO SUBSEQUENT MANIPULATIONS WITH SO THAT
@@ -303,8 +303,8 @@ count=1
 		echo "INFO      | $(date) | Saving subsampled SNPs to file ${MY_OUTPUT_FILENAME}.subsampled.vcf "
 		cat ./header.tmp ./vcf.body.tmp > "$MY_OUTPUT_FILENAME".subsampled.vcf 
 	elif [[ "$MY_OUTPUT_FILENAME" = "NULL" ]] || [[ "$MY_OUTPUT_FILENAME" != "NULL" ]] && [[ ! -s ./vcf.body.tmp ]]; then
-		echo "WARNING!  | $(date) | Failed to save subsampled SNPs to file. This is probably because your FASTA file has one locus, or too few "
-		echo "WARNING!  | $(date) |    loci/variable sites. Please try with another FASTA file. "
+		echo "WARNING   | $(date) | Failed to save subsampled SNPs to file. This is probably because your FASTA file has one locus, or too few "
+		echo "WARNING   | $(date) |    loci/variable sites. Please try with another FASTA file. "
 	fi
 
 fi

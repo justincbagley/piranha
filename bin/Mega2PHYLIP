@@ -9,7 +9,7 @@
   VERSION="v1.2.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 14:09:06 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -223,7 +223,7 @@ fi
 
 			if [[ ! -z ./*.tmp ]]; then rm ./*.tmp; fi
 		else
-			echo "WARNING!  | $(date) | ERROR: Found no Mega file named $MY_INPUT_MEGA_FILE in working directory. Quitting... " 
+			echo "WARNING   | $(date) | ERROR: Found no Mega file named $MY_INPUT_MEGA_FILE in working directory. Quitting... " 
 			exit
 		fi
 	fi

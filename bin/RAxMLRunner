@@ -9,7 +9,7 @@
   VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 19 Aug 2016 00:33:27 -0300.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -163,7 +163,7 @@ echo "INFO      | $(date) | Checking for 'raxml_runner.cfg' configuration file..
 if [[ -f ./raxml_runner.cfg ]]; then 
 	echo "INFO      | $(date) | Configuration file check passed. Moving forward with .cfg file in current directory... "
 elif [[ ! -f ./raxml_runner.cfg ]]; then 
-	echo "WARNING!  | $(date) | Configuration file check FAILED. Copying default .cfg file into current directory... "
+	echo "WARNING   | $(date) | Configuration file check FAILED. Copying default .cfg file into current directory... "
 	cp "$CONFIG_FILE_LOCATION" . ;
 	echo "INFO      | $(date) | Please edit the default 'raxml_runner.cfg' configuration file just added so that \
 it includes all pertinent information (first 3 variables) before rerunning RAxMLRunner in this directory. "
@@ -220,7 +220,7 @@ cat ./sbatch_sub_top.txt ./cd_and_sbatch_commands.txt ./sbatch_sub_bottom.txt > 
 if [ -f ./raxmlrunner_sbatch_sub.sh ]; then
     echo "INFO      | $(date) | Batch queue submission file ('raxmlrunner_sbatch_sub.sh') successfully created. "
 else
-    echo "WARNING!  | $(date) | Something went wrong. Batch queue submission file ('raxmlrunner_sbatch_sub.sh') not created. Exiting... "
+    echo "WARNING   | $(date) | Something went wrong. Batch queue submission file ('raxmlrunner_sbatch_sub.sh') not created. Exiting... "
     exit
 fi
 

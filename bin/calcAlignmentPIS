@@ -9,7 +9,7 @@
   VERSION="v1.5.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -153,7 +153,7 @@ echo "INFO      | $(date) | Step #2: Create custom Rscript. "
 ############ II. CREATE CUSTOM RSCRIPT FOR ESTIMATING PARSIMONY INFORMATIVE SITES.
 echo "INFO      | $(date) | Building custom calcAlignmentPIS R script for calculating parsimony-informative sites (PIS) from FASTA files... "
 if [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
-	echo "WARNING!  | $(date) | NOTE: <keepFiles> switch turned off, so R script and R output files will be removed at the end of this run."
+	echo "WARNING   | $(date) | NOTE: <keepFiles> switch turned off, so R script and R output files will be removed at the end of this run."
 fi
 if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi
 if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi

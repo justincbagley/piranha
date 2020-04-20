@@ -9,7 +9,7 @@
   VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>                                               #
 #                                                                                        #
@@ -193,7 +193,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 	fi
 	if [[ "$MY_HEADER_CHECK" = "1" ]]; then
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			echo "WARNING!  | $(date) | PHYLIP header NOT detected... "
+			echo "WARNING   | $(date) | PHYLIP header NOT detected... "
 		fi
 		sed 's/^/\>/g' "$INPUT_PHYLIP_FILE" | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 	fi
@@ -205,7 +205,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 	perl -p -i -e 's/\t//g' "$MY_BASENAME".fas  ;
 #
 elif [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ ! -s "$INPUT_PHYLIP_FILE" ]]; then
-	echo "WARNING!  | $(date) | ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
+	echo "WARNING   | $(date) | ERROR: Found no PHYLIP file named $INPUT_PHYLIP_FILE in current working directory. Quitting... " 
 	exit ;
 fi
 
@@ -235,7 +235,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 				fi
 				if [[ "$MY_HEADER_CHECK" = "1" ]]; then
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-						echo "WARNING!  | $(date) | PHYLIP header NOT detected. Keeping first line... "
+						echo "WARNING   | $(date) | PHYLIP header NOT detected. Keeping first line... "
 					fi
 					sed 's/^/\>/g' "$i" | perl -pe $'s/\ +/\n/g' > "$MY_BASENAME".fas ;
 				fi
@@ -249,7 +249,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 			done
 		)
 	else
-		echo "WARNING!  | $(date) | ERROR: Found no PHYLIP files in current working directory. Quitting... " 
+		echo "WARNING   | $(date) | ERROR: Found no PHYLIP files in current working directory. Quitting... " 
 		exit ;
 	fi
 fi
