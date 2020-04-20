@@ -6,16 +6,16 @@
 # |                                                                                      #
 #                                                                                        #
 # File: phaseAlleles.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 15 17:10:14 CDT 2020.                       #
-# Last update: April 19, 2020                                                            #
+# Last update: April 20, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# Script for phasing alleles, while optionally transferring (masking) indel gaps from    #
-# the reference sequence to the output phased consensus sequences                        #
+# THIS SCRIPT PHASES ALLELES, WHILE OPTIONALLY TRANSFERRING (MASKING) INDEL GAPS FROM    #
+# THE REFERENCE SEQUENCE TO THE OUTPUT PHASED CONSENSUS SEQUENCES                        #
 #                                                                                        #
 ##########################################################################################
 
@@ -43,7 +43,6 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
 
@@ -57,7 +56,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -142,21 +140,18 @@ phaseAlleles () {
 ######################################## START ###########################################
 ##########################################################################################
 
-# echo "
-# ##########################################################################################
-# #                            phaseAlleles v1.0.0, April 2020                             #
-# ##########################################################################################
-# "
-
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | phaseAlleles, v1.0.0 April 2020                                   "
+echo "INFO      | $(date) | phaseAlleles, v1.0.1 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting phaseAlleles analysis... "
+echo "INFO      | $(date) | ----------------------------------- "
 echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
-################################# SETUP
+echo "INFO      | $(date) | ----------------------------------- "
+
+################################# 1. SETUP
 
 	###### A. START DEBUG MODE IF SET:
 	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
@@ -217,12 +212,20 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and d
 	checkMachineType
 
 
-echo "INFO      | $(date) | Step #2: Create list of BAM (=sample) folders in input dir... "
-################################# PREP WORK:
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | Step #2: Create list of BAM (=sample) subfolders in input dir... "
+echo "INFO      | $(date) | ----------------------------------- "
+
+################################# 2. PREP WORK:
+
 ## NOTE:  Starting dir: $MY_INPUT_DIR  (think: SECAPR remapped_reads_alldata/ subfolder)
 
 	####### A. MAKE SUBFOLDER LIST:
-	## Make BAM (=sample) folder list file and clean the file:
+	## Remove existing sample_runOrder list file if present (from prevoius phaseAlleles run):
+	if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi
+
+	## Make BAM (=sample) subfolder list file and clean the file:
+	echo "INFO      | $(date) | Making BAM subfolder list (file 'sample_runOrder.list.txt')... "
 (
 	for i in ./*/; do 
 		if [[ "$i" != "./backup/" ]] && [[ "$i" != "./reference_seqs/" ]] && [[ "$i" != "$(dirname "$MY_REFERENCE_FASTA")" ]] && [[ "$i" != "./allele_sequences/" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR")" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR" | sed 's/.*\///g; s/^/\.\//g; s/$/\//g')" ]]; then 
@@ -230,13 +233,23 @@ echo "INFO      | $(date) | Step #2: Create list of BAM (=sample) folders in inp
 		fi
 	done
 )
+	echo "INFO      | $(date) | Complete. " 
 
 
+echo "INFO      | $(date) | ----------------------------------- "
 echo "INFO      | $(date) | Step #3: Run main program, phase alleles and create phased consensus FASTAs... "
-################################# MAIN SCRIPT:
+echo "INFO      | $(date) | ----------------------------------- "
 
+################################# 3. MAIN SCRIPT:
+
+echo "INFO      | $(date) | Looping through sample BAM subfolders, conducting data checks, and phasing alleles... " 
 count=1
 MY_LIST=./sample_runOrder.list.txt
+if [[ -s "$MY_LIST" ]]; then 
+	echo "INFO      | $(date) | BAM subfolder list: ${MY_LIST} "
+	MY_NUM_SAMPLE_RUNS="$(wc -l ./sample_runOrder.list.txt | sed 's/\ \.\/.*//g; s/\ //g')";
+	echo "INFO      | $(date) | BAM subfolder list length: ${MY_NUM_SAMPLE_RUNS} "
+fi
 (
 	for i in $(cat "$MY_LIST"); do
 		
@@ -387,7 +400,7 @@ MY_LIST=./sample_runOrder.list.txt
 			if [[ "$(ls -1 ./*_allele.1.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele.1.bam "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/intermediate_files/ ;  fi 
 			if [[ "$(ls -1 ./*_allele.chimera.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele.chimera.bam "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/intermediate_files/ ;  fi
 
-			## Delete files remaining in sample BAM folder:
+			## Delete files remaining in sample BAM subfolder:
 			if [[ "$(ls -1 ./*_allele_0* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then rm ./*_allele_0* ; fi
 			if [[ "$(ls -1 ./*_allele_1* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then rm ./*_allele_1* ; fi
 			if [[ "$(ls -1 ./*_indel_0.fasta 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then rm ./*_indel_0.fasta ; fi
@@ -396,11 +409,21 @@ MY_LIST=./sample_runOrder.list.txt
 		cd ..;
 	done
 )
+	echo "INFO      | $(date) | Complete. " 
 
-	if [[ -s ./sample_runOrder.list.txt ]]; then mv ./sample_runOrder.list.txt "$MY_OUTPUT_DIR"; fi 
+	echo "INFO      | $(date) | Moving BAM subfolder list file to output dir... " 
+	if [[ -s ./sample_runOrder.list.txt ]]; then 
+		mv ./sample_runOrder.list.txt "$MY_OUTPUT_DIR"; 
+	fi 
+	echo "INFO      | $(date) | Complete. " 
 
 
+echo "INFO      | $(date) | ----------------------------------- "
 echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+echo "INFO      | $(date) | ----------------------------------- "
+
+################################# 4. CLEAN UP WORKSPACE 
+
 ###### Remove temporary or unnecessary files created above:
 echo "INFO      | $(date) | Removing temporary files... "
 	
@@ -431,7 +454,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 # ############ SCRIPT OPTIONS
 # ## OPTION DEFAULTS ##
-# MY_INPUT_DIR=NULL                          # Input dir containing remapped reads BAM file folders (1 '_remapped/' folder per sample, containing remapped read BAMs and regular unphased consensus)
+# MY_INPUT_DIR=NULL                          # Input dir containing remapped reads BAM file subfolders (1 '_remapped/' subfolder per sample, containing remapped read BAMs and regular unphased consensus)
 # MY_OUTPUT_DIR=NULL                         # Output dir where phased files will be stored, including phasing_lot.txt (output log file)
 # MY_MIN_BASE_QUAL=20                        # Minimum base quality to be used in het calling
 # MY_REFERENCE_FASTA=NULL                    # Name of reference fasta (e.g. from remapped_reads_alldata/ SECAPR folder (output of SECAPR step #5 - "Reference-based assembly" to remap reads; see https://htmlpreview.github.io/?https://raw.githubusercontent.com/AntonelliLab/seqcap_processor/master/docs/documentation/subdocs/reference_assembly.html   AND   https://github.com/AntonelliLab/seqcap_processor))
@@ -471,7 +494,7 @@ Usage: piranha -f $(basename "$0") [Options]...
  (Li et al. 2009). It is also assumed that the BAM subfolders are named using the sample name or 
  ID label.
 	By default, the program runs quietly with limited output to screen, and stderr and stdout
- are redirected to a log file in the output directory named 'phasing_log.txt'. Using the -v
+ are redirected to log files in the BAM subfolders, each named 'phasing_log.txt'. Using the -v
  (or --verbose) option sends verbose output (more information) to screen during the run. However,
  a verbose run could produce 10s–100s of megabytes of screen output, so this is not always 
  recommended, and it will usually be better to simply check the log file (e.g. if there are 
@@ -548,7 +571,7 @@ fi
 ############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
 	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
-	if [[ -s ./sample_runOrder.list.txt ]]; then rm sample_runOrder.list.txt ; fi ;
+	if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi ;
 	ALL_MY_ARGUMENTS="$(echo "$@")"
 	echo "$ALL_MY_ARGUMENTS" > ./args.txt
 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt

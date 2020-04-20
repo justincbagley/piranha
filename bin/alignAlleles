@@ -6,16 +6,16 @@
 # |                                                                                      #
 #                                                                                        #
 # File: alignAlleles.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 17 13:59:38 CDT 2020.                       #
-# Last update: April 19, 2020                                                            #
+# Last update: April 20, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # THIS SCRIPT ALIGNS AND CLEANS ALLELE SEQUENCES (PHASED DNA SEQUENCES) OUTPUT BY THE    #
-# PIrANHA FUNCTION phaseAlleles                                                          #
+# PIrANHA FUNCTION phaseAlleles (OR IN SIMILAR FORMAT)                                   #
 #                                                                                        #
 ##########################################################################################
 
@@ -38,7 +38,6 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
 
@@ -52,7 +51,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -78,9 +76,9 @@ safeExit () {
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
   fi
-#  if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi
-#  if [[ -s ./phaseAlleles_sample_runOrder.list.txt ]]; then rm ./phaseAlleles_sample_runOrder.list.txt ; fi 
-#  if [[ -s ./args.txt ]]; then rm ./args.txt ; fi
+  if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi
+  if [[ -s ./phaseAlleles_sample_runOrder.list.txt ]]; then rm ./phaseAlleles_sample_runOrder.list.txt ; fi 
+  if [[ -s ./args.txt ]]; then rm ./args.txt ; fi
   trap - INT TERM EXIT
   exit
 }
@@ -139,13 +137,15 @@ alignAlleles () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
-echo "INFO      | $(date) | alignAlleles, v1.0.0 April 2020                                " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | alignAlleles, v1.0.1 April 2020                                " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting alignAlleles analysis... " | tee -a "$MY_LOGFILE_SWITCH"
-echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | # Step #1: Set up workspace, check machine type, and determine output file settings. " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_LOGFILE_SWITCH"
 
 ################################# 1. SETUP
 
@@ -172,7 +172,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and d
 	## Starting directory:
 	MY_STARTING_DIR="$(printf '%q\n' "$(pwd)")";
 	
-	## cwd & input directory:
+	## PWD & input directory:
 	if [[ -s "$MY_INPUT_DIR" ]] && [[ "$MY_INPUT_DIR" != "NULL" ]]; then 
 		cd "$MY_INPUT_DIR" ;
 		echo "INFO      | $(date) | User-specified input path is: " | tee -a "$MY_LOGFILE_SWITCH"
@@ -210,7 +210,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and d
 		if [[ ! -s bad_genes/ ]]; then mkdir bad_genes/ ; fi
 		if [[ ! -s bad_genes/bad_genes.list.txt ]]; then echo "" > bad_genes/bad_genes.list.txt ; fi
 	cd "$MY_INPUT_DIR" ;
-	if [[ ! -s bad_genes.list.txt ]]; then echo "" > bad_genes.list.txt ; fi
+		if [[ ! -s ./bad_genes.list.txt ]]; then echo "" > bad_genes.list.txt ; fi
 
 	## Get absolute path to reference, and process reference to get sequence names/numbers:
 	MY_REFERENCE_FASTA="$(realpath "$MY_REFERENCE_FASTA")";
@@ -218,7 +218,10 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and d
 	echo "INFO      | $(date) | $MY_REFERENCE_FASTA" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	
 	if [[ -s ./ref_gene_names.list.txt ]]; then rm ./ref_gene_names.list.txt ; fi
+	echo "INFO      | $(date) | Making gene list... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	grep -h '^>' "$MY_REFERENCE_FASTA" | sed 's/\>//g' > ./ref_gene_names.list.txt ;
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Gene list:            ./ref_gene_names.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	MY_TOTAL_NUM_REF_GENES="$(wc -l ref_gene_names.list.txt | sed 's/\ ref\_.*//g; s/\ //g')";
 	echo "INFO      | $(date) | No. reference genes:  $MY_TOTAL_NUM_REF_GENES " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
@@ -228,6 +231,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and d
 	echo "INFO      | $(date) | Log file:             $MY_LOGFILE_SWITCH (def: aligning_log.txt) " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Verbose mode:         $MY_VERBOSE_OUT_SWITCH (0, off; 1, on) " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Debug mode:           $MY_DEBUG_MODE_SWITCH (0, off; 1, on) " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 	###### C. CALC FUNCTION:
 	calc () { 
@@ -238,7 +242,8 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and d
 	checkMachineType
 
 
-echo "INFO      | $(date) | Step #2: Create list of phased FASTA (=sample) subfolders in input dir. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | # Step #2: Create list of phased FASTA (=sample) subfolders in input dir. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 ################################# 2. PREP WORK: CREATE LIST OF GENE SUBFOLDERS
 
@@ -248,7 +253,8 @@ echo "INFO      | $(date) | Step #2: Create list of phased FASTA (=sample) subfo
 	## Remove existing sample_runOrder list file if present (from phaseAlleles):
 	if [[ -s ./sample_runOrder.list.txt  ]]; then mv ./sample_runOrder.list.txt ./phaseAlleles_sample_runOrder.list.txt ; fi
 
-	## Make FASTA (=sample) folder list file and clean the file:
+	## Make FASTA (=sample) subfolder list file and clean the file:
+	echo "INFO      | $(date) | Making FASTA subfolder list (file 'sample_runOrder.list.txt')... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 (
 	for i in ./*/; do 
 		if [[ "$i" != "./backup/" ]] && [[ "$i" != "./reference_seqs/" ]] && [[ "$i" != "$(dirname "$MY_REFERENCE_FASTA")" ]] && [[ "$i" != "./allele_sequences/" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR")" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR" | sed 's/.*\///g; s/^/\.\//g; s/$/\//g')" ]]; then 
@@ -256,9 +262,12 @@ echo "INFO      | $(date) | Step #2: Create list of phased FASTA (=sample) subfo
 		fi
 	done
 )
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 
-echo "INFO      | $(date) | Step #3: Run main program, make unaligned allele FASTA files, then align them using MAFFT. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | # Step #3: Run main program, make unaligned allele FASTA files, then align them using MAFFT. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 ################################# 3. MAIN SCRIPT: PREP, CONCATENATE, ALIGN & CLEAN PHASED SEQUENCES
 	
@@ -266,10 +275,12 @@ echo "INFO      | $(date) | Step #3: Run main program, make unaligned allele FAS
 
 	cd "$MY_INPUT_DIR" ;
 	echo "INFO      | $(date) | Current dir: $MY_INPUT_DIR" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | A. Making unaligned allele FASTA files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | - A. Making unaligned allele FASTA files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
-	### Make one single large concatenated file of all unaligned sequences by concatenating allele
-	### fastas (_0 and _1 files) for _ALL SAMPLES_.
+	### Make sequence database, consisting of one single large concatenated file of all unaligned 
+	### sequences, by concatenating allele fastas (_0 and _1 files) for _ALL SAMPLES_.
 	MY_LIST=./sample_runOrder.list.txt
 	if [[ -s "$MY_LIST" ]]; then 
 		echo "INFO      | $(date) | Sample list: ${MY_LIST} " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
@@ -277,6 +288,7 @@ echo "INFO      | $(date) | Step #3: Run main program, make unaligned allele FAS
 		echo "INFO      | $(date) | Sample list length: ${MY_NUM_SAMPLE_RUNS} " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	fi
 
+	echo "INFO      | $(date) | Making sequence database ('BIG_concat_unalign_allele_seqs.fasta')... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 count=1
 (
 	for i in $(cat "$MY_LIST"); do 
@@ -285,7 +297,7 @@ count=1
 			MY_EDITED_BASENAME="$(echo "$MY_BASENAME" | sed 's/\_phased//g')";
 			MY_SAMPLE_ID="$(echo "$i" | sed 's/\.\///g; s/\_.*//g')"; 
 			echo "$MY_SAMPLE_ID" >> ../sample_IDOrder.list.txt ;
-			echo "INFO      | $(date) | #################### Obtaining alleles for ${count}. ${MY_SAMPLE_ID}" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | ----------------- Obtaining alleles for ${count}. ${MY_SAMPLE_ID}" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | Basename: ${MY_BASENAME} " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH" 
 			echo "INFO      | $(date) | Edited basename: ${MY_EDITED_BASENAME} " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH" 
 			echo "INFO      | $(date) | Sample ID: ${MY_SAMPLE_ID} " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH" 
@@ -301,6 +313,7 @@ count=1
 		echo "$((count++)) "  >/dev/null 2>&1 ;
 	done
 )
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 	echo "INFO      | $(date) | Creating gene subfolders in output directory..." | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	### Make gene output subfolders:
@@ -311,17 +324,20 @@ count=1
 		fi		
 	done < ./ref_gene_names.list.txt
 )
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 	### Move sequences from each gene in the BIG concatenated file to alignments in the separate
 	### gene subfolders in output dir.
 	cd "$MY_INPUT_DIR" ;
 	echo "INFO      | $(date) | Current dir: $MY_INPUT_DIR" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | Fixing gene list to contain only 'good' genes (with data)... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Fixing gene list to contain only 'good' genes... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Fixing gene list to contain only 'good' genes... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	## Fix ref_gene_names.list.txt file to contain _ONLY_ names of the good genes with data:
 
 
 	### Make bash script for fixing gene name list to contain only good genes (with data), then
 	### give the script permissions and source the script.
+	echo "INFO      | $(date) | Creating bash script (file 'fix_ref_gene_list.sh')... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 echo "
 #!/usr/bin/env bash
@@ -345,7 +361,7 @@ count=1
 (
 $(printf '\t')while read GENE_NO; do
 $(printf '\t')$(printf '\t')# Data check
-$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) | #################### Data check for for \${count}. Gene\${GENE_NO} (originally: \${GENE_NO})\" | tee -a \"\$MY_INPUT_DIR\"\"\$MY_LOGFILE_SWITCH\"
+$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) | ----------------- Data check for for \${count}. Gene\${GENE_NO} (originally: \${GENE_NO})\" | tee -a \"\$MY_INPUT_DIR\"\"\$MY_LOGFILE_SWITCH\"
 $(printf '\t')$(printf '\t')MY_DATA_CHECK=\"\$(grep -h '\_Gene'\"\$GENE_NO\"'\_' ./BIG_concat_unalign_allele_seqs.fasta | wc -l | sed 's/\.\/.*//g; s/\ //g')\";
 $(printf '\t')$(printf '\t')if [[ \"\$MY_DATA_CHECK\" != \"0\" ]]; then
 $(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) | Data check1: \$MY_DATA_CHECK \" | tee -a \"\$MY_INPUT_DIR\"\"\$MY_LOGFILE_SWITCH\"
@@ -364,7 +380,7 @@ $(printf '\t')done < ./ref_gene_names.list.txt
 
 if [[ -s ./ref_good_gene_names.list.txt ]]; then 
 $(printf '\t')MY_NUM_GOOD_GENES=\"\$(wc -l ./ref_good_gene_names.list.txt | sed 's/\.\/.*//g; s/\ //g')\";
-$(printf '\t')echo \"INFO      | \$(date) | #################### Successfully created revised gene list. \" | tee -a \"\$MY_INPUT_DIR\"\"\$MY_LOGFILE_SWITCH\"
+$(printf '\t')echo \"INFO      | \$(date) | ----------------- Successfully created revised gene list. \" | tee -a \"\$MY_INPUT_DIR\"\"\$MY_LOGFILE_SWITCH\"
 $(printf '\t')echo \"INFO      | \$(date) | Revised gene list contains \${MY_NUM_GOOD_GENES} 'good' genes (with data)... \" | tee -a \"\$MY_INPUT_DIR\"\"\$MY_LOGFILE_SWITCH\"
 $(printf '\t')echo \"INFO      | \$(date) | See 'ref_good_gene_names.list.txt' for list of good genes. \" | tee -a \"\$MY_INPUT_DIR\"\"\$MY_LOGFILE_SWITCH\"
 fi
@@ -373,9 +389,11 @@ fi
 exit 0
 " > ./fix_ref_gene_list.sh
 
+		echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 		## Fix header of bash script (remove 1st empty line) and grant script execution permissions,
 		## taking care to do this differently for Mac vs. Linux machines:
+		echo "INFO      | $(date) | Fixing bash script header... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i '' '1d' ./fix_ref_gene_list.sh ;
 			chmod u+x ./fix_ref_gene_list.sh ; 
@@ -384,18 +402,22 @@ exit 0
 			chmod u+x ./fix_ref_gene_list.sh ; 
 		fi
 
+			echo "INFO      | $(date) | Running bash script... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 			/bin/bash ./fix_ref_gene_list.sh | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH" ; ## UNCOMMENT TO SILENCE THIS FIX REF SCRIPT:  >/dev/null 2>&1 ;
 			
 			sleep 5 ;
+			echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 		if [[ -s ./ref_good_gene_names.list.txt ]]; then 
+			echo "INFO      | $(date) | Moving resulting file to output dir... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 			cp ./ref_good_gene_names.list.txt "$MY_OUTPUT_DIR" ;
 		fi 
+		echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 count=1
 (
 	while read GENE_NO; do
-			echo "INFO      | $(date) | #################### Making allele alignment for ${count}. Gene${GENE_NO} (originally: ${GENE_NO})" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | ----------------- Making allele alignment for ${count}. Gene${GENE_NO} (originally: ${GENE_NO})" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | Looping through samples, adding alleles for current gene to FASTA file... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 			grep -A 1 '\_Gene'$GENE_NO'\_' ./BIG_concat_unalign_allele_seqs.fasta >> "$MY_OUTPUT_DIR""$GENE_NO"/Gene"$GENE_NO"_alleles.fasta ; 
 #
@@ -408,6 +430,7 @@ count=1
 		echo "$((count++)) "  >/dev/null 2>&1 ;
 	done < ./ref_good_gene_names.list.txt
 )
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 	## Remove odd "--" marks added to alignment files presumably during greap -A 1 calls 
 	## to generate the unaglined FASTAs.
@@ -427,20 +450,23 @@ count=1
 		fi
 	done < ./ref_good_gene_names.list.txt
 )	
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 
 
 	####### B. ALIGN THE ALLELE FASTA FILES IN MAFFT TO MAKE FINAL FILES (EXT '.aln'):
 
 	cd "$MY_INPUT_DIR" ;
-	echo "INFO      | $(date) | B. Aligning the allele FASTA files in MAFFT... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | - B. Aligning the allele FASTA files in MAFFT... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 count=1
 (
 	while read GENE_NO; do
 		echo "INFO      | $(date) | " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 		echo "INFO      | $(date) | " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
-		echo "INFO      | $(date) | #################### Aligning and cleaning alleles for ${count}. Gene${GENE_NO} (originally: ${GENE_NO})" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		echo "INFO      | $(date) | ----------------- Aligning and cleaning alleles for ${count}. Gene${GENE_NO} (originally: ${GENE_NO})" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 		cd "$MY_OUTPUT_DIR""$GENE_NO"/ ;
 			# FASTA FILE:  
 			i=Gene"$GENE_NO"_alleles.fasta
@@ -479,24 +505,61 @@ count=1
 		echo "$((count++)) "  >/dev/null 2>&1 ;
 	done < ./ref_good_gene_names.list.txt
 )
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 
 
 	####### C. ORGANIZE OUTPUT FILES
 
-	echo "INFO      | $(date) | C. Organize output files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | - C. Organizing output files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	cd "$MY_INPUT_DIR" ;	
 	echo "INFO      | $(date) | Current dir: $MY_INPUT_DIR" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | Organizing sample and gene list files, FASTA database (BIG file), and log file..." | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Organizing sample and gene list files, sequence database (BIG FASTA file), and log file..." | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Moving the following files to output directory:" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | (location: ${MY_OUTPUT_DIR})" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
-	if [[ -s ./sample_runOrder.list.txt ]]; then mv ./sample_runOrder.list.txt "$MY_OUTPUT_DIR"; fi 
-	if [[ -s ./sample_IDOrder.list.txt  ]]; then mv ./sample_IDOrder.list.txt  "$MY_OUTPUT_DIR"; fi
-	if [[ -s ./ref_gene_names.list.txt  ]]; then mv ./ref_gene_names.list.txt  "$MY_OUTPUT_DIR"; fi 
-	if [[ -s ./ref_good_gene_names.list.txt  ]]; then mv ./ref_good_gene_names.list.txt  "$MY_OUTPUT_DIR"; fi 
-	if [[ -s ./BIG_concat_unalign_allele_seqs.fasta ]]; then mv ./BIG_concat_unalign_allele_seqs.fasta "$MY_OUTPUT_DIR"; fi 
-	if [[ -s ./aligning_log.txt ]]; then mv ./aligning_log.txt "$MY_OUTPUT_DIR"; fi 
-	if [[ -s ./line_pairs.txt ]]; then mv ./line_pairs.txt "$MY_OUTPUT_DIR"; fi 
-	if [[ -s ./fix_ref_gene_list.sh ]]; then mv ./fix_ref_gene_list.sh "$MY_OUTPUT_DIR"; fi 
+	if [[ -s ./args.txt ]]; then 
+		echo "INFO      | $(date) | ./args.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./args.txt "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./sample_runOrder.list.txt ]]; then 
+		echo "INFO      | $(date) | ./sample_runOrder.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./sample_runOrder.list.txt "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./sample_IDOrder.list.txt  ]]; then 
+		echo "INFO      | $(date) | ./sample_IDOrder.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./sample_IDOrder.list.txt  "$MY_OUTPUT_DIR"; 
+	fi
+	if [[ -s ./ref_gene_names.list.txt  ]]; then 
+		echo "INFO      | $(date) | ./ref_gene_names.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./ref_gene_names.list.txt  "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./ref_good_gene_names.list.txt  ]]; then 
+		echo "INFO      | $(date) | ./ref_good_gene_names.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./ref_good_gene_names.list.txt  "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./BIG_concat_unalign_allele_seqs.fasta ]]; then 
+		echo "INFO      | $(date) | ./BIG_concat_unalign_allele_seqs.fasta " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./BIG_concat_unalign_allele_seqs.fasta "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./aligning_log.txt ]]; then 
+		echo "INFO      | $(date) | ./aligning_log.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./aligning_log.txt "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./line_pairs.txt ]]; then 
+		rm ./line_pairs.txt "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./fix_ref_gene_list.sh ]]; then 
+		echo "INFO      | $(date) | ./fix_ref_gene_list.sh " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./fix_ref_gene_list.sh "$MY_OUTPUT_DIR"; 
+	fi 
+	if [[ -s ./bad_genes.list.txt ]]; then 
+		echo "INFO      | $(date) | ./bad_genes.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+		mv ./bad_genes.list.txt "$MY_OUTPUT_DIR"; 
+	fi 
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 
 	echo "INFO      | $(date) | Organizing subfolders of 1) final mafft-aligned FASTAs and 2) final cleaned aligned FASTAs..." | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
@@ -513,23 +576,27 @@ count=1
 	done < ./ref_good_gene_names.list.txt
 )
 	cd "$MY_INPUT_DIR" ;	
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	
 
 
 	####### D. SUMMARIZE FINAL CLEANED FASTA FILES WITH FASTAsummary FUNCTION OF PIrANHA
 	
-	echo "INFO      | $(date) | D. Summarize final cleaned aligned FASTA files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | - D. Summarize final cleaned aligned FASTA files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	cd "$MY_OUTPUT_DIR" ;	
 	echo "INFO      | $(date) | Current dir: $MY_OUTPUT_DIR" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | " | tee -a "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | " | tee -a "$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | #################### Prepping and running FASTAsummary function of PIrANHA to summarize final cleaned aligned FASTAs... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | ----------------- Prepping and running FASTAsummary function of PIrANHA to summarize final cleaned aligned FASTAs... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	if [[ -s ./final_cleaned_alignments/ ]]; then 
 		cp -rf ./final_cleaned_alignments/ ./FASTAsummary/ ;
 		cd ./FASTAsummary/ ;
-			
+		echo "INFO      | $(date) | Current dir: $PWD" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+
 			MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
-			echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH"
+			echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 echo "#!/bin/sh
 
@@ -539,44 +606,84 @@ $MY_PIRANHA_PATH -f FASTAsummary -m 1
 
 			chmod u+x ./piranha_FASTAsummary.sh ;
 
-			. ./piranha_FASTAsummary.sh  >/dev/null 2>&1 ;
-			
-			sleep 5 ;
-			
-			echo "INFO      | $(date) | Organizing FASTAsummary output files (location: final_cleaned_alignments/)... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
-			if [[ "$(ls -1 ./*.fasta 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
-				rm ./*.fasta ;
-			fi
-			
-			mv ./piranha_FASTAsummary.sh ../final_cleaned_alignments/ ;
-			if [[ -s ./FASTA_Summary.txt ]]; then mv ./FASTA_Summary.txt ../final_cleaned_alignments/ ; fi ;
-			if [[ -s ./FASTA_PIS.list.txt ]]; then mv ./FASTA_PIS.list.txt ../final_cleaned_alignments/ ; fi ; 
-			if [[ -s ./pis_results_table_revsort.txt ]]; then mv ./pis_results_table_revsort.txt ../final_cleaned_alignments/ ; fi ; 
-			if [[ -s ./pis_results_table.txt ]]; then mv ./pis_results_table.txt ../final_cleaned_alignments/ ; fi ; 
-			if [[ -s ./FASTA_nChar.list.txt ]]; then mv ./FASTA_nChar.list.txt ../final_cleaned_alignments/ ; fi ; 
-			if [[ -s ./FASTA_nTax.list.txt ]]; then mv ./FASTA_nTax.list.txt ../final_cleaned_alignments/ ; fi ; 
+			echo "INFO      | $(date) | Running FASTAsummary... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+			. ./piranha_FASTAsummary.sh  >/dev/null 2>&1 ;			
 
-		cd ..;
+			sleep 5 ;
+
+			echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+			
+			echo "INFO      | $(date) | Organizing FASTAsummary output files (location: ${MY_OUTPUT_DIR}final_cleaned_alignments/)... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+			mv ./piranha_FASTAsummary.sh ../final_cleaned_alignments/ ;
+			if [[ -s ./FASTA_Summary.txt ]]; then 
+				echo "INFO      | $(date) | ./FASTA_Summary.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+				mv ./FASTA_Summary.txt ../final_cleaned_alignments/ ;
+			fi
+			if [[ -s ./FASTA_PIS.list.txt ]]; then 
+				echo "INFO      | $(date) | ./FASTA_PIS.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+				mv ./FASTA_PIS.list.txt ../final_cleaned_alignments/ ; 
+			fi
+			if [[ -s ./pis_results_table_revsort.txt ]]; then 
+				echo "INFO      | $(date) | ./pis_results_table_revsort.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+				mv ./pis_results_table_revsort.txt ../final_cleaned_alignments/ ; 
+			fi
+			if [[ -s ./pis_results_table.txt ]]; then 
+				echo "INFO      | $(date) | ./pis_results_table.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+				mv ./pis_results_table.txt ../final_cleaned_alignments/ ; 
+			fi
+			if [[ -s ./FASTA_nChar.list.txt ]]; then 
+				echo "INFO      | $(date) | ./FASTA_nChar.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+				mv ./FASTA_nChar.list.txt ../final_cleaned_alignments/ ; 
+			fi
+			if [[ -s ./FASTA_nTax.list.txt ]]; then 
+				echo "INFO      | $(date) | ./FASTA_nTax.list.txt " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+				mv ./FASTA_nTax.list.txt ../final_cleaned_alignments/ ; 
+			fi
+
+		cd ..; # Move out of FASTAsummary/ and into $MY_OUTPUT_DIR
 	fi 
 	rm -rf ./FASTAsummary/ ;
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 
-echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | # Step #4: Clean up workspace by removing temporary files generated during run. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 ################################# 4. CLEAN UP WORKSPACE 
 
-###### Remove temporary or unnecessary files created above:
-echo "INFO      | $(date) | Removing temporary files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+	cd "$MY_INPUT_DIR" ;	
+	echo "INFO      | $(date) | Current dir: $MY_INPUT_DIR" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+
+	###### Remove temporary or unnecessary files created above:
+	echo "INFO      | $(date) | Removing temporary files... " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 	
 	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
 		rm ./*.tmp ; 
 	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 echo "INFO      | Done." | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 echo "----------------------------------------------------------------------------------------------------------" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 echo "output file location: $MY_OUTPUT_DIR " | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 echo "" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
+
+
+	###### Fix the log files (1 copy in input dir, 1 in output dir):
+	cd "$MY_OUTPUT_DIR"
+		if [[ -s ./aligning_log.txt ]]; then 
+			cat ./aligning_log.txt "$MY_INPUT_DIR"aligning_log.txt > ./FILE ;
+			mv ./FILE ./aligning_log.txt ;
+			rm ./FILE ;
+		fi
+	cd "$MY_INPUT_DIR"
+		if [[ -s ./aligning_log.txt ]]; then 
+			cat "$MY_OUTPUT_DIR"aligning_log.txt ./aligning_log.txt > ./FILE ;
+			mv ./FILE ./aligning_log.txt ;
+			rm ./FILE ;		
+		fi
+
 
 
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
