@@ -3,6 +3,10 @@
 ### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
 ...
 
+### Updates since last pre-release (for PIrANHA v0.4a3 draft):
+
+- **April 18-20, 2020:** This update builds on the previous pre-release, v0.4a2, by adding minor bug fixes and improvements to several functions. With the addition of the new function `alignAlleles`, a companion script meant to be run directly after `phaseAlleles`, this release establishes a new workflow for phasing and aligning consensus sequences from HTS (e.g. targeted sequence capture data) based on reads (re)mapped to a reference assembly FASTA file (i.e. following reference-based assembly). This combination of programs was designed to be run on target capture data after first conducting cleaning, assembly, locus selection, and reference-based assembly (specifically, with SECAPR (Andermann et al. 2018) in mind, and with testing based on output from SECAPR).
+
 ### PIrANHA 0.4a2 (official minor pre-release version v0.4-alpha-2) - April 17, 2020
 
 - **April 13-17, 2020:** This update builds on the previous pre-release, v0.4a, by updating the main `prianha` script (including improvements to messaging and help text); addition of a new `phaseAlleles` function that automates phasing of consensus sequences from HTS (e.g. targeted sequence capture) based on a (re)mapped assembly reference FASTA; as well as minor updates to all functions (improved messaging and minor bug fixes).
