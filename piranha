@@ -9,7 +9,7 @@
   VERSION="v1.1.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: April 21, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -211,8 +211,8 @@ completeConcatSeqs     Function converting series of PHYLIP (Felsenstein 2002) D
                        taxon sampling; also makes character subset/partition files in RAxML, PartitionFinder, 
                        and NEXUS formats for the resulting alignment.
 completeSeqs           Function converting series of PHYLIP DNA sequence alignments (with or without varying nos. 
-                       of taxa) into a single concatenated PHYLIP alignment with complete taxon sampling, starting 
-                       from a 'taxon names and spaces' file.
+                       of taxa) into complete PHYLIP alignments (with complete taxon sampling), with missing taxa
+                       filled with dummy sequences (N's), starting from a 'taxon names and spaces' file.
 concatenateSeqs        Function that converts series of PHYLIP DNA sequence alignments with equal taxon sampling 
                        into a single concatenated PHYLIP alignment.
 concatSeqsPartitions   Function similar to concatenateSeqs, but which, in addition to concatenating the set of 
@@ -436,22 +436,13 @@ fi
 }
 
 
-# echo "$@"
-# echo "$#"
-# echo "$1" 
-#
-# for i in "$@"; do
-# echo "$i";
-# done
-
-
 ############## Begin Options and Usage ###################
 
 ## Print usage
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a2 (update Apr 17 12:27:41 EDT 2020).
+ This is the main script for PIrANHA v0.4a2 (update Apr 21 09:15:32 EDT 2020).
 
  ${bold}Options:${reset}
   -f, --func        Function, <function>
