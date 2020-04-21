@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: completeSeqs.sh                                                                  #
-  VERSION="v2.0.3"                                                                       #
+  VERSION="v2.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 17, 2020                                                            #
+# Last update: April 21, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -44,7 +44,6 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
 
@@ -58,7 +57,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -142,7 +140,7 @@ completeSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | completeSeqs, v2.0.3 April 2020                                "
+echo "INFO      | $(date) | completeSeqs, v2.0.4 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -150,18 +148,26 @@ echo "INFO      | $(date) |-----------------------------------------------------
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) | Starting completeSeqs analysis... "
 echo "INFO      | $(date) | Running with the following options: "
-echo "INFO      | $(date) | - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
-echo "INFO      | $(date) | - Missing character option, <missingCharacter> = ${MY_MISSING_CHAR} "	# def: N
-echo "INFO      | $(date) | - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "	# def: completeSeqs_output.txt
-echo "INFO      | $(date) | - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+echo "INFO      | $(date) | - Taxon names and spaces file, <taxonNamesSpaces>: ${USER_SPEC_NAMSPACES_FILE} "
+echo "INFO      | $(date) | - Missing character option, <missingCharacter>: ${MY_MISSING_CHAR} "	# def: N
+echo "INFO      | $(date) | - <outputFile> option: ${MY_OUTPUT_FILE_SWITCH} "	# def: completeSeqs_output.txt
+echo "INFO      | $(date) | - Verbose output switch, <verbose>: ${MY_VERBOSE_OUT_SWITCH} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
 #fi
+
+################################# 1. SETUP
+
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 checkMachineType
 
+	###### START DEBUG MODE IF SET:
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+
+################################# 2. OUTPUT FILE
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Set output file. "
@@ -173,6 +179,8 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	echo ""
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
+	echo "INFO      | $(date) | Step #2: Set output file. "
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
@@ -184,12 +192,16 @@ elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
 	echo ""
 	exec >> ./completeSeqs_output.txt ;
 	exec 2>&1 ;
+	echo "INFO      | $(date) | Step #2: Set output file. "
+	echo "INFO      | $(date) | Default output file settings. Logging output to file at ./completeSeqs_output.txt ... "
 #
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Default output file settings. Logging output to file at ./completeSeqs_output.txt ... "
 	fi
 fi
 
+
+################################# 3. RUN MAIN completeSeqs ANALYSIS
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #3: Run main completeSeqs analysis. "
@@ -198,10 +210,11 @@ fi
 count=1
 (
 	for i in ./*.phy; do
+
 		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
 		j="$i".tmp ;
 		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*[\ ]*//g; s/[\ ]//g')" ;
-		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
+		echo "INFO      | $(date) | ###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###" ;
 
 			while read line; do
 				MY_TAXON_NAME="$(echo "$line" | sed 's/\ //g')" ;
@@ -261,14 +274,13 @@ count=1
 							sed -i 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
 						fi
 					fi
-					
 				fi
 
 			done < "$USER_SPEC_NAMSPACES_FILE"
 
 	echo "$((count++))" > count.tmp ;
 	
-	# Overwrite original phy file $i with new edited tmp file $j
+	# Overwrite original PHYLIP file $i with new edited tmp file $j
 	# cp -f "$j" "$i" ;
 	# SKIP THIS FOR NOW! Just use $j during cat below...
 	
@@ -277,16 +289,18 @@ count=1
 
 	echo "$MY_PHY_NTAX  $MY_PHYLIP_NCHAR" > ./header.tmp ;
 
-	# Overwrite original phy file with new phy file:
+	# Overwrite original PHYLIP file with new PHYLIP file:
 	cat ./header.tmp "$j" > "$i" ;
 		
 	done
 )
 
 
+################################# 4. CLEAN UP WORKSPACE 
+
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
-	echo "INFO      | $(date) | Deleting temporary files... "
+	echo "INFO      | $(date) | Removing temporary files... "
 fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
@@ -306,6 +320,10 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$count" = "2" ]] || [[ "$count" 
 fi
 echo ""
 
+
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+###### END DEBUG MODE
+
 ##########################################################################################
 ######################################### END ############################################
 
@@ -317,15 +335,16 @@ echo ""
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -t   taxonNamesSpaces (def: NULL) mandatory taxon 'names and spaces' file
-  -c   missingCharacter (def: N; others: n, ?) character used to make strings of missing 
-       data representing sequences for missing individuals
-  -o   outputFile (def: NULL) send screen output to file in working dir with user-specified 
-       name, for example 'output.txt'
-  -v   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
-       screen (stdout)
-  -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version of this script and exit
+  -t, --taxa      taxonNamesSpaces (def: NULL) mandatory taxon 'names and spaces' file
+  -c, --char      missingCharacter (def: N; others: n, ?) character used to make strings of missing 
+                  data representing sequences for missing individuals
+  -o, --output    outputFile (def: NULL) send screen output to file in working dir with user-specified 
+                  name, for example 'output.txt'
+  -v, --verbose   verbose (def: 0, off; 1, on) specify verbose filename conversion and step output to
+                  screen (stdout)
+  -h, --help      echo this help text and exit
+  -V, --version   echo version of this script and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT runs in a working directory containing a series of PHYLIP (Felsenstein 2002)
@@ -414,47 +433,76 @@ fi
 	ALL_MY_ARGUMENTS="$(echo "$@")"
 	echo "$ALL_MY_ARGUMENTS" > ./args.txt
 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
-	#perl -p -i -e $'s/\ /\n/g' ./args.txt
-	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+	perl -p -i -e $'s/\-taxa/\-\-taxa/g' ./args.txt
+	perl -p -i -e $'s/\-char/\-\-char/g' ./args.txt
+	perl -p -i -e $'s/\-output/\-\-output/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
 
 
 ############ MANUALLY PARSE THE OPTIONS FROM ARGS
 
 ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
-	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-taxa' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		USER_SPEC_NAMSPACES_FILE=NULL ;
-	else 
+	elif [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-taxa' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		USER_SPEC_NAMSPACES_FILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-taxa' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-taxa' ./args.txt | perl -pe 's/\-\-taxa//g' | perl -pe 's/\ //g')";
 		USER_SPEC_NAMSPACES_FILE="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-char' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_MISSING_CHAR=N ;
-	else 
+	elif [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-char' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-c' ./args.txt | perl -pe 's/\-c//g' | perl -pe 's/\ //g')";
+		MY_MISSING_CHAR="$MY_ARG" ;
+	elif [[  "$(grep -h '\-c' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-char' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-char' ./args.txt | perl -pe 's/\-\-char//g' | perl -pe 's/\ //g')";
 		MY_MISSING_CHAR="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_OUTPUT_FILE_SWITCH=NULL ;
-	else 
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-output' ./args.txt | perl -pe 's/\-\-output//g' | perl -pe 's/\ //g')";
 		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_VERBOSE_OUT_SWITCH=0 ;
-	else 
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
 	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+#
 
 
 # ############ PARSE THE OPTIONS
-# while getopts 't:o:v:' opt ; do
+# while getopts 't:c:o:v:' opt ; do
 #   case $opt in
 # ## completeSeqs options:
 #     t) USER_SPEC_NAMSPACES_FILE=$OPTARG ;;
+#     c) MY_MISSING_CHAR=$OPTARG ;;
 #     o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
 #     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
 # ## Missing and illegal options:

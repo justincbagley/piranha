@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.6.0"                                                                       #
+  VERSION="v1.6.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
 # Last update: April 21, 2020                                                            #
@@ -141,7 +141,7 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.6.0 April 2020                               "
+echo "INFO      | $(date) | dropRandomHap, v1.6.1 April 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -167,7 +167,7 @@ echo "INFO      | $(date) | Step #2: Set log file. "
 if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
 	MY_LOGFILE_SWITCH="$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | dropRandomHap, v1.6.0 April 2020                               " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | dropRandomHap, v1.6.1 April 2020                               " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Starting dropRandomHap analysis... " >> "$MY_LOGFILE_SWITCH"
@@ -176,7 +176,7 @@ if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
 else
 	MY_LOGFILE_SWITCH=./dropRandomHap_output.txt
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | dropRandomHap, v1.6.0 April 2020                               " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | dropRandomHap, v1.6.1 April 2020                               " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Starting dropRandomHap analysis... " >> "$MY_LOGFILE_SWITCH"
@@ -302,19 +302,31 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]
 			echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
 
+			## Remove allele designations from final PHYLIP files with search and replace:
+			echo "INFO      | $(date) | Cleaning reduced PHYLIP taxon names by removing allele designations... " | tee -a "$MY_LOGFILE_SWITCH"
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+			fi
+
 		done
 	)
 fi
 ###
+echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
 
 
 ###
 if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
 	echo "INFO      | $(date) | Running on multiple PHYLIP files in current directory... " | tee -a "$MY_LOGFILE_SWITCH"
 	MY_NUM_PHYLIP_FILES="$(ls ./*.phy | wc -l | sed 's/\ //g')";
-	echo "INFO      | $(date) | No. PHYLIP files:         ${MY_NUM_PHYLIP_FILES}"
+	echo "INFO      | $(date) | No. PHYLIP files:         ${MY_NUM_PHYLIP_FILES}" | tee -a "$MY_LOGFILE_SWITCH"
 	(
 		for i in ./*.phy; do
+
 			echo "INFO      | $(date) | ###--------------   $i   --------------###" | tee -a "$MY_LOGFILE_SWITCH"
 			MY_PHYLIP_BASENAME="$(basename "$i" '.phy')";
 			MY_NTAX="$(head -n1 "$i" | perl -pe  's/\ +.*//g')";
@@ -418,11 +430,23 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 			echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
-			
+
+			## Remove allele designations from final PHYLIP files with search and replace:
+			echo "INFO      | $(date) | Cleaning reduced PHYLIP taxon names by removing allele designations... " | tee -a "$MY_LOGFILE_SWITCH"
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+			fi
+
 		done
 	)
 fi
 ###
+echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+
 
 ################################# 4. CLEAN UP WORKSPACE 
 

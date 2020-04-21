@@ -9,7 +9,7 @@
   VERSION="v2.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 12 19:11:08 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: April 21, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -40,7 +40,6 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
 
@@ -54,7 +53,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -170,6 +168,19 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "
 	echo ""
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
+	echo "INFO      | $(date) |----------------------------------------------------------------"
+	echo "INFO      | $(date) | completeConcatSeqs, v2.0.4 April 2020                          "
+	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+	echo "INFO      | $(date) |----------------------------------------------------------------"
+	echo "INFO      | $(date) | Starting completeConcatSeqs analysis... "
+	echo "INFO      | $(date) | Running with the following options: "
+	echo "INFO      | $(date) | - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+	echo "INFO      | $(date) | - Missing character option, <missingCharacter> = ${MY_MISSING_CHAR} "	# def: N
+	echo "INFO      | $(date) | - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "	# def: NULL, saves output to 'completeConcatSeqs_output.txt'
+	echo "INFO      | $(date) | - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+	echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+	echo "INFO      | $(date) | Step #2: Set output file. "
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 fi
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -180,6 +191,19 @@ if [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]] &&  [[ "$MY_OUTPUT_FILE_SWITCH" != "0
 	echo ""
 	exec >> ./completeConcatSeqs_output.txt ;
 	exec 2>&1 ;
+	echo "INFO      | $(date) |----------------------------------------------------------------"
+	echo "INFO      | $(date) | completeConcatSeqs, v2.0.4 April 2020                          "
+	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+	echo "INFO      | $(date) |----------------------------------------------------------------"
+	echo "INFO      | $(date) | Starting completeConcatSeqs analysis... "
+	echo "INFO      | $(date) | Running with the following options: "
+	echo "INFO      | $(date) | - Taxon names and spaces file, <taxonNamesSpaces> = ${USER_SPEC_NAMSPACES_FILE} "
+	echo "INFO      | $(date) | - Missing character option, <missingCharacter> = ${MY_MISSING_CHAR} "	# def: N
+	echo "INFO      | $(date) | - <outputFile> option = ${MY_OUTPUT_FILE_SWITCH} "	# def: NULL, saves output to 'completeConcatSeqs_output.txt'
+	echo "INFO      | $(date) | - Verbose output switch, <verbose> = ${MY_VERBOSE_OUT_SWITCH} "
+	echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+	echo "INFO      | $(date) | Step #2: Set output file. "
+	echo "INFO      | $(date) | Default output file settings. Logging output to file at ./completeConcatSeqs_output.txt ... "
 fi
 
 if [[ "$MY_OUTPUT_FILE_SWITCH" = "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
