@@ -6,17 +6,16 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.5.1"                                                                       #
+  VERSION="v1.6.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 17, 2020                                                            #
+# Last update: April 21, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
-# SHELL SCRIPT TO RANDOMLY DROP ONE PHASED HAPLOTYPE (ALLELE) PER PHASED INDIVIDUAL IN   #
-# EACH OF N PHYLIP GENE ALIGNMENTS IN CURRENT WORKING DIRECTORY, STARTING FROM A TAXON   #
-# NAMES FILE                                                                             #
+# SHELL SCRIPT TO RANDOMLY DROP ONE PHASED HAPLOTYPE (ALLELE) PER INDIVIDUAL IN ONE OR   #
+# MULTIPLE PHYLIP DNA SEQUENCE ALIGNMENTS IN CURRENT WORKING DIRECTORY                   #
 #                                                                                        #
 ##########################################################################################
 
@@ -44,7 +43,6 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
 
@@ -58,7 +56,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -84,6 +81,8 @@ safeExit () {
   if is_dir "${tmpDir}"; then
     rm -r "${tmpDir}"
   fi
+  if [[ -s ./args.txt ]]; then rm ./args.txt ; fi
+#  if [[ -s ./dropRandomHap_output.txt ]]; then rm ./dropRandomHap_output.txt ; fi 
   trap - INT TERM EXIT
   exit
 }
@@ -142,14 +141,17 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.5.1 April 2020                               "
+echo "INFO      | $(date) | dropRandomHap, v1.6.0 April 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting dropRandomHap analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
-############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+
+################################# 1. SETUP
+
+#### SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 checkMachineType
@@ -159,162 +161,286 @@ checkMachineType
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
 
-echo "INFO      | $(date) | Step #2: Set output file. "
-if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
-	exec 2>&1 ;
-	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
-elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
-	exec >> ./dropRandomHap_output.txt ;
-	exec 2>&1 ;
-	echo "INFO      | $(date) | Default output file settings. Logging output to file at ./dropRandomHap_output.txt ... "
+################################# 2. LOG FILE
+
+echo "INFO      | $(date) | Step #2: Set log file. "
+if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
+	MY_LOGFILE_SWITCH="$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | dropRandomHap, v1.6.0 April 2020                               " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Starting dropRandomHap analysis... " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Step #2: Set output file. " >> "$MY_LOGFILE_SWITCH"
+else
+	MY_LOGFILE_SWITCH=./dropRandomHap_output.txt
+	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | dropRandomHap, v1.6.0 April 2020                               " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Starting dropRandomHap analysis... " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | Step #2: Set output file. " >> "$MY_LOGFILE_SWITCH"
 fi
 
 
-echo "INFO      | $(date) | Step #3: Prep taxon names file to contain only basenames that are randomized in order. "
-###### PREP TAXON NAMES FILE SO THAT IT CONTAINS ONLY BASENAMES, AND THE BASENAMES ARE 
-###### COMPLETELY RANDOMIZED.
-## Check and if necessary reduce taxon names file to only unique basenames using in-place 
-## search and replacement while accounting for machine type (either macOS or Linux), followed 
-## by a unique sort command and file replacement:
+################################# 3. MAIN dropRandomHap FUNCTION
 
-	## Taxon names check/fix:
-	MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' $USER_SPEC_TAXNAMES_FILE | wc -l | perl -pe 's/\t//g; s/\ //g')";
-	if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
+echo "INFO      | $(date) | Step #3: Run main dropRandomHap function to randomly drop one phased haplotype (allele) per individual, per gene. " | tee -a "$MY_LOGFILE_SWITCH"
 
-		if [[ "${machine}" = "Mac" ]]; then
-			sed -i.bak 's/\_0$//g; s/\_1$//g' "$USER_SPEC_TAXNAMES_FILE" ;
-			rm ./*.bak;
-		fi
+if [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then 
+	if [[ -s ./orig_phylip/ ]]; then mv orig_phylip/ orig_phylip-1/ ; mkdir orig_phylip/ ; fi
+	if [[ ! -s ./orig_phylip/ ]]; then mkdir orig_phylip/ ; fi
+fi
 
-		if [[ "${machine}" = "Linux" ]]; then
-			sed -i 's/\_0$//g; s/\_1$//g' "$USER_SPEC_TAXNAMES_FILE" ;
-		fi
-	fi
-
-	# Get unique basenames only and replace file:
-	sort -u "$USER_SPEC_TAXNAMES_FILE" > "$USER_SPEC_TAXNAMES_FILE".tmp ;
-	mv "$USER_SPEC_TAXNAMES_FILE".tmp "$USER_SPEC_TAXNAMES_FILE" ;
-	if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
-
+if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]; then
+	echo "INFO      | $(date) | Running on single input file: ${INPUT_PHYLIP_FILE} " | tee -a "$MY_LOGFILE_SWITCH"
+	(
+		for i in "$INPUT_PHYLIP_FILE"; do
+			echo "INFO      | $(date) | ###--------------   $i   --------------###" | tee -a "$MY_LOGFILE_SWITCH"
+			MY_PHYLIP_BASENAME="$(basename "$i" '.phy')";
+			MY_NTAX="$(head -n1 "$i" | perl -pe  's/\ +.*//g')";
+			MY_NCHAR="$(head -n1 "$i" | sed 's/^[0-9]*\ //g')";
+			echo "INFO      | $(date) | Basename: ${MY_PHYLIP_BASENAME} " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | No. taxa: ${MY_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
+			
+			###### GOALS: FOR EACH PHYLIP FILE...
+			## Get taxon names, making sure that list contains only basenames by using in-place search
+			## and replace followed by a unique sort command. Goal is 1) to obtain taxon names file with
+			## basenames by removing allele designations, if present. Then will 2) randomize PHYLIP file
+			## "$i" and save file with randomized sequence (row) order to tmp file, and finish by 3) looping
+			## through taxon names in file from #1 and grepping out first matching sequence/line in randomized
+			## PHY tmp file from #2. Appending redirects in #3 will create final file of one random allele 
+			## (haplotype) per taxon/species (basename). After making new reduced PHYLIP file, next 4) update
+			## the PHYLIP header to reflect new number of taxa in the file.
+			
+			## 1. Taxon names. - Make taxon names file of unique basenames with allele designations removed (if present):
+			echo "INFO      | $(date) | Making taxon names file ... " | tee -a "$MY_LOGFILE_SWITCH"
+			cp "$i" "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+			perl -p -i -e 's/\ +.*//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Isolate taxon names
 	
-## Now that you have only unique tip taxon basenames, randomize them by making a shuffle 
-## perl function that shuffles order in a completely random way (idea from URL: 
-## https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel/2153897)
-## and then using that function to randomize the <taxonNamesFile> lines, as follows:
-#	shuffle () {
-#		perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$1"
-#}
-#
-#	MY_TAXNAMES_FILE_BASENAME="$(echo $USER_SPEC_TAXNAMES_FILE | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')"
-#
-#	shuffle "$USER_SPEC_TAXNAMES_FILE" > ./"$MY_TAXNAMES_FILE_BASENAME"_random.txt
-
-## Below is a new function for shuffling taxon names file, assuming it is a text file with 
-## extension '.txt'. During some tests, the previous Perl-based shuffle code performed well
-## with numeric taxon names but did not function properly with alphanumeric taxon names,
-## which are common in phylogenomics. The function, text_shuffle, is as follows:
-
-text_shuffle () {
-	MY_TAXNAMES_FILE_BASENAME="$(basename $1 .txt)"
-	MY_NUM_LINES="$( wc -l $1 | perl -pe $'s/\t//g; s/\ //g' | sed 's/\(^[0-9]*\).*/\1/g' )"
-(	for i in $(seq 1 "$MY_NUM_LINES"); do echo "$i" >> seq.tmp; done  )
-	perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < seq.tmp > seq.rand.tmp
-	if [[ -s ./seq.tmp ]]; then rm ./seq.tmp ; fi
-(	
-	while read line; do
-		sed -n ''"$line"'p' "$1" >> ./"$MY_TAXNAMES_FILE_BASENAME"_shuffle.txt ;
-	done < seq.rand.tmp
-)
-	if [[ -s ./seq.rand.tmp ]]; then rm ./seq.rand.tmp ; fi
-	#rm "$1"
-}
-
-## DON'T FORGET TO RUN THE FUNCTION!!!
-text_shuffle "$USER_SPEC_TAXNAMES_FILE"
-
-
-echo "INFO      | $(date) | Step #4: Run main dropRandomHap function to randomly drop one phased haplotype (allele) per individual, per gene. "
-###### RANDOMLY DROP ONE PHASED HAPLOTYPE (ALLELE) PER INDIVIDUAL, PER GENE.
-## Now that taxon labels are randomized basenames (minus the _0 and _1 phased haplotype
-## designations) in a list file, we can use a while loop to go through this list, extract each 
-## individual basename, & count the number of instances of that basename in a the PHYLIP file
-## for a given gene at that point of the loop. Then, if the number of instances is one we
-## simply delete the phase designation (_0, or could be _0 or _1??) and keep that individual, 
-## but if the number of instances is 2 (which should be much more common) then we use a sed 
-## command to remove the first instance of the individual which will be randomly 0 or 1 
-## (haplotype 0 or 1) because the <taxonNamesFile> name order is now completely random due 
-## to our shuffle step above! Last, just find the second instance of the current basename (at 
-## a given point in while loop) and remove the phased haplotype designation, which could be 
-## randomly _0 or _1). We do this by creating and executing the dropRandomHap function, as 
-## follows:
-
-(
-	for i in ./*.phy; do
-		echo "###--------------   $i   --------------###"
-		while read j; do
-			MY_TAXON_BASENAME="$(echo $j | sed 's/\_[01]\{1\}$//' | sed 's/\ //g')";
-			MY_N_IND_INSTS="$(grep -n "$MY_TAXON_BASENAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')";
-			echo "$MY_TAXON_BASENAME  $MY_N_IND_INSTS"
-
-			if [[ "$MY_N_IND_INSTS" = "0" ]]; then
-				## If 0 instances, do nothing:
-				echo "."
-
-			elif [[ "$MY_N_IND_INSTS" = "1" ]]; then
-				## If 1 instance of an individual, then it is not phased, so we keep the 
-				## individual (whole line) in $i, but make sure to replace phased hapoltype 
-				## designation (could be _0 or _1??) with spaces:
-#				perl -pi -e 's/$MY_TAXON_BASENAME\_[01]{1}/$MY_TAXON_BASENAME\ \ /' "$i" ;
-				perl -pi -e 's/$MY_TAXON_BASENAME\_[01]{1}\ /$MY_TAXON_BASENAME\ \ \ /' "$i" ;
-
-			elif [[ "$MY_N_IND_INSTS" = "2" ]]; then
-				## Remove first instance of phased individual basename by removing complete
-				## line from $i using sed d, and then replace phased haplotype designation 
-				## (_0 or _1) with spaces. 
-				MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_BASENAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')";
-				echo "$MY_1ST_INST_LINE"
-
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Mac
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Linux
+			fi
+	
+			## Taxon names check for allele designations:
+			MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' "$MY_PHYLIP_BASENAME"_taxon_names.tmp | wc -l | perl -pe 's/\t//g; s/\ //g')";
+	
+			## Conditionally remove allele designations:
+			echo "INFO      | $(date) | Checking for allele designations (_0 and _1) in taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+			if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
+				echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
 				if [[ "${machine}" = "Mac" ]]; then
-					# Delete nth = $MY_1ST_INST_LINE line of file with sed (=easy!):
-					sed -i.bak ''"$MY_1ST_INST_LINE"'d' "$i" ;
-
-					sed -i.bak 's/'"$MY_TAXON_BASENAME"'\_0\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
-					sed -i.bak 's/'"$MY_TAXON_BASENAME"'\_1\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
+					sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
 					rm ./*.bak;
 				fi
-
 				if [[ "${machine}" = "Linux" ]]; then
-					# Delete nth = $MY_1ST_INST_LINE line of file with sed (=easy!):
-					sed -i ''"$MY_1ST_INST_LINE"'d' "$i" ;
-
-					sed -i 's/'"$MY_TAXON_BASENAME"'\_0\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
-					sed -i 's/'"$MY_TAXON_BASENAME"'\_1\ /'"$MY_TAXON_BASENAME"'\ \ \ /g' "$i" ;
+					sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
 				fi
 			fi
-		done < ./"$MY_TAXNAMES_FILE_BASENAME"_shuffle.txt ;
+			
+			# Get unique basenames only make final alt file:
+			sort -u "$MY_PHYLIP_BASENAME"_taxon_names.tmp > "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+			rm "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+	
+	
+			## 2. Shuffle PHYLIP - Shuffle PHYLIP file to have random sequence order (randomize row order) 
+			## using Perl (idea from URL: https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel)
+			## ...and conditionally save shuffled PHYLIP in separate temporary file, leaving original untouched, 
+			## when user invokes -k 1 option.
+			echo "INFO      | $(date) | Shuffling PHYLIP file, randomizing row order... " | tee -a "$MY_LOGFILE_SWITCH"
 
-		## Since we've deleted indiv's, we now have a different number of lines in the file, so 
-		## we can borrow from my existing code above to count lines and fix first entry in PHYLIP 
-		## header to reflect correct number of lines:
-		MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
-		MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
+			perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$i" > "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp  ;
+	
+			## 3. Loop through taxon names from #1, grep out 1st matches from #2, replacing original
+			## file unless user calls -k 1 to keep originals:
+			echo "INFO      | $(date) | Looping through taxon names... " | tee -a "$MY_LOGFILE_SWITCH"
+			if [[ "$MY_KEEP_PHYLIP_SWITCH" = "0" ]]; then
+				rm "$i" ;
+				(
+					while read line; do
+						MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
+						if [[ "$MY_RAND_NO" = "1" ]]; then
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						else
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						fi
+					done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+				)
+			elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
+				mv "$i" ./orig_phylip/ ;
+				(
+					while read line; do
+						MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
+						if [[ "$MY_RAND_NO" = "1" ]]; then
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						else
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						fi
+					done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+				)
+			fi
+			
+			## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
+			## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
+			## number of lines (and same/original number of characters):
+			echo "INFO      | $(date) | Fixing reduced PHYLIP header... " | tee -a "$MY_LOGFILE_SWITCH"
+			MY_CORR_NTAX="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+			echo "$MY_CORR_NTAX  $MY_NCHAR" > header.tmp ;
+			mv "$MY_PHYLIP_BASENAME".phy "$MY_PHYLIP_BASENAME".phy.tmp ; 
 
-		if [[ "${machine}" = "Mac" ]]; then
-			sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
-			rm ./*.bak;
-		fi
+			echo "INFO      | $(date) | Making final reduced PHYLIP... " | tee -a "$MY_LOGFILE_SWITCH"
+			cat header.tmp "$MY_PHYLIP_BASENAME".phy.tmp > "$MY_PHYLIP_BASENAME".phy ;
+			rm header.tmp ;
+			echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
 
-		if [[ "${machine}" = "Linux" ]]; then
-			sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
-		fi
+		done
+	)
+fi
+###
 
-	done
-)
 
-echo "INFO      | $(date) | Done." 
-echo "----------------------------------------------------------------------------------------------------------"
-echo ""
+###
+if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]]; then
+	echo "INFO      | $(date) | Running on multiple PHYLIP files in current directory... " | tee -a "$MY_LOGFILE_SWITCH"
+	MY_NUM_PHYLIP_FILES="$(ls ./*.phy | wc -l | sed 's/\ //g')";
+	echo "INFO      | $(date) | No. PHYLIP files:         ${MY_NUM_PHYLIP_FILES}"
+	(
+		for i in ./*.phy; do
+			echo "INFO      | $(date) | ###--------------   $i   --------------###" | tee -a "$MY_LOGFILE_SWITCH"
+			MY_PHYLIP_BASENAME="$(basename "$i" '.phy')";
+			MY_NTAX="$(head -n1 "$i" | perl -pe  's/\ +.*//g')";
+			MY_NCHAR="$(head -n1 "$i" | sed 's/^[0-9]*\ //g')";
+			echo "INFO      | $(date) | Basename: ${MY_PHYLIP_BASENAME} " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | No. taxa: ${MY_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
+			
+			###### GOALS: FOR EACH PHYLIP FILE...
+			## Get taxon names, making sure that list contains only basenames by using in-place search
+			## and replace followed by a unique sort command. Goal is 1) to obtain taxon names file with
+			## basenames by removing allele designations, if present. Then will 2) randomize PHYLIP file
+			## "$i" and save file with randomized sequence (row) order to tmp file, and finish by 3) looping
+			## through taxon names in file from #1 and grepping out first matching sequence/line in randomized
+			## PHY tmp file from #2. Appending redirects in #3 will create final file of one random allele 
+			## (haplotype) per taxon/species (basename). After making new reduced PHYLIP file, next 4) update
+			## the PHYLIP header to reflect new number of taxa in the file.
+			
+			## 1. Taxon names. - Make taxon names file of unique basenames with allele designations removed (if present):
+			echo "INFO      | $(date) | Making taxon names file ... "
+			cp "$i" "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+			perl -p -i -e 's/\ +.*//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Isolate taxon names
+	
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Mac
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Linux
+			fi
+	
+			## Taxon names check for allele designations:
+			MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' "$MY_PHYLIP_BASENAME"_taxon_names.tmp | wc -l | perl -pe 's/\t//g; s/\ //g')";
+	
+			## Conditionally remove allele designations:
+			echo "INFO      | $(date) | Checking for allele designations (_0 and _1) in taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+			if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
+				echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+				fi
+			fi
+			
+			# Get unique basenames only make final alt file:
+			sort -u "$MY_PHYLIP_BASENAME"_taxon_names.tmp > "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+			rm "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+	
+	
+			## 2. Shuffle PHYLIP - Shuffle PHYLIP file to have random sequence order (randomize row order) 
+			## using Perl (idea from URL: https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel)
+			## ...and conditionally save shuffled PHYLIP in separate temporary file, leaving original untouched, 
+			## when user invokes -k 1 option.
+			echo "INFO      | $(date) | Shuffling PHYLIP file, randomizing row order... " | tee -a "$MY_LOGFILE_SWITCH"
+
+			perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$i" > "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp  ;
+	
+			## 3. Loop through taxon names from #1, grep out 1st matches from #2, replacing original
+			## file unless user calls -k 1 to keep originals:
+			echo "INFO      | $(date) | Looping through taxon names... " | tee -a "$MY_LOGFILE_SWITCH"
+			if [[ "$MY_KEEP_PHYLIP_SWITCH" = "0" ]]; then
+				rm "$i" ;
+				(
+					while read line; do
+						MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
+						if [[ "$MY_RAND_NO" = "1" ]]; then
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						else
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						fi
+					done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+				)
+			elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
+				mv "$i" ./orig_phylip/ ;
+				(
+					while read line; do
+						MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
+						if [[ "$MY_RAND_NO" = "1" ]]; then
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						else
+							grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+						fi
+					done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+				)
+			fi
+			
+			## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
+			## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
+			## number of lines (and same/original number of characters):
+			echo "INFO      | $(date) | Fixing reduced PHYLIP header... " | tee -a "$MY_LOGFILE_SWITCH"
+			MY_CORR_NTAX="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+			echo "$MY_CORR_NTAX  $MY_NCHAR" > header.tmp ;
+			mv "$MY_PHYLIP_BASENAME".phy "$MY_PHYLIP_BASENAME".phy.tmp ; 
+
+			echo "INFO      | $(date) | Making final reduced PHYLIP... " | tee -a "$MY_LOGFILE_SWITCH"
+			cat header.tmp "$MY_PHYLIP_BASENAME".phy.tmp > "$MY_PHYLIP_BASENAME".phy ;
+			rm header.tmp ;
+			echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
+			
+		done
+	)
+fi
+###
+
+################################# 4. CLEAN UP WORKSPACE 
+
+echo "INFO      | $(date) | # Step #4: Clean up workspace by removing temporary files generated during run. " | tee -a "$MY_LOGFILE_SWITCH"
+
+	###### Remove temporary or unnecessary files created above:
+	echo "INFO      | $(date) | Removing temporary files... " | tee -a "$MY_LOGFILE_SWITCH"
+	
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+
+
+echo "INFO      | $(date) | Done."  | tee -a "$MY_LOGFILE_SWITCH"
+echo "----------------------------------------------------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
+echo "" | tee -a "$MY_LOGFILE_SWITCH"
 
 
 ## END DEBUG MODE
@@ -329,63 +455,66 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ SCRIPT OPTIONS
-USER_SPEC_TAXNAMES_FILE=NULL
-MY_OUTPUT_FILE_SWITCH=NULL
-MY_DEBUG_MODE_SWITCH=0
+# INPUT_PHYLIP_FILE=NULL
+# MULTIPLE_PHYLIP_SWITCH=0
+# MY_KEEP_PHYLIP_SWITCH=0
+# USER_SPEC_TAXNAMES_FILE=NULL
+# MY_LOGFILE_SWITCH=NULL
+# MY_DEBUG_MODE_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -t   taxonNamesFile (def: NULL) mandatory taxon names file
-  -o   outputFile (def: NULL) send all output (stdout and stderr) to file in workingDir with 
-       this name, for example 'output.txt'.
-  -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version of this script and exit
-  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
+  -i, --input     inputPHYLIP (def: NULL) name of input PHYLIP DNA sequence alignment file
+  -m, --multi     multiPHYLIP (def: 0, turned off; 1, on) whether or not to subsample multiple   
+                  PHYLIP DNA sequence alignment files in current working directory
+  -k, --keep      keepPHYLIP (def: 0, off; 1, on) whether or not to keep the original PHYLIP 
+                  files; if invoked, originals are stored in orig_phylip/ subfolder
+  -l, --logfile   logFile (def: dropRandomHap_output.txt) log screen output to file in working  
+                  dir with user-specified name (default is on, so allows changing log file name)
+  -h, --help      echo this help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
- THIS SCRIPT takes as input the name of a <taxonNamesFile> with one tip taxon name per 
- line, with or without phased haplotype designations of '_0' for first phased haplotype and 
- '_1' for second phased haplotype (with maximum of two phased haplotypes), and subsequently
- runs in the current working directory. The _0 and _1 phased designations are common to 
- software and pipelines that yield phased multiple sequence alignments. However, this script 
- was created with pipelines for processing genome-scale target enrichment (e.g. ultraconserved 
- elements; UCE) or hybrid enrichment data in mind, and has been specifically written and 
- tested to handle phased output from PHYLUCE (Faircloth 2015) and SECAPR (Andermann et al. 
- 2018). Phased PHYLIP alignments from other UCE or NGS pipelines may work if they are made to 
- conform to the expected taxon names format described above. PHYLIP filenames and taxon names 
- should not include spaces, or else there could be issues. Also, PHYLIP alignment files must 
- have the extension '.phy'.
-	The <taxonNamesFile> must be a text file ('.txt' extension) with tip name labels for 
- all taxa present in PHYLIP alignments (e.g. one per gene/locus) in current <workingDir>. 
- Taxon names also must not have terminated in _0 or _1 prior to phasing (e.g. yielding phased 
- taxon names ending in '_0_0' or '_0_1' in the alignments). Using the <taxonNamesFile> 
- supplied to the program as mandatory input, the script will (1) check, modify, and randomize 
- the tip taxon names and (2) randomly drop one phased haplotype (allele) per individual, 
- per gene (i.e. from each PHYLIP alignment), while making sure to readjust the taxon number 
- entries in the PHYLIP file headers (first entries). By default, all script output (stdout
- and stderr) is written to a file named 'dropRandomHap_output.txt'. The -o flag allows the 
- user to optionally specify their own output file name.
+ THIS SCRIPT randomly drops one phased haplotype (allele) per individiual from each of a 
+ series of PHYLIP alignments (i.e. by gene), while making sure to readjust the taxon number
+ entries in the PHYLIP file headers (first entries). The script runs on one (-i flag) or 
+ multiple (-m flag) PHYLIP DNA sequence alignment files ('.phy' extension; Felsenstein 2002) 
+ in the current working directory by (1) obtaining and checking, modifying, and unique-sorting
+ tip taxon names, (2) shuffling a copy of the alignment to randomize sequence (row) order,
+ (3) looping through taxon names and extracting the first matching sequence for each name 
+ while randomizing allele selection, and (4) creating the final reduced PHYLIP with updated 
+ header.
+	It is expected that the PHYLIP alignment files have the extension '.phy' and contain 
+ phased sequence data, with a maximum of two phased haplotypes per individual, and that the 
+ tip taxon names are appended with phased haplotype designations of '_0' for first phased 
+ haplotype and '_1' for second phased haplotype. The _0 and _1 phase designations are common 
+ to software and pipelines for phasing consensus sequence data (e.g. from HTS) including 
+ PHYLUCE (Faircloth 2015) and SECAPR (Andermann et al. 2018). Phased PHYLIP alignments from 
+ other UCE or NGS pipelines may work if they are made to conform to the expected taxon name 
+ format described above. Tip taxon names (basenames) may include alphanumeric characters but 
+ no spaces or pound signs (#), or else there could be issues (untested). 
+	By default, the program runs quietly with limited output to screen, and stderr and stdout 
+ are redirected to a log file in the current directory named 'dropRandomHap_log.txt'. Optionally, 
+ the user may supply their own name for the log file (-l, --logfile flag). While the PHYLIP
+ files are replaced by default, one option (-k 1, --keep 1) allows keeping the original PHYLIP 
+ files (saved in 'orig_phylip/' subfolder). The user may also indicate whether or not to run 
+ in debug mode (-d, --debug flag).
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
- software, with usage as obtained by running the script with the -h flag, and has been 
- tested on macOS High Sierra (v10.13+) but should work on many other versions of macOS 
- and Linux platforms. 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. 
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f dropRandomHap -h
-    piranha -f dropRandomHap -t <taxonNamesFile>
-    piranha -f dropRandomHap -t <taxonNamesFile> -o output.txt
-
-	Suggested usage, starting from scratch:
-	
-		Create <taxonNamesFile> with getTaxonNames function:
-		piranha -f getTaxonNames -n <numTips>	# Creates file: '<numTips>_taxon_names.txt'
-
-		Run the program in working dir:
-		piranha -f dropRandomHap -t <numTips>_taxon_names.txt
+    piranha -f dropRandomHap -i <inputPHYLIP>        Drop haplotypes from a single input PHYLIP file
+    piranha -f dropRandomHap -m 1 -k 1               Run on multiple PHYLIP files in current dir,
+                                                     while keeping original files
+    piranha -f dropRandomHap --multi 1 --keep 1      Same as above, but using long options
+    piranha -f dropRandomHap -h                      Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
@@ -407,7 +536,7 @@ if [[ -z "$*" ]]; then
 	exit
 fi
 
-if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 	echo "$USAGE"
 	exit
 fi
@@ -417,26 +546,116 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 't:o:d:' opt ; do
-  case $opt in
-## dropRandomHap options:
-    t) USER_SPEC_TAXNAMES_FILE=$OPTARG ;;
-    o) MY_OUTPUT_FILE_SWITCH=$OPTARG ;;
-    d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
 
-# Store the remaining part as arguments.
-# args+=("$@")
 
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-multi/\-\-multi/g' ./args.txt
+	perl -p -i -e $'s/\-keep/\-\-keep/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+	perl -p -i -e $'s/\-taxa/\-\-taxa/g' ./args.txt
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_PHYLIP_FILE=NULL ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_PHYLIP_FILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
+		INPUT_PHYLIP_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-multi' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MULTIPLE_PHYLIP_SWITCH=0 ;
+	elif [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-multi' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-multi' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-multi' ./args.txt | perl -pe 's/\-\-multi//g' | perl -pe 's/\ //g')";
+		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-keep' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_KEEP_PHYLIP_SWITCH=0 ;
+	elif [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-keep' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+		MY_KEEP_PHYLIP_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-keep' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-keep' ./args.txt | perl -pe 's/\-\-keep//g' | perl -pe 's/\ //g')";
+		MY_KEEP_PHYLIP_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=dropRandomHap_output.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+#
+
+
+# ############ PARSE THE OPTIONS
+# while getopts 't:o:d:' opt ; do
+#   case $opt in
+# ## dropRandomHap options:
+#     t) USER_SPEC_TAXNAMES_FILE=$OPTARG ;;
+#     o) MY_LOGFILE_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
+# # Store the remaining part as arguments.
+# # args+=("$@")
+ 
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##
