@@ -3,12 +3,14 @@
 # ##################################################
 # Shared bash functions used by PIrANHA bash scripts.
 #
-# VERSION 1.0.0
+# VERSION 1.0.1
 #
 # HISTORY
+# * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format
 # * 2019-03-08 - v1.0.0 - First Creation (edited from sharedFunctions.sh script
 #                         by Nate Landau, from a forked version of his shell-scripts repository,
 #                         which he last had as v1.4.9 (see below))
+# * 2019-xx-xx - v1.0.1 - Added checkMachineType function
 #
 # Pre-PIrANHA version updates by Nate Landau:
 # * 2015-01-02 - v1.0.0   - First Creation
@@ -25,34 +27,32 @@
 # into user-specified working dir. Three cases: 1) cwd,
 # 2) up one dir, and 3) some other dir.
 # ------------------------------------------------------
-
 function echoCDWorkingDir () {
 
 if [[ -s "$USER_SPEC_PATH" ]]; then
 if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd -P)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
-	MY_CWD="$(printf '%q\n' "$(pwd -P)" | sed 's/\\//g')"
-	echo "INFO      | $(date) |          Setting working directory to:  "
-	echo "INFO      | $(date) |          $MY_CWD "
+	MY_CWD="$(printf '%q\n' "$(pwd -P)" | sed 's/\\//g')";
+	echo "INFO      | $(date) | Setting working directory to:  "
+	echo "INFO      | $(date) | $MY_CWD "
 elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
 	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
 		cd ..;
-		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')"
-		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
-		echo "INFO      | $(date) |          $MY_CWD "
+		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')";
+		echo "INFO      | $(date) | Setting working directory to user-specified dir:  "	
+		echo "INFO      | $(date) | $MY_CWD "
 	else
 		MY_CWD=$USER_SPEC_PATH
-		cd "$MY_CWD"
-		echo "INFO      | $(date) |          Setting working directory to user-specified dir:  "	
-		echo "INFO      | $(date) |          $MY_CWD "
+		cd "$MY_CWD";
+		echo "INFO      | $(date) | Setting working directory to user-specified dir:  "	
+		echo "INFO      | $(date) | $MY_CWD "
 	fi
 else
-	echo "WARNING!  | $(date) |          Null working directory path. Quitting... "
+	echo "WARNING   | $(date) | Null working directory path. Quitting... "
 	exit 1
 fi
 fi
 
 }
-
 
 
 # Check machine type
@@ -61,8 +61,6 @@ fi
 # variables.
 # ------------------------------------------------------
 function checkMachineType () {
-
-#echo "INFO      | $(date) |          Checking machine type... "
 unameOut="$(uname -s)"
 case "${unameOut}" in
 	Linux*)     machine=Linux;;
@@ -71,10 +69,7 @@ case "${unameOut}" in
 	MINGW*)     machine=MinGw;;
 	*)          machine="UNKNOWN:${unameOut}"
 esac;
-#echo "INFO      | $(date) |          Found machine type ${machine}. "
-
 }
-
 
 
 # Traps
