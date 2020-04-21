@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitFile.sh                                                                     #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.                      #
-# Last update: April 17, 2020                                                            #
+# Last update: April 21, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -141,7 +141,7 @@ splitFile () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitFile, v1.0.1 April 2020                                   "
+echo "INFO      | $(date) | splitFile, v1.0.2 April 2020                                   "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -159,12 +159,12 @@ checkMachineType
 ## START DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 
+
 ## Clean any temporary files from previous run:
 if [[ -s ./.tmpsed ]]; then rm ./.tmpsed  > /dev/null 2>&1 ; fi
 if [[ -s ./.tmpEnds ]]; then rm ./.tmpEnds  > /dev/null 2>&1 ; fi
 if [[ -s ./.tmpStarts ]]; then rm ./.tmpStarts  > /dev/null 2>&1 ; fi
 if [[ -s ./.DS_Store ]]; then rm ./.DS_Store  > /dev/null 2>&1 ; fi
-
 
 
 ############ SPLIT FILE INTO N TOTAL PARTS, WITH ROUNDING WHERE NECESSARY. SAVE SEPARATE PARTS FILES WITH
@@ -182,6 +182,9 @@ fi
 		echo "INFO      | $(date) | Working out line counts... "
 	fi
 	TOTAL_LINES="$(wc -l < "$MY_INPUT_FILE")";
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Total no. lines: ${TOTAL_LINES} "
+	fi
 	LINES="$(calc $TOTAL_LINES+$MY_NUM_PARTS-1)";
 	LINES_PER_FILE="$(calc $LINES/$MY_NUM_PARTS)";
 	LINES_PER_FILE_ROUNDED="$(echo $LINES_PER_FILE | awk '{print int($0)}')";
@@ -204,10 +207,9 @@ fi
 	count=1
 	(
 		while read line; do
-			sed -n "$line"p "$MY_INPUT_FILE" > "$MY_OUTPUT_BASENAME""$count".txt ;
-			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) | $((count++))... "
-			fi
+			sed -n ''"$line"'p' "$MY_INPUT_FILE" > "$MY_OUTPUT_BASENAME""$count".txt ;
+#			echo "INFO      | $(date) | $((count++))... "
+			MY_INCR_COUNT="$((count++)) "
 		done < ./.tmpsed
 	)
 
