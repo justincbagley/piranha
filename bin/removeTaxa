@@ -1,0 +1,533 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        #
+# |                                                                                      #
+#                                                                                        #
+# File: removeTaxa.sh                                                                    #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Tue, Apr 21 16:29:40 CDT 2020.                       #
+# Last update: April 21, 2020                                                            #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# REMOVE TIP TAXA (SAMPLES) FROM FASTA, PHYLIP, NEXUS, OR VCF FILES IN CURRENT DIR BASED #
+# USER-INPUT LIST OF TAXA TO REMOVE                                                      #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited. Always make this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+removeTaxa () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | removeTaxa, v1.0.0 April 2020                                  "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+#echo "INFO      | $(date) | Logging output to default file named ./removeTaxa_output.txt ... "
+#	exec >> ./removeTaxa_output.txt ;
+#	exec 2>&1 ;
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting removeTaxa analysis... "
+echo "INFO      | $(date) | Running with the following options: "
+echo "INFO      | $(date) | - Taxon names file, <taxonNames> = ${MY_TAX_NAMES_FILE} "
+echo "INFO      | $(date) | - <fileType> option = ${MY_FILE_TYPE} "
+
+################################# 1. SETUP 
+
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+echoCDWorkingDir
+checkMachineType
+
+################################# 2. CONVERT NAME LISTS TO STREAM EDITOR FORMAT 
+
+############ CONVERT NAMES FILES TO SED FORMAT.
+echo "INFO      | $(date) | Step #2: Convert names list ${MY_TAX_NAMES_FILE} to shell (stream editor) format. "
+				
+				if [[ -s ./taxon_names.tmp ]]; then rm ./taxon_names.tmp ; fi
+
+				echo "INFO      | $(date) | Copying taxon names list to temporary file... "
+				cp "$MY_TAX_NAMES_FILE" ./taxon_names.tmp ;
+
+				echo "INFO      | $(date) | Modifying tmp taxon names list... "
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak 's/\_/\\_/g' ./taxon_names.tmp  ;
+					sed -i.bak 's/\./\\./g' ./taxon_names.tmp  ;
+					sed -i.bak 's/\-/\\-/g' ./taxon_names.tmp  ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/\_/\\_/g' ./taxon_names.tmp  ;
+					sed -i 's/\./\\./g' ./taxon_names.tmp  ;
+					sed -i 's/\-/\\-/g' ./taxon_names.tmp  ;
+				fi			
+
+
+############ RENAME TAXA IN ALL FILES OF USER-SPECIFIED FILE TYPE IN CURRENT DIRECTORY, USING 
+############ MODIFIED LIST FILES CONVERTED TO SED FORMAT ABOVE.
+
+################################# 3. RENAME TAXA IN FASTA FILES 
+
+if [[ "$MY_FILE_TYPE" = "fasta" ]]; then
+
+echo "INFO      | $(date) | Step #3: Remove taxa (sample names and full corresponding sequence line) in FASTA multiple sequence alignment files in current working dir using modified "
+echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
+#file_count=1
+(
+	for MY_FASTA in ./*.fas; do
+
+		echo "INFO      | $(date) | ###------   $MY_FASTA   ------### "
+		MY_FASTA_BASENAME="$(basename "$MY_FASTA" '.fas')";
+		MY_NTAX="$(grep -h '^>' "$MY_FASTA" | wc -l | sed 's/\ //g')";
+		MY_NCHAR="$(head -n2 "$MY_FASTA" | tail -n1 | perl -pe $'s/\ //g; s/\n//g' | wc -c | sed 's/\ //g' | perl -pe $'s/\t//g')";
+		echo "INFO      | $(date) | Basename: ${MY_FASTA_BASENAME} "
+		echo "INFO      | $(date) | No. taxa: ${MY_NTAX} "
+		echo "INFO      | $(date) | No. char: ${MY_NCHAR} "
+#
+		name_count=1
+		(
+			while read orig_name; do
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/'"$orig_name"'/{N;d;}' "$MY_FASTA" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/'"$orig_name"'/{N;d;}' "$MY_FASTA" ;
+				fi
+				echo "INFO      | $(date) | $((name_count++))... "
+			done < ./taxon_names.tmp
+		)
+
+		echo "INFO      | $(date) | Complete. "
+		MY_CORR_NTAX="$(grep -h '^>' "$MY_FASTA" | wc -l | sed 's/\ //g')";
+		echo "INFO      | $(date) | Reduced FASTA No. taxa: ${MY_CORR_NTAX} "
+		echo "INFO      | $(date) | Reduced FASTA No. char: ${MY_NCHAR} "
+
+	done
+)
+rm ./*.tmp ;
+
+fi
+
+
+if [[ "$MY_FILE_TYPE" = "phylip" ]]; then
+
+################################# 3. RENAME TAXA IN PHYLIP FILES 
+
+echo "INFO      | $(date) | Step #3: Remove taxa from PHYLIP multiple sequence alignment files in current working dir using modified "
+echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
+#file_count=1
+(
+	for MY_PHYLIP in ./*.phy; do
+
+		echo "INFO      | $(date) | ###------   $MY_PHYLIP   ------###"
+		MY_PHYLIP_BASENAME="$(basename "$MY_PHYLIP" '.phy')";
+		MY_NTAX="$(head -n1 "$MY_PHYLIP" | perl -pe  's/\ +.*//g')";
+		MY_NCHAR="$(head -n1 "$MY_PHYLIP" | sed 's/^[0-9]*\ //g')";
+		echo "INFO      | $(date) | Basename: ${MY_PHYLIP_BASENAME} "
+		echo "INFO      | $(date) | No. taxa: ${MY_NTAX} "
+		echo "INFO      | $(date) | No. char: ${MY_NCHAR} "
+#
+		name_count=1
+		(
+			while read orig_name; do
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/'"$orig_name"'/d' "$MY_PHYLIP" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/'"$orig_name"'/d' "$MY_PHYLIP" ;
+				fi
+				echo "INFO      | $(date) | $((name_count++))... "
+			done < ./taxon_names.tmp
+		)
+#
+		## Remove old PHYLIP header:
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i.bak '1d' "$MY_PHYLIP" ;
+			rm ./*.bak;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i '1d' "$MY_PHYLIP" ;
+		fi
+
+		## PHYLIP header - Since we've deleted individuals, we now have a different number of 
+		## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
+		## number of lines (and same/original number of characters):
+		echo "INFO      | $(date) | Fixing reduced PHYLIP header... "
+		MY_CORR_NTAX="$(awk 'END {print NR,"lines"}' $MY_PHYLIP | sed 's/\ .*//g')"; 
+		echo "$MY_CORR_NTAX  $MY_NCHAR" > header.tmp ;
+		mv "$MY_PHYLIP" "$MY_PHYLIP".tmp ; 
+		
+		echo "INFO      | $(date) | Making final reduced PHYLIP... "
+		cat header.tmp "$MY_PHYLIP".tmp > "$MY_PHYLIP_BASENAME".phy ;
+		echo "INFO      | $(date) | Complete. "
+		echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} "
+		echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} "
+
+	done
+)
+rm ./*.tmp ;
+
+fi
+
+
+
+if [[ "$MY_FILE_TYPE" = "nexus" ]]; then
+
+################################# 3. RENAME TAXA IN NEXUS FILES 
+
+echo "INFO      | $(date) | Step #3: Remove taxa from NEXUS multiple sequence alignment files in current working dir using modified "
+echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
+#file_count=1
+(
+	MY_NEXUS_FILES="$(find . -type f \( -name '*.nex' -o -name '*.NEX' -o -name '*.nexus' -o -name '*.NEXUS' \))";
+	for MY_NEXUS in $MY_NEXUS_FILES; do
+
+		echo "INFO      | $(date) | ###------   $MY_NEXUS   ------###"
+		name_count=1
+		(
+			while read orig_name; do
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/'"$orig_name"'/d' "$MY_NEXUS" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/'"$orig_name"'/d' "$MY_NEXUS" ;
+				fi
+				echo "INFO      | $(date) | $((name_count++))... "
+			done < ./taxon_names.tmp
+		)
+
+	done
+)
+
+fi
+
+
+if [[ "$MY_FILE_TYPE" = "vcf" ]]; then
+
+################################# 3. RENAME TAXA IN VCF FILES 
+
+echo "INFO      | $(date) | Step #3: Remove taxa from variant call format (VCF) files in current working dir using modified "
+echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
+#file_count=1
+(
+	for MY_VCF in ./*.vcf; do
+
+		echo "INFO      | $(date) | ###------   $MY_VCF   ------###"
+		name_count=1
+		while read orig_name; do
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak '/'"$orig_name"'/d' "$MY_VCF" ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i '/'"$orig_name"'/d' "$MY_VCF" ;
+			fi
+			echo "INFO      | $(date) | $((name_count++))... "
+		done < ./taxon_names.tmp
+
+	done
+)
+
+fi
+
+
+if [[ "$MY_FILE_TYPE" = "NULL" ]]; then
+	echo "WARNING   | $(date) | File type set to NULL. User must specify file type with -f flag. "
+	echo "WARNING   | $(date) | Quitting... "
+	safeExit ;
+fi
+
+################################# 4. CLEAN UP WORKSPACE 
+
+echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+echo "INFO      | $(date) | Deleting temporary files... "
+############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
+
+echo "INFO      | $(date) | Done."
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename "$0") [OPTION]...
+
+ ${bold}Options:${reset}
+  -t   taxonNames (def: NULL) list file containing names of taxa to remove (i.e. search items)
+  -f   fileType (def: NULL; options: fasta, phylip, nexus, vcf) type of files from which to
+       remove taxa
+  -h   help text (also: --help) echo this help text and exit
+  -V   version (also: --version) echo version of this script and exit
+
+ ${bold}OVERVIEW${reset}
+ THIS FUNCTION of PIrANHA (Bagley 2020) removes taxa (i.e. samples) in genetic data files
+ of type FASTA ('.fas'), PHYLIP ('.phy'), NEXUS ('.nex|.NEX|.nexus'), or VCF ('.vcf') in current 
+ working directory, based on a user-supplied file listing the names of taxa to remove (-t flag). 
+ The -f flag allows you to specify the file type to be renamed; for example, '-f fasta' will 
+ cause the program to remove taxa from all FASTA files in the current dir. The -t  and -f flags 
+ provide mandatory input for the program and are thus required arguments. By default, the 
+ program is designed to run with stdout and stderr saved to an output file named 'removeTaxa_output.txt' 
+ located in the current directory.
+ 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage obtained by running the script with the -h flag. It has been tested
+ on macOS High Sierra (v10.13+) and Mojave but should work on many other macOS versions or
+ Linux distributions (tested on CentOS 5/6/7). There are no other dependencies.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f removeTaxa -t <taxonNames> -f <fileType>      Generic usage
+    piranha -f removeTaxa -t taxa_to_remove.txt -f fasta     Rename taxa in FASTA files
+    piranha -f removeTaxa -t taxa_to_remove.txt -f phylip    Rename taxa in PHYLIP files
+    piranha -f removeTaxa -t taxa_to_remove.txt -f nexus     Rename taxa in NEXUS files
+    piranha -f removeTaxa -t taxa_to_remove.txt -f vcf       Rename taxa in VCF files
+    piranha -f removeTaxa -h                                 Show this help text and exit
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Tue, Apr 21 16:29:40 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename "$0") $VERSION";
+	exit
+fi
+
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_TAX_NAMES_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		MY_TAX_NAMES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_FILE_TYPE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+		MY_FILE_TYPE="$MY_ARG" ;
+	fi
+
+
+# ############ PARSE THE OPTIONS
+# while getopts 't:f:' opt ; do
+#   case $opt in
+# ## removeTaxa options:
+#     t) MY_TAX_NAMES_FILE=$OPTARG ;;
+#     f) MY_FILE_TYPE=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+removeTaxa
+
+# Exit cleanly
+safeExit
