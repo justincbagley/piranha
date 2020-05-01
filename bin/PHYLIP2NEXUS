@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  VERSION="v1.3.5"                                                                       #
+  VERSION="v1.3.6"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: May 1, 2020                                                               #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.5 April 2020                                "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.6 May 2020                                  "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -298,6 +298,41 @@ END;
 
 fi
 ###
+
+	## Fix nuisance hex characters if generated for some reason in the final output NEXUS file:
+	MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+	if [[ "$MY_HEX_CHAR_CHECK" -gt "0" ]]; then
+		echo "INFO      | $(date) | Cleaning hex characters from final NEXUS file... "
+		# Working code:
+		# sed 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i.bak 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
+			rm ./*.bak;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
+		fi
+	fi
+
+	## Remove second NEXUS header if accidentally added to NEXUS partitions file by user
+	## using the -NEX option (accommodate '#nexus', '#NEXUS', and '#Nexus'):
+	MY_NEXUS_HEADER_COUNT="$(grep -h '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+	if [[ "$MY_NEXUS_HEADER_COUNT" -gt "1" ]]; then
+		echo "INFO      | $(date) | Fixing NEXUS header in final NEXUS file... "
+		MY_UNWANTED_NEXUS_LINES="$(grep -n '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | sed '1d' | sed 's/\:.*//g')";
+		(
+			for i in $MY_UNWANTED_NEXUS_LINES; do
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
+				fi
+			done
+		)
+	fi
+
 
 echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
 ###### Remove temporary or unnecessary files created above:
