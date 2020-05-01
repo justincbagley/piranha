@@ -218,6 +218,69 @@ fi
 perl -p -i -e $'s/^'"$MY_NTAX"'\ +[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ; 
 perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ; 
 
+
+#### ADDITIONAL EDITS CLEANING FINAL NEXUS FILE:
+
+	## Fix nuisance hex characters if generated for some reason in the final output NEXUS file:
+	MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+	if [[ "$MY_HEX_CHAR_CHECK" -gt "0" ]]; then
+		echo "INFO      | $(date) | Cleaning hex characters from final NEXUS file... "
+		# Working code:
+		# sed 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i.bak 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
+			rm ./*.bak;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
+		fi
+	fi
+
+	## Remove second NEXUS header if accidentally added to NEXUS partitions file by user
+	## using the -NEX option (accommodate '#nexus', '#NEXUS', and '#Nexus'):
+	MY_NEXUS_HEADER_COUNT="$(grep -h '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+	if [[ "$MY_NEXUS_HEADER_COUNT" -gt "1" ]]; then
+		echo "INFO      | $(date) | Fixing NEXUS header in final NEXUS file... "
+		MY_UNWANTED_NEXUS_LINES="$(grep -n '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | sed '1d' | sed 's/\:.*//g')";
+		(
+			for i in $MY_UNWANTED_NEXUS_LINES; do
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
+				fi
+			done
+		)
+	fi
+
+	## Remove PHYLIP header if present on line 7 of the new NEXUS file. This sometimes happens
+	## when the total number of sequences is odd (because of EOF line handling?). Just check 
+	## for it and remove the line if present, as follows:
+	if [[ "$(sed -n '7p' ./"$MY_PHYLIP_BASENAME".nex | wc -c | sed 's/\ //g')" -lt "20" ]]; then 
+		echo "INFO      | $(date) | Fixing NEXUS matrix... "
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i.bak '7d' ./"$MY_PHYLIP_BASENAME".nex ;
+			rm ./*.bak;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i '7d' ./"$MY_PHYLIP_BASENAME".nex ;
+		fi
+	fi
+
+	## Replace \? missing characters with Ns, if present:
+	if [[ "$( grep -h '\?' ./"$MY_PHYLIP_BASENAME".nex | wc -l )" -gt "0" ]]; then 
+		echo "INFO      | $(date) | Fixing missing data characters... "
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i.bak 's/\?/N/g' ./"$MY_PHYLIP_BASENAME".nex ;
+			rm ./*.bak;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/\?/N/g' ./"$MY_PHYLIP_BASENAME".nex ;
+		fi
+	fi
+
 fi
 ###
 
@@ -292,6 +355,69 @@ END;
 	perl -p -i -e $'s/^'"$MY_NTAX"'\ +[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ; 
 	perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ; 
 	
+
+	#### ADDITIONAL EDITS CLEANING FINAL NEXUS FILE:
+	
+		## Fix nuisance hex characters if generated for some reason in the final output NEXUS file:
+		MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+		if [[ "$MY_HEX_CHAR_CHECK" -gt "0" ]]; then
+			echo "INFO      | $(date) | Cleaning hex characters from final NEXUS file... "
+			# Working code:
+			# sed 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
+			fi
+		fi
+	
+		## Remove second NEXUS header if accidentally added to NEXUS partitions file by user
+		## using the -NEX option (accommodate '#nexus', '#NEXUS', and '#Nexus'):
+		MY_NEXUS_HEADER_COUNT="$(grep -h '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+		if [[ "$MY_NEXUS_HEADER_COUNT" -gt "1" ]]; then
+			echo "INFO      | $(date) | Fixing NEXUS header in final NEXUS file... "
+			MY_UNWANTED_NEXUS_LINES="$(grep -n '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | sed '1d' | sed 's/\:.*//g')";
+			(
+				for i in $MY_UNWANTED_NEXUS_LINES; do
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i.bak ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
+						rm ./*.bak;
+					fi
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
+					fi
+				done
+			)
+		fi
+	
+		## Remove PHYLIP header if present on line 7 of the new NEXUS file. This sometimes happens
+		## when the total number of sequences is odd (because of EOF line handling?). Just check 
+		## for it and remove the line if present, as follows:
+		if [[ "$(sed -n '7p' ./"$MY_PHYLIP_BASENAME".nex | wc -c | sed 's/\ //g')" -lt "20" ]]; then 
+			echo "INFO      | $(date) | Fixing NEXUS matrix... "
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak '7d' ./"$MY_PHYLIP_BASENAME".nex ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i '7d' ./"$MY_PHYLIP_BASENAME".nex ;
+			fi
+		fi
+
+		## Replace \? missing characters with Ns, if present:
+		if [[ "$( grep -h '\?' ./"$MY_PHYLIP_BASENAME".nex | wc -l )" -gt "0" ]]; then 
+			echo "INFO      | $(date) | Fixing missing data characters... "
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak 's/\?/N/g' ./"$MY_PHYLIP_BASENAME".nex ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i 's/\?/N/g' ./"$MY_PHYLIP_BASENAME".nex ;
+			fi
+		fi
+
 	done
 )
 
@@ -299,39 +425,6 @@ END;
 fi
 ###
 
-	## Fix nuisance hex characters if generated for some reason in the final output NEXUS file:
-	MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
-	if [[ "$MY_HEX_CHAR_CHECK" -gt "0" ]]; then
-		echo "INFO      | $(date) | Cleaning hex characters from final NEXUS file... "
-		# Working code:
-		# sed 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex
-		if [[ "${machine}" = "Mac" ]]; then
-			sed -i.bak 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
-			rm ./*.bak;
-		fi
-		if [[ "${machine}" = "Linux" ]]; then
-			sed -i 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
-		fi
-	fi
-
-	## Remove second NEXUS header if accidentally added to NEXUS partitions file by user
-	## using the -NEX option (accommodate '#nexus', '#NEXUS', and '#Nexus'):
-	MY_NEXUS_HEADER_COUNT="$(grep -h '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
-	if [[ "$MY_NEXUS_HEADER_COUNT" -gt "1" ]]; then
-		echo "INFO      | $(date) | Fixing NEXUS header in final NEXUS file... "
-		MY_UNWANTED_NEXUS_LINES="$(grep -n '\#NEXUS\|\#Nexus\|\#nexus' ./"$MY_PHYLIP_BASENAME".nex  | sed '1d' | sed 's/\:.*//g')";
-		(
-			for i in $MY_UNWANTED_NEXUS_LINES; do
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i.bak ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
-					rm ./*.bak;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
-				fi
-			done
-		)
-	fi
 
 
 echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
