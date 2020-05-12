@@ -1,0 +1,440 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: combineFASTA.sh                                                                  #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Mon, May 11 13:37:30 CDT 2020.                       #
+# Last update: May 12, 2020                                                              #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# THIS SCRIPT COMBINES MULTIPLE SEQUENTIAL FASTA ALIGNMENTS (ONE LINE PER SEQUENCE) WITH #
+# TIP TAXA IN _SAME ORDER_ INTO A SINGLE SEQUENTIAL FASTA FILE                           #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  if [[ -s ./args.txt ]]; then rm ./args.txt ; fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+combineFASTA () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | combineFASTA, v1.0.0 May 2020                                  " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting combineFASTA analysis... " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | # Step #1: Set up workspace, check machine type, and determine output file settings. " | tee -a "$MY_LOGFILE_SWITCH"
+
+################################# 1. SETUP
+
+# if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]] && [[ "$MY_LOGFILE_SWITCH" != "0" ]]; then
+# 	echo "INFO      | $(date) | Logging output to file at ./${MY_LOGFILE_SWITCH} ... "
+# 	## WORKING:
+# 	## All output to file:
+# 		exec >> ./"$MY_LOGFILE_SWITCH"
+# 		exec 2>&1
+# 	## WORKING:
+# 	# exec >> "$MY_LOGFILE_SWITCH" 2>&1 && tail "$MY_LOGFILE_SWITCH"
+# 	# exec >>(tee "$MY_LOGFILE_SWITCH") 2>&1
+# 	
+# 	## NOT WORKING BUT PREFERRED:
+# 	## All output to file and terminal:
+# 	# exec > >(tee "$MY_LOGFILE_SWITCH") 2>&1
+# 	# exec &> >(tee -a "$MY_LOGFILE_SWITCH")
+# fi
+
+	###### A. START DEBUG MODE IF SET:
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	###### B. HANDLE WORKING DIRECTORY, INPUT DIRECTORY, OUTPUT DIRECTORY, AND REFERENCE ABSOLUTE PATH:
+	## Starting directory:
+	MY_STARTING_DIR="$(printf '%q\n' "$(pwd)")";
+	
+	####### C. CHECK MACHINE TYPE:
+	checkMachineType
+
+
+echo "INFO      | $(date) | # Step #2: Count input FASTAs, run main program to combine FASTAs into single alignment. " | tee -a "$MY_LOGFILE_SWITCH"
+
+################################# 2. MAIN SCRIPT: PREP ENVIRONMENT, COMBINE FASTAS
+	
+	####### A. COUNT NUMBER OF INPUT FASTAS:
+	echo "INFO      | $(date) | Counting number of input FASTA files... " | tee -a "$MY_LOGFILE_SWITCH"
+	MY_NUM_FASTAS="$(echo "$MY_INPUT_FASTAS" | perl -pe $'s/\ /\n/g; s/\t/\n/g' | wc -l | sed 's/\ //g')";
+	MY_CORR_NUM_FASTAS="$(calc $MY_NUM_FASTAS-1)";
+	echo "INFO      | $(date) | No. FASTAs: ${MY_CORR_NUM_FASTAS}" | tee -a "$MY_LOGFILE_SWITCH"
+	
+	echo "$MY_INPUT_FASTAS" | perl -pe $'s/\ /\n/g; s/\t/\n/g' > ./input.list.tmp ;
+	if [[ "$machine" = "Mac" ]]; then
+		sed -i.bak '1d' ./input.list.tmp ;
+		rm ./*.bak;
+	elif [[ "$machine" = "Linux" ]]; then
+		sed -i '1d' ./input.list.tmp ;
+	fi
+
+	####### B. COMBINING INPUT FASTA FILES:
+	echo "INFO      | $(date) | Combining input FASTA files... " | tee -a "$MY_LOGFILE_SWITCH"
+	count=1
+	(
+#		for i in $MY_INPUT_FASTAS; do
+		while read i; do
+			if [[ -s "$i" ]]; then
+				if [[ "$count" = "1" ]]; then
+					echo "INFO      | $(date) | Pasting FASTA ${count}/${MY_CORR_NUM_FASTAS}: ${i}"
+					cp "$i" ./combineFASTA.tmp ;
+				elif [[ "$count" != "1" ]]; then
+					echo "INFO      | $(date) | Pasting FASTA ${count}/${MY_CORR_NUM_FASTAS}: ${i}"
+					paste ./combineFASTA.tmp "$i" > _combineFASTA.tmp_; mv _combineFASTA.tmp_ ./combineFASTA.tmp ;
+					perl -p -i -e $'s/\t\>.*//g' ./combineFASTA.tmp ;
+					perl -p -i -e $'s/\t//g' ./combineFASTA.tmp ;
+				fi
+			else
+				echo "WARNING   | $(date) | Input FASTA file ${i} not found. Quitting... "
+				safeExit ;
+				exit 1 ;
+			fi
+		echo "$((count++)) "  >/dev/null 2>&1 ;
+#		done
+#		done < $(echo $MY_INPUT_FASTAS | perl -pe $'s/\ /\n/g; s/\t/\n/g')
+		done < ./input.list.tmp
+	)
+
+	echo "INFO      | $(date) | Making final combined FASTA alignment named 'combined.fasta' in current dir... " | tee -a "$MY_LOGFILE_SWITCH"
+	## Make final combined FASTA alignment named 'combined.fasta'
+	## (Note: in future versions, give user option to set prefix or final FASTA name.)
+	cp ./combineFASTA.tmp combined.fasta ;
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+
+
+echo "INFO      | $(date) | # Step #3: Clean up workspace by removing temporary files generated during run. " | tee -a "$MY_LOGFILE_SWITCH"
+
+################################# 3. CLEAN UP WORKSPACE 
+
+	###### Remove temporary or unnecessary files created above:
+	echo "INFO      | $(date) | Removing temporary files... " | tee -a "$MY_LOGFILE_SWITCH"
+	
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+	echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+
+echo "INFO      | Done." | tee -a "$MY_LOGFILE_SWITCH"
+echo "----------------------------------------------------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
+echo "output file: ./combined.fasta " | tee -a "$MY_LOGFILE_SWITCH"
+echo "" | tee -a "$MY_LOGFILE_SWITCH"
+
+
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+###### END DEBUG MODE
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+
+# ############ SCRIPT OPTIONS
+# ## OPTION DEFAULTS ##
+# MY_INPUT_DIR=NULL                          # List of input FASTAs to combine
+# MY_LOGFILE_SWITCH=combining_log.txt        # Log file name, acts as switch to turn on loggin to file (default: on; specification would in implementation allow the user to change the name of this file, but this is not _really_ important so currently not implemented.)
+# MY_VERBOSE_OUT_SWITCH=0
+# MY_DEBUG_MODE_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="
+Usage: piranha -f $(basename "$0") [Options]... 
+
+ ${bold}Options:${reset}
+  -i, --input     input (def: NULL) Mandatory space/tab-delimited list of input FASTA files
+                  to combine
+  -l, --logfile   logFile (def: combining_log.txt) log screen output to file in working dir 
+                  with user-specified name (default is on, so allows changing log file name)
+  -h, --help      echo this help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT combines multiple sequential FASTA alignments (passed with -i, --input flag), 
+ with tip taxa in the _same exact order_ (top to bottom), into a single sequential FASTA 
+ alignment. The input FASTAs must be in simple sequential format, with no sequences hard-
+ warpped across lines, i.e. such that each sequence occurs on a single line. All input 
+ FASTAs must also be present in the current working directory. If you have sequential FASTAs 
+ with sequences wrapped across multiple lines, then this will cause problems; fix them first
+ using the 'sequentialFASTA' function available in PIrANHA (Bagley 2020) before running 
+ combineFASTA. Additionally, tip taxon labels may include alphanumeric characters but no 
+ spaces, or elese there could be issues.
+ 	By default, the program runs prints stderr and stdout to screen, and this info is also 
+ redirected to a log file in the current directory named 'combining_log.txt'. Optionally, 
+ the user may supply their own name for the log file (-l, --logfile flag), and indicate 
+ whether or not to run in debug mode (-d, --debug flag).
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. There are no other dependencies. 
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f combineFASTA -i <inputFASTA1> <inputFASTA2> ... <inputFASTAn>         Generic program usage with default settings
+    piranha -f combineFASTA -l combine_hybseq_FASTAs.txt -i contig1.fas contig2.fas  Example with user-specified logfile name and
+                                                                                     input FASTA filenames
+    piranha -f combineFASTA -h                                                       Show this help text and exit
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Mon, May 11 13:37:30 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "--Help" ]]; then
+	echo "$VERBOSE_USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename "$0") $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+#	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		# ORIGINALLY THIS WAS:  MY_INPUT_FASTAS="$*"
+		MY_INPUT_FASTAS=NULL ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g')";
+		MY_INPUT_FASTAS="$MY_ARG" ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g')";
+		MY_INPUT_FASTAS="$MY_ARG" ;
+	fi
+#
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=combining_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+#	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MY_VERBOSE_OUT_SWITCH=0 ;
+#	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+#		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+#	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+#		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+#		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+#		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+#	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+#
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+combineFASTA
+
+# Exit cleanly
+safeExit
