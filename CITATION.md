@@ -24,6 +24,7 @@ BibTeX entries for LaTeX users are as follows:
 
 **Standard BibTeX entry:**
 
+```tex
 @misc{PIrANHA,
   author = {Justin C. Bagley},
   title = {PIrANHA},
@@ -32,9 +33,11 @@ BibTeX entries for LaTeX users are as follows:
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/justincbagley/piranha}}
 }
+```
 
 **BibTeX entry with Zenodo DOI:**
 
+```tex
 @misc{PIrANHA,
   author = {Justin C. Bagley},
   title = {PIrANHA},
@@ -44,6 +47,7 @@ BibTeX entries for LaTeX users are as follows:
   journal = {GitHub repository},
   howpublished = {\url{http://doi.org/10.5281/zenodo.596766}}
 }
+``` 
 
 Justin C. Bagley, Ph.D.
 May 27, 2020, St. Louis, MO
