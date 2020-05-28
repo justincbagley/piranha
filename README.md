@@ -10,6 +10,8 @@ All code within **PIrANHA v0.4a2** repository is available "AS IS" under a 3-Cla
 
 ## CITATION
 
+Should you cite **PIrANHA**? See https://github.com/mr-c/shouldacite/blob/master/should-I-cite-this-software.md.
+
 If you use scripts from this repository as part of your published research, please cite the repository as follows (also see DOI information below): 
   
 - Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
