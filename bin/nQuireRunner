@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: nQuireRunner.sh                                                                  #
-  VERSION="v1.0.4"                                                                       #
+  VERSION="v1.0.7"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Oct 17 11:59:08 CDT 2019.                       #
-# Last update: April 19, 2020                                                            #
+# Last update: June 22, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,21 +136,26 @@ nQuireRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | nQuireRunner, v1.0.4 April 2020                                "
+echo "INFO      | $(date) | nQuireRunner, v1.0.7 June 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
-	echo "INFO      | $(date) | Starting nQuireRunner pipeline... "
-	echo "INFO      | $(date) | Step #1: Set up workspace."
+echo "INFO      | $(date) | Starting nQuireRunner pipeline... "
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | nQuireRunner "
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | nQuireRunner | Step #1: Set up workspace."
 
 ############ STEP #1: SET UP VARIABLES AND USEFUL FUNCTIONS
 ###### Set working directory and filetypes as different variables:
-	echo "INFO      | $(date) | Setting user-specified path to: "
-	echo "INFO      | $(date) | $PWD "	
-	echo "INFO      | $(date) | Input file: $MY_BAM_FILE "
-	echo "INFO      | $(date) | Examining current directory, setting variables... "
-checkMachineType
+	echo "INFO      | $(date) | nQuireRunner | Setting user-specified path to: "
+	echo "INFO      | $(date) | nQuireRunner | $PWD "	
+	echo "INFO      | $(date) | nQuireRunner | Input file: $MY_BAM_FILE "
+	echo "INFO      | $(date) | nQuireRunner | Examining current directory, setting variables... "
+	####### CHECK MACHINE TYPE:
+	checkMachineType
+	echo "INFO      | $(date) | nQuireRunner | Found machine type ${machine}. "
 
 ######
 ## START DEBUG MODE
@@ -163,35 +168,35 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 
 	############ STEPS #2 & #3: PREP WORK & RUNNING nQuire
 
-	echo "INFO      | $(date) | Step #2: Prep input .bam file for model runs in nQuire... "
-	echo "INFO      | $(date) | Processing .bam file... "
-	echo "INFO      | $(date) |    Storing filename... "
+	echo "INFO      | $(date) | nQuireRunner | Step #2: Prep input .bam file for model runs in nQuire... "
+	echo "INFO      | $(date) | nQuireRunner | Processing .bam file... "
+	echo "INFO      | $(date) | nQuireRunner |    Storing filename... "
 	MY_BAM_BASENAME="$(basename "$MY_BAM_FILE" '.bam')";
 
-	echo "INFO      | $(date) |    Creating base file ${MY_BAM_BASENAME}_base.bin... "
+	echo "INFO      | $(date) | nQuireRunner |    Creating base file ${MY_BAM_BASENAME}_base.bin... "
 	nQuire create -b "$MY_BAM_FILE" -o "$MY_BAM_BASENAME"_base 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-	echo "INFO      | $(date) |    Creating base file histogram... "
+	echo "INFO      | $(date) | nQuireRunner |    Creating base file histogram... "
 	nQuire histo "$MY_BAM_BASENAME"_base.bin > "$MY_BAM_BASENAME"_base.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-	echo "INFO      | $(date) |    "
-	echo "INFO      | $(date) |    Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
+	echo "INFO      | $(date) | nQuireRunner |    "
+	echo "INFO      | $(date) | nQuireRunner |    Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
 	nQuire denoise -o "$MY_BAM_BASENAME"_base_denoised "$MY_BAM_BASENAME"_base.bin 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-	echo "INFO      | $(date) |    Creating denoised base file histogram... "
+	echo "INFO      | $(date) | nQuireRunner |    Creating denoised base file histogram... "
 	nQuire histo "$MY_BAM_BASENAME"_base_denoised.bin > "$MY_BAM_BASENAME"_base_denoised.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 
 
-	echo "INFO      | $(date) | Step #3: Running nQuire... "
-	echo "INFO      | $(date) | Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
+	echo "INFO      | $(date) | nQuireRunner | Step #3: Running nQuire... "
+	echo "INFO      | $(date) | nQuireRunner | Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.lrdmodel.out.txt ;
 
-	echo "INFO      | $(date) |    "
+	echo "INFO      | $(date) | nQuireRunner |    "
 
-	echo "INFO      | $(date) | Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
+	echo "INFO      | $(date) | nQuireRunner | Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.lrdmodel.out.txt ;
 
 
-	echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
+	echo "INFO      | $(date) | nQuireRunner | Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
 	nQuire modeltest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire estmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -200,9 +205,9 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	nQuire estmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.estmodel.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.histotest.out.txt ;
 
-	echo "INFO      | $(date) |    "
+	echo "INFO      | $(date) | nQuireRunner |    "
 
-	echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
+	echo "INFO      | $(date) | nQuireRunner | Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
 	nQuire modeltest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -211,16 +216,16 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.estmodel.out.txt ;
 	nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt ;
 
-	echo "INFO      | $(date) |    "
+	echo "INFO      | $(date) | nQuireRunner |    "
 
 
 	############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
 
-	echo "INFO      | $(date) | Step #4: Post-processing of nQuire results for ${MY_BAM_FILE}... "
+	echo "INFO      | $(date) | nQuireRunner | Step #4: Post-processing of nQuire results for ${MY_BAM_FILE}... "
 
 	#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
 
-	echo "INFO      | $(date) |    Best ploidy model based on goodness-of-fit... "
+	echo "INFO      | $(date) | nQuireRunner |    Best ploidy model based on goodness-of-fit... "
 	## Find model / ploidy level with positive slope in histotest check files. These will be
 	## the best-fit model(s), and should be the same for regular and denoised base.bin files. 
 	## Here, we first get the line where the positive slope model is reported in each file. 
@@ -229,26 +234,26 @@ if [[ "$MY_MULTIBAM_SWITCH" = "0" ]] && [[ -s "$MY_BAM_FILE" ]]; then
 	## the entire procedure for both the regular and denoised base.bin files, as follows:
 	MY_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 	MY_CORR_HIST_PLOIDY_LINE="$(calc $MY_POS_SLOPE_LINE-2)";
-	echo "INFO      | $(date) |    Best-fit ploidy model from regular base file: "
+	echo "INFO      | $(date) | nQuireRunner |    Best-fit ploidy model from regular base file: "
 	sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 	sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base.bin.histotest.PLOIDY.txt ;
 #
 	MY_DENOISE_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 	MY_CORR_DENOISE_HIST_PLOIDY_LINE="$(calc $MY_DENOISE_POS_SLOPE_LINE-2)";
-	echo "INFO      | $(date) |    Best-fit ploidy model from denoised base file: "
+	echo "INFO      | $(date) | nQuireRunner |    Best-fit ploidy model from denoised base file: "
 	sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 	sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.PLOIDY.txt ;
 
 
 	#### Model test ploidy interpretation:
 
-	echo "INFO      | $(date) |    Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
+	echo "INFO      | $(date) | nQuireRunner |    Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
 	MY_DENOISE_DIP_LOGLIKE="$(grep -h 'diploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 	MY_DENOISE_TRIP_LOGLIKE="$(grep -h 'triploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 	MY_DENOISE_TETRA_LOGLIKE="$(grep -h 'tetraploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
-	if [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]] && [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="Diploid"; echo "Diploid"; fi
-	if [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="Triploid"; echo "Triploid"; fi
-	if [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="Tetraploid"; echo "Tetraploid"; fi
+	if [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]] && [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="diploid"; echo "Diploid"; fi
+	if [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="triploid"; echo "Triploid"; fi
+	if [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="tetraploid"; echo "Tetraploid"; fi
 	echo "$MY_MODELTEST_PLOIDY" > "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.PLOIDY.txt ;
 
 
@@ -265,21 +270,21 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 (
 	for MY_BAM_FILE in ./*.bam ; do
 		
-		echo "INFO      | $(date) | #############################  "
-		echo "INFO      | $(date) | #############################  Current .bam file: ${MY_BAM_FILE} "
-		echo "INFO      | $(date) | #############################  "
-		echo "INFO      | $(date) |    "
+		echo "INFO      | $(date) | nQuireRunner | #############################  "
+		echo "INFO      | $(date) | nQuireRunner | #############################  Current .bam file: ${MY_BAM_FILE} "
+		echo "INFO      | $(date) | nQuireRunner | #############################  "
+		echo "INFO      | $(date) | nQuireRunner |    "
 
 		############ STEPS #2 & #3: PREP WORK & RUNNING nQuire
 		
-			echo "INFO      | $(date) | Step #2: Prep input .bam file for model runs in nQuire... "
-			echo "INFO      | $(date) | Processing .bam file... "
-			echo "INFO      | $(date) |    Storing filename... "
+			echo "INFO      | $(date) | nQuireRunner | Step #2: Prep input .bam file for model runs in nQuire... "
+			echo "INFO      | $(date) | nQuireRunner | Processing .bam file... "
+			echo "INFO      | $(date) | nQuireRunner |    Storing filename... "
 			MY_BAM_BASENAME="$(basename "$MY_BAM_FILE" '.bam')";
 
 			if [[ -s  "$MY_BAM_BASENAME"_base_denoised.bin ]] && [[ -s "$MY_BAM_BASENAME"_nQuireRunner.out.txt ]] && [[ -s "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt ]]; then
-				echo "INFO      | $(date) |    Checking for related files... "
-				echo "WARNING   | $(date) |    File already analyzed by nQuireRunner. ~~~ SKIPPING ~~~ "
+				echo "INFO      | $(date) | nQuireRunner |    Checking for related files... "
+				echo "WARNING   | $(date) | nQuireRunner |    File already analyzed by nQuireRunner. ~~~ SKIPPING ~~~ "
 			fi
 			###
 			if [[ ! -s  "$MY_BAM_BASENAME"_base_denoised.bin ]] && [[ ! -s "$MY_BAM_BASENAME"_nQuireRunner.out.txt ]]; then
@@ -287,30 +292,30 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			echo "$MY_BAM_BASENAME" >> ./nQuireRunner_sample_basenames.list.txt ;
 			echo "$MY_BAM_FILE" >> ./nQuireRunner_sample_bamfiles.list.txt ;
 
-			echo "INFO      | $(date) |    Creating base file ${MY_BAM_BASENAME}_base.bin... "
+			echo "INFO      | $(date) | nQuireRunner |    Creating base file ${MY_BAM_BASENAME}_base.bin... "
 			nQuire create -b "$MY_BAM_FILE" -o "$MY_BAM_BASENAME"_base 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-			echo "INFO      | $(date) |    Creating base file histogram... "
+			echo "INFO      | $(date) | nQuireRunner |    Creating base file histogram... "
 			nQuire histo "$MY_BAM_BASENAME"_base.bin > "$MY_BAM_BASENAME"_base.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-			echo "INFO      | $(date) |    "
-			echo "INFO      | $(date) |    Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
+			echo "INFO      | $(date) | nQuireRunner |    "
+			echo "INFO      | $(date) | nQuireRunner |    Creating denoised base file ${MY_BAM_BASENAME}_base_denoised.bin... "
 			nQuire denoise -o "$MY_BAM_BASENAME"_base_denoised "$MY_BAM_BASENAME"_base.bin 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
-			echo "INFO      | $(date) |    Creating denoised base file histogram... "
+			echo "INFO      | $(date) | nQuireRunner |    Creating denoised base file histogram... "
 			nQuire histo "$MY_BAM_BASENAME"_base_denoised.bin > "$MY_BAM_BASENAME"_base_denoised.bin.histo.txt 2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 		
 		
-			echo "INFO      | $(date) | Step #3: Running nQuire... "
-			echo "INFO      | $(date) | Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
+			echo "INFO      | $(date) | nQuireRunner | Step #3: Running nQuire... "
+			echo "INFO      | $(date) | nQuireRunner | Running lrdmodel on base file, ${MY_BAM_BASENAME}_base.bin, sending output to .out.txt file... "
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.lrdmodel.out.txt ;
 		
-			echo "INFO      | $(date) |    "
+			echo "INFO      | $(date) | nQuireRunner |    "
 		
-			echo "INFO      | $(date) | Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
+			echo "INFO      | $(date) | nQuireRunner | Running lrdmodel on denoised base file, ${MY_BAM_BASENAME}_base_denoised.bin, sending output to .out.txt file... "
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire lrdmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.lrdmodel.out.txt ;
 		
 		
-			echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
+			echo "INFO      | $(date) | nQuireRunner | Running tests (modeltest, estmodel, and histotest) on base file, sending output to .out.txt file... "
 			nQuire modeltest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire estmodel "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -319,9 +324,9 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			nQuire estmodel "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.estmodel.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base.bin  > "$MY_BAM_BASENAME"_base.bin.histotest.out.txt ;
 		
-			echo "INFO      | $(date) |    "
+			echo "INFO      | $(date) | nQuireRunner |    "
 		
-			echo "INFO      | $(date) | Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
+			echo "INFO      | $(date) | nQuireRunner | Running tests (modeltest, estmodel, and histotest) on denoised base file, sending output to .out.txt file... "
 			nQuire modeltest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  2>&1 | tee "$MY_BAM_BASENAME"_nQuireRunner.out.txt ;
@@ -330,16 +335,16 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			nQuire estmodel "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.estmodel.out.txt ;
 			nQuire histotest "$MY_BAM_BASENAME"_base_denoised.bin  > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt ;
 		
-			echo "INFO      | $(date) |    "
+			echo "INFO      | $(date) | nQuireRunner |    "
 		
 		
 			############ STEP #4: POST-PROCESSING OF THE nQuire RESULTS
 		
-			echo "INFO      | $(date) | Step #4: Initial post-processing of nQuire results for ${MY_BAM_FILE}... "
+			echo "INFO      | $(date) | nQuireRunner | Step #4: Initial post-processing of nQuire results for ${MY_BAM_FILE}... "
 		
 			#### Histotest-based (goodness-of-fit-based) ploidy interpretation:
 		
-			echo "INFO      | $(date) |    Best ploidy model based on goodness-of-fit... "
+			echo "INFO      | $(date) | nQuireRunner |    Best ploidy model based on goodness-of-fit... "
 			## Find model / ploidy level with positive slope in histotest check files. These will be
 			## the best-fit model(s), and should be the same for regular and denoised base.bin files. 
 			## Here, we first get the line where the positive slope model is reported in each file. 
@@ -348,7 +353,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 			## the entire procedure for both the regular and denoised base.bin files, as follows:
 			MY_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 			MY_CORR_HIST_PLOIDY_LINE="$(calc $MY_POS_SLOPE_LINE-2)";
-			echo "INFO      | $(date) |    Best-fit ploidy model from regular base file: "
+			echo "INFO      | $(date) | nQuireRunner |    Best-fit ploidy model from regular base file: "
 			sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 			sed -n ''"$MY_CORR_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base.bin.histotest.PLOIDY.txt ;
 #
@@ -356,7 +361,7 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 #
 			MY_DENOISE_POS_SLOPE_LINE="$(grep -n 'slope\:\ [0-9]' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\:\ \ y\-y\ slope\:\ .*\,\ .*\:\ .*//g')";
 			MY_CORR_DENOISE_HIST_PLOIDY_LINE="$(calc $MY_DENOISE_POS_SLOPE_LINE-2)";
-			echo "INFO      | $(date) |    Best-fit ploidy model from denoised base file: "
+			echo "INFO      | $(date) | nQuireRunner |    Best-fit ploidy model from denoised base file: "
 			sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' ; # echoes ploidy to screen
 			sed -n ''"$MY_CORR_DENOISE_HIST_PLOIDY_LINE"'p' "$MY_BAM_BASENAME"_base_denoised.bin.histotest.out.txt | sed 's/\://g' > "$MY_BAM_BASENAME"_base_denoised.bin.histotest.PLOIDY.txt ;
 #
@@ -364,13 +369,13 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 		
 			#### Model test ploidy interpretation:
 		
-			echo "INFO      | $(date) |    Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
+			echo "INFO      | $(date) | nQuireRunner |    Best ploidy model based on model testing (log-likelihood comparison) on denoised base file results... "
 			MY_DENOISE_DIP_LOGLIKE="$(grep -h 'diploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 			MY_DENOISE_TRIP_LOGLIKE="$(grep -h 'triploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
 			MY_DENOISE_TETRA_LOGLIKE="$(grep -h 'tetraploid' "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.out.txt | sed 's/[A-Za-z\ \:]//g' | sed 's/\..*//g')";
-			if [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]] && [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="Diploid"; echo "Diploid"; fi
-			if [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="Triploid"; echo "Triploid"; fi
-			if [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="Tetraploid"; echo "Tetraploid"; fi
+			if [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]] && [[ "$MY_DENOISE_DIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="diploid"; echo "Diploid"; fi
+			if [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TRIP_LOGLIKE" -gt "$MY_DENOISE_TETRA_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="triploid"; echo "Triploid"; fi
+			if [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_DIP_LOGLIKE" ]] && [[ "$MY_DENOISE_TETRA_LOGLIKE" -gt "$MY_DENOISE_TRIP_LOGLIKE" ]]; then MY_MODELTEST_PLOIDY="tetraploid"; echo "Tetraploid"; fi
 			echo "$MY_MODELTEST_PLOIDY" > "$MY_BAM_BASENAME"_base_denoised.bin.modeltest.PLOIDY.txt ;
 #
 			echo "$MY_MODELTEST_PLOIDY" >> nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt  ;
@@ -382,55 +387,59 @@ if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
 )
 
 
-	echo "INFO      | $(date) |    "
-	echo "INFO      | $(date) | Step #5: Summarize results and clean up workspace by organizing list and summary files... "
+	echo "INFO      | $(date) | nQuireRunner |    "
+	echo "INFO      | $(date) | nQuireRunner | Step #5: Summarize results and clean up workspace by organizing list and summary files... "
 	###### Remove temporary or unnecessary files created above:
 	#		echo "INFO      | $(date) | Removing temporary files... "
 	#	rm ./*.tmp ;
 
-	paste ./nQuireRunner_sample_basenames.list.txt nQuireRunner_reg_base_histotest.PLOIDY.list.txt > nQuireRunner_reg_base_histotest.PLOIDY.Summary.txt ;
+	paste ./nQuireRunner_sample_basenames.list.txt ./nQuireRunner_reg_base_histotest.PLOIDY.list.txt > ./nQuireRunner_reg_base_histotest.PLOIDY.Summary.txt ;
 
-	paste ./nQuireRunner_sample_basenames.list.txt nQuireRunner_denoised_base_histotest.PLOIDY.list.txt > nQuireRunner_denoised_base_histotest.PLOIDY.Summary.txt ;
+	paste ./nQuireRunner_sample_basenames.list.txt ./nQuireRunner_denoised_base_histotest.PLOIDY.list.txt > ./nQuireRunner_denoised_base_histotest.PLOIDY.Summary.txt ;
 
-	paste ./nQuireRunner_sample_basenames.list.txt nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt > nQuireRunner_denoised_base_modeltest.PLOIDY.Summary.txt ;
+	paste ./nQuireRunner_sample_basenames.list.txt ./nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt > ./nQuireRunner_denoised_base_modeltest.PLOIDY.Summary.txt ;
 
-	echo " " | sed 's/\ /bam\_file\treg\_base\_histotest\.PLOIDY\tdenoised\_base\_histotest\.PLOIDY\tdenoised\_base\_modeltest\.PLOIDY/g' > header.txt  ;
-	paste ./nQuireRunner_sample_basenames.list.txt nQuireRunner_reg_base_histotest.PLOIDY.list.txt nQuireRunner_denoised_base_histotest.PLOIDY.list.txt nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt > nQuireRunner_PLOIDY.Summary.headless.txt ;
-	cat header.txt nQuireRunner_PLOIDY.Summary.headless.txt > nQuireRunner_PLOIDY.FINAL.SUMMARY.txt ;
+	echo " " | sed 's/\ /bam\_file\treg\_base\_histotest\.PLOIDY\tdenoised\_base\_histotest\.PLOIDY\tdenoised\_base\_modeltest\.PLOIDY/g' > ./header.txt  ;
+	paste ./nQuireRunner_sample_basenames.list.txt ./nQuireRunner_reg_base_histotest.PLOIDY.list.txt ./nQuireRunner_denoised_base_histotest.PLOIDY.list.txt ./nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt > ./nQuireRunner_PLOIDY.Summary.headless.txt ;
+	cat ./header.txt ./nQuireRunner_PLOIDY.Summary.headless.txt > ./nQuireRunner_PLOIDY.FINAL.SUMMARY.txt ;
 
 	mkdir misc/;
 	mkdir lists/;
 	mkdir summaries/;
 	
-	mv nQuireRunner_PLOIDY.Summary.headless.txt misc/ ;
-	mv nQuireRunner_denoised_base_histotest.PLOIDY.list.txt nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt nQuireRunner_reg_base_histotest.PLOIDY.list.txt lists/ ;
-	mv nQuireRunner_denoised_base_histotest.PLOIDY.Summary.txt nQuireRunner_denoised_base_modeltest.PLOIDY.Summary.txt nQuireRunner_reg_base_histotest.PLOIDY.Summary.txt summaries/;
-	# nQuireRunner_PLOIDY.FINAL.SUMMARY.txt
-
+	if [[ -s misc ]] && [[ -s lists/ ]] && [[ -s summaries/ ]]; then 
+		mv ./nQuireRunner_PLOIDY.Summary.headless.txt ./header.txt misc/ ;
+		mv ./nQuireRunner_denoised_base_histotest.PLOIDY.list.txt ./nQuireRunner_denoised_base_modeltest.PLOIDY.list.txt ./nQuireRunner_reg_base_histotest.PLOIDY.list.txt lists/ ;
+		mv ./nQuireRunner_denoised_base_histotest.PLOIDY.Summary.txt ./nQuireRunner_denoised_base_modeltest.PLOIDY.Summary.txt ./nQuireRunner_reg_base_histotest.PLOIDY.Summary.txt summaries/;
+		# ./nQuireRunner_PLOIDY.FINAL.SUMMARY.txt
+	fi
 
 
 fi
 ####
 ####
 
-echo "INFO      | $(date) | Step #5: Clean up workspace by removing temporary files generated during run. "
+if [[ "$MY_MULTIBAM_SWITCH" = "1" ]]; then
+
+echo "INFO      | $(date) | nQuireRunner | Step #5: Clean up workspace by removing temporary files generated during run. "
+fi
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-echo "INFO      | $(date) | Removing temporary files... "
+echo "INFO      | $(date) | nQuireRunner | Removing temporary files... "
 	
 	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
 		rm ./*.tmp ; 
 	fi
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-echo "INFO      | $(date) | Done."
-echo "----------------------------------------------------------------------------------------------------------"
-# if [[ -s "$MY_NEXUS_BASENAME".charsets.txt ]] && [[ -s "$MY_NEXUS_BASENAME" ]]; then
-# 	echo "output files: ./${MY_NEXUS_BASENAME}.phy"
-# 	echo "              ./${MY_NEXUS_BASENAME}.charsets.txt"
-# else
-# 	echo "output file: ./${MY_NEXUS_BASENAME}.phy"
-# fi
-echo ""
+	echo "INFO      | $(date) | nQuireRunner | Done."
+	# echo "----------------------------------------------------------------------------------------------------------"
+	# if [[ -s "$MY_NEXUS_BASENAME".charsets.txt ]] && [[ -s "$MY_NEXUS_BASENAME" ]]; then
+	# 	echo "output files: ./${MY_NEXUS_BASENAME}.phy"
+	# 	echo "              ./${MY_NEXUS_BASENAME}.charsets.txt"
+	# else
+	# 	echo "output file: ./${MY_NEXUS_BASENAME}.phy"
+	# fi
+	# echo ""
 
 ## END DEBUG MODE
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
@@ -440,6 +449,389 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 ######################################### END ############################################
 
 }
+
+
+## histotestSummary
+## Justin C. Bagley, Ph.D.
+## May 22, 2020 8:52 am
+
+## Summarizes histotest output (can run in main nQuire run directory containing all output
+## files, or in a separate 'results_text_files/' subfolder containing all text files output
+## / modified during nQuireRunner analysis).
+
+histotestSummary () {
+
+######################################## START ###########################################
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | histotestSummary "
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | histotestSummary | Starting histotestSummary analysis of nQuire output... "
+echo "INFO      | $(date) | histotestSummary | Step #1: Check machine type.. "
+
+	####### CHECK MACHINE TYPE:
+	checkMachineType
+	echo "INFO      | $(date) | histotestSummary | Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	# MY_ID_LIST_FILE=n76_bam_IDs_list.txt
+	# MY_ID_FORSED_LIST_FILE=n76_bam_IDs_list_forsed.txt
+
+	echo "INFO      | $(date) | histotestSummary | Step #2: Making header rows... "
+	## Header 1:
+	## Make ploidy header to go above the main results table header (1st row of table header)
+	echo "Sample	Diploid				Triploid				Tetraploid			" > ./denoised_bin_histotest_res_ploidy_header1.tmp
+
+	## Header 2:
+	## Make denoised histotest results table header (this will be 2nd row of table header):
+	echo "ID	NormSSR	yySlope	slopeSE	r2	NormSSR	yySlope	slopeSE	r2	NormSSR	yySlope	slopeSE	r2" > ./denoised_bin_histotest_res_header2.tmp ;
+	sed -i '' $'s/\ /\t/g' ./denoised_bin_histotest_res_header2.tmp ;
+
+	echo "INFO      | $(date) | histotestSummary | Step #3: Looping through histotest results files, organizing main body of summary table... "
+	## Loop through histotest results files, make main body of histotest results table:
+#	(
+#		for i in ./*_denoised.bin.histotest.out.txt ; do
+#			echo "$i" >> denoised_bin_histotest_out_fileOrder.list.txt ;
+#			cat "$i" | perl -pe $'s/\,\ with\ std\.Err\:\ /\n/g' | sed 's/^.*Norm\ SSR\:\ //g; s/^.*y\-y\ slope\:\ //g; s/^.*r.2\:\ //g' | transposeFile | sed '/with/d' | sed '/std\.Err/d' | sed $'s/\ /\t/g' | sed $'s/\t\t/\t/g' | sed $'s/\t\t/\t/g' | sed $'s/^\t//g' | perl -pe $'s/^Diploid\:\t//g; s/\tTriploid\:\t/\t/g; s/\tTetraploid\:\t/\t/g' >> ./denoised_bin_histotest_out_SUMMARY.tmp ;
+#		done
+#	)
+#
+#	cat denoised_bin_histotest_res_ploidy_header1.tmp denoised_bin_histotest_res_header2.tmp denoised_bin_histotest_out_SUMMARY.tmp > denoised_bin_histotest_out_SUMMARY.txt
+#		
+	(
+		for i in ./*_denoised.bin.histotest.out.txt ; do 
+		echo "$i" >> ./denoised_bin_histotest_out_fileOrder.list.txt ; 
+		MY_SPECIES_ID="$(echo "$i" | sed 's/\.\///g; s/\_denoised\.bin\.histotest\.out\.txt//g')"; 
+		echo "$MY_SPECIES_ID" >> ./denoised_bin_histotest_res_species_dDocent_ID_order.list.txt; 
+		cat "$i" | perl -pe $'s/\,\ with\ std\.Err\:\ /\n/g' | sed 's/^.*Norm\ SSR\:\ //g; s/^.*y\-y\ slope\:\ //g; s/^.*r.2\:\ //g' | transposeFile | sed '/with/d' | sed '/std\.Err/d' | sed $'s/\ /\t/g' | sed $'s/\t\t/\t/g' | sed $'s/\t\t/\t/g' | sed $'s/^\t//g' | perl -pe $'s/^Diploid\:\t//g; s/\tTriploid\:\t/\t/g; s/\tTetraploid\:\t/\t/g' >> ./denoised_bin_histotest_out_SUMMARY.tmp ; 
+		done
+	)
+	
+	paste ./denoised_bin_histotest_res_species_dDocent_ID_order.list.txt ./denoised_bin_histotest_out_SUMMARY.tmp > ./denoised_bin_histotest_out_SUMMARY_table.tmp  ;
+	
+	echo "INFO      | $(date) | histotestSummary | Step #4: Making final histotest output summary table './denoised_bin_histotest_out_SUMMARY.txt' "
+	## Cat files together to make final summary table:
+	cat ./denoised_bin_histotest_res_ploidy_header1.tmp ./denoised_bin_histotest_res_header2.tmp ./denoised_bin_histotest_out_SUMMARY_table.tmp > ./denoised_bin_histotest_out_SUMMARY.txt  ;
+	
+	echo "INFO      | $(date) | histotestSummary | Step #5: Cleaning workspace... "
+	## Clean up by removing any remaining temporary files created during run:
+	if [[ -s summaries/ ]] && [[ -s ./denoised_bin_histotest_out_SUMMARY.txt ]]; then  mv ./denoised_bin_histotest_out_SUMMARY.txt summaries/ ; fi
+
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+
+	echo "INFO      | histotestSummary | Done. "
+	# echo "----------------------------------------------------------------------------------------------------------"
+	# echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
+######################################### END ############################################
+
+}
+
+
+## lrdmodelSummary
+## Justin C. Bagley, Ph.D.
+## May 22, 2020 8:21 am
+
+## Summarizes lrdmodel output (can run in main nQuire run directory containing all output
+## files, or in a separate 'results_text_files/' subfolder containing all text files output
+## / modified during nQuireRunner analysis).
+
+lrdmodelSummary () {
+
+######################################## START ###########################################
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | lrdmodelSummary "
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | lrdmodelSummary | Starting lrdmodelSummary analysis of nQuire output... "
+	
+	####### CHECK MACHINE TYPE:
+	checkMachineType
+	echo "INFO      | $(date) | lrdmodelSummary | Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	# MY_ID_LIST_FILE=n76_bam_IDs_list.txt
+	# MY_ID_FORSED_LIST_FILE=n76_bam_IDs_list_forsed.txt
+
+	echo "INFO      | $(date) | lrdmodelSummary | Step #1: Making rough file order lists... "
+(
+	for i in ./*denoised.bin.lrdmodel.out.txt; do
+		echo "$i" >> ./denoised_bin_lrdmodel_out_fileOrder.list.txt ;
+		cat "$i" >> ./denoised_bin_lrdmodel_out_SUMMARY.txt ;
+	done
+)
+
+	head -n1 ./denoised_bin_lrdmodel_out_SUMMARY.txt > ./lrdmodel_out_header.txt ;
+
+	if [[ "$machine" = "Mac" ]]; then
+		sed -i.bak '/^file/d' ./denoised_bin_lrdmodel_out_SUMMARY.txt ;
+		rm ./*.bak;
+	elif [[ "$machine" = "Linux" ]]; then
+		sed -i '/^file/d' ./denoised_bin_lrdmodel_out_SUMMARY.txt ;
+	fi
+
+	mv ./denoised_bin_lrdmodel_out_SUMMARY.txt ./denoised_bin_lrdmodel_out_SUMMARY.tmp  ;
+
+	echo "INFO      | $(date) | lrdmodelSummary | Step #2: Making final lrdmodel output summary table './denoised_bin_lrdmodel_out_SUMMARY.txt' "
+	cat ./lrdmodel_out_header.txt ./denoised_bin_lrdmodel_out_SUMMARY.tmp > ./denoised_bin_lrdmodel_out_SUMMARY.txt  ;
+
+	echo "INFO      | $(date) | lrdmodelSummary | Step #3: Cleaning workspace... "
+	## Clean up by removing any remaining temporary files created during run:
+	if [[ -s misc/ ]] && [[ -s ./lrdmodel_out_header.txt ]]; then  mv ./lrdmodel_out_header.txt misc/ ; fi
+
+	if [[ -s lists/ ]] && [[ -s ./denoised_bin_lrdmodel_out_fileOrder.list.txt ]]; then mv ./denoised_bin_lrdmodel_out_fileOrder.list.txt lists/ ; fi
+	
+	mv ./denoised_bin_lrdmodel_out_SUMMARY.txt summaries/;
+
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+
+	echo "INFO      | lrdmodelSummary | Done. "
+	# echo "----------------------------------------------------------------------------------------------------------"
+	# echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
+######################################### END ############################################
+
+}
+
+
+nQuireViewMaker () {
+
+######################################## START ###########################################
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | nQuireViewMaker "
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | nQuireViewMaker | Starting nQuireViewMaker pipeline... "
+echo "INFO      | $(date) | nQuireViewMaker | Step #1: Set up workspace."
+
+############ STEP #1: SET UP VARIABLES AND USEFUL FUNCTIONS
+###### Set working directory and filetypes as different variables:
+	echo "INFO      | $(date) | nQuireViewMaker |           Setting user-specified path to: "
+	echo "INFO      | $(date) | nQuireViewMaker |           $PWD "	
+	echo "INFO      | $(date) | nQuireViewMaker |           Input file: $MY_BAM_FILE "
+	echo "INFO      | $(date) | nQuireViewMaker |           Examining current directory, setting variables... "
+
+# exec >> ./"$MY_BAM_FILE"_nQuireViewMaker.out.txt ;
+# exec 2>&1 ;
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+
+### Normal run of function, when BAM files present: 
+###
+if [[ "$(ls -1 ./*.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+	echo "INFO      | $(date) | nQuireViewMaker | Step #2: Create nQuire view files (2) for each sample (from regular and denoised bin files)...  "
+	echo "INFO      | $(date) | nQuireViewMaker | BAM files (mapped reads files) present. Used as reference point for each sample... "
+	(
+		for MY_BAM_FILE in ./*.bam ; do
+		
+			echo "INFO      | $(date) | nQuireViewMaker | #############################  "
+			echo "INFO      | $(date) | nQuireViewMaker | #############################  Current .bam file: ${MY_BAM_FILE} "
+			echo "INFO      | $(date) | nQuireViewMaker | #############################  "
+			echo "INFO      | $(date) | nQuireViewMaker |             "
+		
+			MY_BAM_BASENAME="$(basename "$MY_BAM_FILE" '.bam')";
+
+			if [[ -s "${MY_BAM_BASENAME}"_base.bin ]]; then
+				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file ${MY_BAM_BASENAME}_base.bin... "
+				nQuire view "${MY_BAM_BASENAME}"_base.bin > "${MY_BAM_BASENAME}"_base.bin.view.txt
+			fi
+			if [[ -s "${MY_BAM_BASENAME}"_base_denoised.bin ]]; then
+				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file ${MY_BAM_BASENAME}_base_denoised.bin... "
+				nQuire view "${MY_BAM_BASENAME}"_base_denoised.bin > "${MY_BAM_BASENAME}"_base_denoised.bin.view.txt
+			fi			
+
+		done
+	)
+fi
+###
+
+### Alt run scenario, running only on .view files...
+###
+if [[ "$(ls -1 ./*.bam 2>/dev/null | wc -l | sed 's/\ //g')" = "0"  ]]; then  
+	echo "INFO      | $(date) | nQuireViewMaker | Step #2: Create nQuire view files (2) for each sample (from regular and denoised bin files)...  "
+	echo "INFO      | $(date) | nQuireViewMaker | BAM files (mapped reads files) absent. Looping through view files for each sample... "
+	(
+		for i in ./*_base.bin.view.txt; do
+			
+			echo "INFO      | $(date) | nQuireViewMaker | #############################  "
+			echo "INFO      | $(date) | nQuireViewMaker | #############################  Current view file: $i "
+			echo "INFO      | $(date) | nQuireViewMaker | #############################  "
+			echo "INFO      | $(date) | nQuireViewMaker |             "
+			
+			MY_BASENAME="$(basename "$i" '_base.bin.view.txt')";
+	
+			if [[ -s "$i" ]]; then
+				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file for ${MY_BAM_BASENAME}_base.bin... "
+				nQuire view "${MY_BAM_BASENAME}"_base.bin > "${MY_BAM_BASENAME}"_base.bin.view.txt
+			fi
+			if [[ -s "${MY_BAM_BASENAME}"_base_denoised.bin ]]; then
+				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file ${MY_BAM_BASENAME}_base_denoised.bin... "
+				nQuire view "${MY_BAM_BASENAME}"_base_denoised.bin > "${MY_BAM_BASENAME}"_base_denoised.bin.view.txt
+			fi			
+
+		done
+	)
+fi
+###
+
+
+	echo "INFO      | nQuireViewMaker | Done. "
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
+######################################### END ############################################
+
+}
+
+
+## SNPsCoverageSummary.sh
+## Justin C. Bagley, Ph.D.
+## Date created: Sun, Jun 14 12:08:42 CDT 2020
+
+## Summarizes sample names, putative species names (derived from sample basenames), numbers
+## of (biallelic) SNP loci, and average read depth of coverage (i.e. 'coverage') across SNP
+## loci per sample analyzed in nQuire. Assumes current working directory is an nQuire run
+## folder in which nQuireRunner function of PIrANHA has been run previously.
+
+
+SNPsCoverageSummary () {
+
+######################################## START ###########################################
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | SNPsCoverageSummary "
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | SNPsCoverageSummary | Starting SNPsCoverageSummary analysis of nQuire output... "
+	
+	echo "INFO      | $(date) | SNPsCoverageSummary | Step #1: Check machine type.. "
+	####### CHECK MACHINE TYPE:
+	checkMachineType
+	echo "INFO      | $(date) | SNPsCoverageSummary | Found machine type ${machine}. "
+
+######
+## START DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+
+	####### CHECK NUMBER OF SAMPLES:
+	MY_NUM_SAMPLES="$(ls -lR ./*base_denoised.bin.lrdmodel.out.txt | wc -l | sed 's/\ //g')";
+	echo "INFO      | $(date) | SNPsCoverageSummary | Total no. samples: ${MY_NUM_SAMPLES}   "
+	# echo $MY_NUM_SAMPLES
+	# echo "INFO      | $(date) | SNPsCoverageSummary | Total no. samples: ""$(ls ./*_base_denoised.bin.histotest.out.txt | wc -l | sed 's/\ //g')";
+
+	####### COUNT SNP NUMBERS AND CALCULATE AVERAGE COVERAGES PER SNP LOCUS:
+	if [[ -s ./denoised_bin_histotest_out_fileOrder.list.txt ]]; then
+		echo "INFO      | $(date) | SNPsCoverageSummary | Step #2: Summarize SNP numbers and average read depth of coverage per (biallelic SNP) locus...   "
+		count=1
+		(
+			while read line; do 
+				## Info / filenames:
+				MY_BASENAME="$(basename "$line" '_base_denoised.bin.histotest.out.txt')";  
+					MY_SAMPLE_NAME="$MY_BASENAME"; 
+					MY_SPECIES_NAME="$(echo "$MY_BASENAME" | sed 's/\-RG\_.*//g; s/\-RG//g')"; 
+				MY_BIN_NAME="$(echo "${MY_BASENAME}_base.bin")";
+				MY_DENOISED_BIN_NAME="$(echo "${MY_BASENAME}_base_denoised.bin")";
+				MY_BIN_VIEW_NAME="$(echo "${MY_BASENAME}_base.bin.view.txt")";
+				MY_DENOISED_BIN_VIEW_NAME="$(echo "${MY_BASENAME}_base_denoised.bin.view.txt")";
+				echo "INFO      | $(date) | SNPsCoverageSummary | ----------------- Current sample - ${count}/${MY_NUM_SAMPLES}: ${MY_SAMPLE_NAME}  "
+		#
+				## Make sample names list:
+				echo "INFO      | $(date) | SNPsCoverageSummary | Adding sample ID to list...   "
+				echo "$MY_SAMPLE_NAME" >> ./n"$MY_NUM_SAMPLES"_sampleIDs.list.txt ; ## NOTE: previously, for me was: n77_dDocent_IDs_list.txt  OR  BAM_basenames.list.txt
+				## Make species names list:
+				echo "INFO      | $(date) | SNPsCoverageSummary | Adding (potential) species name to list...   "
+				echo "$MY_SPECIES_NAME" >> ./n"$MY_NUM_SAMPLES"_speciesNames.list.txt ; ## NOTE: previously, for me was: BAM_species_names.list.txt ; 
+		#
+				## Count number of SNPs per sample:
+				echo "INFO      | $(date) | SNPsCoverageSummary | Counting numbers of (biallelic) SNP loci...   "
+				MY_NUM_DENOISED_BIALL_SNPS="$(wc -l ./"$MY_BIN_VIEW_NAME" | sed 's/\ //g; s/\.\/.*//g')";
+				echo "$MY_NUM_DENOISED_BIALL_SNPS" >> ./num_SNPs.txt ;
+		#
+				## Calculate average read coverage, across SNP loci, per sample:
+				echo "INFO      | $(date) | SNPsCoverageSummary | Calculating average read coverage, across SNP loci...   "
+				cat "$MY_BASENAME"_base_denoised.bin.view.txt | cut -f1 > ./my_cov_vals.tmp ; 
+				awk '{ total += $1; count++ } END { print total/count }' ./my_cov_vals.tmp >> ./avg_coverage.txt ; 
+				rm ./*.tmp ;
+		#
+			echo "$((count++)) "  >/dev/null 2>&1 ;
+			done < ./denoised_bin_histotest_out_fileOrder.list.txt   ;
+		)
+	else
+		echo "WARNING   | $(date) | SNPsCoverageSummary | NOT FOUND: Reference file 'denoised_bin_histotest_out_fileOrder.list.txt' needed for this script."
+		echo "INFO      | $(date) | SNPsCoverageSummary | This script should be run in a folder where the nQuireRunner function of PIrANHA has been run previously. "
+		echo "INFO      | $(date) | SNPsCoverageSummary | A successful nQuireRunner run should contain a file with the name listed in the warning above. Check for this file, and if necessary "
+		echo "INFO      | $(date) | SNPsCoverageSummary | re-run nQuireRunner. See the nQuireRunner help text for more info ($ piranha -f nQuireRunner -h)... "
+		echo "INFO      | $(date) | SNPsCoverageSummary | Quitting... "
+		exit 1 ;
+	fi
+
+
+	## Fix species names file if necessary:
+	# if [[ "${machine}" = "Mac" ]]; then
+	# 	sed -i '' 's/\-RG\_.*//g; s/\-RG//g' ./n"$MY_NUM_SAMPLES"_speciesNames.list.txt ;
+	# elif [[ "${machine}" = "Linux" ]]; then
+	# 	sed -i 's/\-RG\_.*//g; s/\-RG//g' ./n"$MY_NUM_SAMPLES"_speciesNames.list.txt ;
+	# fi
+		
+	## Number of samples (lines) in average coverage file?
+	MY_NUM_AVG_COV_FILE_LINES="$(wc -l ./avg_coverage.txt | sed 's/\ //g; s/\.\/.*//g')";
+			
+#   NOT RUN:
+#	## Make final table of average SNP read coverage values:
+#	echo "INFO      | $(date) | SNPsCoverageSummary | Making final table of average SNP read coverage values...   "
+#	paste ./n"$MY_NUM_SAMPLES"_speciesNames.list.txt ./avg_coverage.txt > ./n"$MY_NUM_SAMPLES"_avg_coverages.txt ;
+
+	## Make final summary table of SNP nos. and average SNP read coverage values:
+	echo "INFO      | $(date) | SNPsCoverageSummary | Making final summary table of SNP nos. and average SNP read coverage values...   "
+	paste ./n"$MY_NUM_SAMPLES"_speciesNames.list.txt ./num_SNPs.txt ./avg_coverage.txt > ./n"$MY_NUM_SAMPLES"_num_SNPs_avg_cov_SUMMARY.txt ;
+
+
+	echo "INFO      | $(date) | SNPsCoverageSummary | Step #3: Organize results and clean up working directory...   "
+	if [[ -s lists/ ]] && [[ -s ./avg_coverage.txt ]] && [[ -s ./num_SNPs.txt ]]; then	 mv ./avg_coverage.txt lists/ ; mv ./num_SNPs.txt lists/ ; fi
+	if [[ -s lists/ ]] && [[ -s ./n"$MY_NUM_SAMPLES"_sampleIDs.list.txt ]] && [[ -s ./n"$MY_NUM_SAMPLES"_speciesNames.list.txt ]]; then mv ./n"$MY_NUM_SAMPLES"_sampleIDs.list.txt ./n"$MY_NUM_SAMPLES"_speciesNames.list.txt lists/ ; fi	
+	if [[ -s summaries/ ]] && [[ -s ./n"$MY_NUM_SAMPLES"_num_SNPs_avg_cov_SUMMARY.txt  ]]; then mv ./n"$MY_NUM_SAMPLES"_num_SNPs_avg_cov_SUMMARY.txt summaries/  ; fi
+
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+
+
+	echo "INFO      | SNPsCoverageSummary | Done. "
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
+
+## END DEBUG MODE
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+######
+
+######################################### END ############################################
+
+}
+
+
+if [[ -s lists/ ]] && [[ -s ./denoised_bin_histotest_out_fileOrder.list.txt ]]; then cp ./denoised_bin_histotest_out_fileOrder.list.txt lists/ ; fi
+
 
 
 
@@ -689,8 +1081,21 @@ set -o pipefail
 # Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
 # checkDependencies
 
-# Run the script
+# Run the scripts
+# 1. main
 nQuireRunner
+#
+# 2. summarize histotest output
+histotestSummary
+#
+# 3. summarize lrdmodel output
+lrdmodelSummary
+#
+# 4. make view files for all samples/BAMs (currently requires BAM files in current working dir)
+nQuireViewMaker
+#
+# 5. summarize SNP numbers and read coverages for biallelic SNP loci, across samples
+SNPsCoverageSummary
 
 # Exit cleanly
 safeExit
