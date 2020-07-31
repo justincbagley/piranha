@@ -9,9 +9,9 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: April 19, 2020                                                            #
+# Last update: July 31, 2020                                                             #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # Runs the Taxon DNA software program SpeciesIdentifier, which implements methods in the #
@@ -136,7 +136,7 @@ SpeciesIdentifier () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | SpeciesIdentifier, v1.0.1 April 2020                           "
+echo "INFO      | $(date) | SpeciesIdentifier, v1.0.1 July 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -144,7 +144,8 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
+#echoCDWorkingDir
+echoShortPWD
 checkMachineType
 
 

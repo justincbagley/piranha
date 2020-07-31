@@ -9,9 +9,9 @@
   VERSION="v1.1.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.                       #
-# Last update: April 19, 2020                                                            #
+# Last update: July 31, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # RENAMES TAXA (SAMPLES) IN FASTA, PHYLIP, NEXUS, OR VCF FILES IN CURRENT DIR BASED ON   #
@@ -136,7 +136,7 @@ renameTaxa () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | renameTaxa, v1.1.3 April 2020                                  "
+echo "INFO      | $(date) | renameTaxa, v1.1.3 July 2020                                   "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -153,8 +153,9 @@ echo "INFO      | $(date) | - <fileType> option = ${MY_FILE_TYPE} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#echoCDWorkingDir
+echoShortPWD
 checkMachineType
 
 

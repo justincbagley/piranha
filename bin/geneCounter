@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Tue, May 5 07:47:30 CDT 2020.                        #
 # Last update: July 31, 2020                                                             #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT COUNTS AND SUMMARIZES NUMBER OF GENE COPIES PER TIP TAXON LABEL IN   #

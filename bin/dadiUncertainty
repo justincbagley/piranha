@@ -9,9 +9,9 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: April 17, 2020                                                            #
+# Last update: July 31, 2020                                                             #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT AUTOMATING UNCERTAINTY ANALYSIS IN ∂a∂i, INCLUDING GENERATION OF BOOT-    #
@@ -137,7 +137,7 @@ dadiUncertainty () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dadiUncertainty, v1.0.3 April 2020                             "
+echo "INFO      | $(date) | dadiUncertainty, v1.0.3 July 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -145,8 +145,9 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting dadiUncertainty analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#echoCDWorkingDir
+echoShortPWD
 MY_WORKING_DIR="$(pwd -P)";  	## Keep, this is used a few places below.
 checkMachineType
 
