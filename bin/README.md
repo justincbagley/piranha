@@ -10,7 +10,9 @@ The full file tree for this directory is as follows:
 └─ bin
    ├── README.md
    ├── 2logeB10.r
+   ├── alignAlleles
    ├── AnouraNEXUSPrepper
+   ├── batchRunFolders
    ├── BEAST_logThinner
    ├── BEAST_PSPrepper
    ├── BEASTPostProc
@@ -83,6 +85,7 @@ The full file tree for this directory is as follows:
    ├── taxonCompFilter
    ├── test
    ├── treeThinner
+   ├── trimSeqs
    ├── vcfSubsampler
    └── virtualenv.txt
 ```
