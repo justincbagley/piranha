@@ -1,0 +1,655 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: geneCounter.sh                                                                   #
+  VERSION="v1.0.1"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Tue, May 5 07:47:30 CDT 2020.                        #
+# Last update: July 31, 2020                                                             #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT COUNTS AND SUMMARIZES NUMBER OF GENE COPIES PER TIP TAXON LABEL IN   #
+# A SET OF INPUT GENE TREES IN NEWICK FORMAT, GIVEN A TAXON-SPECIES ASSIGNMENT FILE      #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+geneCounter () {
+
+###### ORIGINAL HEADER / NOTES:
+
+## geneCounter
+## Justin C. Bagley, Ph.D.
+## Created by Justin Bagley on Tue, May 5 07:47:30 CDT 2020
+## GOAL: count number of gene copies in HybPiper paralog alignments, for each individual for each gene
+# start from file of gene trees, one per line, for paralogous genes. end with
+# summary of counts for every individual. input tree file is one Newick-format
+# tree per line. output is 1 header line, listing individuals, with alphabetical
+# recoding, followed by gene counts, with counts for 1 gene per line. this main
+# output is a csv file. other output includes matching file to match original
+# tip taxon names to output codes. also generate a gene tree file with names 
+# converted to alphabetical
+
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | geneCounter, v1.0.1 July 2020                                  "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting geneCounter analysis... "
+echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
+
+################################# 1. SETUP
+
+	###### A. START DEBUG MODE IF SET:
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	###### B. SET WORKING DIRECTORY AND CHECK MACHINE TYPE:
+	## Starting directory:
+	#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+	#echoCDWorkingDir
+	echoShortPWD
+	## Check machine type (saves in var $machine):
+	checkMachineType
+
+
+################################# 2. MAIN SCRIPT 
+
+########### CASE #1: USER GENE TREES FILE WITH STANDARD/USER TIP-NAMING CONVENTIONS, NOT OUTPUT 
+########### BY HYBPIPER PARALOG SCRIPT
+###
+if [[ "$MY_HYBPIPER_TREEFILE_SWITCH" = "0" ]]; then 
+echo "INFO      | $(date) | Step #2: Run main script to count gene copies in standard/user-formatted gene trees file and organize results. "
+
+	###### COPY GENE TREES FILE:
+
+	## Make copy and work with copy so as not to replace / edit original file:
+	cp "$MY_INPUT_TREEFILE" ./treefile.tmp ;
+
+
+	###### MODIFY GENE TREES FILE:
+
+	## Remove branch lengths:
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i.bak 's/\:[0-9e\.]*//g' ./treefile.tmp ;
+		rm ./*.bak;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\:[0-9e\.]*//g' ./treefile.tmp ;
+	fi
+
+	## Remove bootstrap proportions or bayesian posterior probs:
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i.bak 's/)[0-9\.]*/)/g' ./treefile.tmp ;
+		rm ./*.bak;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/)[0-9\.]*/)/g' ./treefile.tmp ;
+	fi
+	# This file is now perfect for replacing names and having a nice output file of simple
+	# gene trees (noBrL) with alphabetical taxon names (renamed taxa)
+
+	## Set aside prelim tree file for alphabetical-rename tree file:
+	cp ./treefile.tmp ./treefile_for_alpharename.tmp ;
+
+
+	###### MAKE TAXON NAMES FILE:
+	## Make taxon names file:
+
+	cp ./treefile_for_alpharename.tmp ./taxon_names.tmp ;
+	perl -p -i -e $'s/\,/\n/g' ./taxon_names.tmp ;
+	perl -p -i -e $'s/\(/\n/g' ./taxon_names.tmp ;
+	perl -p -i -e $'s/\)/\n/g' ./taxon_names.tmp ;
+	perl -p -i -e $'s/\[/\n/g' ./taxon_names.tmp ;
+	perl -p -i -e $'s/\]/\n/g' ./taxon_names.tmp ;
+	# remove empty lines
+	#sed -i '' $'s/^[[:space:]]*$\n//g; s/^$\n//g' ./taxon_names.tmp ;
+	perl -p -i -e $'s/^$\n//g; s/^[\s]$\n//g' ./taxon_names.tmp ;
+
+	# unique sorting names produces a file with all unique names, and after cleaning the number
+	# of lines in this file provides a count of the total number of gene copies in the gene tree
+	# dataset.
+	sort -u ./taxon_names.tmp > ./taxon_names_usort.tmp 
+	perl -p -i -e $'s/^\;$\n//g' ./taxon_names_usort.tmp 
+	MY_TOTAL_GENE_COPIES="$(wc -l ./taxon_names_usort.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
+	#echo "$MY_TOTAL_GENE_COPIES"
+
+fi
+###
+
+
+
+########### CASE #2: INPUT FILE OF GENE TREES OUTPUT BY HYBPIPER PARALOG SCRIPT, THUS WITH
+########### HYBPIPER TIP-NAMING CONVENTION
+###
+if [[ "$MY_HYBPIPER_TREEFILE_SWITCH" = "1" ]]; then 
+echo "INFO      | $(date) | Step #2: Run main script to count gene copies in user gene trees file and organize results. "
+echo "INFO      | $(date) | HybPiper paralog gene trees switch activated (default)."
+echo "INFO      | $(date) | Assuming gene trees follow HybPiper 'paralog_retriever.py' output tip taxon naming conventions... "
+echo "INFO      | $(date) | (See help text (-h, --help) for additional information.) "
+
+	## OK, if these are paralogs obtained by running the paralog_retriever.py script within the
+	## HybPiper (Johnson et al. 2016) pipeline, then the names of different copies have a specific 
+	## format. We can assume that, in each gene tree, one per row of input treefile, multiple copies of
+	## a gene for a given species (tip taxon label, <tipTaxon>) are labeled <tipTaxon>_main, 
+	## <tipTaxon>_0, <tipTaxon>_1, or <tipTaxon> (this is for putative paralog copy 1 that is closest
+	## to the reference seq and kept as main seq in output targeted gene alignments, paralog copy 2, 
+	## paralog copy 3, and regular ortholog sequence for an individual in which no paralogous copies
+	## of the given gene have been found). We use search and replace to rename these as simply 
+	## <tipTaxon>, and then count occurrences of each taxon in each gene tree (each treefile row),
+	## using an assignments file as a guide (2 tab-separated columns matching taxa to species).
+
+	###### COPY GENE TREES FILE:
+
+	## Make copy and work with copy so as not to replace / edit original file:
+	echo "INFO      | $(date) | Making copy of gene trees file..."
+	cp "$MY_INPUT_TREEFILE" ./treefile.tmp ;
+
+	###### MODIFY GENE TREES FILE:
+	echo "INFO      | $(date) | Modifying gene trees file..."
+
+	## Remove branch lengths:
+	echo "INFO      | $(date) | - Removing branch lengths..."
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i.bak 's/\:[0-9e\.]*//g' ./treefile.tmp ;
+		rm ./*.bak;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/\:[0-9e\.]*//g' ./treefile.tmp ;
+	fi
+
+	## Remove bootstrap proportions or bayesian posterior probs:
+	echo "INFO      | $(date) | - Removing nodal support values..."
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i.bak 's/)[0-9\.]*/)/g' ./treefile.tmp ;
+		rm ./*.bak;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i 's/)[0-9\.]*/)/g' ./treefile.tmp ;
+	fi
+
+	## Modify HybPiper tip taxon names so that all copies for each taxon have the same name:
+	echo "INFO      | $(date) | - Modifying tip taxon names..."
+	perl -p -i -e 's/\_0\,/\,/g; s/\_1\,/\,/g; s/\_main\,/\,/g' ./treefile.tmp ;
+	perl -p -i -e 's/\_0\)/\)/g; s/\_1\)/\)/g; s/\_main\)/\)/g' ./treefile.tmp ;
+	echo "INFO      | $(date) | - Complete. "
+
+	## Get total number of genes:
+	echo "INFO      | $(date) | Counting number of gene trees..."
+	#MY_TOTAL_NO_GENES="$(wc -l ./treefile.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
+	export MY_TOTAL_NO_GENES="$(wc -l ./treefile.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
+	echo "INFO      | $(date) | - No. genes: ${MY_TOTAL_NO_GENES}"
+
+
+	###### COUNT NUMBER OF GENE COPIES FOR EACH TIP TAXON, IN EACH GENE TREE:
+	echo "INFO      | $(date) | Counting number of gene copies..."
+
+	## Use assignments file to count gene copies and make summary with species codes:
+	echo "INFO      | $(date) | - Working on: "
+	count=1
+	(
+		for i in $(seq 1 "$MY_TOTAL_NO_GENES"); do
+			echo "INFO      | $(date) | - Gene ${count}/${MY_TOTAL_NO_GENES}... "
+#
+			(
+				while read ASSIGN; do
+					export MY_TIP_NAME="$(echo "$ASSIGN" | cut -f1)";  #test: echo "$MY_TIP_NAME"
+					export MY_SPECIES_CODE="$(echo "$ASSIGN" | cut -f2)";  #test: echo "$MY_SPECIES_CODE"
+#					MY_GENE_COUNT="$(echo "$TREE" | grep -o '\b'${MY_TIP_NAME}'\b' | wc -l | sed 's/\ //g')";  #test: echo "$MY_GENE_COUNT"
+#					MY_GENE_COUNT="$(echo "$TREE" | sed 's/'"$MY_TIP_NAME"'/\n&\n/g' | grep -cx "$MY_TIP_NAME" | sed 's/\ //g')";
+					MY_GENE_COUNT="$(sed -n ''"$i"'p' ./treefile.tmp | perl -nle '$c+=scalar(()=m/'$MY_TIP_NAME'/g);END{print $c}' | sed 's/\ //g' | perl -pe $'s/\n//g')";
+					# Only make header once, because same total # tip taxa possible in each gene. 
+					if [[ "$count" = "1" ]]; then
+						echo "${MY_SPECIES_CODE}${TAB}" >> ./gc_header.tmp
+					fi
+						echo "${MY_GENE_COUNT}${TAB}" >> ./gc"$count".tmp
+				done < "$MY_ASSIGN_FILE"
+			)
+#
+			echo "$((count++)) "  >/dev/null 2>&1 ;
+		done
+	)
+	echo "INFO      | $(date) | - Complete. "
+
+
+	echo "INFO      | $(date) | Collating gene counts... "
+	echo "INFO      | $(date) | - Working on: "
+	#idea: sed '$s/$/yourText2/' list.txt > _list.txt_ && mv -- _list.txt_ list.txt
+	#MY_TOTAL_NO_GENES="$(wc -l ./treefile.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
+	echo "INFO      | $(date) | - No. genes: ${MY_TOTAL_NO_GENES}"
+	(
+		for i in $(seq 1 "$MY_TOTAL_NO_GENES"); do
+			echo "INFO      | $(date) | - Gene ${i}/${MY_TOTAL_NO_GENES}... "
+			if [[ "$i" = "2" ]]; then paste ./gc1.tmp ./gc"$i".tmp > ./gc_table.tmp ; fi ; 
+			if [[ "$i" != "1" ]] && [[ "$i" != "2" ]]; then
+				paste ./gc_table.tmp gc"$i".tmp > _gc_table.tmp_ && mv -- _gc_table.tmp_ gc_table.tmp ;
+			fi
+		done
+	)
+	echo "INFO      | $(date) | - Complete. "
+
+	## Fix the header file by making the taxon labels on one line, and by removing any trailing
+	## tabs at end of line:
+	echo "INFO      | $(date) | Fixing header... "
+	perl -p -i -e $'s/\n//g' ./gc_header.tmp ;
+	perl -p -i -e $'s/\t$//g' ./gc_header.tmp ;
+	perl -p -i -e $'s/$/\n/g' ./gc_header.tmp ;
+	echo "INFO      | $(date) | - Complete. "
+
+	# Make transpose function from URL: https://stackoverflow.com/questions/1729824/an-efficient-way-to-transpose-a-file-in-bash
+	echo "INFO      | $(date) | Adding transpose function... "
+	transpose () {
+awk '
+{
+    for (i=1; i<=NF; i++)  {
+        a[NR,i] = $i
+    }
+}
+NF>p { p = NF }
+END {
+    for(j=1; j<=p; j++) {
+        str=a[1,j]
+        for(i=2; i<=NR; i++){
+            str=str" "a[i,j];
+        }
+        print str
+    }
+}' $1
+}
+
+	## Fix the gene count table file by transposing the table to match the header, so that
+	## counts for each gene are present on 1 row, and the order of counts matches the order
+	## of tip taxa in the header:
+	echo "INFO      | $(date) | Transposing gene counts... "
+	#transpose ./gc_table.tmp > _gc_table.tmp_ &&  mv -- _gc_table.tmp_ gc_table.tmp ;
+	transpose ./gc_table.tmp > ./gc_table_transpose.tmp ;
+	perl -p -i -e $'s/\ /\t/g' ./gc_table_transpose.tmp ;
+	echo "INFO      | $(date) | - Complete. "
+	
+	echo "INFO      | $(date) | Creating final gene counts summary table... "
+	cat ./gc_header.tmp ./gc_table_transpose.tmp > ./gc_table.txt
+	perl -p -i -e $'s/\t\t/\t/g' ./gc_table.txt ;
+	perl -pe $'s/\t/\,/g' ./gc_table.txt > ./gc_table.csv
+	echo "INFO      | $(date) | - Complete. "
+	
+	echo "INFO      | $(date) | Cleaning up, making final results/ subfolder... "
+	## Clean up temporary files and output files by moving to results/ subfolder, and also 
+	## move a copy of the original input gene trees file to results/input/, as follows:
+	#rm ./*.tmp
+	if [[ ! -s results/ ]]; then mkdir results/ ; fi ; 
+	if [[ ! -s results/gene_counts/ ]]; then mkdir results/gene_counts/ ; fi ; 
+	if [[ ! -s results/input/ ]]; then mkdir results/input/ ; fi ; 
+
+	mv ./gc*.tmp results/gene_counts/  ;
+	mv ./*.tmp results/ ;
+	mv ./gc_table.csv results/ ; 
+	mv ./gc_table.txt results/ ; 
+	cp "$MY_INPUT_TREEFILE" results/input/ ;
+	
+	if [[ -s results/treefile.tmp ]]; then 
+		MY_BASENAME="$(basename "$MY_INPUT_TREEFILE" '.tre')";
+		cp ./results/treefile.tmp results/"$MY_BASENAME"_rename.tre ;
+#
+		(
+			while read ASSIGN; do
+				MY_TIP_NAME="$(echo "$ASSIGN" | cut -f1)";
+				MY_SPECIES_CODE="$(echo "$ASSIGN" | cut -f2)";
+				echo "INFO      | $(date) | Renaming $MY_TIP_NAME to $MY_SPECIES_CODE... "
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak 's/'"$MY_TIP_NAME"'/'"$MY_SPECIES_CODE"'/g' results/"$MY_BASENAME"_rename.tre ;
+					#rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/'"$MY_TIP_NAME"'/'"$MY_SPECIES_CODE"'/g' results/"$MY_BASENAME"_rename.tre ;
+				fi
+			done < "$MY_ASSIGN_FILE"
+		)
+		if [[ -s results/"$MY_INPUT_TREEFILE".bak ]]; then rm results/"$MY_INPUT_TREEFILE".bak ; fi 
+#
+	fi
+	echo "INFO      | $(date) | - Complete. "
+
+fi
+###
+
+
+################################# 3. CLEAN UP WORKSPACE 
+
+###### Remove temporary or unnecessary files created above:
+echo "INFO      | $(date) | Removing temporary files... "
+	
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+	if [[ "$(ls -1 results/*.bak 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm results/*.bak ; 
+	fi
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
+
+echo "INFO      | $(date) | Done."
+echo "----------------------------------------------------------------------------------------------------------"
+
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+###### END DEBUG MODE
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="
+Usage: piranha -f $(basename "$0") [Options]...
+
+ ${bold}Options:${reset}
+  -i, --input     treeFile (def: NULL) name of input gene tree file
+  -a, --assign    assignFile (def: NULL) name of tip taxon-species assignment file
+  -h, --help      echo this help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates counting and summarizing the number of gene copies per tip taxon 
+ (label) in a set of input gene trees in Newick format (passed with -i, --input flag), given
+ a taxon-species assignment file (passed with -a, --assign flag). The default setting assumes
+ that tip taxa are named (labeled) as follows: a regular tip taxon label with no suffix 
+ indicates only one gene copy was sequenced for that individual (=the only representative of 
+ its species; alternatively, different gene copies for a given individual/species can be 
+ appended with '_main', '_0', or '_1', all indicating putatively paralogous gene copies. 
+	These default tip-naming conventions match output of the 'paralog_retriever.py' Python 
+ script in the HybPiper targeted sequence capture pipeline (Johnson et al. 2016), in which 
+ case the 'main' sequence would be the gene copy retained for downstream analyses because it 
+ was most similar to the reference sequence (i.e. target gene sequence). The present 
+ geneCounter script was written with gene trees generated from alignments of gene copies 
+ from paralog_retriever in mind; however, it will work with any sets of multi-gene/multi-
+ individual gene trees meeting the tip-naming assumptions. It should also work perfectly
+ well if given a gene trees file in which multiple copies of a gene present from the same 
+ tip taxon are all given the same tip taxon label. Tip taxon names may include alphanumeric, 
+ hyphen, and underscore characters but no spaces (or else there could be problems). 
+	Program output (final output plus intermediate files) is saved in a 'results/' subfolder, 
+ with temporary gene counts for each gene in 'results/gene_counts/'. The main output files are
+ 1) a tab-formatted gene x species gene counts file, 'gc_table.txt'; 2) a comma-separated gene
+ x species gene counts file, 'gc_table.csv'; and 3) a renamed version of the input gene trees
+ file named '<treeFile>_rename.tre', with tip labels replaced with species codes. 
+	The program runs on UNIX-like and Linux systems using commonly distributed utility software, 
+ with usage obtained by running the script with the -h flag (also --help). It has been tested 
+ on macOS High Sierra (v10.13+) and Mojave, as well as Centos 5/6/7 Linux, but should work on 
+ many other versions of these operating systems. There are no other dependencies.
+ 
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f geneCounter -h                                           Show this help text and exit
+    piranha -f geneCounter -i <treeFile> -a <assignFile>                Generic usage, with both mandatory parameters
+    piranha -f geneCounter --input <treeFile> --assign <assignFile>     Same as above, but using long options
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ Created by Justin Bagley on Tue, May 5 07:47:30 CDT 2020. 
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename "$0") $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./treefile.tmp ]]; then rm ./treefile.tmp ; fi ; 
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-assign/\-\-assign/g' ./args.txt
+	perl -p -i -e $'s/\-hybpiper/\-\-hybpiper/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_TREEFILE=NULL ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_INPUT_TREEFILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
+		MY_INPUT_TREEFILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-assign' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ASSIGN_FILE=NULL ;
+	elif [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-assign' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-a' ./args.txt | perl -pe 's/\-a//g' | perl -pe 's/\ //g')";
+		MY_ASSIGN_FILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-assign' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-assign' ./args.txt | perl -pe 's/\-\-assign//g' | perl -pe 's/\ //g')";
+		MY_ASSIGN_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-h' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-hybpiper' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_HYBPIPER_TREEFILE_SWITCH=1 ;
+	elif [[  "$(grep -h '\-h' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-hybpiper' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-h' ./args.txt | perl -pe 's/\-h//g' | perl -pe 's/\ //g')";
+		MY_HYBPIPER_TREEFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-h' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-hybpiper' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-hybpiper' ./args.txt | perl -pe 's/\-\-hybpiper//g' | perl -pe 's/\ //g')";
+		MY_HYBPIPER_TREEFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=geneCounter_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+#	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MY_VERBOSE_OUT_SWITCH=0 ;
+#	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+#		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+#	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+#		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+#		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+#		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=0 ; fi
+#	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=0 ; fi
+	fi
+#
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+geneCounter
+
+# Exit cleanly
+safeExit
