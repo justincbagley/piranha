@@ -196,7 +196,7 @@ FUNCTION			   DESCRIPTION
                        (2loge(B10)) from BEAST marginal likelihood estimation (ps / ss) runs.
 alignAlleles           Aligns and cleans allele sequences (phased DNA sequences) output by the PIrANHA function
                        phaseAlleles (or in similar format; see phaseAlleles and alignAlleles usage texts for 
-                       additional details)
+                       additional details).
 AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses (Calderon, 
                        Bagley, and Muchhala, in prep.).
 batchRunFolders        Automates splitting a set of input files into different batches (to be run in parallel on
