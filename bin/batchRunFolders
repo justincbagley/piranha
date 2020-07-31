@@ -1,0 +1,776 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: batchRunFolders.sh                                                               #
+  VERSION="v1.0.2"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Sun, May 3 11:00:32 CDT 2020.                        #
+# Last update: July 31, 2020                                                             #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <bagleyj@umsl.edu>.                                              #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT AUTOMATES PREPPING RUNS BY ORGANIZING A SET OF INPUT FILES INTO      #
+# DIFFERENT RUN BATCH FOLDERS, STARTING FROM FILE TYPE OR LIST OF INPUT FILES            #
+#                                                                                        #
+##########################################################################################
+
+## TODO: Compare with dropRandomHap script; if highly overlapping and non-complementary, 
+## then decide on one and keep it, remove the other, and develop the one you kept further.
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+batchRunFolders () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | batchRunFolders, v1.0.2 July 2020                              "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Running batchRunFolders function... "
+echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+
+################################# 1. SETUP
+
+	####### A. START DEBUG MODE IF SET:
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	####### B. SET WORKING DIRECTORY AND CHECK MACHINE TYPE:
+	#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+	#echoCDWorkingDir
+	echoShortPWD
+	checkMachineType
+
+
+################################# 2. FILE PROCESSING
+
+echo "INFO      | $(date) | Step #2: Organize input files (and other files) into run folders, depending on input <fileType>. "
+
+	####### A. ECHO INPUT FILE TYPE & NUMBER OF INPUT FILES:
+
+	## Handle / echo info about <fileType>:
+
+	if [[ "$MY_FILE_TYPE" = "phylip" ]]; then 
+		echo "INFO      | $(date) | File type:        phylip"
+		MY_NUM_INPUT_FILES="$(find . -type f \( -iname \*.phy -o -iname \*.phylip -o -iname \*.PHY -o -iname \*.PHYLIP \) | wc -l | sed 's/\ //g')";
+		echo "INFO      | $(date) | No. PHYLIP files: ${MY_NUM_INPUT_FILES}"
+	elif [[ "$MY_FILE_TYPE" = "fasta" ]]; then 
+		echo "INFO      | $(date) | File type:       fasta"
+		MY_NUM_INPUT_FILES="$(find . -type f \( -iname \*.fas -o -iname \*.fasta -o -iname \*.FAS -o -iname \*.FASTA \) | wc -l | sed 's/\ //g')";
+		echo "INFO      | $(date) | No. FASTA files: ${MY_NUM_INPUT_FILES}"
+	elif [[ "$MY_FILE_TYPE" = "nexus" ]]; then 
+		echo "INFO      | $(date) | File type:       nexus"
+		MY_NUM_INPUT_FILES="$(find . -type f \( -iname \*.nex -o -iname \*.nexus -o -iname \*.NEX -o -iname \*.NEXUS \) | wc -l | sed 's/\ //g')";
+		echo "INFO      | $(date) | No. NEXUS files: ${MY_NUM_INPUT_FILES}"
+	fi
+
+
+	####### B. MAKE INPUT LIST FILE IF NOT PRESENT:
+
+	## Make list file if not supplied using -i flag:
+	
+	if [[ "$MY_INPUT_LIST_FILE" = "NULL" ]]; then
+		if [[ "$MY_FILE_TYPE" = "phylip" ]]; then 
+			MY_LIST_FILE_NAME=phylip_fileOrder.list.txt ;
+			MY_INPUT_LIST_FILE=phylip_fileOrder.list.txt ;
+			(
+				for i in ./*.{phylip,phy,PHYLIP,PHY} ; do 
+					if [[ "$i" != "./*.phylip" ]] && [[ "$i" != "./*.phy" ]] && [[ "$i" != "./*.PHYLIP" ]] && [[ "$i" != "./*.PHY" ]]; then 
+						echo "$i" >> "$MY_LIST_FILE_NAME" ; 
+					fi
+				done
+			); 
+		fi
+		if [[ "$MY_FILE_TYPE" = "fasta" ]]; then 
+			MY_LIST_FILE_NAME=fasta_fileOrder.list.txt ;
+			MY_INPUT_LIST_FILE=fasta_fileOrder.list.txt ;
+			( 
+				for i in ./*.{fasta,fas,FASTA,FAS} ; do 
+					if [[ "$i" != "./*.fasta" ]] && [[ "$i" != "./*.fas" ]] && [[ "$i" != "./*.FASTA" ]] && [[ "$i" != "./*.FAS" ]]; then 
+						echo "$i" >> "$MY_LIST_FILE_NAME" ; 
+					fi
+				done ; 
+			);  
+		fi
+		if [[ "$MY_FILE_TYPE" = "nexus" ]]; then 
+			MY_LIST_FILE_NAME=nexus_fileOrder.list.txt ;
+			MY_INPUT_LIST_FILE=nexus_fileOrder.list.txt ;
+			( 
+				for i in ./*.{nexus,nex,NEXUS,NEX} ; do 
+					if [[ "$i" != "./*.nexus" ]] && [[ "$i" != "./*.nex" ]] && [[ "$i" != "./*.NEXUS" ]] && [[ "$i" != "./*.NEX" ]]; then 
+						echo "$i" >> "$MY_LIST_FILE_NAME" ; 
+					fi
+				done ; 
+			);  
+		fi
+	fi
+
+
+	####### C. SPLIT LIST FILE INTO BATCH LIST FILES USING splitFile FUNCTION:
+
+	### Make align batch list files:
+	## Use PIrANHA splitFile function to split the original (full) list file into parts:
+
+	echo "INFO      | $(date) | Making batch list files using PIrANHA splitFile function... "
+
+	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
+	
+#piranha -f splitFile -i "$MY_INPUT_LIST_FILE" -n "$MY_NUM_BATCHES" -o "$MY_BATCH_FILE_PREFIX"  ;
+echo "#!/bin/sh
+
+$MY_PIRANHA_PATH -f splitFile -i $MY_INPUT_LIST_FILE -n $MY_NUM_BATCHES -o $MY_BATCH_FILE_PREFIX  ;
+
+" > ./piranha_splitFile.sh
+
+	chmod u+x ./piranha_splitFile.sh ;
+
+	. ./piranha_splitFile.sh  >/dev/null 2>&1 ;
+
+
+
+	#### Organize input files into run folders (make subfolders) etc.:
+
+	if [[ ! -s orig_phylip_files/ ]]; then mkdir orig_phylip_files/ ; fi ; 
+
+(
+	for i in ./"$MY_BATCH_FILE_PREFIX"[0-9]*.txt; do
+		MY_BASENAME="$(basename "$i" '.txt')";
+			echo "INFO      | $(date) | ###------    ${MY_BASENAME}    ------### "
+			echo "INFO      | $(date) | Making ${MY_BASENAME} batch run subfolder... "
+			mkdir "$MY_BASENAME"/ ;
+#
+			(
+				while read line; do
+					cp "$line" "$MY_BASENAME"/ ; 
+					mv "$line" orig_phylip_files/ ;
+				done < "$i" ;
+			)
+		cp "$i" "$MY_BASENAME"/ ;
+#
+	done
+)
+
+
+	####### D. PREPARE QUEUE SUBMISSION SHELL SCRIPTS:
+
+	### QUEUE SCRIPTS, CASE #1: FASTA INPUT FILES FOR MAFFT ALIGNINMENT RUNS:
+	###
+	if [[ "$MY_FILE_TYPE" = "fasta" ]] && [[ "$MY_SOFTWARE" = "mafft" ]] || [[ "$MY_SOFTWARE" = "MAFFT" ]]; then
+
+	## Make queue submission script for first batch, <batchPrefix>1.sh (default: align1.sh):
+	# test: MY_BATCH_FILE_PREFIX=align
+
+	echo "
+#!/bin/bash
+
+#\$ -N ${MY_BATCH_FILE_PREFIX}1_mafft
+#\$ -pe smp 3
+#\$ -cwd
+#\$ -V
+#\$ -S /bin/bash
+#\$ -e ${MY_BATCH_FILE_PREFIX}1_mafft.err.txt
+#\$ -o ${MY_BATCH_FILE_PREFIX}1_mafft.out.txt
+
+
+JOB_NAME=\"${MY_BATCH_FILE_PREFIX}1_mafft\"
+
+echo + \$(date) job \$JOB_NAME started in \$QUEUE with jobID=\$JOB_ID on \$HOSTNAME
+echo + NSLOTS = \$NSLOTS
+
+######################################## START ###########################################
+
+$(printf '\t')list=${MY_BATCH_FILE_PREFIX}1.txt
+$(printf '\t')MY_BASENAME=\"\$(basename \"\$list\" '.txt')\";
+$(printf '\t')export MY_NUM_THREADS=3
+(
+$(printf '\t')$(printf '\t')$(printf '\t')for i in ./*.{fasta,fas,FASTA,FAS} ; do
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')if [[ \"\$i\" != \"./*.fasta\" ]] && [[ \"\$i\" != \"./*.fas\" ]] && [[ \"\$i\" != \"./*.FASTA\" ]] && [[ \"\$i\" != \"./*.FAS\" ]]; then 
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          ###------    \$i    ------### \"
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          \"
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          Aligning split FASTA alignments (e.g. contigs/partitions) with mafft with \${MY_NUM_THREADS} threads...\"
+#
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')if [[ ! -s \"\$i\".mafft ]] && [[ ! -s \"\$i\".aln.mafft ]] && [[ ! -s \"\$i\".aln  ]]; then
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')mafft --auto --thread \"\$MY_NUM_THREADS\" --preservecase \"\$i\" > \"\$i\".aln  ;
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')fi
+#
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          \"
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')fi 
+$(printf '\t')$(printf '\t')$(printf '\t')done
+)
+#
+#
+#
+######################################### END ############################################
+
+echo \$(date) job \$JOB_NAME done
+
+exit 0
+" > "$MY_BATCH_FILE_PREFIX"1.sh
+
+	## Fix the first submission script file by removing the first (empty) line:
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i.bak '1d' "$MY_BATCH_FILE_PREFIX"1.sh ;
+		rm ./*.bak;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i '1d' "$MY_BATCH_FILE_PREFIX"1.sh ;
+	fi
+
+	## Make queue submission scripts for all remaining batches (2–n), where n is the number of 
+	## batches, <batchNumber>:
+(
+	for i in $(seq 2 "$MY_NUM_BATCHES"); do 
+		cp "$MY_BATCH_FILE_PREFIX"1.sh "$MY_BATCH_FILE_PREFIX""${i}".sh ;
+#
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i.bak 's/'"$MY_BATCH_FILE_PREFIX"'1/'"$MY_BATCH_FILE_PREFIX"''"$i"'/g' "$MY_BATCH_FILE_PREFIX""${i}".sh ;
+			rm ./*.bak;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/'"$MY_BATCH_FILE_PREFIX"'1/'"$MY_BATCH_FILE_PREFIX"''"$i"'/g' "$MY_BATCH_FILE_PREFIX""${i}".sh ;
+		fi
+	done
+)
+
+
+	## Add queue submission scripts to batch run subfolders, final storage in sh/ subfolder.
+	## While doing this, also store batch list files (.txt) in txt/ subfolder, as follows:
+	if [[ ! -s ./sh/ ]]; then mkdir sh/ ; fi ;
+	if [[ ! -s ./txt/ ]]; then mkdir txt/ ; fi ;
+(
+	for i in ./"$MY_BATCH_FILE_PREFIX"[0-9]*.sh; do
+		MY_BASENAME="$(basename "$i" '.sh')";
+		cp "$i" "$MY_BASENAME"/ ;
+		mv "$i" sh/ ;
+		if [[ -s "$MY_BASENAME".txt ]]; then mv "$MY_BASENAME".txt txt/ ; fi ; 
+	done
+)
+
+fi
+###
+
+
+	### QUEUE SCRIPTS, CASE #2: PHYLIP INPUT FILES FOR IQ-TREE RUNS:
+	###
+	if [[ "$MY_FILE_TYPE" = "phylip" ]] && [[ "$MY_SOFTWARE" = "iqtree" ]] || [[ "$MY_SOFTWARE" = "IQ-TREE" ]]; then
+
+	## Make queue submission script for first batch, <batchPrefix>1.sh (default: align1.sh):
+
+	echo "
+#!/bin/bash
+
+#\$ -N ${MY_BATCH_FILE_PREFIX}1_iqtree
+#\$ -pe smp 3
+#\$ -cwd
+#\$ -V
+#\$ -S /bin/bash
+#\$ -e ${MY_BATCH_FILE_PREFIX}1_iqtree.err.txt
+#\$ -o ${MY_BATCH_FILE_PREFIX}1_iqtree.out.txt
+
+
+JOB_NAME=\"${MY_BATCH_FILE_PREFIX}1_iqtree\"
+
+echo + \$(date) job \$JOB_NAME started in \$QUEUE with jobID=\$JOB_ID on \$HOSTNAME
+echo + NSLOTS = \$NSLOTS
+
+######################################## START ###########################################
+
+$(printf '\t')list=${MY_BATCH_FILE_PREFIX}1.txt
+$(printf '\t')MY_BASENAME=\"\$(basename \"\$list\" '.txt')\";
+(
+$(printf '\t')$(printf '\t')$(printf '\t')for i in ./*.phy; do
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')MY_PHYLIP_BASENAME=\"\$(basename \"\$i\" '.phy')\";
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"\$i\" >> ./\"\$MY_BASENAME\"_PHYLIP_iqtree_fileOrder.list.txt
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          ###------    \$i    ------### \"
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          \"
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          Performing model selection (ModelFinder), building ML gene tree phylogeny, and performing SH-aLRT test and 1000 ultrafast bootstraps with IQ-tree... \"
+#
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')if [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.contree  ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.contree  ]]; then
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')iqtree -s \"\$i\" -alrt 1000 -bb 1000 -nt 3 ;
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')fi
+#
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          \"
+$(printf '\t')$(printf '\t')$(printf '\t')done
+)
+
+#
+#
+#
+######################################### END ############################################
+
+echo \$(date) job \$JOB_NAME done
+
+exit 0
+" > "$MY_BATCH_FILE_PREFIX"1.sh
+
+	## Fix the first submission script file by removing the first (empty) line:
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i.bak '1d' "$MY_BATCH_FILE_PREFIX"1.sh ;
+		rm ./*.bak;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i '1d' "$MY_BATCH_FILE_PREFIX"1.sh ;
+	fi
+
+
+	## Make queue submission scripts for all remaining batches (2–n), where n is the number of 
+	## batches, <batchNumber>:
+(
+	for i in $(seq 2 "$MY_NUM_BATCHES"); do 
+		cp "$MY_BATCH_FILE_PREFIX"1.sh "$MY_BATCH_FILE_PREFIX""${i}".sh ;
+#
+		if [[ "${machine}" = "Mac" ]]; then
+			sed -i.bak 's/'"$MY_BATCH_FILE_PREFIX"'1/'"$MY_BATCH_FILE_PREFIX"''"$i"'/g' "$MY_BATCH_FILE_PREFIX""${i}".sh ;
+			rm ./*.bak;
+		fi
+		if [[ "${machine}" = "Linux" ]]; then
+			sed -i 's/'"$MY_BATCH_FILE_PREFIX"'1/'"$MY_BATCH_FILE_PREFIX"''"$i"'/g' "$MY_BATCH_FILE_PREFIX""${i}".sh ;
+		fi
+	done
+)
+
+
+	## Add queue submission scripts to batch run subfolders, final storage in sh/ subfolder.
+	## While doing this, also store batch list files (.txt) in txt/ subfolder, as follows:
+	if [[ ! -s ./sh/ ]]; then mkdir sh/ ; fi ;
+	if [[ ! -s ./txt/ ]]; then mkdir txt/ ; fi ;
+(
+	for i in ./"$MY_BATCH_FILE_PREFIX"[0-9]*.sh; do
+		MY_BASENAME="$(basename "$i" '.sh')";
+		cp "$i" "$MY_BASENAME"/ ;
+		mv "$i" sh/ ;
+		if [[ -s "$MY_BASENAME".txt ]]; then mv "$MY_BASENAME".txt txt/ ; fi ; 
+	done
+)
+	
+fi
+###
+
+
+	### QUEUE SCRIPTS, CASE #3: PHYLIP INPUT FILES FOR RAxML RUNS:
+	###
+	if [[ "$MY_FILE_TYPE" = "phylip" ]] && [[ "$MY_SOFTWARE" = "raxml" ]] || [[ "$MY_SOFTWARE" = "RAxML" ]]; then
+		echo "" ;
+	fi
+	###
+
+
+	# ## submit 'align#.sh' files in 'align1/', 'align2/', etc. align dirs to run queue
+	# ## (on supercomputer):
+	# for i in ./align[0-9]/; do
+	# cd "$i"
+	# MY_BASENAME="$(basename "$i")";
+	# qsub "$MY_BASENAME".sh ;
+	# cd ..;
+	# done
+
+	# ## Clean dirs if iqtree runs fail (on supercomputer):
+	# rm ./*/*_PHYLIP_iqtree_fileOrder.list.txt
+	# rm ./*/*_iqtree.out.txt
+	# rm ./*/*_iqtree.err.txt
+
+
+
+echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary files generated during run. "
+
+################################# 3. CLEAN UP WORKSPACE 
+
+	echo "INFO      | $(date) | Deleting temporary files... "
+	############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.	
+
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+
+echo "INFO      | $(date) | Done."
+echo "----------------------------------------------------------------------------------------------------------"
+echo ""
+
+
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+###### END DEBUG MODE
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+############ SCRIPT OPTIONS
+## OPTION DEFAULTS ##
+# MY_INPUT_LIST_FILE=NULL
+# MY_FILE_TYPE=phylip
+# MY_SOFTWARE=mafft
+# MY_NUM_BATCHES=10
+# MY_BATCH_FILE_PREFIX=align
+# MY_LOGFILE_SWITCH=batchRunFolders_log.txt
+# MY_DEBUG_MODE_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="Usage: $(basename "$0") [OPTION]...
+
+ ${bold}Options:${reset}
+  -i, --input     inputList (def: NULL) name of file containing list of input files
+  -f, --filetype  fileType (def: phylip; other: fasta, nexus) input file type
+  -s, --software  targetSoftware (def: mafft; other: iqtree, raxml) target run software that 
+                  input files will be analyzed with
+  -b, --batches   batchNumber (def: 10) number of batches (parts) to split input files into
+  -p, --prefix    batchPrefix (def: align) prefix for batch parts file and other dir/file names
+  -l, --logfile   logFile (def: aligning_log.txt) log screen output to file in working dir 
+                  with user-specified name (default is on, so allows changing log file name)
+  -h, --help      echo this help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THE SCRIPT automates splitting a set of input files into batches to be run in parallel on
+ a remote supercomputing cluster, or a local machine. Given information about the input files
+ (input file type, and optionally an input file list) and the final target software for analyzing
+ the input files, the batchRunFolders function takes care of mundane file processing, including
+ making file lists, splitting files into batches, creating and organizing input files into 
+ batch run folders, and generation of queue submission shell scripts for each batch run.
+	Currently, batchRunFolders is designed to prepare bath run folders for parallel analyses
+ of DNA sequence alignment files in one of three formats: PHYLIP ('.phy'; Felsenstein 2002), 
+ FASTA ('.fas', '.fasta'), or NEXUS ('.nex'; Maddison et la. 1997). These input files are 
+ prepped to be run in parallel in one of three programs (although this may be extended in the
+ future): MAFFT (Katoh et al. 2013), RAxML (Stamatakis 2014), and IQ-TREE (Bin et al. 2017).
+ These software programs must be available from the command line as 'mafft', 'raxmlHPC', and
+ 'iqtree', respectively.
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. The main dependency is PIrANHA (Bagley 2020),
+ as the program makes executes a custom call of the splitFile PIrANHA function. This program
+ also relies on the availability of PIrANHA as 'piranha' from the command line, so first make
+ sure to install PIrANHA and make it available from the command line (see instructions on
+ the PIrANHA GitHub wiki (available at: https://github.com/justincbagley/piranha/wiki).
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f batchRunFolders -f <fileType> -p <runProgram>                     Generic usage
+    piranha -f batchRunFolders -i <inputList> -f <fileType> -p <runProgram>      Generic usage with input file list
+    piranha -f batchRunFolders -h                                                Show this help text and exit
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+ Katoh, K., & Standley, D.M., 2013. MAFFT multiple sequence alignment software version 7: 
+	improvements in performance and usability. Molecular Biology and Evolution, 30(4), 772–
+	780.
+ Maddison, D.R., Swofford, D.L. and Maddison, W.P., 1997. NEXUS: an extensible file format for 
+	systematic information. Systematic Biology, 46(4), 590–621.
+
+ Created by Justin Bagley on Sun, May 3 11:00:32 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename "$0") $VERSION";
+	exit
+fi
+
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-filetype/\-\-filetype/g' ./args.txt
+	perl -p -i -e $'s/\-software/\-\-software/g' ./args.txt
+	perl -p -i -e $'s/\-batches/\-\-batches/g' ./args.txt
+	perl -p -i -e $'s/\-prefix/\-\-prefix/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_LIST_FILE=NULL ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_PHYLIP_FILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
+		INPUT_PHYLIP_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-filetype' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_FILE_TYPE=phylip ;
+	elif [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-filetype' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+		MY_FILE_TYPE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-filetype' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-filetype' ./args.txt | perl -pe 's/\-\-filetype//g' | perl -pe 's/\ //g')";
+		MY_FILE_TYPE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-software' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_SOFTWARE=mafft ;
+	elif [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-software' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-s' ./args.txt | perl -pe 's/\-s//g' | perl -pe 's/\ //g')";
+		MY_SOFTWARE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-software' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-software' ./args.txt | perl -pe 's/\-\-software//g' | perl -pe 's/\ //g')";
+		MY_SOFTWARE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-batches' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NUM_BATCHES=10  ;
+	elif [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-batches' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-b' ./args.txt | perl -pe 's/\-b//g' | perl -pe 's/\ //g')";
+		MY_NUM_BATCHES="$MY_ARG" ;
+	elif [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-batches' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-batches' ./args.txt | perl -pe 's/\-\-batches//g' | perl -pe 's/\ //g')";
+		MY_NUM_BATCHES="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-prefix' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_BATCH_FILE_PREFIX=align  ;
+	elif [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-prefix' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-p' ./args.txt | perl -pe 's/\-p//g' | perl -pe 's/\ //g')";
+		MY_BATCH_FILE_PREFIX="$MY_ARG" ;
+	elif [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-prefix' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-prefix' ./args.txt | perl -pe 's/\-\-prefix//g' | perl -pe 's/\ //g')";
+		MY_BATCH_FILE_PREFIX="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=batchRunFolders_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+#	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MY_VERBOSE_OUT_SWITCH=0 ;
+#	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+#		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+#		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+#	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+#		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+#		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+#		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+#	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+#
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:f:s:b:p:l:d:' opt ; do
+#   case $opt in
+# ## PHYLIPSubsampler options:
+#     i) MY_INPUT_LIST_FILE=$OPTARG ;;
+#     f) MY_FILE_TYPE=$OPTARG ;;
+#     s) MY_SOFTWARE=$OPTARG ;;
+#     b) MY_NUM_BATCHES=$OPTARG ;;
+#     p) MY_BATCH_FILE_PREFIX=$OPTARG ;;
+#     l) MY_LOGFILE_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
+# # Store the remaining part as arguments.
+# # args+=("$@")
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+batchRunFolders
+
+# Exit cleanly
+safeExit
