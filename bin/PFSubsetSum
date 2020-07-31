@@ -9,9 +9,9 @@
   VERSION="v1.4.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
-# Last update: April 19, 2020                                                            #
+# Last update: July 31, 2020                                                             #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FOR DNA SUBSETS WITHIN THE OPTIMUM     #
@@ -136,15 +136,16 @@ PFSubsetSum () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PFSubsetSum, v1.4.2 April 2020                                 "
+echo "INFO      | $(date) | PFSubsetSum, v1.4.2 July 2020                                  "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
 echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#echoCDWorkingDir
+echoShortPWD
 MY_WORKING_DIR="$(pwd -P)";		## Keep, used by script a few places below.
 checkMachineType
 
