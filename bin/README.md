@@ -32,6 +32,7 @@ The full file tree for this directory is as follows:
    ├── FASTA2PHYLIP
    ├── FASTAsummary
    ├── fastSTRUCTURE
+   ├── geneCounter
    ├── getBootTrees
    ├── getTaxonNames
    ├── MAGNET-1.1.1
