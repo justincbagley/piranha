@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
 # Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT AUTOMATING UNCERTAINTY ANALYSIS IN ∂a∂i, INCLUDING GENERATION OF BOOT-    #
@@ -972,7 +972,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f dadiUncertainty -a assignments.txt -i \'LP\',\'core\',\'periphery\' -p 98,46,156 -n 250 -m 2 -s M4.py -e 0.72828532,0.29458734,0.96806661,5.30191219,6.90827885,4.35076242,8.80921022,0.0349316,0.00881585 55Pops.recode.6330IDs.vcf
  
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

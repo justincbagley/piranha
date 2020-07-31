@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Mon, Aug 29 13:12:45 2016 -0700.                     #
 # Last update: July 31, 2020                                                             #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL PIPELINE FOR AUTOMATING ESTIMATION OF A MAXIMUM-LIKELIHOOD (ML) GENE TREE IN     #
@@ -1035,7 +1035,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f MAGNET -h                                  Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -1143,7 +1143,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  runs. The default setting is to run without this option.
 
  The -d flag runs this function in Bash debug mode (set -xv), which is intended for debugging
- for development purposes. If you find a bug, please contact the author at bagleyj@umsl.edu.
+ for development purposes. If you find a bug, please contact the author at jbagley@jsu.edu.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
@@ -1156,7 +1156,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f MAGNET -h                                  Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

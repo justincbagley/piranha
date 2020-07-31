@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Wed, Jun 19 14:04:27 CDT 2019.                       #
 # Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL FUNCTION THAT SUMMARIZES THE CHARACTERISTICS OF ONE OR MULTIPLE PHYLIP DNA       #
@@ -272,7 +272,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f PHYLIPsummary -h                    Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

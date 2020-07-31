@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
 # Last update: July 31, 2020                                                             #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO NEXUS FORMAT, #
@@ -518,7 +518,7 @@ Usage: piranha -f $(basename "$0") [Options]...
     piranha -f PHYLIP2NEXUS -m 1 
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

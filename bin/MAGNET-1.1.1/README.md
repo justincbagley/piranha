@@ -180,7 +180,7 @@ Usage: MAGNET [OPTION]...
  runs. The default setting is to run without this option.
 
  The -d flag runs this function in Bash debug mode (set -xv), which is intended for debugging
- for development purposes. If you find a bug, please contact the author at bagleyj@umsl.edu.
+ for development purposes. If you find a bug, please contact the author at jbagley@jsu.edu.
 
  Usage examples:
  Call the program using PIrANHA, as follows:

@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Tue, Mar 5 11:32:42 CST 2019.                        #
 # Last update: April 17, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT TO RENAME TIP LABLES IN PHYLIP OR FASTA MULTIPLE SEQUENCE ALIGNMENT (MSA) #
@@ -274,7 +274,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f renameForStarBEAST2 -f fasta -a <assignmentFile>
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

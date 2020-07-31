@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
 # Last update: July 31, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT REMOVES INDIVIDUALS WITH ALL MISSING DATA (OR MOSTLY MISSING DATA)   #
@@ -408,7 +408,7 @@ Usage: piranha -f $(basename "$0") [Options]...
     piranha -f PHYLIPcleaner -h                        Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

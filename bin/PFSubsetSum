@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
 # Last update: April 19, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR CALCULATING SUMMARY STATISTICS FOR DNA SUBSETS WITHIN THE OPTIMUM     #
@@ -324,7 +324,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f PFSubsetSum -h      Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -354,7 +354,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-c" ]] || [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]; then
-	echo " Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+	echo " Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 "
 	exit

@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.                       #
 # Last update: April 19, 2020                                                            #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # RENAMES TAXA (SAMPLES) IN FASTA, PHYLIP, NEXUS, OR VCF FILES IN CURRENT DIR BASED ON   #
@@ -388,11 +388,11 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f renameTaxa -h                                              Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.

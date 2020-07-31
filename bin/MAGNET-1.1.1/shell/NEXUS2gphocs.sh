@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
 # Last update: March 13, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT       #
@@ -136,7 +136,7 @@ function NEXUS2gphocs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2gphocs, v1.5.0 March 2019  (part of PIrANHA v0.3a1)      "
+echo "INFO      | $(date) | NEXUS2gphocs, v1.5.0 March 2019  (part of PIrANHA v0.4a3)      "
 echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -329,7 +329,7 @@ USAGE="Usage: $(basename $0) [OPTION]...
     piranha -f MAGNET-1.0.0/NEXUS2gphocs --args='-h'
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.3a1. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}

@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Thu, 20 Apr 2017 17:14:32 -0400.                     #
 # Last update: April 17, 2020                                                            #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR AUTOMATING RUNNING ∂a∂i ON A REMOTE SUPERCOMPUTING CLUSTER            #
@@ -417,7 +417,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f dadiRunner -i <SNPInput> -n 20 -w 24:00:00      Changing run walltime.
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
@@ -493,7 +493,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f dadiRunner -i <SNPInput> -n 20 -w 24:00:00      Changing run walltime.
 	
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

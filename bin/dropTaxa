@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.                        #
 # Last update: April 19, 2020                                                            #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES REMOVING TAXA FROM SEQUENTIAL, MULTI-INDIVIDUAL FASTA OR   #
@@ -585,7 +585,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f dropTaxa -m 1 -f phylip -t <taxonList> -k 1               Drop taxa from multiple PHYLIP files, keep original files
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

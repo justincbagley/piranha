@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:28:02 -0300.                     #
 # Last update: April 19, 2020                                                            #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES READING AND CONDUCTING POST-PROCESSING OF PHYLOGENETIC     #
@@ -428,7 +428,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f ExaBayesPostProc -h                   Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
 # Last update: July 31, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>                                               #
+# Please report bugs to <jbagley@jsu.edu>                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES CONVERTING EACH OF ONE TO MULTIPLE PHYLIP DNA SEQUENCE     #
@@ -369,7 +369,7 @@ Usage: piranha -f $(basename "$0") [Options]...
                                                        print stdout to screen
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

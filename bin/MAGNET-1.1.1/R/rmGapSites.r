@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
 # Last update: March 6, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <bagleyj@umsl.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                              #
 #                                                                                        #
 # Description:                                                                           #
 # RSCRIPT THAT REMOVES GAP SITES FROM AN INPUT DNA SEQUENCE ALIGNMENT IN PHYLIP FORMAT   #
