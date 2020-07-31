@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPsubsampler.sh                                                              #
-  VERSION="v1.1.7"                                                                       #
+  VERSION="v1.1.9"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: July 31, 2020                                                             #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -41,7 +41,6 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
 
@@ -55,7 +54,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -139,7 +137,7 @@ PHYLIPsubsampler () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.7 April 2020                            "
+echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.9 July 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -147,10 +145,16 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting PHYLIPSubsampler analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#echoCDWorkingDir
+echoShortPWD
 checkMachineType
 
+MY_NUM_PHYLIP_FILES="$(ls ./*.phy | wc -l | sed 's/\ //g')";
+echo "INFO      | $(date) | No. PHYLIP files:         ${MY_ASSIGNMENT_FILE}"
+echo "INFO      | $(date) | Assignment file:          ${MY_ASSIGNMENT_FILE}"
+MY_NUM_SPECIES_TAX="$(cat "$MY_ASSIGNMENT_FILE" | wc -l | sed 's/\ //g')";
+echo "INFO      | $(date) | No. taxa (unique labels): ${MY_NUM_SPECIES_TAX} "
 
 ###### FILE PROCESSING
 echo "INFO      | $(date) | Step #2: Conduct main PHYLIP file processing steps. "
@@ -160,50 +164,55 @@ echo "INFO      | $(date) | Step #2: Conduct main PHYLIP file processing steps. 
 
 if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]]; then
 
-MY_PHYLIP_ALIGNMENTS=./*.phy ;
+#MY_PHYLIP_ALIGNMENTS=./*.phy ;
 (
-	for i in $MY_PHYLIP_ALIGNMENTS; do 
-		LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
-		echo "$LOCUS_NAME";
+	for i in ./*.phy; do
+		MY_PHYLIP_BASENAME="$(echo "$i" | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
+		echo "$MY_PHYLIP_BASENAME";
 
-			head -n+1 "$i" > ./head.tmp; 
+			head -n+1 "$i" > ./head.tmp ; 
 
 			count=1
-			while read j; do
-				grep "$(echo $j)" "$i" | head -n1 > ./ind"$count".tmp;
-				COUNT_PLUS_ONE="$((count++))";
-			done < "$MY_ASSIGNMENT_FILE"
+			(
+				while read line; do
+					grep '^'$line'' "$i" | head -n1 > ./ind"$count".tmp ;
+					COUNT_PLUS_ONE="$((count++))";
+				done < "$MY_ASSIGNMENT_FILE"
+			)
 
 			(
 				for k in ./ind*.tmp; do  
-					if [[ "$(wc -c $k | sed 's/\.\/.*//g')" -gt "0" ]]; then 
-					echo OK >> check.tmp; 
+					if [[ "$(wc -c "$k" | sed 's/\.\/.*//g')" -gt "0" ]]; then 
+					echo OK >> check.tmp ; 
 					fi; 
 				done
 			)
 
 			MY_NUMTAX="$(wc -l ./check.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
-			MY_NUMCHAR="$(cat head.tmp | sed 's/^[0-9]*\ //g')";
+			MY_NUMCHAR="$(cat ./head.tmp | sed 's/^[0-9]*\ //g')";
 			echo "$MY_NUMTAX   $MY_NUMCHAR" > ./new_head.tmp ;
 
 		rm "$i";
-		cat ./new_head.tmp ./ind*.tmp > "$LOCUS_NAME".phy;
-		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp; fi
+		cat ./new_head.tmp ./ind*.tmp > "$MY_PHYLIP_BASENAME".phy ;
+
+		if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.tmp ; 
+		fi
 
 		while read j; do
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
 				rm ./*.bak;
 			fi
 
 			if [[ "${machine}" = "Linux" ]]; then
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
 			fi
 		done < "$MY_ASSIGNMENT_FILE" ;
 
@@ -221,49 +230,54 @@ fi
 if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
 
 (
-	for i in $INPUT_PHYLIP_FILE; do 
-		LOCUS_NAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
-		echo "$LOCUS_NAME";
+	for i in "$INPUT_PHYLIP_FILE"; do 
+		MY_PHYLIP_BASENAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
+		echo "$MY_PHYLIP_BASENAME";
 
-			head -n+1 "$i" > ./head.tmp; 
+			head -n+1 "$i" > ./head.tmp ; 
 
 			count=1
-			while read j; do
-			# echo "$j"
-			grep "$(echo $j)" "$i" | head -n1 > ./ind"$count".tmp;
-			COUNT_PLUS_ONE="$((count++))";
-			done < "$MY_ASSIGNMENT_FILE"
+			(
+				while read line; do
+					# echo "$line"
+					grep '^'$line'' "$i" | head -n1 > ./ind"$count".tmp ;
+					COUNT_PLUS_ONE="$((count++))";
+				done < "$MY_ASSIGNMENT_FILE"
+			)
 
 			(
 				for k in ./ind*.tmp; do  
-					if [[ "$(wc -c $k | sed 's/\.\/.*//g')" -gt "0" ]]; then 
-					echo OK >> check.tmp; 
+					if [[ "$(wc -c "$k" | sed 's/\.\/.*//g')" -gt "0" ]]; then 
+					echo OK >> check.tmp ; 
 					fi; 
 				done
 			)
 
 			MY_NUMTAX="$(wc -l ./check.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
-			MY_NUMCHAR="$(cat head.tmp | sed 's/^[0-9]*\ //g')";
+			MY_NUMCHAR="$(cat ./head.tmp | sed 's/^[0-9]*\ //g')";
 			echo "$MY_NUMTAX   $MY_NUMCHAR" > ./new_head.tmp ;
 
 		rm "$i";
-		cat ./new_head.tmp ./ind*.tmp > "$LOCUS_NAME".phy;
-		if [[ ! -z ./*.tmp ]]; then rm ./*.tmp; fi
+		cat ./new_head.tmp ./ind*.tmp > "$MY_PHYLIP_BASENAME".phy ;
+
+		if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			rm ./*.tmp ; 
+		fi
 
 		while read j; do
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i.bak 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
 				rm ./*.bak;
 			fi
 
 			if [[ "${machine}" = "Linux" ]]; then
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
-				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$LOCUS_NAME".phy;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+				sed -i 's/\('$j'\)-[0-9\ ]*/\1\ \ \ \ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
 			fi
 		done < "$MY_ASSIGNMENT_FILE"
 
@@ -293,19 +307,27 @@ echo ""
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
-INPUT_PHYLIP_FILE=NULL
-MY_ASSIGNMENT_FILE=assignments.txt
+# INPUT_PHYLIP_FILE=NULL
+# MULTIPLE_PHYLIP_SWITCH=0
+# MY_ASSIGNMENT_FILE=assignments.txt
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: piranha -f $(basename "$0") [Options]...
 
  ${bold}Options:${reset}
+  -i   inputPHYLIP (def: NULL) name of input PHYLIP DNA sequence alignment file
+  -m   multiPHYLIP (def: 0, turned off; 1, on) whether or not to subsample multiple PHYLIP  
+       DNA sequence alignment files in current working directory
+
+
   -i   inputPHYLIP (def: NULL) Used in case of subsampling a single input PHYLIP file; 
        otherwise, left blank when analyzing multiple PHYLIP files (default)
   -a   assignmentFile (def: $MY_ASSIGNMENT_FILE) assignment file containing four-letter
        population or taxon assignment codes, one per line
   -h   help text (also: --help) echo this help text and exit
   -V   version (also: --version) echo version and exit
+  -d   debug (def: 0, off; 1, on also: --debug) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THE SCRIPT runs in the current working directory, <workingDir>, where there exists one
@@ -373,24 +395,112 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	exit
 fi
 
-############ PARSE THE OPTIONS
-while getopts 'i:a:' opt ; do
-  case $opt in
-## PHYLIPSubsampler options:
-    i) INPUT_PHYLIP_FILE=$OPTARG ;;
-    a) MY_ASSIGNMENT_FILE=$OPTARG ;;
-## Missing and illegal options:
-    :) printf "Missing argument for -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-   \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
-       echo "$USAGE" >&2
-       exit 1 ;;
-  esac
-done
 
-# Store the remaining part as arguments.
-# args+=("$@")
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-assign/\-\-assign/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		INPUT_PHYLIP_FILE=NULL ;
+	else 
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		INPUT_PHYLIP_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-m' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MULTIPLE_PHYLIP_SWITCH=0 ;
+	else 
+		MY_ARG="$(grep -h '\-m' ./args.txt | perl -pe 's/\-m//g' | perl -pe 's/\ //g')";
+		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-assign' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ASSIGNMENT_FILE=assignments.txt  ;
+	elif [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-assign' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-a' ./args.txt | perl -pe 's/\-a//g' | perl -pe 's/\ //g')";
+		MY_ASSIGNMENT_FILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-a' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-assign' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-assign' ./args.txt | perl -pe 's/\-\-assign//g' | perl -pe 's/\ //g')";
+		MY_ASSIGNMENT_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=PHYLIPsubsampler_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+#
+
+
+# ############ PARSE THE OPTIONS
+# while getopts 'i:m:a:l:v:d:' opt ; do
+#   case $opt in
+# ## PHYLIPSubsampler options:
+#     i) INPUT_PHYLIP_FILE=$OPTARG ;;
+#     m) MULTIPLE_PHYLIP_SWITCH=$OPTARG ;;
+#     a) MY_ASSIGNMENT_FILE=$OPTARG ;;
+#     l) MY_LOGFILE_SWITCH=$OPTARG ;;
+#     v) MY_VERBOSE_OUT_SWITCH=$OPTARG ;;
+#     d) MY_DEBUG_MODE_SWITCH=$OPTARG ;;
+# ## Missing and illegal options:
+#     :) printf "Missing argument for -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#    \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+#        echo "$USAGE" >&2
+#        exit 1 ;;
+#   esac
+# done
+# 
+# # Store the remaining part as arguments.
+# # args+=("$@")
 
 
 # ############# ############# #############

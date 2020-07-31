@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  VERSION="v1.3.6"                                                                       #
+  VERSION="v1.3.7"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: May 1, 2020                                                               #
+# Last update: July 31, 2020                                                             #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.6 May 2020                                  "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.7 July 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -144,8 +144,7 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
 ###### Set working directory and filetypes as different variables:
-echo "INFO      | $(date) | Setting user-specified path to: "
-echo "INFO      | $(date) | $PWD "	
+echoShortPWD
 echo "INFO      | $(date) | Input PHYLIP file: $INPUT_PHYLIP_FILE "
 echo "INFO      | $(date) | Examining current directory, setting variables... "
 checkMachineType
@@ -454,7 +453,8 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: piranha -f $(basename "$0") [Options]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) input PHYLIP filename
@@ -469,15 +469,15 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT reads one (-i flag) or multiple (-m flag) PHYLIP (Felsenstein 2002) DNA sequence 
- alignment files and converts them to NEXUS ('.nex') format. Sequence names should include 
- alphanumeric, hyphen, and underscore characters but no spaces. Also, PHYLIP alignment files 
- must have the extension '.phy'. Optionally, when reading in a single PHYLIP file, the user 
- may use the -p and -f flags to read in and process an external partitions file containing 
- information on character set partitions for <inputPHYLIP>, to be included in the resulting
- NEXUS file. The partitions file may be in one of the three standard formats for which 
- examples are provided below and must be described as such using the corresponding -f flag 
- option. The following examples are given for a hypothetical set of subsets identified using 
- PartitionFinder (Lanfear et al. 2014), as follows:
+ alignment files and converts them to NEXUS ('.nex'; Maddison et al. 1997) format. Sequence 
+ names should include alphanumeric, hyphen, and underscore characters but no spaces. Also, 
+ PHYLIP alignment files must have the extension '.phy'. Optionally, when reading in a single 
+ PHYLIP file, the user may use the -p and -f flags to read in and process an external partitions 
+ file containing information on character set partitions for <inputPHYLIP>, to be included 
+ in the resulting NEXUS file. The partitions file may be in one of the three standard formats 
+ for which examples are provided below and must be described as such using the corresponding 
+ -f flag option. The following examples are given for a hypothetical set of subsets identified 
+ using PartitionFinder (Lanfear et al. 2014), as follows:
  
  # Standard RAxML partitions format (e.g. output by PartitionFinder):
  
@@ -526,6 +526,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
  Lanfear R, Calcott B, Kainer D, Mayer C, Stamatakis A (2014) Selecting optimal partitioning 
  	schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
+ Maddison, D.R., Swofford, D.L. and Maddison, W.P., 1997. NEXUS: an extensible file format for 
+	systematic information. Systematic Biology, 46(4), 590–621.
 
  Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.
  Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
