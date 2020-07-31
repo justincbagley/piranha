@@ -776,7 +776,7 @@ Usage: piranha -f $(basename "$0") [Options]...
                                                                             custom identity and similarity thresholds and
                                                                             phylip output format
     piranha -f trimSeqs --multi 1 --output phylip --ident 0.99 -st 0.2      Same as above but using long option flags 
-    piranha -f trimSeqs --multi 1 --ident 0.99 -st 0.2 --nogaps             More complete filtering options, removing sites with gaps
+    piranha -f trimSeqs --multi 1 --ident 0.99 -st 0.2 --nogaps 1           More complete filtering options, removing sites with gaps
     piranha -f trimSeqs --multi 1 --ident 0.99 --cons 70 --gt 0.1           A run with custom gap handling options
     piranha -f trimSeqs -h                                                  Show this help text and exit
 
