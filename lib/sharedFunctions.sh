@@ -3,23 +3,71 @@
 # ##################################################
 # Shared bash functions used by PIrANHA bash scripts.
 #
-# VERSION 1.0.1
+# VERSION 1.0.2
+  VERSION="v1.0.2"
 #
 # HISTORY
-# * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format
-# * 2019-03-08 - v1.0.0 - First Creation (edited from sharedFunctions.sh script
-#                         by Nate Landau, from a forked version of his shell-scripts repository,
-#                         which he last had as v1.4.9 (see below))
-# * 2019-xx-xx - v1.0.1 - Added checkMachineType function
-#
 # Pre-PIrANHA version updates by Nate Landau:
 # * 2015-01-02 - v1.0.0   - First Creation
 # * 2015-04-16 - v1.2.0   - Added 'checkDependencies' and 'pauseScript'
 # * 2016-01-10 - v1.3.0   - Added 'join' function
 # * 2016-01-11 - v1.4.9   - Added 'httpStatus' function
 #
+# PIrANHA version updates by Justin Bagley:
+# * 2019-03-08 - v1.0.0 - Added to PIrANHA, edited from sharedFunctions.sh script
+#                         by Nate Landau, from a forked version of his shell-scripts
+#                         repository, which he last had as v1.4.9 (see above)
+# * 2019-xx-xx - v1.0.1 - Added checkMachineType function
+# * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format
+# * 2020-07-31 - v1.0.2 - Minor update, added Short PWD functions
+#
 # ##################################################
 
+# Short present working directory (PWD) functions
+# ------------------------------------------------------
+# New common functions (most scripts written/edited from
+# July 2020 onwards) for echoing $PWD, but truncating 
+# absolute path to precisely fit the Terminal window.
+# Functions for two cases: 1) Regular PWD and 2) user-
+# specified PWD.
+# ------------------------------------------------------
+function echoShortPWD () {
+
+		MY_ABS_PATH_LENGTH="$(echo $PWD | wc -c | sed 's/\ //g')";
+		MY_ABS_PATH_ECHO_LENGTH="$(calc $MY_ABS_PATH_LENGTH+43)";
+		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
+#
+		if [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "85" ]] && [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "$MY_BASH_WINDOW_COLS" ]]; then
+			MY_CORRECTION_LENGTH="$(calc $MY_ABS_PATH_ECHO_LENGTH-$MY_BASH_WINDOW_COLS+3)";
+			MY_NUM_FINAL_PWD_CHARS="$(calc $MY_ABS_PATH_LENGTH-$MY_CORRECTION_LENGTH)";
+			SHORT_PWD="$(echo ${PWD:${#PWD}<$MY_NUM_FINAL_PWD_CHARS?0:-$MY_NUM_FINAL_PWD_CHARS})";   ## Get last $MY_NUM_FINAL_PWD_CHARS characters of $PWD
+			echo "INFO      | $(date) | Starting input directory (using current dir): "
+			echo "INFO      | $(date) | ...$SHORT_PWD"	
+
+		else
+			echo "INFO      | $(date) | Starting input directory (using current dir): "
+			echo "INFO      | $(date) | $PWD"	
+		fi
+}
+
+function echoShortUSPWD () {
+
+		MY_ABS_PATH_LENGTH="$(echo $PWD | wc -c | sed 's/\ //g')";
+		MY_ABS_PATH_ECHO_LENGTH="$(calc $MY_ABS_PATH_LENGTH+43)";
+		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
+#
+		if [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "85" ]] && [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "$MY_BASH_WINDOW_COLS" ]]; then
+			MY_CORRECTION_LENGTH="$(calc $MY_ABS_PATH_ECHO_LENGTH-$MY_BASH_WINDOW_COLS+3)";
+			MY_NUM_FINAL_PWD_CHARS="$(calc $MY_ABS_PATH_LENGTH-$MY_CORRECTION_LENGTH)";
+			SHORT_PWD="$(echo ${PWD:${#PWD}<$MY_NUM_FINAL_PWD_CHARS?0:-$MY_NUM_FINAL_PWD_CHARS})";   ## Get last $MY_NUM_FINAL_PWD_CHARS characters of $PWD
+			echo "INFO      | $(date) | User-specified input directory: "
+			echo "INFO      | $(date) | ...$SHORT_PWD"	
+
+		else
+			echo "INFO      | $(date) | User-specified input directory: "
+			echo "INFO      | $(date) | $PWD"	
+		fi
+}
 
 # Working directory function
 # ------------------------------------------------------
@@ -30,30 +78,42 @@
 function echoCDWorkingDir () {
 
 if [[ -s "$USER_SPEC_PATH" ]]; then
-if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd -P)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
-	MY_CWD="$(printf '%q\n' "$(pwd -P)" | sed 's/\\//g')";
-	echo "INFO      | $(date) | Setting working directory to:  "
-	echo "INFO      | $(date) | $MY_CWD "
-elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
-	if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
-		cd ..;
-		MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')";
-		echo "INFO      | $(date) | Setting working directory to user-specified dir:  "	
+	if [[ "$USER_SPEC_PATH" = "$(printf '%q\n' "$(pwd -P)")" ]] || [[ "$USER_SPEC_PATH" = "." ]]; then
+		MY_CWD="$(printf '%q\n' "$(pwd -P)" | sed 's/\\//g')";
+		echo "INFO      | $(date) | Setting working directory to:  "
 		echo "INFO      | $(date) | $MY_CWD "
+	elif [[ "$USER_SPEC_PATH" != "$(printf '%q\n' "$(pwd)")" ]]; then
+		if [[ "$USER_SPEC_PATH" = ".." ]] || [[ "$USER_SPEC_PATH" = "../" ]] || [[ "$USER_SPEC_PATH" = "..;" ]] || [[ "$USER_SPEC_PATH" = "../;" ]]; then
+			cd ..;
+			MY_CWD="$(printf '%q\n' "$(pwd)" | sed 's/\\//g')";
+			echo "INFO      | $(date) | Setting working directory to user-specified dir:  "	
+			echo "INFO      | $(date) | $MY_CWD "
+		else
+			MY_CWD=$USER_SPEC_PATH
+			cd "$MY_CWD";
+			echo "INFO      | $(date) | Setting working directory to user-specified dir:  "	
+			echo "INFO      | $(date) | $MY_CWD "
+		fi
 	else
-		MY_CWD=$USER_SPEC_PATH
-		cd "$MY_CWD";
-		echo "INFO      | $(date) | Setting working directory to user-specified dir:  "	
-		echo "INFO      | $(date) | $MY_CWD "
+		echo "WARNING   | $(date) | Null working directory path. Quitting... "
+		exit 1
 	fi
-else
-	echo "WARNING   | $(date) | Null working directory path. Quitting... "
-	exit 1
-fi
 fi
 
 }
 
+# Calculater
+# ------------------------------------------------------
+# Function to send commands to Bash's arbitrary precision
+# calculator language.
+# ------------------------------------------------------
+
+# A calculator function, which echos input to Bash bc. 
+# Usage: calc <math_commands>, e.g. calc 1+2, or with 
+# variables, e.g. calc $VAR1+$VAR2
+function calc () {
+	bc -l <<< "$@"
+}
 
 # Check machine type
 # ------------------------------------------------------
@@ -71,6 +131,34 @@ case "${unameOut}" in
 esac;
 }
 
+# Transpose file
+# ------------------------------------------------------
+# Common function for transposing a file (switching columns
+# to rows)
+# ------------------------------------------------------
+
+# Function to transpose file and send to screenout, so save
+# results with a redirect.
+# Usage: "$ transposeFile <file> > <outputFilename>", with redirect
+# Adapted from URL: https://stackoverflow.com/questions/1729824/an-efficient-way-to-transpose-a-file-in-bash
+function transposeFile () {
+awk '
+{
+    for (i=1; i<=NF; i++)  {
+        a[NR,i] = $i
+    }
+}
+NF>p { p = NF }
+END {
+    for(j=1; j<=p; j++) {
+        str=a[1,j]
+        for(i=2; i<=NR; i++){
+            str=str" "a[i,j];
+        }
+        print str
+    }
+}' $1
+}
 
 # Traps
 # ------------------------------------------------------
