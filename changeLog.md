@@ -1,10 +1,13 @@
 # PIrANHA Change Log
 
-### PIrANHA v1.0 (official major version release #1) - TBA - _coming soon!_
+### PIrANHA v1.0 (official major version release #1) - TBA - _Coming soon! Join in on development and help us get there sooner!!_
 ...
 
-### Updates since last pre-release (for PIrANHA v0.4a3 draft):
+<!-- ### Updates since last pre-release (for PIrANHA v0.4a3 draft): -->
+### PIrANHA 0.4a3 (official minor pre-release version v0.4-alpha-3) - July 31, 2020
 
+- **July 31, 2020:** Added new `trimSeqs` function and prepped 0.4a3 release by updating versioning of main `piranha` script and function scipts, and also updating Wiki and READMEs. The `trimSeqs` function automates trimming one or multiple DNA sequence alignments in PHYLIP format, with options for custom gap handling parameters for trimAl, and with trimmed alignments output to FASTA, PHYLIP, or NEXUS formats.
+- **May 3-5, 2020:** Added new functions. The new `geneCounter` function counts and summarizes number of gene copies per tip taxon label in a set of input gene trees in Newick format, given a taxon-species assignment file (this function written to handle output from HybPiper pipeline; see Usage text). Also added a new `batchRunFolders` function to help setting up input files for batch analyses in several popular software programs for phylogenetics.
 - **April 18-20, 2020:** This update builds on the previous pre-release, v0.4a2, by adding minor bug fixes and improvements to several functions. With the addition of the new function `alignAlleles`, a companion script meant to be run directly after `phaseAlleles`, this release establishes a new workflow for phasing and aligning consensus sequences from HTS (e.g. targeted sequence capture data) based on reads (re)mapped to a reference assembly FASTA file (i.e. following reference-based assembly). This combination of programs was designed to be run on target capture data after first conducting cleaning, assembly, locus selection, and reference-based assembly (specifically, with SECAPR (Andermann et al. 2018) in mind, and with testing based on output from SECAPR).
 
 ### PIrANHA 0.4a2 (official minor pre-release version v0.4-alpha-2) - April 17, 2020
