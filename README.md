@@ -31,7 +31,7 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE
 
 ## DOCUMENTATION
 
-For additional information on this distribution, including overview, dependencies, installation, updating, usage, workflows, etc., please see the documentation given in the [Quick Guide](Quick_Guide.pdf) and the [PIrANHA wiki!!!](https://github.com/justincbagley/PIrANHA/wiki)
+For additional information on this distribution, including overview, dependencies, installation, updating, usage, workflows, etc., please see the documentation given in the **Quick Guide** ([here](https://github.com/justincbagley/piranha/wiki#quick-guide-for-the-impatient) or [here](Quick_Guide.pdf)) and the **[PIrANHA wiki!!!](https://github.com/justincbagley/PIrANHA/wiki)**
 
 ## CONTENTS
 
