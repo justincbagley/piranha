@@ -367,7 +367,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 	fi
 #
 	## EVALUATE AVERAGE IDENTITY AGAINST DESIRED THRESHOLD:
-	MY_AVG_IDENT="$(grep '## AverageIdentity[:space:]*' "$MY_BASENAME"_trimal_log.txt | perl -pe $'s/\#\#.*\t//g' | sed 's/\ //g')";
+	MY_AVG_IDENT="$(grep '## AverageIdentity[[:space:]]*' "$MY_BASENAME"_trimal_log.txt | perl -pe $'s/\#\#.*\t//g' | sed 's/\ //g')";
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Average Identity: ${MY_AVG_IDENT}" | tee -a "$MY_BASENAME"_trimal_log.txt ; 
 	fi
@@ -525,7 +525,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 				fi
 #
 				## EVALUATE AVERAGE IDENTITY AGAINST DESIRED THRESHOLD:
-				MY_AVG_IDENT="$(grep '## AverageIdentity[:space:]*' "$MY_BASENAME"_trimal_log.txt | perl -pe $'s/\#\#.*\t//g' | sed 's/\ //g')";
+				MY_AVG_IDENT="$(grep '## AverageIdentity[[:space:]]*' "$MY_BASENAME"_trimal_log.txt | perl -pe $'s/\#\#.*\t//g' | sed 's/\ //g')";
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 					echo "INFO      | $(date) | Average Identity: ${MY_AVG_IDENT}" | tee -a "$MY_BASENAME"_trimal_log.txt ; 
 				fi
