@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  VERSION="v1.3.2"                                                                       #
+  VERSION="v1.3.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: July 31, 2020                                                             #
+# Last update: October 30, 2020                                                          #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.2 July 2020                                 "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.3 October 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -182,6 +182,13 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 		mkdir phylip_files/ ;
 	fi
 
+## As a precaution, conditionally fix $MY_FASTA filename so that it contains no "-" (dash/hyphen) 
+## or " " (space) characters, if needed:
+	MY_HYPHEN_OR_SPACE_CHECK="$(echo "$MY_FASTA" | grep -h '\-\|\ ' | wc -l | sed 's/\ //g')";
+	if [[ "$MY_HYPHEN_OR_SPACE_CHECK" != "0" ]] || [[ "$MY_HYPHEN_OR_SPACE_CHECK" = "1" ]]; then
+		mv "$MY_FASTA" "$(echo "$MY_FASTA" | sed 's/\-/\_/; s/\ /\_/g')";
+	fi
+	
 
 ############ STEP #2: CONVERT USER-SPECIFIED INPUT FASTA FILE IN CWD TO PHYLIP AND SAVE FASTA CHARACTERISTICS.
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
