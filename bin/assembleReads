@@ -1,0 +1,917 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: assembleReads.sh                                                                 #
+  VERSION="v1.0.1"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Thu, Aug 20 12:30:37 CDT 2020.                       #
+# Last update: November 19, 2020                                                         #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
+#                                                                                        #
+# Description:                                                                           #
+# THIS SCRIPT AUTOMATES ASSEMBLING CLEANED SEQUENCE READS (SHORT READS, FASTQ FORMAT)    #
+# FROM TARGETED CAPTURE (e.g. Hyb-Seq) HTS EXPERIMENTS DE NOVO USING THE ABySS ASSEMBLER #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+# Source shared functions and variables
+# -----------------------------------
+
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi
+  if [[ -s ./args.txt ]]; then rm ./args.txt ; fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+homebrewDependencies=()
+caskDependencies=()
+gemDependencies=()
+
+
+
+
+assembleReads () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | assembleReads, v1.0.1 November 2020                            "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+######################################## START ###########################################
+echo "INFO      | $(date) | Starting assembleReads analysis... "
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
+echo "INFO      | $(date) | ----------------------------------- "
+
+################################# 1. SETUP
+
+	###### A. START DEBUG MODE IF SET:
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	###### B. HANDLE WORKING DIRECTORY, INPUT DIRECTORY, OUTPUT DIRECTORY, AND REFERENCE ABSOLUTE PATH:
+	## Starting directory:
+	MY_STARTING_DIR="$(printf '%q\n' "$(pwd)")";
+	
+	## PWD & input directory:
+	if [[ -s "$MY_INPUT_DIR" ]] && [[ "$MY_INPUT_DIR" != "NULL" ]]; then 
+		cd "$MY_INPUT_DIR" ;
+			echo "INFO      | $(date) | User-specified input path is: "
+			echo "INFO      | $(date) | $PWD"
+			MY_INPUT_DIR="$(printf '%q\n' "$(pwd)")";  # get absolute path to input dir
+			if [[ "$machine" = "Mac" ]]; then
+				MY_INPUT_DIR="$(echo $(realpath "$MY_INPUT_DIR")/$f)";
+			elif [[ "$machine" = "Linux" ]]; then
+				MY_INPUT_DIR="$(echo $PWD/$f)";
+			fi
+	elif [[ "$MY_INPUT_DIR" = "NULL" ]] || [[ "$MY_INPUT_DIR" = "." ]] || [[ "$MY_INPUT_DIR" = "./" ]] || [[ "$MY_INPUT_DIR" = "$PWD" ]] ; then
+		MY_INPUT_DIR="$(printf '%q\n' "$(pwd)")";  # set absolute path to default input dir (when none is specified)
+		if [[ "$machine" = "Mac" ]]; then
+			MY_INPUT_DIR="$(echo $(realpath "$PWD")/$f)";
+		elif [[ "$machine" = "Linux" ]]; then
+			MY_INPUT_DIR="$(echo $PWD/$f)";
+		fi
+		echo "INFO      | $(date) | Starting input directory (using current dir): "
+		echo "INFO      | $(date) | $PWD"	
+	fi
+
+	## Output directory:
+	if [[ -s "$MY_OUTPUT_DIR" ]] && [[ "$MY_OUTPUT_DIR" != "NULL" ]]; then 
+		if [[ "$machine" = "Mac" ]]; then
+			MY_OUTPUT_DIR="$(echo $(realpath "$MY_OUTPUT_DIR")/$f)";
+		elif [[ "$machine" = "Linux" ]]; then
+			cd "$MY_OUTPUT_DIR";
+				MY_OUTPUT_DIR="$(echo $PWD/$f)";
+		fi
+		echo "INFO      | $(date) | User-specified output path is: $MY_OUTPUT_DIR"
+		cd "$MY_INPUT_DIR" ;	
+	elif [[ ! -s "$MY_OUTPUT_DIR" ]] && [[ ! -d "$MY_OUTPUT_DIR" ]] && [[ "$MY_OUTPUT_DIR" != "NULL" ]] && [[ "$MY_OUTPUT_DIR" != "." ]] && [[ "$MY_OUTPUT_DIR" != "./" ]] && [[ "$MY_OUTPUT_DIR" != "$PWD" ]]; then 
+		mkdir "$MY_OUTPUT_DIR" ;
+		if [[ "$machine" = "Mac" ]]; then
+			MY_OUTPUT_DIR="$(echo $(realpath "$MY_OUTPUT_DIR")/$f)";
+		elif [[ "$machine" = "Linux" ]]; then
+			MY_OUTPUT_DIR="$(echo $MY_OUTPUT_DIR/$f)";
+		fi
+		echo "INFO      | $(date) | Output directory (<output> doesn't exist, making it): "
+		echo "INFO      | $(date) | $MY_OUTPUT_DIR"		
+	elif [[ "$MY_OUTPUT_DIR" = "NULL" ]] || [[ "$MY_OUTPUT_DIR" = "." ]] || [[ "$MY_OUTPUT_DIR" = "./" ]] || [[ "$MY_OUTPUT_DIR" = "$PWD" ]] ; then
+		cd ..;
+			echo "INFO      | $(date) | Creating default output directory... "
+			if [[ ! -d ./contigs/ ]]; then mkdir ./contigs/ ; fi
+			MY_OUTPUT_DIR="$(echo $PWD/contigs/)";
+			echo "INFO      | $(date) | Using output directory: "
+			echo "INFO      | $(date) | $MY_OUTPUT_DIR"
+		cd "$MY_INPUT_DIR" ;	
+	fi
+
+#	## Get absolute path to reference:
+#	MY_REFERENCE_FASTA="$(realpath "$MY_REFERENCE_FASTA")";
+#	echo "INFO      | $(date) | Reference FASTA: "
+#	echo "INFO      | $(date) | $MY_REFERENCE_FASTA"
+
+	## Echo options settings:
+	echo "INFO      | $(date) | Size of k-mer:        $MY_KMER_SIZE (def: k = 35) "    # From ABySS documentation: "size of k-mer (when K is not set) or the span of a k-mer pair (when K is set)."
+	echo "INFO      | $(date) | Number of threads:    $MY_NUM_THREADS (def: 1) "       # The ABySS default value for this parameter is 2.
+	echo "INFO      | $(date) | Min. read length:     $MY_MIN_ALIGN_LENGTH (def: 40)"  # The default of 40 here is the ABySS default value.
+	echo "INFO      | $(date) | Min. base quality:    $MY_MIN_BASE_QUAL (def: 3)"      # The default of 3 here is the ABySS default value.
+	echo "INFO      | $(date) | Name:                 $MY_RUN_NAME (def: sample_id) "  # I believe this is parameterized with make 'name' or '-N' options; 'name' works for sure.
+	echo "INFO      | $(date) | Log file:             $MY_LOGFILE_SWITCH (def: assembly_log.txt) " 
+	echo "INFO      | $(date) | Input files:          Determined from (expected) directory structure." 
+	echo "INFO      | $(date) | Verbose mode:         $MY_VERBOSE_OUT_SWITCH (0, off; 1, on) " 
+	echo "INFO      | $(date) | Debug mode:           $MY_DEBUG_MODE_SWITCH (0, off; 1, on) " 
+
+	###### C. CALC FUNCTION:
+	calc () { 
+		bc -l <<< "$@"  
+}
+
+	####### D. CHECK MACHINE TYPE:
+	checkMachineType
+
+
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | Step #2: Create list of sample subfolders in input directory... "
+echo "INFO      | $(date) | ----------------------------------- "
+
+################################# 2. PREP WORK
+
+## NOTE:  Starting dir: $MY_INPUT_DIR  (think: SECAPR secapr_cleaned_trimmed_reads_custom/ subfolder)
+
+## This should be the input subfolder of the run, containing n directories (1 per sample, 
+## over n samples) of cleaned sequence reads files in FASTQ format. In my work with SECAPR 
+## I have used the cleaned reads subfolder name "secapr_cleaned_trimmed_reads_custom", and 
+## this script expects input dir analogous to that subfolder. 
+
+	####### A. MAKE SUBFOLDER LIST:
+	## Remove existing sample_runOrder list file if present (from prevoius assembleReads run):
+	if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi
+
+	## Make BAM (=sample) subfolder list file and clean the file:
+	echo "INFO      | $(date) | Making BAM subfolder list (file 'sample_runOrder.list.txt')... "
+(
+	for i in ./*/; do 
+		if [[ "$i" != "./backup/" ]] && [[ "$i" != "./tmp/" ]] && [[ "$i" != "./old/" ]] && [[ "$i" != "./reference_seqs/" ]] && [[ "$i" != "./contigs/" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR")" ]] && [[ "$i" != "$(dirname "$MY_OUTPUT_DIR" | sed 's/.*\///g; s/^/\.\//g; s/$/\//g')" ]]; then 
+			echo "$i" | sed 's/\.\///g; s/\///g' >> ./sample_runOrder.list.txt ; 
+		fi
+	done
+)
+	echo "INFO      | $(date) | Complete. " 
+
+
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | Step #3: Run main program, assemble contigs and create contig FASTAs... "
+echo "INFO      | $(date) | ----------------------------------- "
+
+################################# 3. MAIN SCRIPT
+
+echo "INFO      | $(date) | Looping through subfolders of cleaned reads, by sample; conducting data checks; and assembling reads... " 
+count=1
+MY_LIST=./sample_runOrder.list.txt
+if [[ -s "$MY_LIST" ]]; then 
+	echo "INFO      | $(date) | Sample subfolder list: ${MY_LIST} "
+	MY_NUM_SAMPLE_RUNS="$(wc -l ./sample_runOrder.list.txt | sed 's/\ \.\/.*//g; s/\ //g')";
+	echo "INFO      | $(date) | Sample subfolder list length: ${MY_NUM_SAMPLE_RUNS} "
+fi
+(
+	for i in $(cat "$MY_LIST"); do
+		
+		cd "$MY_INPUT_DIR"/"$i"/;
+			echo "INFO      | $(date) | #################### Current directory - No. $((count++)) - $i "
+			
+			########### Check for FASTQ files:
+			if [[ "$(ls -1 ./*.fastq 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+				echo "INFO      | $(date) | FASTQ file check PASSED... "
+			else
+				echo "WARNING   | $(date) | FASTQ file check FAILED! No FASTQ files detected in current subfolder."
+				echo "INFO      | $(date) | ($PWD)"
+				echo "INFO      | $(date) | The expected directory structure is one subfolder per sample. Please fix your file structure so there "
+				echo "INFO      | $(date) | are two paired-end reads files in FASTQ format in each sample subfolder, and then try re-running assembleReads."
+				echo "INFO      | $(date) | Cleaned reads FASTQ files should be named <sampleName>-READ1.fastq and <sampleName>-READ2.fastq for F and R."
+				echo "INFO      | $(date) | reads (i.e. R1 and R2 reads), respectively."
+				echo "ERROR     | $(date) | Quitting... "
+				exit 1 ;
+			fi
+#
+			########### Get sample name (from subfolder name, ${i}), as well as FASTQ basename(s)
+			########### and check specific FASTQ file names:
+			## Sample name:
+			# OPTION: MY_SAMPLE_NAME="$(echo "$i" | sed 's/\.\///g; s/\///g; s/\ //g')";
+			MY_SAMPLE_NAME="$(basename "$i")";
+
+			## Check forward reads FASTQ file for correct naming convention:
+			if [[ -s "$MY_SAMPLE_NAME"-READ1.fastq ]]; then 
+				echo "INFO      | $(date) | Cleaned forward reads FASTQ file check PASSED... "
+			else
+				echo "WARNING   | $(date) | Cleaned forward reads FASTQ file check FAILED! Forward reads file is incorrectly named."
+				echo "INFO      | $(date) | Cleaned reads FASTQ files should be named <sampleName>-READ1.fastq and <sampleName>-READ2.fastq for F and R."
+				echo "INFO      | $(date) | reads (i.e. R1 and R2 reads), respectively."
+				echo "ERROR     | $(date) | Quitting... "
+				exit 1 ;
+			fi
+
+			## Check reverse reads FASTQ file for correct naming convention:
+			if [[ -s "$MY_SAMPLE_NAME"-READ2.fastq ]]; then 
+				echo "INFO      | $(date) | Cleaned reverse reads FASTQ file check PASSED... "
+			else
+				echo "WARNING   | $(date) | Cleaned reverse reads FASTQ file check FAILED! Reverse reads file is incorrectly named."
+				echo "INFO      | $(date) | Cleaned reads FASTQ files should be named <sampleName>-READ1.fastq and <sampleName>-READ2.fastq for F and R."
+				echo "INFO      | $(date) | reads (i.e. R1 and R2 reads), respectively."
+				echo "ERROR     | $(date) | Quitting... "
+				exit 1 ;
+			fi
+
+			MY_FWD_READS_FQ_FILE="$(ls "$MY_SAMPLE_NAME"-READ1.fastq | sed 's/\.\///g; s/\ //g')";
+			MY_REV_READS_FQ_FILE="$(ls "$MY_SAMPLE_NAME"-READ2.fastq | sed 's/\.\///g; s/\ //g')";
+			# These parameters are not needed, because the FASTQ basenames would be identical to $MY_SAMPLE_NAME:
+			# MY_FWD_FQ_BASENAME="$(basename "$MY_SAMPLE_NAME"-READ1.fastq '-READ1.fastq')";
+			# MY_REV_FQ_BASENAME="$(basename "$MY_SAMPLE_NAME"-READ2.fastq '-READ2.fastq')";
+#
+			## Make stats/ directory (if not present) in the default/user-spec $MY_OUTPUT_DIR (default: contigs/) 
+			## and also make assembled contigs output dir for sample, which will be a sample-specific subfolder 
+			## _within_ $MY_OUTPUT_DIR/stats/, where resulting intermediate files and stats files 
+			## output by ABySS will be stored. This is the 'real' output directory for each sample
+			## and the final output FASTA files will be moved/copied to the main $MY_OUTPUT_DIR (likely
+			## contigs/) folder.
+			##
+			## When we make the final stats/sample/ output folder, we actually want to use a 
+			## sanitized sample name, from which we have removed any "_clean" or "_cleaned"
+			## suffix. So first make the MY_SANI_SAMPLE_NAME environmental variable, then
+			## check and make the subfolders as needed:
+		
+			MY_SANI_SAMPLE_NAME="$(echo "$MY_SAMPLE_NAME" | sed 's/\_cleaned$//g; s/\_clean$//g')";
+		#
+			# Fix MY_OUTPUT_DIR if doesn't have final forward slash:
+			if [[ "$(echo "$MY_OUTPUT_DIR" | grep "\/\{1\}$" | wc -l | sed 's/\ //g')" = "0" ]]; then  
+				MY_OUTPUT_DIR="$(echo $MY_OUTPUT_DIR/)"; 
+				echo "INFO      | $(date) | Fixed output dir to: "
+				echo "INFO      | $(date) | ${MY_OUTPUT_DIR} "
+			fi
+		#	
+			if [[ ! -d "$MY_OUTPUT_DIR"stats/ ]]; then 
+				mkdir "$MY_OUTPUT_DIR"stats/ ; 
+			fi
+		#
+			if [[ ! -d "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/ ]]; then 
+				mkdir "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/ ; 
+			fi
+#
+			########### Make assembly log file (overwrites existing file, if present):
+			echo "" > "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+#			
+			###
+			if [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
+			######################
+			########### ~~~ RELATIVELY QUIET RUN ~~~
+			###################### 
+
+		cd ..;  ## Move up from $MY_INPUT_DIR/$i ( e.g. secapr_cleaned_trimmed_reads_custom/122Slycioides_clean/ )
+				## to $MY_INPUT_DIR ( e.g. secapr_cleaned_trimmed_reads_custom/ )
+				## Recall: "$i" contents look similar to "./$i/" ...
+
+			########### Echo sample name for user:
+			#echo "$PWD"
+			echo "INFO      | $(date) | Current sample file: ${MY_SANI_SAMPLE_NAME} " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+
+			########### Assemble cleaned reads in ABySS:
+			if [[ ! -s ./"$i"/coverage.hist ]] && [[ ! -s ./"$i"/"$MY_SAMPLE_NAME"-stats.csv ]] && [[ ! -s "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/coverage.hist ]] && [[ ! -s "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_SAMPLE_NAME"-stats.csv ]]; then
+				echo "INFO      | $(date) | Assembling reads de novo from cleaned FASTQ files.......... " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+				
+				## If abyss is available as 'abyss-pe' from the cli, then run:
+				if [[ -s "$(which abyss-pe)" ]]; then 
+					## Run ABySS with simple options for paired-end reads (i.e. with default min base quality and read alignment lengths):
+#					abyss-pe --directory="$i" name="$MY_SAMPLE_NAME" k="$MY_KMER_SIZE" in='"$MY_FWD_READS_FQ_FILE" "$MY_REV_READS_FQ_FILE"' >> "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" 2>&1 ;
+#					abyss-pe --directory="$i" name="$MY_SAMPLE_NAME" k="$MY_KMER_SIZE" in='"$(echo $MY_FWD_READS_FQ_FILE $MY_REV_READS_FQ_FILE)"' >> "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" 2>&1 ;
+
+export MY_ABYSS_PATH="$(echo $(which abyss-pe))";
+echo "#!/bin/sh
+
+${MY_ABYSS_PATH} --directory=${i} name=${MY_SAMPLE_NAME} k=${MY_KMER_SIZE} in='${MY_FWD_READS_FQ_FILE} ${MY_REV_READS_FQ_FILE}' >> ${MY_OUTPUT_DIR}stats/${MY_SANI_SAMPLE_NAME}/${MY_LOGFILE_SWITCH} 2>&1 ;
+
+" > ./"$MY_SANI_SAMPLE_NAME"_abyss.sh
+
+					chmod u+x ./"$MY_SANI_SAMPLE_NAME"_abyss.sh ;
+
+					. ./"$MY_SANI_SAMPLE_NAME"_abyss.sh  ; #>/dev/null 2>&1 ;			
+
+
+				else
+					echo "WARNING   | $(date) | ABySS is not available from the command line." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					echo "INFO      | $(date) | ABySS for paired end reads must be installed and available from the cli as 'abyss-pe'." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					echo "INFO      | $(date) | Please install ABySS correctly (e.g. using the Anaconda installer) or place abyss-pe program in your PATH environmental variable and re-try." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					echo "ERROR     | $(date) | Quitting... " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					exit 1 ;
+				fi
+
+			else
+				echo "WARNING   | $(date) | ABySS output file(s) detected. It looks like ABySS has already been run on this sample (check results manually). " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+				echo "INFO      | $(date) | Skiping ABySS run for sample.......... " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;			
+			fi
+
+			########### Organize ABySS output files:			
+				## Move ABySS output files to appropriate output directory for all files, including
+				## intermediate files (in e.g. "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/):
+
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-stat* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-stat* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-scaff* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-scaff* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-conti* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-conti* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-unit* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-unit* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-indel* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-indel* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-bubbl* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-bubbl* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./coverage.hist 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./coverage.hist "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+
+cd "$i"
+			########### Identify and move correct assembled contigs FASTA file to output dir (e.g. contigs/):
+				## Within ./contigs/stats/"$MY_SAMPLE_NAME"/, there is a file "$MY_SAMPLE_NAME"-scaffolds.fa
+				## symlinked (symbolically linked) to the 'true' final FASTA of assembled reads. To find out
+				## the symlink target file, which is the real file to copy to ./contigs/ and use to represent
+				## final output for the sample, do:
+#echo "A"
+#echo "$PWD"
+				#ls -l . | grep '^l' | grep 'scaffolds.fa' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
+				ls -l ./*.fa | grep 'scaffolds' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
+#echo "B"
+				MY_SYMLINK_SCAFF_FA_CHECK="$(head -n1 fa_check.txt | sed 's/\ //g')";
+#echo "C"
+				if [[ "$MY_SYMLINK_SCAFF_FA_CHECK" = "1" ]] || [[ "$MY_SYMLINK_SCAFF_FA_CHECK" -gt "0" ]]; then 
+#echo "D"
+					ls -l . | grep '^l' | grep 'scaffolds.fa' | awk -F"-> " '{print $2}' > ./sl_final_fa.txt ;
+					MY_SYMLINKED_FINAL_FASTA="$(head -n1 sl_final_fa.txt | sed 's/\ //g')";
+#echo "E1"
+					echo "$MY_SYMLINKED_FINAL_FASTA" > symlinked_final_scaffolds_FASTA.txt ;
+#echo "E2"
+				else
+					ls -lt . | grep '\-[0-9]*.fa$' | sed '/^l/d; /^d/d' | head -n1 | sed 's/.*\ //g' > ./approx_sl_final_fa.txt ;
+#echo "E3"
+					MY_SYMLINKED_FINAL_FASTA="$(head -n1 approx_sl_final_fa.txt | sed 's/\ //g')";
+#echo "F"
+					echo "$MY_SYMLINKED_FINAL_FASTA" > approximate_symlinked_final_scaffolds_FASTA.txt ;
+#echo "G"
+				fi
+
+				## Move correct final FASTA to output dir (e.g. contigs/) and rename:
+				if [[ -s "$MY_SYMLINKED_FINAL_FASTA" ]]; then
+					echo "INFO      | $(date) | Final FASTA with assembled contigs: ${MY_SYMLINKED_FINAL_FASTA}." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					## Move it
+					echo "INFO      | $(date) | Moving final FASTA file to output directory..." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					cp "$MY_SYMLINKED_FINAL_FASTA" "$MY_OUTPUT_DIR"  ; # Where "$MY_OUTPUT_DIR" will normally be contigs/
+					
+					## Rename it
+					echo "INFO      | $(date) | Renaming. Final output FASTA: ${MY_SANI_SAMPLE_NAME}.fa" | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					mv "$MY_OUTPUT_DIR""$MY_SYMLINKED_FINAL_FASTA" "$MY_OUTPUT_DIR""$MY_SANI_SAMPLE_NAME".fa | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+				fi
+cd ..;
+
+#echo "finished organizing in...  $PWD"
+
+			elif [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			######################
+			########### ~~~ VERBOSE RUN ~~~
+			###################### 
+
+		cd ..;  ## Move up from $MY_INPUT_DIR/$i ( e.g. secapr_cleaned_trimmed_reads_custom/122Slycioides_clean/ )
+				## to $MY_INPUT_DIR ( e.g. secapr_cleaned_trimmed_reads_custom/ )
+				## Recall: "$i" contents look similar to "./$i/" ...
+
+			########### Echo sample name for user:
+			echo "INFO      | $(date) | Current sample file: ${MY_SANI_SAMPLE_NAME} " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+
+			########### Assemble cleaned reads in ABySS:
+			if [[ ! -s ./"$i"/coverage.hist ]] && [[ ! -s ./"$i"/"$MY_SAMPLE_NAME"-stats.csv ]] && [[ ! -s "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/coverage.hist ]] && [[ ! -s "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_SAMPLE_NAME"-stats.csv ]]; then
+				echo "INFO      | $(date) | Assembling reads de novo from cleaned FASTQ files.......... " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+				
+				## If abyss is available as 'abyss-pe' from the cli, then run:
+				if [[ -s "$(which abyss-pe)" ]]; then 
+					## Run ABySS with simple options for paired-end reads (i.e. with default min base quality and read alignment lengths):
+#					abyss-pe --directory="$i" name="$MY_SAMPLE_NAME" k="$MY_KMER_SIZE" in='"$MY_FWD_READS_FQ_FILE" "$MY_REV_READS_FQ_FILE"' >> "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" 2>&1 ;
+#					abyss-pe --directory="$i" name="$MY_SAMPLE_NAME" k="$MY_KMER_SIZE" in='"$(echo $MY_FWD_READS_FQ_FILE $MY_REV_READS_FQ_FILE)"' >> "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" 2>&1 ;
+#					abyss-pe --directory="$i" name="$MY_SAMPLE_NAME" k="$MY_KMER_SIZE" in='$MY_FWD_READS_FQ_FILE $MY_REV_READS_FQ_FILE' >> "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" 2>&1 ;
+
+export MY_ABYSS_PATH="$(echo $(which abyss-pe))";
+echo "#!/bin/sh
+
+${MY_ABYSS_PATH} --directory=${i} name=${MY_SAMPLE_NAME} k=${MY_KMER_SIZE} in='${MY_FWD_READS_FQ_FILE} ${MY_REV_READS_FQ_FILE}' >> ${MY_OUTPUT_DIR}stats/${MY_SANI_SAMPLE_NAME}/${MY_LOGFILE_SWITCH} 2>&1 ;
+
+" > ./"$MY_SANI_SAMPLE_NAME"_abyss.sh
+
+					chmod u+x ./"$MY_SANI_SAMPLE_NAME"_abyss.sh ;
+
+					. ./"$MY_SANI_SAMPLE_NAME"_abyss.sh  ; #>/dev/null 2>&1 ;			
+
+
+				else
+					echo "WARNING   | $(date) | ABySS is not available from the command line." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					echo "INFO      | $(date) | ABySS for paired end reads must be installed and available from the cli as 'abyss-pe'." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					echo "INFO      | $(date) | Please install ABySS correctly (e.g. using the Anaconda installer) or place abyss-pe program in your PATH environmental variable and re-try." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					echo "ERROR     | $(date) | Quitting... " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					exit 1 ;
+				fi
+
+			else
+				echo "WARNING   | $(date) | ABySS output file(s) detected. It looks like ABySS has already been run on this sample (check results manually). " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;			
+				echo "INFO      | $(date) | Skiping ABySS run for sample.......... " | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;			
+			fi
+
+			########### Organize ABySS output files:			
+				## Move ABySS output files to appropriate output directory for all files, including
+				## intermediate files (in e.g. "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/):
+
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-stat* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-stat* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-scaff* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-scaff* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-conti* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-conti* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-unit* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-unit* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-indel* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-indel* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./"$MY_SAMPLE_NAME"-bubbl* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./"$MY_SAMPLE_NAME"-bubbl* "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+				if [[ "$(ls -1 ./coverage.hist 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+					mv ./coverage.hist "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/  ;
+				fi
+
+cd "$i"
+			########### Identify and move correct assembled contigs FASTA file to output dir (e.g. contigs/):
+				## Within ./contigs/stats/"$MY_SAMPLE_NAME"/, there is a file "$MY_SAMPLE_NAME"-scaffolds.fa
+				## symlinked (symbolically linked) to the 'true' final FASTA of assembled reads. To find out
+				## the symlink target file, which is the real file to copy to ./contigs/ and use to represent
+				## final output for the sample, do:
+#echo "A"
+#echo "$PWD"
+				#ls -l . | grep '^l' | grep 'scaffolds.fa' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
+				ls -l ./*.fa | grep 'scaffolds' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
+#echo "B"
+				MY_SYMLINK_SCAFF_FA_CHECK="$(head -n1 fa_check.txt | sed 's/\ //g')";
+#echo "C"
+				if [[ "$MY_SYMLINK_SCAFF_FA_CHECK" = "1" ]] || [[ "$MY_SYMLINK_SCAFF_FA_CHECK" -gt "0" ]]; then 
+#echo "D"
+					ls -l . | grep '^l' | grep 'scaffolds.fa' | awk -F"-> " '{print $2}' > ./sl_final_fa.txt ;
+					MY_SYMLINKED_FINAL_FASTA="$(head -n1 sl_final_fa.txt | sed 's/\ //g')";
+#echo "E1"
+					echo "$MY_SYMLINKED_FINAL_FASTA" > symlinked_final_scaffolds_FASTA.txt ;
+#echo "E2"
+				else
+					ls -lt . | grep '\-[0-9]*.fa$' | sed '/^l/d; /^d/d' | head -n1 | sed 's/.*\ //g' > ./approx_sl_final_fa.txt ;
+#echo "E3"
+					MY_SYMLINKED_FINAL_FASTA="$(head -n1 approx_sl_final_fa.txt | sed 's/\ //g')";
+#echo "F"
+					echo "$MY_SYMLINKED_FINAL_FASTA" > approximate_symlinked_final_scaffolds_FASTA.txt ;
+#echo "G"
+				fi
+
+				## Move correct final FASTA to output dir (e.g. contigs/) and rename:
+				if [[ -s "$MY_SYMLINKED_FINAL_FASTA" ]]; then
+					echo "INFO      | $(date) | Final FASTA with assembled contigs: ${MY_SYMLINKED_FINAL_FASTA}." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					## Move it
+					echo "INFO      | $(date) | Moving final FASTA file to output directory..." | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					cp "$MY_SYMLINKED_FINAL_FASTA" "$MY_OUTPUT_DIR"  ; # Where "$MY_OUTPUT_DIR" will normally be contigs/
+					
+					## Rename it
+					echo "INFO      | $(date) | Renaming. Final output FASTA: ${MY_SANI_SAMPLE_NAME}.fa" | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+					mv "$MY_OUTPUT_DIR""$MY_SYMLINKED_FINAL_FASTA" "$MY_OUTPUT_DIR""$MY_SANI_SAMPLE_NAME".fa | tee -a "$MY_OUTPUT_DIR"stats/"$MY_SANI_SAMPLE_NAME"/"$MY_LOGFILE_SWITCH" ;
+				fi
+			fi
+cd ..;
+			###	
+		## Modified from function script with "cd ..;" here... but already moved up a dir above, so don't need this here.
+
+
+	done
+)
+	echo "INFO      | $(date) | Complete. " 
+
+	echo "INFO      | $(date) | Moving sample subfolder list file to output dir... " 
+	if [[ -s ./sample_runOrder.list.txt ]]; then 
+		mv ./sample_runOrder.list.txt "$MY_OUTPUT_DIR"  ; 
+	fi 
+	echo "INFO      | $(date) | Complete. " 
+
+
+echo "INFO      | $(date) | ----------------------------------- "
+echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+echo "INFO      | $(date) | ----------------------------------- "
+
+################################# 4. CLEAN UP WORKSPACE 
+
+###### Remove temporary or unnecessary files created above:
+echo "INFO      | $(date) | Removing temporary files... "
+	
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
+
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
+echo "INFO      | Done."
+echo "----------------------------------------------------------------------------------------------------------"
+echo "output file location: $MY_OUTPUT_DIR "
+echo ""
+
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+###### END DEBUG MODE
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+
+
+# ############ SCRIPT OPTIONS
+# ## OPTION DEFAULTS ##
+# MY_KMER_SIZE=35                             # (def: k = 35), From ABySS documentation: "size of k-mer (when K is not set) or the span of a k-mer pair (when K is set)."
+# MY_NUM_THREADS=1                            # (def: 1), The ABySS default value for this parameter is 2.
+# MY_MIN_ALIGN_LENGTH=40                      # (def: 40), The default of 40 here is the ABySS default value.
+# MY_MIN_BASE_QUAL=3                          # (def: 3), The default of 3 here is the ABySS default value.
+# MY_RUN_NAME=NULL                            # (def: NULL), For simplicity, set to NULL to use the $SAMPLE_NAME for the run name, and I believe this is parameterized with make 'name' or '-N' options; 'name' works for sure.
+# MY_LOGFILE_SWITCH=assembly_log.txt          # Log file name, acts as switch to turn on loggin to file (default: on; specification would in implementation allow the user to change the name of this file, but this is not _really_ important so currently not implemented.)
+# MY_VERBOSE_OUT_SWITCH=0
+# MY_DEBUG_MODE_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="
+Usage: piranha -f $(basename "$0") [Options]...
+
+ ${bold}Options:${reset}
+  -i, --input     input (def: .) Mandatory path to input directory of cleaned read files 
+                  subfolders (one per sample)
+  -o, --output    output (def: ../contigs/) Mandatory path to output directory
+  -k, --kmer      kmerSize (def: 35) Size of k-mer when K not set in ABySS
+  -j, --threads   numThreads (def: 1) Number of threads (suggestion: ABySS default, 2)
+  -r, --length    readLength (def: 40) Minimum aligned read length
+  -q, --quality   baseQuality (def: 3) Minimum base quality for reads
+  -n, --name      name (def: NULL) run name, defaults to name of each sample; do NOT use
+                  this parameter as it is currently untested
+  -l, --logfile   logFile (def: assembly_log.txt) log screen output to file in working dir 
+                  with user-specified name (default is on, so allows changing log file name)
+  -v, --verbose   verbose (def: 0, off; 1, on) output more information to screen (stdout)
+  -h, --help      echo this help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates de novo assembly of contigs from cleaned, paired-end high-throughput
+ sequencing (HTS; i.e. Illumina) reads from targeted sequence capture (e.g. Hyb-Seq) HTS 
+ experiments, using the ABySS assembler (Jackman et al. 2017). Users are allowed to optionally 
+ set the input (-i, --input) and output (-o, --output) directories, k-mer size (-k, --kmer), 
+ number of threads (processor cores; -j, --threads), and minimum allowed aligned read length 
+ (-r, --length). 
+	The program assumes that the input directory contains one subfolder of cleaned reads per 
+ sample. It is also assumed that the subfolders are named using the sample name or ID label, 
+ <sampleName>. Reads are assumed to be cleaned of all adapters and low-quality bases beforehand. 
+ It is also assumed that the data supplied are paired-end reads in FASTQ format, with two 
+ files per sample, named as follows: '<sampleName>-READ1.fastq' for the forward reads (e.g. 
+ Illumina R1 file) and <sampleName>-READ2.fastq' for the reverse reads (e.g. Illumina R2 file). 
+	By default, the program runs with ABySS output (stderr and stdout) printed to screen, 
+ and also captured to the sample assembly logfiles in the sample subfolders, each named 
+ 'assembly_log.txt'. Using the -v (or --verbose) option sends verbose output (more information) 
+ to screen during the run. However, verbose mode has not been tested. Optionally, the user may
+ supply their own name for the log file (-l, --logfile flag).
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. Other than standard UNIX/Linux utility software,
+ the main dependencies are ABySS (Jackman et al. 2017; available on GitHub at: 
+ https://github.com/bcgsc/abyss) and its dependencies, the Boost libraries, Open MPI, and
+ sparsehash, all of which can be installed automatically using the conda package management 
+ system available in Anaconda. It is important to note that the paired-end ABySS program
+ must be available from the command line interface as 'abyss-pe' (default).
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f assembleReads -i <input> -o <output>                      Run program with default settings
+    piranha -f assembleReads --input <input> --output <output>           Same as above but using long option flags
+    piranha -f assembleReads -i <input> -o <output> -k 35 -j 4           Run the program with user-specified k-mer size
+                                                                         and number of threads 
+    piranha -f assembleReads -i <input> -o <output> -k 35 -j 4 -v 1      Same as just above, but also running in 
+                                                                         verbose mode
+    piranha -f assembleReads -h                                          Show this help text and exit
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Jackman, S.D., Vandervalk, B.P., Mohamadi, H., Chu, J., Yeo, S., Hammond, S.A., Jahesh, G., 
+	Khan, H., Coombe, L., Warren, R.L., & Birol, I., 2017. ABySS 2.0: resource-efficient 
+	assembly of large genomes using a Bloom filter. Genome Research, 27(5), 768-777. 
+	doi:10.1101/gr.214346.116. 
+
+ Created by Justin Bagley on Thu, Aug 20 12:30:37 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-H" ]] || [[ "$1" == "--Help" ]]; then
+	echo "$VERBOSE_USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename "$0") $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	if [[ -s ./sample_runOrder.list.txt ]]; then rm ./sample_runOrder.list.txt ; fi ;
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-output/\-\-output/g' ./args.txt
+	perl -p -i -e $'s/\-kmer/\-\-kmer/g' ./args.txt
+	perl -p -i -e $'s/\-threads/\-\-threads/g' ./args.txt
+	perl -p -i -e $'s/\-length/\-\-length/g' ./args.txt
+	perl -p -i -e $'s/\-quality/\-\-quality/g' ./args.txt
+	perl -p -i -e $'s/\-name/\-\-name/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+
+
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_INPUT_DIR=NULL ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_INPUT_DIR="$MY_ARG" ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
+		MY_INPUT_DIR="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_OUTPUT_DIR=NULL ;
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_DIR="$MY_ARG" ;
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-output' ./args.txt | perl -pe 's/\-\-output//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_DIR="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-kmer' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_KMER_SIZE=35 ;
+	elif [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-kmer' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+		MY_KMER_SIZE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-kmer' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-kmer' ./args.txt | perl -pe 's/\-\-kmer//g' | perl -pe 's/\ //g')";
+		MY_KMER_SIZE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-j' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-threads' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NUM_THREADS=NULL ;
+	elif [[  "$(grep -h '\-j' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-threads' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-j' ./args.txt | perl -pe 's/\-j//g' | perl -pe 's/\ //g')";
+		MY_NUM_THREADS="$MY_ARG" ;
+	elif [[  "$(grep -h '\-j' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-threads' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-threads' ./args.txt | perl -pe 's/\-\-threads//g' | perl -pe 's/\ //g')";
+		MY_NUM_THREADS="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-length' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MIN_ALIGN_LENGTH=40 ;
+	elif [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-length' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-r' ./args.txt | perl -pe 's/\-r//g' | perl -pe 's/\ //g')";
+		MY_MIN_ALIGN_LENGTH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-r' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-length' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-length' ./args.txt | perl -pe 's/\-\-length//g' | perl -pe 's/\ //g')";
+		MY_MIN_ALIGN_LENGTH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_MIN_BASE_QUAL=3 ;
+	elif [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-q' ./args.txt | perl -pe 's/\-q//g' | perl -pe 's/\ //g')";
+		MY_MIN_BASE_QUAL="$MY_ARG" ;
+	elif [[  "$(grep -h '\-q' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-quality' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-quality' ./args.txt | perl -pe 's/\-\-quality//g' | perl -pe 's/\ //g')";
+		MY_MIN_BASE_QUAL="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-name' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_RUN_NAME=NULL ;
+	elif [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-name' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-n' ./args.txt | perl -pe 's/\-n//g' | perl -pe 's/\ //g')";
+		MY_RUN_NAME="$MY_ARG" ;
+	elif [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-name' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-name' ./args.txt | perl -pe 's/\-\-name//g' | perl -pe 's/\ //g')";
+		MY_RUN_NAME="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=assembly_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+#
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages. Uncomment if needed.
+# checkDependencies
+
+# Run the script
+assembleReads
+
+# Exit cleanly
+safeExit
