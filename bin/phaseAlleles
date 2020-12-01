@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: phaseAlleles.sh                                                                  #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 15 17:10:14 CDT 2020.                       #
-# Last update: April 20, 2020                                                            #
+# Last update: December 1, 2020                                                          #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -141,7 +141,7 @@ phaseAlleles () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | phaseAlleles, v1.0.1 April 2020                                "
+echo "INFO      | $(date) | phaseAlleles, v1.0.2 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -216,7 +216,7 @@ echo "INFO      | $(date) | ----------------------------------- "
 echo "INFO      | $(date) | Step #2: Create list of BAM (=sample) subfolders in input dir... "
 echo "INFO      | $(date) | ----------------------------------- "
 
-################################# 2. PREP WORK:
+################################# 2. PREP WORK
 
 ## NOTE:  Starting dir: $MY_INPUT_DIR  (think: SECAPR remapped_reads_alldata/ subfolder)
 
@@ -240,7 +240,7 @@ echo "INFO      | $(date) | ----------------------------------- "
 echo "INFO      | $(date) | Step #3: Run main program, phase alleles and create phased consensus FASTAs... "
 echo "INFO      | $(date) | ----------------------------------- "
 
-################################# 3. MAIN SCRIPT:
+################################# 3. MAIN SCRIPT
 
 echo "INFO      | $(date) | Looping through sample BAM subfolders, conducting data checks, and phasing alleles... " 
 count=1
@@ -284,10 +284,13 @@ fi
 			########### Make phasing log file (overwrites existing file, if present):
 			echo "" > "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
 #			
-			if [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]]; then
-			######################
-			########### ~~~ RELATIVELY QUIET RUN ~~~
-			###################### 
+			##
+			if [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]] && [[ ! -s "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_BAM_BASENAME"_allele_0_sorted.bam ]] && \
+			   [[ ! -s "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_BAM_BASENAME"_allele_0.fasta ]]; then
+
+				######################
+				########### ~~~ RELATIVELY QUIET RUN ~~~
+				###################### 
 
 				########### Echo BAM file name for user:
 				echo "INFO      | $(date) | Current BAM file: ${MY_BAM_FILE} " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
@@ -338,10 +341,12 @@ fi
 					bedtools maskfasta -fi "$MY_BAM_BASENAME"_allele_1.fasta -fo "$MY_BAM_BASENAME"_indel_1.fasta -bed "$MY_BAM_BASENAME"_allele_1.bed >> "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" 2>&1 ;
 				fi
 
-			elif [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-			######################
-			########### ~~~ VERBOSE RUN ~~~
-			###################### 
+			elif [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ ! -s "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_BAM_BASENAME"_allele_0_sorted.bam ]] && \
+			   [[ ! -s "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_BAM_BASENAME"_allele_0.fasta ]]; then
+
+				######################
+				########### ~~~ VERBOSE RUN ~~~
+				###################### 
 
 				########### Echo BAM file name for user:
 				echo "INFO      | $(date) | #################### Current BAM file: ${MY_BAM_FILE} " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
@@ -389,8 +394,27 @@ fi
 					bedtools maskfasta -fi "$MY_BAM_BASENAME"_allele_0.fasta -fo "$MY_BAM_BASENAME"_indel_0.fasta -bed "$MY_BAM_BASENAME"_allele_0.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
 					bedtools maskfasta -fi "$MY_BAM_BASENAME"_allele_1.fasta -fo "$MY_BAM_BASENAME"_indel_1.fasta -bed "$MY_BAM_BASENAME"_allele_1.bed | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
 				fi
-			fi
 
+
+			elif [[ "$MY_VERBOSE_OUT_SWITCH" = "0" ]] || [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && \
+			   [[ -s "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_BAM_BASENAME"_allele_0_sorted.bam ]] || \
+			   [[ -s "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_BAM_BASENAME"_allele_0.fasta ]]; then
+
+				######################
+				########### ~~~ SKIPPING!!! ALREADY RUN! ~~~
+				###################### 
+
+				########### Echo BAM file name for user:
+				echo "INFO      | $(date) | Current BAM file: ${MY_BAM_FILE} " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+
+				########### Echo WARNING stating that phaseAlleles / SECAPR appears to have already
+				########### been run on the data for this sample, so we are skipping it.
+				echo "WARNING   | $(date) | It appears that the PIrANHA phaseAlleles function (or SECAPR analog) has already been run on the BAM file for this sample." | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+				echo "INFO      | $(date) | Moving to the next sample in the generated list (./sample_runOrder.list.txt)...  " | tee -a "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/"$MY_LOGFILE_SWITCH" ;
+
+			fi
+			##
+			
 			########### Organize remaining files
 			if [[ "$(ls -1 ./*_allele_0* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele_0* "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/  ;  fi
 			if [[ "$(ls -1 ./*_allele_1* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then mv ./*_allele_1* "$MY_OUTPUT_DIR""$MY_BAM_BASENAME"_phased/  ;  fi

@@ -441,27 +441,17 @@ cd "$i"
 				## symlinked (symbolically linked) to the 'true' final FASTA of assembled reads. To find out
 				## the symlink target file, which is the real file to copy to ./contigs/ and use to represent
 				## final output for the sample, do:
-#echo "A"
-#echo "$PWD"
 				#ls -l . | grep '^l' | grep 'scaffolds.fa' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
 				ls -l ./*.fa | grep 'scaffolds' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
-#echo "B"
 				MY_SYMLINK_SCAFF_FA_CHECK="$(head -n1 fa_check.txt | sed 's/\ //g')";
-#echo "C"
 				if [[ "$MY_SYMLINK_SCAFF_FA_CHECK" = "1" ]] || [[ "$MY_SYMLINK_SCAFF_FA_CHECK" -gt "0" ]]; then 
-#echo "D"
 					ls -l . | grep '^l' | grep 'scaffolds.fa' | awk -F"-> " '{print $2}' > ./sl_final_fa.txt ;
 					MY_SYMLINKED_FINAL_FASTA="$(head -n1 sl_final_fa.txt | sed 's/\ //g')";
-#echo "E1"
 					echo "$MY_SYMLINKED_FINAL_FASTA" > symlinked_final_scaffolds_FASTA.txt ;
-#echo "E2"
 				else
 					ls -lt . | grep '\-[0-9]*.fa$' | sed '/^l/d; /^d/d' | head -n1 | sed 's/.*\ //g' > ./approx_sl_final_fa.txt ;
-#echo "E3"
 					MY_SYMLINKED_FINAL_FASTA="$(head -n1 approx_sl_final_fa.txt | sed 's/\ //g')";
-#echo "F"
 					echo "$MY_SYMLINKED_FINAL_FASTA" > approximate_symlinked_final_scaffolds_FASTA.txt ;
-#echo "G"
 				fi
 
 				## Move correct final FASTA to output dir (e.g. contigs/) and rename:
@@ -559,27 +549,17 @@ cd "$i"
 				## symlinked (symbolically linked) to the 'true' final FASTA of assembled reads. To find out
 				## the symlink target file, which is the real file to copy to ./contigs/ and use to represent
 				## final output for the sample, do:
-#echo "A"
-#echo "$PWD"
 				#ls -l . | grep '^l' | grep 'scaffolds.fa' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
 				ls -l ./*.fa | grep 'scaffolds' | wc -l | sed 's/\ //g' > ./fa_check.txt  ;
-#echo "B"
 				MY_SYMLINK_SCAFF_FA_CHECK="$(head -n1 fa_check.txt | sed 's/\ //g')";
-#echo "C"
 				if [[ "$MY_SYMLINK_SCAFF_FA_CHECK" = "1" ]] || [[ "$MY_SYMLINK_SCAFF_FA_CHECK" -gt "0" ]]; then 
-#echo "D"
 					ls -l . | grep '^l' | grep 'scaffolds.fa' | awk -F"-> " '{print $2}' > ./sl_final_fa.txt ;
 					MY_SYMLINKED_FINAL_FASTA="$(head -n1 sl_final_fa.txt | sed 's/\ //g')";
-#echo "E1"
 					echo "$MY_SYMLINKED_FINAL_FASTA" > symlinked_final_scaffolds_FASTA.txt ;
-#echo "E2"
 				else
 					ls -lt . | grep '\-[0-9]*.fa$' | sed '/^l/d; /^d/d' | head -n1 | sed 's/.*\ //g' > ./approx_sl_final_fa.txt ;
-#echo "E3"
 					MY_SYMLINKED_FINAL_FASTA="$(head -n1 approx_sl_final_fa.txt | sed 's/\ //g')";
-#echo "F"
 					echo "$MY_SYMLINKED_FINAL_FASTA" > approximate_symlinked_final_scaffolds_FASTA.txt ;
-#echo "G"
 				fi
 
 				## Move correct final FASTA to output dir (e.g. contigs/) and rename:
