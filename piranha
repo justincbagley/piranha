@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.1.4"                                                                       #
+  VERSION="v1.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: July 31, 2020                                                             #
+# Last update: December 3, 2020                                                          #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description: Main script for PIrANHA package, controls all other scripts. With no      #
 # input, prints usage and exits.                                                         #
@@ -137,7 +137,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.1.4, July 2020  (main script for PIrANHA v0.4a3, update Jul 31 14:40:56 CDT 2020)                    "
+piranha v1.1.5, December 2020  (main script for PIrANHA v0.4a3, update Dec 3 12:31:58 CST 2020)                    "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -163,6 +163,7 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 		FILE_LIMIT=$(ulimit -n)
 		export FILE_LIMIT
 		echo "INFO      | $(date) |    ulimit: ${FILE_LIMIT}"
+
 ## Not working on some supercomputer nodes; best solution would involve checking whether 
 ## manual setting of ulimit is allowed from user accounts on machine, and then using a 
 ## method that allows this if possible. Not fixed yet, so this is commented out for now:
@@ -199,6 +200,9 @@ alignAlleles           Aligns and cleans allele sequences (phased DNA sequences)
                        additional details).
 AnouraNEXUSPrepper     In-house function for preparing NEXUS files for Anoura UCE project analyses (Calderon, 
                        Bagley, and Muchhala, in prep.).
+assembleReads          Function that automates assembling cleaned sequence reads (short reads in FASTQ format)
+                       from targeted sequence capture (e.g. Hyb-Seq) HTS experiments de novo using the ABySS
+                       assembler.
 batchRunFolders        Automates splitting a set of input files into different batches (to be run in parallel on
                        a remote supercomputing cluster, or a local machine), starting from file type or list of
                        input files.
@@ -209,7 +213,8 @@ BEASTPostProc          Conducts post-processing of gene trees and species trees 
                        et al. 2012; Bouckaert et al. 2014; usually on a remote supercomputer).
 BEASTReset             Function that resets the random seeds for n shell queue scripts corresponding to n BEAST 
                        runs/subfolders (destined for supercomputer).
-BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster.
+BEASTRunner            Automates running BEAST XML input files on a remote supercomputing cluster, assuming 
+                       passwordless ssh access.
 calcAlignmentPIS       Generates and runs custom Rscript (phyloch wrapper) to calculate number of parsimony-
                        informative sites (pis) for all FASTA files in working dir.
 completeConcatSeqs     Function converting series of PHYLIP (Felsenstein 2002) DNA sequence alignments (with or 
@@ -220,7 +225,7 @@ completeSeqs           Function converting series of PHYLIP DNA sequence alignme
                        of taxa) into complete PHYLIP alignments (with complete taxon sampling), with missing taxa
                        filled with dummy sequences (N's), starting from a 'taxon names and spaces' file.
 concatenateSeqs        Function that converts series of PHYLIP DNA sequence alignments with equal taxon sampling 
-                       into a single concatenated PHYLIP alignment.
+                       (same tip taxa, preferably in same order) into a single concatenated PHYLIP alignment.
 concatSeqsPartitions   Function similar to concatenateSeqs, but which, in addition to concatenating the set of 
                        PHYLIP alignments, also outputs character subset/partitions files in RAxML, PartitionFinder,
                        and NEXUS formats. This function differs from completeConcatSeqs in only taking alignments 
@@ -458,9 +463,10 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a3 (update Apr 21 09:15:32 EDT 2020).
+ This is the main script for PIrANHA v0.4a3 (update Jul 31 14:40:56 CDT 2020).
 
  ${bold}Options:${reset}
+  -s, --shortlist   Short list of available functions
   -f, --func        Function, <function>
   -a, --args        Function arguments passed to <function>
   -q, --quiet       Quiet (no output)
@@ -482,7 +488,8 @@ usage() {
 
  ${bold}Usage examples:${reset}
     piranha -h                                   Show piranha help text and exit
-    piranha -f list                              Get list of available functions
+    piranha -f <TAB>                             Get list of available functions by dynamic completion
+    piranha -f list                              Get list of available functions by function
     piranha -f <function> -h                     Show help text for <function> and exit
     piranha -f calcAlignmentPIS -h               Show help text for calcAlignmentPIS function and exit
     piranha -f calcAlignmentPIS -t 150           Run calcAlignmentPIS with threshold at N=150 alignments
@@ -542,6 +549,8 @@ unset options
 # Read the options and set stuff
 while [[ ${1} = -?* ]]; do
   case ${1} in
+    -i|--init) shift; echo "${SCRIPT_PATH}/completions/init.sh"; exit 0 ;;
+    -s|--shortlist) echo "2logeB10.r alignAlleles AnouraNEXUSPrepper assembleReads batchRunFolders BEAST_logThinner BEAST_PSPrepper BEASTPostProc BEASTReset BEASTRunner calcAlignmentPIS completeConcatSeqs completeSeqs concatenateSeqs concatSeqsPartitions dadiPostProc dadiRunner dadiUncertainty dropRandomHap dropTaxa ExaBayesPostProc FASTA2PHYLIP FASTA2VCF FASTAsummary fastSTRUCTURE geneCounter getBootTrees getTaxonNames indexBAM list MAGNET makePartitions Mega2PHYLIP mergeBAM MLEResultsProc MrBayesPostProc NEXUS2MultiPHYLIP NEXUS2PHYLIP nQuireRunner PFSubsetSum phaseAlleles PHYLIP2FASTA phylip2fasta.pl PHYLIP2Mega PHYLIP2NEXUS PHYLIP2PFSubsets PHYLIPcleaner PHYLIPsubsampler PHYLIPsummary PhyloMapperNullProc phyNcharSumm pyRAD2PartitionFinder pyRADLocusVarSites RAxMLRunChecker RAxMLRunner renameForStarBeast2 renameTaxa RogueNaRokRunner RYcoder SNAPPRunner SpeciesIdentifier splitFASTA splitFile splitPHYLIP taxonCompFilter treeThinner trimSeqs vcfSubsampler shortlist"; exit 0 ;;
     -f|--func) shift; FUNCTION_TO_RUN="$1" ;;
     -a|--args) shift; FUNCTION_ARGUMENTS="$*" ;;
     -o|--output) shift; USER_OUTPUT_DIR="$1" ;;

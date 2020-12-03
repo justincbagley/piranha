@@ -4,11 +4,21 @@
 ...
 
 <!-- ### Updates since last pre-release (for PIrANHA v0.4a3 draft): -->
+
+- **December 3, 2020:** Added _important_ updates to PIrANHA, including edits to main `piranha` script and a new `completions/` subfolder, allowing bash tab completion of function names (expected usage: `piranha -f <TAB>`). Updated Homebrew tap and 'changelog.md' accordingly.
+- **November 23 and December 1, 2020:** Bug fixes and updates for `assembleReads` and `phaseAlleles` functions of `piranha`, fixing errors that caused the program to stop due to issues with among other things `ls`, plus minor change to `alignAlleles` (not worth a mention).
+- **November 13, 2020:** Bug fix for `PHYLIP2NEXUS` because failing regex test for hexadecimal characters, if produced, in the resulting (output) NEXUS files. Problem solved by posix solution.
+- **October 20, 2020** Bug fixes for `FASTA2PHYLIP` function, which in aggregate fix problems completely for the single-FASTA, `-f 1 option.
+- **August 12, 2020:** Updated `trimSeqs` function to improve performance after bug/issue discussion with Juan Moreira. This updated fixed posix space bug, because `[:space:]` should be `[[:space:]]`.
+- **August 3, 2020:** Updated README, as well as Quick Guide for [wiki](https://github.com/justincbagley/piranha/wiki).
+
 ### PIrANHA 0.4a3 (official minor pre-release version v0.4-alpha-3) - July 31, 2020
 
 - **July 31, 2020:** Added new `trimSeqs` function and prepped 0.4a3 release by updating versioning of main `piranha` script and function scipts, and also updating Wiki and READMEs. The `trimSeqs` function automates trimming one or multiple DNA sequence alignments in PHYLIP format, with options for custom gap handling parameters for trimAl, and with trimmed alignments output to FASTA, PHYLIP, or NEXUS formats.
+- **May 27, 2020:** Updated repo with new citation file ('CITATION.md'), code of conduct for developers ('CODE_OF_CONDUCT.md'), and license ('LICENSE').
 - **May 3-5, 2020:** Added new functions. The new `geneCounter` function counts and summarizes number of gene copies per tip taxon label in a set of input gene trees in Newick format, given a taxon-species assignment file (this function written to handle output from HybPiper pipeline; see Usage text). Also added a new `batchRunFolders` function to help setting up input files for batch analyses in several popular software programs for phylogenetics.
 - **April 18-20, 2020:** This update builds on the previous pre-release, v0.4a2, by adding minor bug fixes and improvements to several functions. With the addition of the new function `alignAlleles`, a companion script meant to be run directly after `phaseAlleles`, this release establishes a new workflow for phasing and aligning consensus sequences from HTS (e.g. targeted sequence capture data) based on reads (re)mapped to a reference assembly FASTA file (i.e. following reference-based assembly). This combination of programs was designed to be run on target capture data after first conducting cleaning, assembly, locus selection, and reference-based assembly (specifically, with SECAPR (Andermann et al. 2018) in mind, and with testing based on output from SECAPR).
+- **April 17, 2020:** Added "Quick Guide" to wiki, entitled "Quick Guide for the Impatient," with install instructions and example code.
 
 ### PIrANHA 0.4a2 (official minor pre-release version v0.4-alpha-2) - April 17, 2020
 
