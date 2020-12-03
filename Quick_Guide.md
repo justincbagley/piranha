@@ -116,6 +116,30 @@ Concatenate DNA sequence alignments (e.g. genes) like so:
 
 ```
 
+Trim DNA sequence alignments like so:
+
+```bash
+# Use trimSeqs to trim single PHYLIP alignment with default settings and PHYLIP output:
+
+     piranha -f trimSeqs -i <inputPHYLIP> -o phylip
+     piranha -f trimSeqs --input <inputPHYLIP> --output phylip
+
+# Use trimSeqs to trim multiple PHYLIP alignments with default settings and PHYLIP output:
+
+     piranha -f trimSeqs -m 1 -o phylip
+     piranha -f trimSeqs --multi 1 --output phylip
+
+# Use trimSeqs to trim PHYLIP alignments with custom gap handling and sequence conservation settings for trimAl:
+
+     piranha -f trimSeqs --multi 1 --output phylip --cons 60 --gt 0.1
+
+# Use trimSeqs to trim PHYLIP alignments stringently, removing all sites with gaps:
+
+     piranha -f trimSeqs --multi 1 --output phylip --nogaps 1
+
+# NOTE: You may also switch output formats to FASTA (--output fasta) or NEXUS (--output nexus) formats.
+```
+
 Phase consensus sequences from HTS (e.g. targeted sequence capture) using reference:
 
 ```bash
@@ -207,6 +231,6 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE
   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
 
-April 17, 2020 Justin C. Bagley, St. Louis, MO, USA
+July 31, 2020 Justin C. Bagley, Jacksonville, AL, USA
 
 [Next (Introduction) >>](https://github.com/justincbagley/piranha/wiki/1.-Introduction)

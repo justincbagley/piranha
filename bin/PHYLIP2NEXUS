@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  VERSION="v1.3.7"                                                                       #
+  VERSION="v1.3.8"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: July 31, 2020                                                             #
+# Last update: November 13, 2020                                                         #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.7 July 2020                                 "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.8 November 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -178,6 +178,7 @@ END;
 	MY_PHYLIP_BASENAME="$(echo $INPUT_PHYLIP_FILE | sed 's/\.phy//g')" ;
 
 echo "INFO      | $(date) | If available, add partition information to NEXUS... "
+##
 if [[ "$MY_PARTITIONS_FILE" = "NULL" ]]; then
 	echo "INFO      | $(date) | No partitions file detected... "
 	cat ./NEXUS_top.tmp ./sequences.tmp ./NEXUS_bottom.tmp > ./"$MY_PHYLIP_BASENAME".nex ;
@@ -213,6 +214,7 @@ elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "SVDqua
 	echo "INFO      | $(date) | Making final, partitioned NEXUS file... "
 
 fi
+##
 
 perl -p -i -e $'s/^'"$MY_NTAX"'\ +[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ; 
 perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ; 
@@ -221,7 +223,13 @@ perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ;
 #### ADDITIONAL EDITS CLEANING FINAL NEXUS FILE:
 
 	## Fix nuisance hex characters if generated for some reason in the final output NEXUS file:
-	MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#	MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#	MY_HEX_CHAR_CHECK="$(grep -h -b -o $'\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#	MY_HEX_CHAR_CHECK="$(grep -b -o $'\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#	MY_HEX_CHAR_CHECK="$(grep -h '^([0-9A-Fa-f]{2})+$' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#	MY_HEX_CHAR_CHECK="$(grep -h '^([0-9A-Fa-f]{2})+' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+	MY_HEX_CHAR_CHECK="$(grep -hbo '[[:xdigit:]]' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+
 	if [[ "$MY_HEX_CHAR_CHECK" -gt "0" ]]; then
 		echo "INFO      | $(date) | Cleaning hex characters from final NEXUS file... "
 		# Working code:
@@ -358,7 +366,13 @@ END;
 	#### ADDITIONAL EDITS CLEANING FINAL NEXUS FILE:
 	
 		## Fix nuisance hex characters if generated for some reason in the final output NEXUS file:
-		MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#		MY_HEX_CHAR_CHECK="$(grep -h '\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#		MY_HEX_CHAR_CHECK="$(grep -h -b -o $'\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#		MY_HEX_CHAR_CHECK="$(grep -b -o $'\x{0D}' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#		MY_HEX_CHAR_CHECK="$(grep -h '^([0-9A-Fa-f]{2})+$' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+#		MY_HEX_CHAR_CHECK="$(grep -h '^([0-9A-Fa-f]{2})+' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+		MY_HEX_CHAR_CHECK="$(grep -hbo '[[:xdigit:]]' ./"$MY_PHYLIP_BASENAME".nex  | wc -l | sed 's/\ //g')";
+
 		if [[ "$MY_HEX_CHAR_CHECK" -gt "0" ]]; then
 			echo "INFO      | $(date) | Cleaning hex characters from final NEXUS file... "
 			# Working code:
