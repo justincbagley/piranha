@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.1.5"                                                                       #
+  VERSION="v1.1.6"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: December 3, 2020                                                          #
+# Last update: December 4, 2020                                                          #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -34,7 +34,7 @@ if [[ -f "${UTILS_LOCATION}" ]]; then
   source "${UTILS_LOCATION}"
 else
   echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
-  exit 1
+  exit 1 ;
 fi
 
 ## Source Shared Functions and Variables
@@ -48,7 +48,18 @@ if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
   source "${VARS_LOCATION}" ;
 else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
-  exit 1
+  exit 1 ;
+fi
+
+## Source Completions Functions
+# -----------------------------------
+COMPL_LOCATION="${SCRIPT_PATH}/completions/init.sh" # Update this path to find the init.sh script.
+
+if [[ -f "${COMPL_LOCATION}" ]]; then
+  source "${COMPL_LOCATION}"
+else
+  echo "Please find the file init.sh and add a reference to it in this script. Exiting..."
+  exit 1 ;
 fi
 
 ## Set bin/ Location
@@ -80,7 +91,7 @@ safeExit () {
     rm -r "${tmpDir}"
   fi
   trap - INT TERM EXIT
-  exit
+  exit ;
 }
 
 ## Set Flags
@@ -137,7 +148,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.1.5, December 2020  (main script for PIrANHA v0.4a3, update Dec 3 12:31:58 CST 2020)                    "
+piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 4 17:34:49 CST 2020)                    "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -159,18 +170,23 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 	echo "INFO      | $(date) | Found machine type ${machine}. "
 
 	if [[ "${machine}" = "Linux" ]]; then
-		echo "INFO      | $(date) | Checking file limits on Linux..."
+		echo "INFO      | $(date) | Checking core and file limits on Linux..."
+		CORE_LIMIT=$(ulimit -c)
+		export CORE_LIMIT
 		FILE_LIMIT=$(ulimit -n)
 		export FILE_LIMIT
-		echo "INFO      | $(date) |    ulimit: ${FILE_LIMIT}"
-
-## Not working on some supercomputer nodes; best solution would involve checking whether 
-## manual setting of ulimit is allowed from user accounts on machine, and then using a 
-## method that allows this if possible. Not fixed yet, so this is commented out for now:
-#		if [[ "$FILE_LIMIT" != "unlimited" ]]; then
-#			NEW_LIMIT="$( calc $FILE_LIMIT*10 )";
-#			ulimit -n $NEW_LIMIT ;
-#		fi
+		echo "INFO      | $(date) |    core limit: ${CORE_LIMIT}"
+		echo "INFO      | $(date) |    open file limit: ${FILE_LIMIT}"
+		## Attempt to set core limit to unlimited:
+		ulimit -c unlimited 2>/dev/null ;
+		## Attempt to increase to 1GB, or set as unlimited, the file limit:
+		if [[ "$FILE_LIMIT" != "unlimited" ]] && [[ "$FILE_LIMIT" = "256" ]]; then
+			ulimit -n 1024 ;
+		elif [[ "$FILE_LIMIT" != "unlimited" ]] && [[ "$FILE_LIMIT" -gt "1000" ]] && [[ "$FILE_LIMIT" != "1024" ]]; then	
+		#	NEW_LIMIT="$( calc $FILE_LIMIT*10 )";
+		#	ulimit -n $NEW_LIMIT ;
+			ulimit -n unlimited 2>/dev/null ;
+		fi
 	fi
 
 ############ II. CALL USER-SPECIFIED FUNCTION / SCRIPT IN BIN LOCATION, WITH OR WITHOUT ARGUMENTS.
@@ -393,7 +409,6 @@ Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a sta
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha.out.log.txt ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" = "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
 		# Redirect stderr and stdout to /dev/null to make the run quiet
-		# URL: https://stackoverflow.com/questions/2292847/how-to-silence-output-in-a-bash-script
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" >/dev/null 2>&1 ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" != "MAGNET" ]] && [[ "$quiet" != "true" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
 		# Warn/acknowledge that user is running function script in DEBUG MODE (for developers) by setting debug=true
@@ -463,7 +478,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a3 (update Jul 31 14:40:56 CDT 2020).
+ This is the main script for PIrANHA v0.4a3 (update Dec 4 17:34:49 CST 2020).
 
  ${bold}Options:${reset}
   -s, --shortlist   Short list of available functions
@@ -488,8 +503,8 @@ usage() {
 
  ${bold}Usage examples:${reset}
     piranha -h                                   Show piranha help text and exit
-    piranha -f <TAB>                             Get list of available functions by dynamic completion
-    piranha -f list                              Get list of available functions by function
+    piranha -f <TAB>                             Get short list of available functions by dynamic completion
+    piranha -f list                              Get detailed list of available functions by function
     piranha -f <function> -h                     Show help text for <function> and exit
     piranha -f calcAlignmentPIS -h               Show help text for calcAlignmentPIS function and exit
     piranha -f calcAlignmentPIS -t 150           Run calcAlignmentPIS with threshold at N=150 alignments
