@@ -160,7 +160,7 @@ fi
 if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 
 ############ I. READ INPUT, SET UP WORKSPACE, AND CHECK / ECHO MACHINE TYPE.
-#	echo "INFO      | $(date) | Script path: $SCRIPT_PATH/piranha"
+	echo "INFO      | $(date) | Script path: $SCRIPT_PATH/piranha"
 	echo "INFO      | $(date) | Function: $FUNCTION_TO_RUN "
 	echo "INFO      | $(date) | Function arguments: $FUNCTION_ARGUMENTS "
 #	echo "INFO      | $(date) | Remaining arguments: $args+ "
@@ -169,6 +169,7 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 	checkMachineType
 	echo "INFO      | $(date) | Found machine type ${machine}. "
 
+	# Linux ulimits:
 	if [[ "${machine}" = "Linux" ]]; then
 		echo "INFO      | $(date) | Checking core and file limits on Linux..."
 		CORE_LIMIT=$(ulimit -c)
