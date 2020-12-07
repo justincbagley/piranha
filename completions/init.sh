@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 ## init.sh
 ## Justin C. Bagley, Ph.D.

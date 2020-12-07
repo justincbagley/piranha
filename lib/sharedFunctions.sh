@@ -102,7 +102,7 @@ fi
 
 }
 
-# Calculater
+# Calculator
 # ------------------------------------------------------
 # Function to send commands to Bash's arbitrary precision
 # calculator language.
