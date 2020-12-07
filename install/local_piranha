@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: local_piranha (install_piranha.sh)                                               #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Apr 16 23:10:44 CDT 2020.                       #
 # Last update: December 7, 2020                                                          #
@@ -23,7 +23,7 @@ local_piranha () {
 ######################################## START ###########################################
 ##########################################################################################
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | local_piranha, v1.0.1 December 2020                            "
+echo "INFO      | $(date) | local_piranha, v1.0.2 December 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -46,22 +46,25 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 
 		echo "INFO      | $(date) | Done. "
 
-        ####### COMMENT OUT HOMEBREW PIRANHA ALIAS IN ~/.bash_profile (or ~/.bashrc on Linux), 
+        ####### REMOVE HOMEBREW PIRANHA ALIAS IN ~/.bash_profile (or ~/.bashrc on Linux), 
         ####### IF PRESENT:
 		if [[ "$machine" = "Mac" ]]; then
 			MY_PIRANHA_ALIAS_CHECK="$(grep -h '\#\#\#\#\ HOMEBREW\ PIrANHA\ ALIAS\:' ~/.bash_profile | wc -l | sed 's/\ //g')"; 
 				if [[ "$MY_PIRANHA_ALIAS_CHECK" != "0" ]]; then
 					sed -i '' '/\ HOMEBREW\ PIrANHA\ ALIAS/d' ~/.bash_profile  ;
 					sed -i '' '/alias\ piranha\=.*\/Cellar/d' ~/.bash_profile  ;
+					sed -i '' '/piranha\/.*\/completions\/init\.sh/d' ~/.bash_profile ;
 				fi
 		elif [[ "$machine" = "Linux" ]]; then
 			MY_PIRANHA_ALIAS_CHECK1="$(grep -h 'PIrANHA\ ALIAS\:' ~/.bash_profile | wc -l | sed 's/\ //g')"; 
 			MY_PIRANHA_ALIAS_CHECK2="$(grep -h 'PIrANHA\ ALIAS\:' ~/.bashrc | wc -l | sed 's/\ //g')"; 
 				if [[ "$MY_PIRANHA_ALIAS_CHECK1" != "0" ]] || [[ "$MY_PIRANHA_ALIAS_CHECK2" != "0" ]]; then
-					sed -i '' '/PIrANHA\ ALIAS/d' ~/.bash_profile  ;
-					sed -i '' '/alias\ piranha\=/d' ~/.bash_profile  ;
-					sed -i '' '/PIrANHA\ ALIAS/d' ~/.bashrc  ;
-					sed -i '' '/alias\ piranha\=/d' ~/.bashrc  ;
+					sed -i '/PIrANHA\ ALIAS/d' ~/.bash_profile  ;
+					sed -i '/alias\ piranha\=/d' ~/.bash_profile  ;
+					sed -i '/piranha\/.*\/completions\/init\.sh/d' ~/.bash_profile ;
+					sed -i '/PIrANHA\ ALIAS/d' ~/.bashrc  ;
+					sed -i '/alias\ piranha\=/d' ~/.bashrc  ;
+					sed -i '/piranha\/.*\/completions\/init\.sh/d' ~/.bashrc ;
 				fi
 		fi
 
@@ -82,11 +85,15 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 				sed -i.bak 's/x/bash\ \/Users\/justinbagley\/Downloads\/piranha\-master\/piranha\ $\*/g' ~/bin/piranha ;
 				rm ~/bin/piranha.bak ;
 				chmod u+x ~/bin/piranha ;
+				echo "source \"\/Users\/justinbagley\/Downloads\/piranha\-master\/completions\/init\.sh\"" >> ~/.bash_profile ;
+				source ~/.bash_profile ;
 			elif [[ "$machine" = "Linux" ]]; then
 				echo "x" > ~/local/bin/piranha ; # overwrites existing file, if present
 				sed -i 's/x/bash\ \~\/local\/opt\/piranha\-master\/piranha\ $\*/g' ~/local/bin/piranha ;
 				chmod u+x ~/local/opt/piranha-master/piranha ;
 				chmod u+x ~/local/bin/piranha ;
+				echo "source \"\/Users\/justinbagley\/Downloads\/piranha\-master\/completions\/init\.sh\"" >> ~/.bashrc ;
+				source ~/.bashrc ;
 			fi
 
 		else
@@ -105,6 +112,7 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 						echo "INFO      | $(date) | Granting execution permissions... "
 						chmod u+x ./* ;
 						chmod u+x ../piranha ;
+						chmod u+x ../completions/init.sh ;
 					cd ..;
 				fi
 
@@ -115,11 +123,15 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 				sed -i.bak 's/x/bash\ \~\/piranha\-master\/piranha\ $\*/g' ~/bin/piranha ;
 				rm ~/bin/piranha.bak ;
 				chmod u+x ~/bin/piranha ;
+				echo "source \""$HOME"\/piranha\-master\/completions\/init\.sh\"" >> ~/.bash_profile ;
+				source ~/.bash_profile ;
 			elif [[ "$machine" = "Linux" ]]; then
 				echo "INFO      | $(date) | Creating piranha executable... "
 				echo "x" > ~/bin/piranha ; # overwrites existing file, if present
 				sed -i.bak 's/x/bash\ \~\/piranha\-master\/piranha\ $\*/g' ~/bin/piranha ;
 				chmod u+x ~/bin/piranha ;
+				echo "source \""$HOME"\/piranha\-master\/completions\/init\.sh\"" >> ~/.bashrc ;
+				source ~/.bashrc ;
 			fi
 
 		fi

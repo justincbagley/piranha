@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: brew_piranha.sh                                                                  #
-  VERSION="v1.0.1"                                                                       #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Apr 16 23:10:44 CDT 2020.                       #
 # Last update: December 7, 2020                                                          #
@@ -24,7 +24,7 @@ brew_piranha () {
 ######################################## START ###########################################
 ##########################################################################################
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | brew_piranha, v1.0.1 December 2020                             "
+echo "INFO      | $(date) | brew_piranha, v1.0.3 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -96,6 +96,7 @@ echo "INFO      | $(date) | Initiating Homebrew PIrANHA install/setup procedures
 				MY_BREW_PIRANHA_MAIN="$(echo "$MY_PIRANHA_CELLAR"/piranha)"
 				echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
 				echo "alias piranha=\""$MY_BREW_PIRANHA_MAIN"\"" >> ~/.bash_profile ;
+				echo "source \""$MY_PIRANHA_CELLAR"/completions/init.sh\"" >> ~/.bash_profile ;
 				source ~/.bash_profile ;
 
 				####### REMOVE ~/bin/piranha, IF PRESENT (TO AVOID CONFLICT):
@@ -112,7 +113,8 @@ echo "INFO      | $(date) | Initiating Homebrew PIrANHA install/setup procedures
 				
 				## First, remove ~/.bash_profile alias:
 				sed -i '' -e '/\#\#\ HOMEBREW\ PIrANHA\ ALIAS\:/,+1d' ~/.bash_profile ;
-
+				sed -i '' '/piranha\/.*\/completions\/init\.sh/d' ~/.bash_profile ;
+				
 				## Next, redo test then do fresh Homebrew piranha install:	
 				MY_HB_PIRANHA_ALIAS_CHECK="$(cat ~/.bash_profile | grep '### HOMEBREW PIrANHA ALIAS:' | wc -l | sed 's/\ //g')";
 				if [[ "$MY_HB_PIRANHA_ALIAS_CHECK" = "0" ]]; then
@@ -131,6 +133,7 @@ echo "INFO      | $(date) | Initiating Homebrew PIrANHA install/setup procedures
 					MY_BREW_PIRANHA_MAIN="$(echo "$MY_PIRANHA_CELLAR"/piranha)"
 					echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
 					echo "alias piranha=\""$MY_BREW_PIRANHA_MAIN"\"" >> ~/.bash_profile ;
+					echo "source \""$MY_PIRANHA_CELLAR"/completions/init.sh\"" >> ~/.bash_profile ;
 					source ~/.bash_profile ;
 	
 					####### REMOVE ~/bin/piranha, IF PRESENT (TO AVOID CONFLICT):
