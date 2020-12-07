@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: brew_piranha.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Apr 16 23:10:44 CDT 2020.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: December 7, 2020                                                          #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -24,7 +24,7 @@ brew_piranha () {
 ######################################## START ###########################################
 ##########################################################################################
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | brew_piranha, v1.0.0 April 2020                                "
+echo "INFO      | $(date) | brew_piranha, v1.0.1 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -35,42 +35,118 @@ echo "INFO      | $(date) | Initiating Homebrew PIrANHA install/setup procedures
 		## This idea and code came from the following URL (Lines 87-95 code is reused here):
 		## https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux
 		echo "INFO      | $(date) | Checking machine type... "
-		unameOut="$(uname -s)"
+		unameOut="$(uname -s)";
 		case "${unameOut}" in
 			Linux*)     machine=Linux;;
 			Darwin*)    machine=Mac;;
 			CYGWIN*)    machine=Cygwin;;
 			MINGW*)     machine=MinGw;;
 			*)          machine="UNKNOWN:${unameOut}"
-		esac
+		esac;
 
-		####### INSTALL/UPGRADE HOMEBREW PIrANHA:
-		if [[ "$machine" = "Mac" ]]; then
-			echo "INFO      | $(date) | Installing latest Homebrew PIrANHA version on ${USER}'s ${machine}... "
-			brew update ;
-			brew update ; 
-			brew upgrade piranha ; 
-			brew info piranha ;
-			MY_PIRANHA_CELLAR="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g')";
-			MY_BREW_PIRANHA_VERSION="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g; s/.*\///g')";
-			echo "INFO      | $(date) | Homebrew PIrANHA version: $MY_BREW_PIRANHA_VERSION "
-			echo "INFO      | $(date) | Homebrew PIrANHA location: $MY_PIRANHA_CELLAR "
-			
-			####### ADD BASH PROFILE PIrANHA ALIAS:
-			echo "INFO      | $(date) | Adding Homebrew PIrANHA alias to ~/.bash_profile... "
-			MY_BREW_PIRANHA_MAIN="$(echo "$MY_PIRANHA_CELLAR"/piranha)"
-			echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
-			echo "alias piranha=\""$MY_BREW_PIRANHA_MAIN"\"" >> ~/.bash_profile ;
-			source ~/.bash_profile ;
+		echo "INFO      | $(date) | Done. "
 
-			####### REMOVE ~/bin/piranha, IF PRESENT (TO AVOID CONFLICT):
-			if [[ -s ~/bin/piranha ]]; then
-				rm ~/bin/piranha 
-			fi
+		####### CHECK FOR HOMEBREW, ATTEMPT INSTALL (ON MAC) OR EXIT IF UNWANTED / NOT FOUND:
+		echo "INFO      | $(date) | Checking for Homebrew (https://brew.sh)... "
+		MY_HB_CHECK="$(which brew 2> /dev/null | wc -l | sed 's/\ //g')";
+		##
+		if [[ "$machine" = "Mac" ]] && [[ "$MY_HB_CHECK" = "0" ]]; then
+			echo "WARNING   | $(date) | No Homebrew install detected! "
+			echo "INFO      | $(date) | Attempting to install Homebrew locally... "
+			## Download Homebrew installer script:
+			echo "INFO      | $(date) | Downloading Homebrew installer script and installing... "
+			echo "INFO      | $(date) | NOTE: You may need to re-run this brew_piranha installer after the Homebrew install is complete. "
+			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
+		elif [[ "$machine" != "Mac" ]] && [[ "$MY_HB_CHECK" = "0" ]]; then
+			echo "WARNING   | $(date) | No Homebrew install detected! "
+			echo "WARNING   | $(date) | Cannot install Homebrew on ${machine} machine... "
+#			echo "INFO      | $(date) | Quitting... "
+#			exit 1;	
+		fi
+		##
+
+		echo "INFO      | $(date) | Done. "
 		
-			echo "INFO      | $(date) | Done. "
+		####### INSTALL/UPGRADE HOMEBREW PIrANHA:
+		##
+		if [[ "$machine" = "Mac" ]]; then
+
+			## First check to see if there is a Homebrew alias in ~/.bash_profile (indicating
+			## a prior local Homebrew piranha install is present):
+			MY_HB_PIRANHA_ALIAS_CHECK="$(cat ~/.bash_profile | grep '### HOMEBREW PIrANHA ALIAS:' | wc -l | sed 's/\ //g')";
+			
+			##
+			if [[ "$MY_HB_PIRANHA_ALIAS_CHECK" = "0" ]]; then
+			 
+				## Case #1: Prior Homebrew install absent.
+				## If no prior Homebrew piranha install, do the install:
+						
+				echo "INFO      | $(date) | Installing latest Homebrew PIrANHA version on ${USER}'s ${machine}... "
+				brew update ;
+				brew update ; 
+				brew upgrade --fetch-HEAD piranha ; 
+				brew info piranha ;
+				MY_PIRANHA_CELLAR="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g')";
+				MY_BREW_PIRANHA_VERSION="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g; s/.*\///g')";
+				echo "INFO      | $(date) | Homebrew PIrANHA version: $MY_BREW_PIRANHA_VERSION "
+				echo "INFO      | $(date) | Homebrew PIrANHA location: $MY_PIRANHA_CELLAR "
+
+				####### ADD BASH PROFILE PIrANHA ALIAS:
+				echo "INFO      | $(date) | Adding Homebrew PIrANHA alias to ~/.bash_profile... "
+				MY_BREW_PIRANHA_MAIN="$(echo "$MY_PIRANHA_CELLAR"/piranha)"
+				echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
+				echo "alias piranha=\""$MY_BREW_PIRANHA_MAIN"\"" >> ~/.bash_profile ;
+				source ~/.bash_profile ;
+
+				####### REMOVE ~/bin/piranha, IF PRESENT (TO AVOID CONFLICT):
+				if [[ -s ~/bin/piranha ]]; then
+					rm ~/bin/piranha 
+				fi
+		
+				echo "INFO      | $(date) | Done. "
+
+			elif [[ "$MY_HB_PIRANHA_ALIAS_CHECK" = "1" ]] || [[ "$MY_HB_PIRANHA_ALIAS_CHECK" -gt "0" ]]; then
+
+				## Case #2: Prior Homebrew install exists.
+				## If existing prior install found:
+				
+				## First, remove ~/.bash_profile alias:
+				sed -i '' -e '/\#\#\ HOMEBREW\ PIrANHA\ ALIAS\:/,+1d' ~/.bash_profile ;
+
+				## Next, redo test then do fresh Homebrew piranha install:	
+				MY_HB_PIRANHA_ALIAS_CHECK="$(cat ~/.bash_profile | grep '### HOMEBREW PIrANHA ALIAS:' | wc -l | sed 's/\ //g')";
+				if [[ "$MY_HB_PIRANHA_ALIAS_CHECK" = "0" ]]; then
+					echo "INFO      | $(date) | Installing latest Homebrew PIrANHA version on ${USER}'s ${machine}... "
+					brew update ;
+					brew update ; 
+					brew upgrade --fetch-HEAD piranha ; 
+					brew info piranha ;
+					MY_PIRANHA_CELLAR="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g')";
+					MY_BREW_PIRANHA_VERSION="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g; s/.*\///g')";
+					echo "INFO      | $(date) | Homebrew PIrANHA version: $MY_BREW_PIRANHA_VERSION "
+					echo "INFO      | $(date) | Homebrew PIrANHA location: $MY_PIRANHA_CELLAR "
+			
+					####### ADD BASH PROFILE PIrANHA ALIAS:
+					echo "INFO      | $(date) | Adding Homebrew PIrANHA alias to ~/.bash_profile... "
+					MY_BREW_PIRANHA_MAIN="$(echo "$MY_PIRANHA_CELLAR"/piranha)"
+					echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
+					echo "alias piranha=\""$MY_BREW_PIRANHA_MAIN"\"" >> ~/.bash_profile ;
+					source ~/.bash_profile ;
+	
+					####### REMOVE ~/bin/piranha, IF PRESENT (TO AVOID CONFLICT):
+					if [[ -s ~/bin/piranha ]]; then
+						rm ~/bin/piranha 
+					fi
+		
+					echo "INFO      | $(date) | Done. "
+				fi
+			
+			fi
+			##
+
         else
-			echo "WARNING!  | $(date) | Cannot install PIrANHA on ${machine} with Homebrew. "
+
+			echo "WARNING   | $(date) | Cannot install PIrANHA on ${machine} with Homebrew. "
 
 #			echo "INFO      | $(date) | Checking for PIrANHA alias and adding if not present (assuming piranha-master/ already exists)... "
 #			####### ADD BASH PROFILE PIrANHA ALIAS:
@@ -86,12 +162,16 @@ echo "INFO      | $(date) | Initiating Homebrew PIrANHA install/setup procedures
 			## On Linux, do local_piranha setup, assuming piranha-master/ already exists in expected location 
 			## (~/local/opt/piranha-master/):
 			echo "INFO      | $(date) | Doing local PIrANHA setup for Linux... "
-			. source local_piranha ;
-
-			echo "ERROR     | $(date) | Quitting... "
-			exit 1 ;
+			if [[ -s ./local_piranha ]]; then
+				chmod u+x ./local_piranha ; 
+				. source local_piranha ;			
+			else
+				echo "ERROR     | $(date) | Quitting... "
+				exit 1 ;
+			fi
         fi
-
+		##
+		
 echo "INFO      | $(date) | Done. 
 "
 ##########################################################################################

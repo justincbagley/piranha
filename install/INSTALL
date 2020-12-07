@@ -4,9 +4,10 @@
 
 Justin C. Bagley
 
-_University of Missouri-St. Louis_
+_Jacksonville State University_
+_Virginia Commonwealth University_
 
-April 17, 2020
+December 7, 2020
 
 ## AUTOMATED LOCAL GIT INSTALL
 
@@ -16,7 +17,7 @@ April 17, 2020
 cd piranha-master/ ;
 cd install/ ;
 chmod u+x ./* ;
-local_piranha
+local_piranha ;
 #
 cp local_piranha ~/bin/ ; # makes installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual)
 ```
@@ -33,3 +34,7 @@ brew_piranha ;
 #
 cp brew_piranha ~/bin/ ; # makes installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual)
 ```
+
+For information on options for installing 'by-hand', please see the Quick Guide for the Impatient 
+(https://github.com/justincbagley/piranha/wiki#quick-guide-for-the-impatient) in the PIrANHA
+GitHub Wiki pages (https://github.com/justincbagley/piranha/wiki).

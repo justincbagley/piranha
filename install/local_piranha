@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: local_piranha (install_piranha.sh)                                               #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Apr 16 23:10:44 CDT 2020.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: December 7, 2020                                                          #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <bagleyj@umsl.edu>.                                              #
 #                                                                                        #
@@ -23,7 +23,7 @@ local_piranha () {
 ######################################## START ###########################################
 ##########################################################################################
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | local_piranha, v1.0.0 April 2020                               "
+echo "INFO      | $(date) | local_piranha, v1.0.1 December 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -34,15 +34,17 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 		## This idea and code came from the following URL (Lines 87-95 code is reused here):
 		## https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux
 		echo "INFO      | $(date) | Checking machine type... "
-		unameOut="$(uname -s)"
+		unameOut="$(uname -s)";
 		case "${unameOut}" in
 			Linux*)     machine=Linux;;
 			Darwin*)    machine=Mac;;
 			CYGWIN*)    machine=Cygwin;;
 			MINGW*)     machine=MinGw;;
 			*)          machine="UNKNOWN:${unameOut}"
-		esac
+		esac;
 		echo "INFO      | $(date) | Found machine type ${machine}. "
+
+		echo "INFO      | $(date) | Done. "
 
         ####### COMMENT OUT HOMEBREW PIRANHA ALIAS IN ~/.bash_profile (or ~/.bashrc on Linux), 
         ####### IF PRESENT:
@@ -71,6 +73,7 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 		
         ###
         if [[ "$USER" = "justinbagley" ]] || [[ "$USER" = "jcbagley" ]] || [[ "$USER" = "bagle004" ]]; then
+
 	        ## CASE #1: AUTHOR MACHINE
 			
 			## SET UP PIrANHA:
@@ -85,7 +88,9 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 				chmod u+x ~/local/opt/piranha-master/piranha ;
 				chmod u+x ~/local/bin/piranha ;
 			fi
+
 		else
+
 			## CASE #2: USER MACHINE
 
 			## INSTALL PIrANHA:
@@ -116,6 +121,7 @@ echo "INFO      | $(date) | Initiating local PIrANHA install/setup procedures...
 				sed -i.bak 's/x/bash\ \~\/piranha\-master\/piranha\ $\*/g' ~/bin/piranha ;
 				chmod u+x ~/bin/piranha ;
 			fi
+
 		fi
 		###
 
