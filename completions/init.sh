@@ -14,7 +14,7 @@
 	if [ -n "$BASH_VERSION" ]; then
 		
 		COMPL_ROOT="$(dirname "${BASH_SOURCE[0]}")";
-		source "$COMPL_ROOT/c.bash";
+		. "$COMPL_ROOT/c.bash";
 		export PIRANHA_DIR="$(dirname "$COMPL_ROOT")";
 		export PIRANHA_PATH="$(echo "$PIRANHA_DIR"/piranha)";
 		
