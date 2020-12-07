@@ -56,6 +56,7 @@ fi
 COMPL_LOCATION="${SCRIPT_PATH}/completions/init.sh" # Update this path to find the init.sh script.
 
 if [[ -f "${COMPL_LOCATION}" ]]; then
+  echo "INFO      | $(date) | Completions location: $COMPL_LOCATION "
   source "${COMPL_LOCATION}" ;
 else
   echo "Please find the file init.sh and add a reference to it in this script. Exiting..."
