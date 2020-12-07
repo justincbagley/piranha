@@ -1,5 +1,3 @@
-## #!/usr/bin/env bash
-
 ## init.sh
 ## Justin C. Bagley, Ph.D.
 ## Thu Dec 3 12:31:58 CST 2020
@@ -14,7 +12,7 @@
 	if [ -n "$BASH_VERSION" ]; then
 		
 		COMPL_ROOT="$(dirname "${BASH_SOURCE[0]}")";
-		. "$COMPL_ROOT/c.bash";
+		source "$COMPL_ROOT/c.bash";
 		export PIRANHA_DIR="$(dirname "$COMPL_ROOT")";
 		export PIRANHA_PATH="$(echo "$PIRANHA_DIR"/piranha)";
 		
