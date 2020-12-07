@@ -20,6 +20,7 @@
 
 ## Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo "INFO      | $(date) | Script location: $SCRIPT_PATH "
 
 ## Source Scripting Utilities
 # -----------------------------------
@@ -54,9 +55,9 @@ fi
 ## Source Completions Functions
 # -----------------------------------
 COMPL_LOCATION="${SCRIPT_PATH}/completions/init.sh" # Update this path to find the init.sh script.
+echo "INFO      | $(date) | Completions location: $COMPL_LOCATION "
 
 if [[ -f "${COMPL_LOCATION}" ]]; then
-  echo "INFO      | $(date) | Completions location: $COMPL_LOCATION "
   source "${COMPL_LOCATION}" ;
 else
   echo "Please find the file init.sh and add a reference to it in this script. Exiting..."
