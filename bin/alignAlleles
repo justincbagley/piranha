@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: alignAlleles.sh                                                                  #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 17 13:59:38 CDT 2020.                       #
-# Last update: June 25, 2020                                                             #
+# Last update: December 1, 2020                                                          #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,7 +137,7 @@ alignAlleles () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
-echo "INFO      | $(date) | alignAlleles, v1.0.2 June 2020                                 " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | alignAlleles, v1.0.3 December 2020                             " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
 
@@ -651,7 +651,7 @@ $MY_PIRANHA_PATH -f FASTAsummary -m 1
 		## Option to rename alignments according to SECAPR match file ('reference_fasta_header_info.txt', output during
 		## SECAPR run):
 		##
-		if [[ "$MY_RENAME_SWITCH" ="1" ]]; then
+		if [[ "$MY_RENAME_SWITCH" = "1" ]]; then
 	
 		####### E. RENAME OPTION CODE (added June 25, 2020):
 
