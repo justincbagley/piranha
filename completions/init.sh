@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ## init.sh
 ## Justin C. Bagley, Ph.D.
 ## Thu Dec 3 12:31:58 CST 2020
