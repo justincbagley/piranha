@@ -56,6 +56,8 @@ Directory tree...
 ├── piranha
 ├── Quick_Guide.md
 ├── Quick_Guide.pdf
+├── assets
+│   └── ...
 ├── bin
 │   ├── README.md
 │   ├── calcAlignmentPIS
