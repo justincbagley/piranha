@@ -9,7 +9,7 @@ Scripts for file processing and analysis in phylogenomics &amp; phylogeography
 
 PIrANHA provides a set of tools for automating file processing and analysis steps in the (phylo\*=) fields of phylogenomics and phylogeography (including population genomics). PIrANHA is fully command line-based and contains a series of functions for automating tasks during evolutionary analyses of genetic data. 
 
-A variety of functions manipulate DNA sequence alignments, while others conduct custom analysis pipelines; for example, one set conducts reference-based assembly, allele phasing, and alignment of allelic sequences, starting from cleaned targeted sequence capture reads. Many functions are wrappers around existing software, allowing for straightforward automation of common analysis steps in evolutionary genetics. PIrANHA is under development (join in!), but the alpha release is now stable! 
+A variety of functions manipulate DNA sequence alignments, while others conduct custom analysis pipelines; for example, one set conducts reference-based assembly, allele phasing, and alignment of allelic sequences, starting from cleaned targeted sequence capture reads. Many functions are wrappers around existing software, allowing for straightforward automation of common analysis steps in evolutionary genetics. PIrANHA is under development (join in!), but the [alpha release](https://github.com/justincbagley/piranha/releases) is now stable! 
 
 _New features_ include tab completion of function names, as follows:
 
