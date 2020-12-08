@@ -1,0 +1,313 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+  
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /Users/justinbagley
+  
+  # Export additional ENV variables
+  env:
+    recording: true
+  
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 171
+  
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 13
+  
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+  
+  # Quality
+  # 1 - 100
+  quality: 100
+  
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+  
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+  
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: justinbagley –– -bash –– 171x13  (Terminalizer)
+    style:
+      border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+  
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+  
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+  
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  
+  # The size of the font
+  fontSize: 16
+  
+  # The height of lines
+  lineHeight: 1
+  
+  # The spacing between letters
+  letterSpacing: 0
+  
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+  
+# Records, feel free to edit them
+records:
+  - delay: 462
+    content: p
+  - delay: 72
+    content: i
+  - delay: 56
+    content: r
+  - delay: 224
+    content: a
+  - delay: 72
+    content: 'n'
+  - delay: 176
+    content: h
+  - delay: 73
+    content: a
+  - delay: 103
+    content: ' '
+  - delay: 176
+    content: '-'
+  - delay: 104
+    content: f
+  - delay: 448
+    content: ' '
+  - delay: 499
+    content: "\a"
+  - delay: 380
+    content: "\r\n2logeB10.r             FASTAsummary           PHYLIP2NEXUS           SNAPPRunner            dadiPostProc           list                   renameTaxa\r\nAnouraNEXUSPrepper     MAGNET                 PHYLIP2PFSubsets       SpeciesIdentifier      dadiRunner             makePartitions         shortlist\r\nBEASTPostProc          MLEResultsProc         PHYLIPcleaner          alignAlleles           dadiUncertainty        mergeBAM               splitFASTA\r\nBEASTReset             Mega2PHYLIP            PHYLIPsubsampler       assembleReads          dropRandomHap          nQuireRunner           splitFile\r\nBEASTRunner            MrBayesPostProc        PHYLIPsummary          batchRunFolders        dropTaxa               phaseAlleles           splitPHYLIP\r\nBEAST_PSPrepper        NEXUS2MultiPHYLIP      PhyloMapperNullProc    calcAlignmentPIS       fastSTRUCTURE          phyNcharSumm           taxonCompFilter\r\nBEAST_logThinner       NEXUS2PHYLIP           RAxMLRunChecker        completeConcatSeqs     geneCounter            phylip2fasta.pl        treeThinner\r\nExaBayesPostProc       PFSubsetSum            RAxMLRunner            completeSeqs           getBootTrees           pyRAD2PartitionFinder  trimSeqs\r\nFASTA2PHYLIP           PHYLIP2FASTA           RYcoder                concatSeqsPartitions   getTaxonNames          pyRADLocusVarSites     vcfSubsampler\r\nFASTA2VCF              PHYLIP2Mega            RogueNaRokRunner       concatenateSeqs        indexBAM               renameForStarBeast2    \r\n(base) Justin:~ justinbagley$ piranha -f "
+  - delay: 1362
+    content: a
+  - delay: 71
+    content: l
+  - delay: 80
+    content: i
+  - delay: 112
+    content: a
+  - delay: 112
+    content: 'n'
+  - delay: 528
+    content: "\b\e[K"
+  - delay: 184
+    content: "\b\e[K"
+  - delay: 271
+    content: g
+  - delay: 97
+    content: 'n'
+  - delay: 448
+    content: Alleles
+  - delay: 640
+    content: "\b\e[K"
+  - delay: 417
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 199
+    content: "\b\e[K"
+  - delay: 160
+    content: "\b\e[K"
+  - delay: 320
+    content: "\b\e[K"
+  - delay: 295
+    content: P
+  - delay: 630
+    content: "\a"
+  - delay: 507
+    content: "\r\nPFSubsetSum          PHYLIP2Mega          PHYLIP2PFSubsets     PHYLIPsubsampler     PhyloMapperNullProc  \r\nPHYLIP2FASTA         PHYLIP2NEXUS         PHYLIPcleaner        PHYLIPsummary        \r\n(base) Justin:~ justinbagley$ piranha -f P"
+  - delay: 1136
+    content: H
+  - delay: 1164
+    content: "\aYLIP"
+  - delay: 298
+    content: "\a"
+  - delay: 802
+    content: '2'
+  - delay: 467
+    content: "\a"
+  - delay: 362
+    content: "\r\nPHYLIP2FASTA      PHYLIP2Mega       PHYLIP2NEXUS      PHYLIP2PFSubsets  \r\n(base) Justin:~ justinbagley$ piranha -f PHYLIP2"
+  - delay: 1002
+    content: 'N'
+  - delay: 598
+    content: EXUS
+  - delay: 706
+    content: "\b\e[K"
+  - delay: 416
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 102
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 99
+    content: "\b\e[K"
+  - delay: 102
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 138
+    content: "\b\e[K"
+  - delay: 176
+    content: "\b\e[K"
+  - delay: 320
+    content: 'N'
+  - delay: 112
+    content: E
+  - delay: 216
+    content: X
+  - delay: 160
+    content: U
+  - delay: 168
+    content: S
+  - delay: 690
+    content: "\a2"
+  - delay: 325
+    content: "\a"
+  - delay: 963
+    content: "\r\nNEXUS2MultiPHYLIP  NEXUS2PHYLIP       \r\n(base) Justin:~ justinbagley$ piranha -f NEXUS2"
+  - delay: 332
+    content: "\r\nNEXUS2MultiPHYLIP  NEXUS2PHYLIP       \r\n(base) Justin:~ justinbagley$ piranha -f NEXUS2\b\e[K"
+  - delay: 298
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 166
+    content: "\b\e[K"
+  - delay: 224
+    content: "\b\e[K"
+  - delay: 336
+    content: F
+  - delay: 194
+    content: A
+  - delay: 223
+    content: S
+  - delay: 71
+    content: T
+  - delay: 176
+    content: A
+  - delay: 329
+    content: '2'
+  - delay: 506
+    content: "\a"
+  - delay: 320
+    content: "\r\nFASTA2PHYLIP  FASTA2VCF     \r\n(base) Justin:~ justinbagley$ piranha -f FASTA2"
+  - delay: 964
+    content: V
+  - delay: 585
+    content: CF
+  - delay: 594
+    content: "\b\e[K"
+  - delay: 415
+    content: "\b\e[K"
+  - delay: 103
+    content: "\b\e[K"
+  - delay: 99
+    content: "\b\e[K"
+  - delay: 99
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 99
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 541
+    content: "\b\e[K"
+  - delay: 593
+    content: F
+  - delay: 207
+    content: A
+  - delay: 304
+    content: S
+  - delay: 980
+    content: "\aTA"
+  - delay: 321
+    content: "\a"
+  - delay: 283
+    content: s
+  - delay: 747
+    content: ummary
+  - delay: 3128
+    content: "\a"
+  - delay: 20357
+    content: "\r\n\e]7;file://Justin/Users/justinbagley\a(base) Justin:~ justinbagley$ "
