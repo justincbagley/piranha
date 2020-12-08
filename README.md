@@ -17,6 +17,10 @@ _New features_ include tab completion of function names, as follows:
 <!-- ![piranha-tab-completion](https://raw.githubusercontent.com/justincbagley/piranha/master/assets/piranha_tab_completion2-min.gif) -->
 <p align="center"><img src="/assets/piranha_tab_completion2-min.gif?raw=true"/></p>
 
+## DOCUMENTATION
+
+For additional information on this distribution, including overview, dependencies, installation, updating, usage, workflows, etc., please see the documentation given in the **Quick Guide** ([here](https://github.com/justincbagley/piranha/wiki#quick-guide-for-the-impatient) or [here](Quick_Guide.pdf)) and the **[PIrANHA wiki!!!](https://github.com/justincbagley/PIrANHA/wiki)**
+
 ## LICENSE
 
 All code within **PIrANHA v0.4a3** repository is available "AS IS" under a 3-Clause BSD license. See the [LICENSE](LICENSE) file for more information.
@@ -40,10 +44,6 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE
   Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
-
-## DOCUMENTATION
-
-For additional information on this distribution, including overview, dependencies, installation, updating, usage, workflows, etc., please see the documentation given in the **Quick Guide** ([here](https://github.com/justincbagley/piranha/wiki#quick-guide-for-the-impatient) or [here](Quick_Guide.pdf)) and the **[PIrANHA wiki!!!](https://github.com/justincbagley/PIrANHA/wiki)**
 
 ## CONTENTS
 
