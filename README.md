@@ -11,7 +11,7 @@ PIrANHA provides a set of tools for automating file processing and analysis step
 
 A variety of functions manipulate DNA sequence alignments, while others conduct custom analysis pipelines; for example, one set conducts reference-based assembly, allele phasing, and alignment of allelic sequences, starting from cleaned targeted sequence capture reads. Many functions are wrappers around existing software, allowing for straightforward automation of common analysis steps in evolutionary genetics. PIrANHA is under development (join in!), but the alpha release is now stable! Features include tab completion of function names, as:
 
-![piranha-tab-completion](https://raw.githubusercontent.com/justincbagley/notes/master/assets/piranha_tab_completion.gif)
+![piranha-tab-completion](https://raw.githubusercontent.com/justincbagley/piranha/master/assets/piranha_tab_completion.gif)
 
 ## LICENSE
 
