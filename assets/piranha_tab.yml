@@ -1,0 +1,383 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+  
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /Users/justinbagley
+  
+  # Export additional ENV variables
+  env:
+    recording: true
+  
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 171
+  
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 13
+  
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+  
+  # Quality
+  # 1 - 100
+  quality: 100
+  
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+  
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+  
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: Terminalizer
+    style:
+      border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+  
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+  
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+  
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  
+  # The size of the font
+  fontSize: 12
+  
+  # The height of lines
+  lineHeight: 1
+  
+  # The spacing between letters
+  letterSpacing: 0
+  
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+  
+# Records, feel free to edit them
+records:
+  - delay: 50
+    content: p
+  - delay: 87
+    content: i
+  - delay: 96
+    content: r
+  - delay: 240
+    content: a
+  - delay: 90
+    content: 'n'
+  - delay: 184
+    content: h
+  - delay: 78
+    content: a
+  - delay: 274
+    content: "\r\n"
+  - delay: 3727
+    content: "\r\nThe default interactive shell is now zsh.\r\nTo update your account to use zsh, please run `chsh -s /bin/zsh`.\r\nFor more details, please visit https://support.apple.com/kb/HT208050.\r\n"
+  - delay: 12
+    content: "\e]7;file://Justin/Users/justinbagley\a\e[?1034h(base) Justin:~ justinbagley$ piranha\r\n"
+  - delay: 371
+    content: "\r\npiranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 4 17:34:49 CST 2020)                    \r\nCopyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            \r\n----------------------------------------------------------------------------------------------------------\r\npiranha [OPTION]... [FILE]...\r\n\r\n This is the main script for PIrANHA v0.4a3 (update Dec 4 17:34:49 CST 2020).\r\n\r\n \e[1mOptions:\e(B\e[m\r\n  -s, --shortlist   Short list of available functions\r\n  -f, --func        Function, <function>\r\n  -a, --args        Function arguments passed to <function>\r\n  -q, --quiet       Quiet (no output)\r\n  -l, --log         Print log to file\r\n  -v, --verbose     Output more information (items echoed to 'verbose')\r\n  -d, --debug       Runs script in Bash debug mode (set -x)\r\n  -h, --help        Display this help and exit\r\n  -V, --version     Output version information and exit\r\n\r\n \e[1mOVERVIEW\e(B\e[m\r\n THIS SCRIPT is the 'master' script that runs the PIrANHA software package by specifying \r\n the <function> to be run (-f flag) and passing user-specified arguments to that function. \r\n If no function or arguments are given, then the program prints the help text and exits.\r\n\tFunctions are located in the bin/ folder of the PIrANHA distribution. For detailed \r\n information on the capabilities of PIrANHA, please refer to documentation posted on the \r\n PIrANHA Wiki (https://github.com/justincbagley/piranha/wiki) or the PIrANHA website\r\n (https://justinbagley.org/piranha/). Developers can test prianha and its functions by \r\n activating Bash debug mode (-d, --debug flags).\r\n\r\n \e[1mUsage examples:\e(B\e[m\r\n    piranha -h                                   Show piranha help text and exit\r\n    piranha -f <TAB>                             Get short list of available functions by dynamic completion\r\n    piranha -f list                              Get detailed list of available functions by function\r\n    piranha -f <function> -h                     Show help text for <function> and exit\r\n    piranha -f calcAlignmentPIS -h               Show help text for calcAlignmentPIS function and exit\r\n    piranha -f calcAlignmentPIS -t 150           Run calcAlignmentPIS with threshold at N=150 alignments\r\n\r\n \e[1mCITATION\e(B\e[m\r\n Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:\r\n\t<https://github.com/justincbagley/piranha>.\r\n\r\n Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.\r\n Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.\r\n"
+  - delay: 9
+    content: "\e]7;file://Justin/Users/justinbagley\a(base) Justin:~ justinbagley$ "
+  - delay: 1661
+    content: "\r\n\e]7;file://Justin/Users/justinbagley\a(base) Justin:~ justinbagley$ "
+  - delay: 766
+    content: "\r\n\e]7;file://Justin/Users/justinbagley\a(base) Justin:~ justinbagley$ "
+  - delay: 2455
+    content: p
+  - delay: 103
+    content: i
+  - delay: 64
+    content: r
+  - delay: 232
+    content: a
+  - delay: 96
+    content: 'n'
+  - delay: 178
+    content: h
+  - delay: 62
+    content: a
+  - delay: 96
+    content: ' '
+  - delay: 176
+    content: '-'
+  - delay: 144
+    content: f
+  - delay: 153
+    content: ' '
+  - delay: 561
+    content: "\a"
+  - delay: 761
+    content: "\r\n2logeB10.r             FASTAsummary           PHYLIP2NEXUS           SNAPPRunner            dadiPostProc           list                   renameTaxa\r\nAnouraNEXUSPrepper     MAGNET                 PHYLIP2PFSubsets       SpeciesIdentifier      dadiRunner             makePartitions         shortlist\r\nBEASTPostProc          MLEResultsProc         PHYLIPcleaner          alignAlleles           dadiUncertainty        mergeBAM               splitFASTA\r\nBEASTReset             Mega2PHYLIP            PHYLIPsubsampler       assembleReads          dropRandomHap          nQuireRunner           splitFile\r\nBEASTRunner            MrBayesPostProc        PHYLIPsummary          batchRunFolders        dropTaxa               phaseAlleles           splitPHYLIP\r\nBEAST_PSPrepper        NEXUS2MultiPHYLIP      PhyloMapperNullProc    calcAlignmentPIS       fastSTRUCTURE          phyNcharSumm           taxonCompFilter\r\nBEAST_logThinner       NEXUS2PHYLIP           RAxMLRunChecker        completeConcatSeqs     geneCounter            phylip2fasta.pl        treeThinner\r\nExaBayesPostProc       PFSubsetSum            RAxMLRunner            completeSeqs           getBootTrees           pyRAD2PartitionFinder  trimSeqs\r\nFASTA2PHYLIP           PHYLIP2FASTA           RYcoder                concatSeqsPartitions   getTaxonNames          pyRADLocusVarSites     vcfSubsampler\r\nFASTA2VCF              PHYLIP2Mega            RogueNaRokRunner       concatenateSeqs        indexBAM               renameForStarBeast2    \r\n(base) Justin:~ justinbagley$ piranha -f "
+  - delay: 3142
+    content: a
+  - delay: 88
+    content: l
+  - delay: 103
+    content: i
+  - delay: 376
+    content: "\b\e[K"
+  - delay: 185
+    content: "\b\e[K"
+  - delay: 199
+    content: "\b\e[K"
+  - delay: 160
+    content: "\b\e[K"
+  - delay: 417
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 102
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\a"
+  - delay: 159
+    content: "\r\n\e]7;file://Justin/Users/justinbagley\a(base) Justin:~ justinbagley$ "
+  - delay: 702
+    content: "\r\n\e]7;file://Justin/Users/justinbagley\a(base) Justin:~ justinbagley$ "
+  - delay: 390
+    content: p
+  - delay: 48
+    content: i
+  - delay: 72
+    content: r
+  - delay: 160
+    content: a
+  - delay: 96
+    content: 'n'
+  - delay: 184
+    content: h
+  - delay: 80
+    content: a
+  - delay: 97
+    content: ' '
+  - delay: 153
+    content: '-'
+  - delay: 126
+    content: f
+  - delay: 114
+    content: ' '
+  - delay: 206
+    content: a
+  - delay: 112
+    content: l
+  - delay: 104
+    content: i
+  - delay: 120
+    content: g
+  - delay: 127
+    content: 'n'
+  - delay: 490
+    content: Alleles
+  - delay: 1119
+    content: "\b\e[K"
+  - delay: 615
+    content: s
+  - delay: 1057
+    content: "\b\e[K"
+  - delay: 416
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 199
+    content: "\b\e[K"
+  - delay: 376
+    content: "\b\e[K"
+  - delay: 330
+    content: "\b\e[K"
+  - delay: 263
+    content: R
+  - delay: 618
+    content: "\a"
+  - delay: 600
+    content: "\r\nRAxMLRunChecker   RAxMLRunner       RYcoder           RogueNaRokRunner  \r\n(base) Justin:~ justinbagley$ piranha -f R"
+  - delay: 910
+    content: 'Y'
+  - delay: 509
+    content: coder
+  - delay: 1219
+    content: "\b\e[K"
+  - delay: 416
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 242
+    content: "\b\e[K"
+  - delay: 183
+    content: "\b\e[K"
+  - delay: 1145
+    content: c
+  - delay: 528
+    content: "\a"
+  - delay: 416
+    content: o
+  - delay: 88
+    content: m
+  - delay: 419
+    content: "\aplete"
+  - delay: 965
+    content: "\a"
+  - delay: 414
+    content: "\r\ncompleteConcatSeqs  completeSeqs        \r\n(base) Justin:~ justinbagley$ piranha -f complete"
+  - delay: 1058
+    content: C
+  - delay: 264
+    content: o
+  - delay: 63
+    content: 'n'
+  - delay: 456
+    content: catSeqs
+  - delay: 714
+    content: "\b\e[K"
+  - delay: 415
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 102
+    content: "\b\e[K"
+  - delay: 99
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 102
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\b\e[K"
+  - delay: 102
+    content: "\b\e[K"
+  - delay: 103
+    content: "\b\e[K"
+  - delay: 98
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 101
+    content: "\b\e[K"
+  - delay: 100
+    content: "\a"
+#  - delay: 1546
+#    content: "logout\r\nSaving session..."
+#  - delay: 16
+#    content: "\r\n...copying shared history..."
+#  - delay: 7
+#    content: "\r\n...saving history..."
+#  - delay: 14
+#    content: "truncating history files...\r\n...completed.\r\n"
