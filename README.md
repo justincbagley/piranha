@@ -68,6 +68,11 @@ Directory tree...
 │   ├── PHYLIP2Mega
 │   ├── PHYLIP2PFSubsets
 │   └── ...
+├── completions
+│   ├── init.sh
+│   ├── c.bash
+│   ├── c.zsh
+│   └── source_piranha_compl.sh
 ├── install
 │   ├── README.md
 │   ├── INSTALL
