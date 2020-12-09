@@ -507,8 +507,8 @@ usage() {
     piranha -f <TAB>                             Get short list of available functions by dynamic completion
     piranha -f list                              Get detailed list of available functions by function
     piranha -f <function> -h                     Show help text for <function> and exit
-    piranha -f calcAlignmentPIS -h               Show help text for calcAlignmentPIS function and exit
-    piranha -f calcAlignmentPIS -t 150           Run calcAlignmentPIS with threshold at N=150 alignments
+    piranha -f <function> <args>                 Run <function> script with arguments (e.g. options flags)
+    piranha -f <function> <args> -d              Run <function> script in Bash debug mode
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
