@@ -8,4 +8,4 @@ echo "${bashProfile}${NL}${NL}# Leave this line sourcing piranha completions as 
 
 echo "INFO      | $(date) | *** Did the above fail with permissions errors? *** "
 echo "INFO      | $(date) | If yes, you will need to try this after Homebrew finishes: "
-echo "INFO      | $(date) |   $ source /usr/local/Cellar/piranha/*/completions/init.sh "
+echo "INFO      | $(date) |   \$ source /usr/local/Cellar/piranha/*/completions/init.sh "
