@@ -1,1 +1,1 @@
-bash /usr/local/Cellar/piranha/*/piranha $*
+bash /usr/local/Cellar/piranha/*/piranha.sh $*
