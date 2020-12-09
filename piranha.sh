@@ -565,7 +565,7 @@ unset options
 # Read the options and set stuff
 while [[ ${1} = -?* ]]; do
   case ${1} in
-    -i|--init) shift; echo "${SCRIPT_PATH}/completions/init.sh"; exit 0 ;;
+    -i|--init) shift; source "${SCRIPT_PATH}/completions/init.sh"; exit 0 ;;
     -s|--shortlist) echo "2logeB10.r alignAlleles AnouraNEXUSPrepper assembleReads batchRunFolders BEAST_logThinner BEAST_PSPrepper BEASTPostProc BEASTReset BEASTRunner calcAlignmentPIS completeConcatSeqs completeSeqs concatenateSeqs concatSeqsPartitions dadiPostProc dadiRunner dadiUncertainty dropRandomHap dropTaxa ExaBayesPostProc FASTA2PHYLIP FASTA2VCF FASTAsummary fastSTRUCTURE geneCounter getBootTrees getTaxonNames indexBAM list MAGNET makePartitions Mega2PHYLIP mergeBAM MLEResultsProc MrBayesPostProc NEXUS2MultiPHYLIP NEXUS2PHYLIP nQuireRunner PFSubsetSum phaseAlleles PHYLIP2FASTA phylip2fasta.pl PHYLIP2Mega PHYLIP2NEXUS PHYLIP2PFSubsets PHYLIPcleaner PHYLIPsubsampler PHYLIPsummary PhyloMapperNullProc phyNcharSumm pyRAD2PartitionFinder pyRADLocusVarSites RAxMLRunChecker RAxMLRunner renameForStarBeast2 renameTaxa RogueNaRokRunner RYcoder SNAPPRunner SpeciesIdentifier splitFASTA splitFile splitPHYLIP taxonCompFilter treeThinner trimSeqs vcfSubsampler shortlist"; exit 0 ;;
     -f|--func) shift; FUNCTION_TO_RUN="$1" ;;
     -a|--args) shift; FUNCTION_ARGUMENTS="$*" ;;
