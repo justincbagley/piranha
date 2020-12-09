@@ -12,16 +12,16 @@
 		COMPL_ROOT="$(dirname "${BASH_SOURCE[0]}")";
 		source "$COMPL_ROOT/c.bash";
 		export COMPL_ROOT;
-		export PIRANHA_DIR="$(echo /usr/local/Cellar/piranha/*/)";
-		export PIRANHA_PATH="$(echo "$PIRANHA_DIR"piranha)";
+		#export PIRANHA_DIR="$(echo /usr/local/Cellar/piranha/*/)";
+		#export PIRANHA_PATH="$(echo "$PIRANHA_DIR"piranha)";
 		
 	elif [ -n "$ZSH_VERSION" ]; then
 		
 		COMPL_ROOT="$(dirname "$0")";
 		source "$COMPL_ROOT/c.zsh";
 		export COMPL_ROOT;
-		export PIRANHA_DIR="$(echo /usr/local/Cellar/piranha/*/)";
-		export PIRANHA_PATH="$(echo ${PIRANHA_DIR}piranha)";
+		#export PIRANHA_DIR="$(echo /usr/local/Cellar/piranha/*/)";
+		#export PIRANHA_PATH="$(echo ${PIRANHA_DIR}piranha)";
 		
 	fi
 

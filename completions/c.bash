@@ -4,7 +4,8 @@
 _piranha_complete()
 {
   #_script_commands=$(/path/to/your/script.sh shortlist)
-  _script_commands=$("${PIRANHA_PATH}" -s)
+  #_script_commands=$("${PIRANHA_PATH}" -s)
+  _script_commands=$(/usr/local/bin/piranha -s)
   
   local cur prev
   COMPREPLY=()
