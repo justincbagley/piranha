@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RAxMLRunChecker.sh                                                               #
-  VERSION="v1.3.0"                                                                       #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before November 29, 2018.                            #
-# Last update: March 14, 2019                                                            #
-# Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Last update: December 11, 2020                                                         #
+# Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT COUNTS NUMBER OF LOCI/PARTITIONS WITH COMPLETED RAxML RUNS DURING    #
@@ -136,8 +136,8 @@ function RAxMLRunChecker () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RAxMLRunChecker, v1.3.0 March 2019  (part of PIrANHA v0.4a3)   "
-echo "INFO      | $(date) | Copyright (c) 2018-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | RAxMLRunChecker, v1.3.1 December 2020  (part of PIrANHA v0.4a3)"
+echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -155,25 +155,25 @@ checkMachineType
 echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current directory (assumed to be a MAGNET run folder). "
 
 	echo "INFO      | $(date) |          Estimating numbers (no.) of loci and RAxML runs... "
-	MY_N_LOCI_FOLD="$(ls -d ./locus*/ | wc -l | sed 's/^[\ ]*//g')"
-	MY_N_COMPLETED="$(ls ./locus*/RAxML_info.raxml_out | wc -l | sed 's/^[\ ]*//g')"
-	MY_N_REMAINING="$(calc $MY_N_LOCI_FOLD - $MY_N_COMPLETED)"
+	MY_N_LOCI_FOLD="$(ls -d ./locus*/ | wc -l | sed 's/^[\ ]*//g')";
+	MY_N_COMPLETED="$(ls ./locus*/RAxML_info.raxml_out | wc -l | sed 's/^[\ ]*//g')";
+	MY_N_REMAINING="$(calc $MY_N_LOCI_FOLD - $MY_N_COMPLETED)";
 
 	echo "INFO      | $(date) |          Total no. RAxML runs: $TAB$TAB$MY_N_LOCI_FOLD "
 	echo "INFO      | $(date) |          No. completed RAxML runs: $TAB$MY_N_COMPLETED "
 	echo "INFO      | $(date) |          No. remaining RAxML runs:    $TAB$MY_N_REMAINING "
 
 	if [[ -s ./completed_run_info.tmp ]]; then
-		rm ./completed_run_info.tmp;
+		rm ./completed_run_info.tmp ;
 	fi
 	if [[ -s ./completed_run_info.txt ]]; then
-		rm ./completed_run_info.txt;
+		rm ./completed_run_info.txt ;
 	fi
 	if [[ -s ./remaining_run_info.tmp ]]; then
-		rm ./remaining_run_info.tmp;
+		rm ./remaining_run_info.tmp ;
 	fi
 	if [[ -s ./remaining_run_info.txt ]]; then
-		rm ./remaining_run_info.txt;
+		rm ./remaining_run_info.txt ;
 	fi
 
 	echo "INFO      | $(date) |          Saving RAxML run info to file... "
@@ -183,7 +183,7 @@ echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current d
 (
 	for i in ./locus*/; do 
 		MY_LOCUS="$(echo $i | sed 's/\.\///g; s/\///g; s/\ //g')"; 
-		MY_COUNT_HUND_CHECK="$(calc $count / 100 | sed 's/^[0-9]*\.//g; s/^[0]\{1\}//g')"
+		MY_COUNT_HUND_CHECK="$(calc $count / 100 | sed 's/^[0-9]*\.//g; s/^[0]\{1\}//g')";
 		if [[ "$MY_COUNT_HUND_CHECK" -eq "0" ]]; then
 			echo "INFO      | $(date) |          ...  $count / $MY_N_LOCI_FOLD ..."
 		fi
@@ -202,7 +202,7 @@ echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current d
 			fi
 			if [[ ! -s RAxML_bipartitions.raxml_out ]]; then 
 				
-				echo "$count$TAB$MY_LOCUS$TAB$MY_ALIGN_PATT$TAB$MY_SUBST_MODEL$TAB incomplete" >> ../remaining_run_info.tmp; 
+				echo "$count$TAB$MY_LOCUS$TAB$MY_ALIGN_PATT$TAB$MY_SUBST_MODEL$TAB incomplete" >> ../remaining_run_info.tmp ; 
 				
 			fi
 		cd ..; 
@@ -211,20 +211,20 @@ echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current d
 )
 
 
-	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Likelihood$TAB ML Run Time$TAB Status" > ./header.tmp;
-	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Status" > ./rem_header.tmp;
-	cat ./header.tmp ./completed_run_info.tmp > ./completed_run_info.txt;
-	cat ./rem_header.tmp ./remaining_run_info.tmp > ./remaining_run_info.txt;
+	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Likelihood$TAB ML Run Time$TAB Status" > ./header.tmp ;
+	echo "No$TAB Locus$TAB No. Patterns$TAB Subst. Model$TAB Status" > ./rem_header.tmp ;
+	cat ./header.tmp ./completed_run_info.tmp > ./completed_run_info.txt ;
+	cat ./rem_header.tmp ./remaining_run_info.tmp > ./remaining_run_info.txt ;
 
 
 	echo "INFO      | $(date) |          Editing final RAxML run information files... "
 		if [[ "${machine}" = "Mac" ]]; then
-			sed -i '' 's/\ //g' ./completed_run_info.txt;
-			sed -i '' 's/\ //g' ./remaining_run_info.txt;
+			sed -i '' 's/\ //g' ./completed_run_info.txt ;
+			sed -i '' 's/\ //g' ./remaining_run_info.txt ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
-			sed -i 's/\ //g' ./completed_run_info.txt;
-			sed -i 's/\ //g' ./remaining_run_info.txt;
+			sed -i 's/\ //g' ./completed_run_info.txt ;
+			sed -i 's/\ //g' ./remaining_run_info.txt ;
 		fi
 
 
@@ -232,7 +232,9 @@ echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current d
 echo "INFO      | $(date) | Step #3: Clean up workspace. "
 echo "INFO      | $(date) |          Cleaning up workspace by removing temporary files generated during run... "
 
-	rm ./*.tmp ;
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 
 echo "----------------------------------------------------------------------------------------------------------"
 echo "output file(s): ./completed_run_info.txt "
@@ -252,7 +254,7 @@ echo ""
 # None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -297,7 +299,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 
