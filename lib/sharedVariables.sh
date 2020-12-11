@@ -21,8 +21,8 @@
 # ------------------------------------------------------
 # Will return the name of the script being run
 # ------------------------------------------------------
-SCRIPT_NAME="$(basename $0)" #Set Script Name variable
-SCRIPT_BASENAME="$(basename ${SCRIPT_NAME} .sh)" # Strips '.sh' from scriptName
+SCRIPT_NAME="$(basename "$0")" #Set Script Name variable
+SCRIPT_BASENAME="$(basename "${SCRIPT_NAME}" '.sh')" # Strips '.sh' from scriptName
 
 # COMMON FUNCTIONS
 # ------------------------------------------------------
@@ -31,7 +31,7 @@ SCRIPT_BASENAME="$(basename ${SCRIPT_NAME} .sh)" # Strips '.sh' from scriptName
 CR=$(printf '\r')
 TAB=$(printf '\t')
 calc () {
-	bc -l <<< "$@"
+	bc -l <<< "$@" ;
 }
 
 # TIMESTAMPS
