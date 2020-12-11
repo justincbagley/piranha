@@ -38,8 +38,8 @@ function echoShortPWD () {
 		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
 #
 		if [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "85" ]] && [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "$MY_BASH_WINDOW_COLS" ]]; then
-			MY_CORRECTION_LENGTH="$(calc $MY_ABS_PATH_ECHO_LENGTH-$MY_BASH_WINDOW_COLS+3)";
-			MY_NUM_FINAL_PWD_CHARS="$(calc $MY_ABS_PATH_LENGTH-$MY_CORRECTION_LENGTH)";
+			MY_CORRECTION_LENGTH="$(calc "$MY_ABS_PATH_ECHO_LENGTH"-"$MY_BASH_WINDOW_COLS"+3)";
+			MY_NUM_FINAL_PWD_CHARS="$(calc "$MY_ABS_PATH_LENGTH"-"$MY_CORRECTION_LENGTH")";
 			SHORT_PWD="$(echo ${PWD:${#PWD}<$MY_NUM_FINAL_PWD_CHARS?0:-$MY_NUM_FINAL_PWD_CHARS})";   ## Get last $MY_NUM_FINAL_PWD_CHARS characters of $PWD
 			echo "INFO      | $(date) | Starting input directory (using current dir): "
 			echo "INFO      | $(date) | ...$SHORT_PWD"	
@@ -57,8 +57,8 @@ function echoShortUSPWD () {
 		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
 #
 		if [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "85" ]] && [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "$MY_BASH_WINDOW_COLS" ]]; then
-			MY_CORRECTION_LENGTH="$(calc $MY_ABS_PATH_ECHO_LENGTH-$MY_BASH_WINDOW_COLS+3)";
-			MY_NUM_FINAL_PWD_CHARS="$(calc $MY_ABS_PATH_LENGTH-$MY_CORRECTION_LENGTH)";
+			MY_CORRECTION_LENGTH="$(calc "$MY_ABS_PATH_ECHO_LENGTH"-"$MY_BASH_WINDOW_COLS"+3)";
+			MY_NUM_FINAL_PWD_CHARS="$(calc "$MY_ABS_PATH_LENGTH"-"$MY_CORRECTION_LENGTH")";
 			SHORT_PWD="$(echo ${PWD:${#PWD}<$MY_NUM_FINAL_PWD_CHARS?0:-$MY_NUM_FINAL_PWD_CHARS})";   ## Get last $MY_NUM_FINAL_PWD_CHARS characters of $PWD
 			echo "INFO      | $(date) | User-specified input directory: "
 			echo "INFO      | $(date) | ...$SHORT_PWD"	
@@ -170,7 +170,7 @@ END {
 function safeExit() {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
-    rm -r "${tmpDir}"
+    rm -r "${tmpDir}" ;
   fi
   trap - INT TERM EXIT
   exit
@@ -205,7 +205,7 @@ escape() { echo "${@}" | sed 's/[]\.|$(){}?+*^]/\\&/g'; }
 function needSudo() {
   # Update existing sudo time stamp if set, otherwise do nothing.
   sudo -v
-  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null & ;
 }
 
 # convertsecs
@@ -224,7 +224,7 @@ function convertsecs() {
   ((h=${1}/3600))
   ((m=(${1}%3600)/60))
   ((s=${1}%60))
-  printf "%02d:%02d:%02d\n" $h $m $s
+  printf "%02d:%02d:%02d\n" $h $m $s ;
 }
 
 function pushover() {
@@ -243,7 +243,7 @@ function pushover() {
    error "Please locate the pushover.cfg to send notifications to Pushover."
   else
     # Grab variables from the config file
-    source "${SOURCEPATH}/../etc/pushover.cfg"
+    source "${SOURCEPATH}/../etc/pushover.cfg" ;
 
     # Send to Pushover
     PUSHOVERURL="https://api.pushover.net/1/messages.json"
@@ -258,7 +258,7 @@ function pushover() {
     -F "device=${DEVICE}" \
     -F "title=${TITLE}" \
     -F "message=${MESSAGE}" \
-    "${PUSHOVERURL}" > /dev/null 2>&1
+    "${PUSHOVERURL}" > /dev/null 2>&1 ;
   fi
 }
 
@@ -287,72 +287,72 @@ function join() { local IFS="${1}"; shift; echo "${*}"; }
 
 function is_exists() {
   if [[ -e "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_not_exists() {
   if [[ ! -e "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_file() {
   if [[ -f "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_not_file() {
   if [[ ! -f "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_dir() {
   if [[ -d "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_not_dir() {
   if [[ ! -d "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_symlink() {
   if [[ -L "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_not_symlink() {
   if [[ ! -L "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_empty() {
   if [[ -z "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function is_not_empty() {
   if [[ -n "$1" ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 # Test whether a command exists
@@ -367,16 +367,16 @@ function is_not_empty() {
 
 function type_exists() {
   if [ "$(type -P "$1")" ]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 function type_not_exists() {
   if [ ! "$(type -P "$1")" ]; then
-    return 0
+    return 0 ; 
   fi
-  return 1
+  return 1 ;
 }
 
 # Test which OS the user runs
@@ -385,9 +385,9 @@ function type_not_exists() {
 
 function is_os() {
   if [[ "${OSTYPE}" == $1* ]]; then
-    return 0
+    return 0 ;
   fi
-  return 1
+  return 1 ;
 }
 
 
@@ -425,9 +425,9 @@ function is_confirmed() {
     return 0
   else
     if [[ "${REPLY}" =~ ^[Yy]$ ]]; then
-      return 0
+      return 0 ;
     fi
-    return 1
+    return 1 ;
   fi
 }
 
@@ -436,9 +436,9 @@ function is_not_confirmed() {
     return 1
   else
     if [[ "${REPLY}" =~ ^[Nn]$ ]]; then
-      return 0
+      return 0 ;
     fi
-    return 1
+    return 1 ;
   fi
 }
 
@@ -452,10 +452,10 @@ function skip() {
   read -t 5 -n 1 -s -p "${bold}To skip, press ${underline}X${reset}${bold} within 5 seconds.${reset}"
   if [[ "$REPLY" =~ ^[Xx]$ ]]; then
     notice "  Skipping!"
-    return 0
+    return 0 ;
   else
     notice "  Continuing..."
-    return 1
+    return 1 ;
   fi
 }
 
@@ -466,7 +466,7 @@ function skip() {
 # ------------------------------------------------------
 function unmountDrive() {
   if [ -d "$1" ]; then
-    diskutil unmount "$1"
+    diskutil unmount "$1" ;
   fi
 }
 
@@ -535,7 +535,7 @@ function pauseScript() {
     info "Continuing"
   else
     warning "Exiting Script."
-    safeExit
+    safeExit ;
   fi
 }
 
@@ -546,7 +546,7 @@ function in_array() {
     for arrayItem in "$@"; do
         [[ "${arrayItem}" == "${value}" ]] && return 0
     done
-    return 1
+    return 1 ;
 }
 
 # Text Transformations
@@ -624,7 +624,7 @@ progressBar() {
   #   done
   # -----------------------------------
   if [[ "${quiet}" = "true" ]] || [ "${quiet}" == "1" ]; then
-    return
+    return ;
   fi
 
   local width
@@ -642,7 +642,7 @@ progressBar() {
   # Do nothing if the output is not a terminal
   if [ ! -t 1 ]; then
       echo "Output is not a terminal" 1>&2
-      return
+      return ;
   fi
   # Hide the cursor
     tput civis
@@ -700,8 +700,8 @@ urlencode() {
 urldecode() {
     # Usage: urldecode <string>
 
-    local url_encoded="${1//+/ }"
-    printf '%b' "${url_encoded//%/\x}"
+    local url_encoded="${1//+/ }" ;
+    printf '%b' "${url_encoded//%/\x}" ;
 }
 
 parse_yaml() {
@@ -866,7 +866,7 @@ function makeCSV() {
     seek_confirmation "${csvFile} already exists. Overwrite?"
     if is_confirmed; then
       rm "${csvFile}"
-      writeCSV "$@"
+      writeCSV "$@" ;
     fi
   fi
 }
@@ -885,10 +885,10 @@ function writeCSV() {
 
 function json2yaml() {
   # convert json files to yaml using python and PyYAML
-  python -c 'import sys, yaml, json; yaml.safe_dump(json.load(sys.stdin), sys.stdout, default_flow_style=False)' < "$1"
+  python -c 'import sys, yaml, json; yaml.safe_dump(json.load(sys.stdin), sys.stdout, default_flow_style=False)' < "$1" ;
 }
 
 function yaml2json() {
   # convert yaml files to json using python and PyYAML
-  python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < "$1"
+  python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < "$1" ;
 }
