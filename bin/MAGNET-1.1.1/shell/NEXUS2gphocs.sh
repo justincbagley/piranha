@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2gphocs.sh                                                                  #
-  VERSION="v1.5.0"                                                                       #
+  VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: March 13, 2019                                                            #
-# Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Last update: December 11, 2020                                                         #
+# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT       #
@@ -136,8 +136,8 @@ function NEXUS2gphocs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2gphocs, v1.5.0 March 2019  (part of PIrANHA v0.4a3)      "
-echo "INFO      | $(date) | Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | NEXUS2gphocs, v1.5.0 December 2020  (part of PIrANHA v0.4a3)   "
+echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -153,7 +153,7 @@ checkMachineType
 
 ############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
 ##--Extract charset info from sets block at end of NEXUS file: 
-	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" $MY_NEXUS | \
+	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" "$MY_NEXUS" | \
 	awk -F"=" '{print $NF}' | sed 's/\;/\,/g' | \
 	awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}' | \
 	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')";
@@ -164,7 +164,7 @@ checkMachineType
 	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)";
 
 ##--This is the base name of the original nexus file, so you have it. This WILL work regardless of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
-	MY_NEXUS_BASENAME="$(echo $MY_NEXUS | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')";
+	MY_NEXUS_BASENAME="$(echo "$MY_NEXUS" | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')";
 
 ##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
 ##--However, if alignment is too long (>100,000 bp), then need to convert to fasta using my 
@@ -184,7 +184,7 @@ checkMachineType
 	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
 		echo "INFO      | $(date) |          Input NEXUS was successfully converted to fasta format. Moving forward... "
 	else
-		echo "WARNING!  | $(date) |          NEXUS to fasta file conversion FAILED! Quitting... "
+		echo "WARNING   | $(date) |          NEXUS to fasta file conversion FAILED. Quitting... "
 		exit 1
 	fi
 
@@ -199,12 +199,12 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 	(
 		for j in ${MY_NEXUS_CHARSETS}; do
 			echo "$j";
-			charRange="$(echo ${j} | sed 's/\,//g')";
+			charRange="$(echo "$j" | sed 's/\,//g')";
 			echo "$charRange";
-			export setLower="$(echo ${j} | sed 's/\-.*$//g')";
-			export setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
+			export setLower="$(echo "$j" | sed 's/\-.*$//g')";
+			export setUpper="$(echo "$j" | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
 
-			**/selectSites.pl -s $charRange $MY_FASTA > ./sites.fasta;
+			**/selectSites.pl -s "$charRange" "$MY_FASTA" > ./sites.fasta;
 			
 			**/fasta2phylip.pl ./sites.fasta > ./sites.phy;
 
@@ -241,10 +241,10 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
         		if [ $MY_INDIV_MISSING_DATA == 0 ]; then
 					sed '1d' ./sites_nogaps.phy | egrep -v 'NNNNNNNNNN|nnnnnnnnnn' > ./cleanLocus.tmp ;
 					cleanLocus_ntax="$(cat ./cleanLocus.tmp | wc -l)" ;
-					echo locus"$((count++))" $cleanLocus_ntax $locus_nchar > ./locus_top.tmp ;
+					echo locus"$((count++))" "$cleanLocus_ntax" "$locus_nchar" > ./locus_top.tmp ;
 					cat ./locus_top.tmp ./cleanLocus.tmp >> ./gphocs_body.txt ;
 				else
-					echo locus"$((count++))" $locus_ntax $locus_nchar > ./locus_top.tmp ;
+					echo locus"$((count++))" "$locus_ntax" "$locus_nchar" > ./locus_top.tmp ;
 					cat ./locus_top.tmp ./sites_nogaps.phy >> ./gphocs_body.txt ;
 				fi
 
@@ -254,7 +254,7 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 	)
 
 	grep -v "^[0-9]*\ [0-9]*.*$" ./gphocs_body.txt > ./gphocs_body_fix.txt ;
-	cat ./gphocs_top.txt ./gphocs_body_fix.txt > $MY_NEXUS_BASENAME.gphocs ;
+	cat ./gphocs_top.txt ./gphocs_body_fix.txt > "$MY_NEXUS_BASENAME".gphocs ;
 
 	############ STEP #4: CLEANUP: REMOVE UNNECESSARY FILES
 	rm ./gphocs_top.txt ;
