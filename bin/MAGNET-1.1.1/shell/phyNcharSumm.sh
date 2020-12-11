@@ -144,7 +144,7 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting phyNcharSumm... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
@@ -161,7 +161,7 @@ echo "INFO      | $(date) |          Saving number of characters for each alignm
 (
 	for i in ./*.phy; do 
 		echo "$i" >> ./phyalign_names.txt; 
-		echo "$(head -n1 $i | awk -F"[0-9]*\ " '{print $NF}')" >> ./nchar.txt; 
+		echo "$(head -n1 $i | awk -F"[0-9]*\ " '{print $NF}')" >> ./nchar.txt ; 
 	done;
 )
 
@@ -184,7 +184,7 @@ echo ""
 # None at this time.
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 
