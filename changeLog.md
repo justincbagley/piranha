@@ -1,10 +1,12 @@
 # PIrANHA Change Log
 
 ### PIrANHA v1.0 (official major version release #1) - TBA - _Coming soon! Join in on development and help us get there sooner!!_
+
 ...
 
 <!-- ### Updates since last pre-release (for PIrANHA v0.4a3 draft): -->
 
+-  **December 11, 2020:** Made various minor fixes to code, READMEs, Quick Guide, etc. fixing Codacy issues.
 -  **December 7, 2020:** Another update to `piranha` script (now v1.1.6) to make sure that function name tab completions are automatically sourced when running `piranha`. Also updates to installer scripts and documentation, plus the change log.
 -  **December 3, 2020:** Added _important_ updates to PIrANHA, including edits to main `piranha` script (now v1.1.5) and a new `completions/` subfolder, allowing bash tab completion of function names (expected usage: `piranha -f <TAB>`). Updated Homebrew tap and 'changelog.md' accordingly.
 -  **November 23 and December 1, 2020:** Bug fixes and updates for `assembleReads` and `phaseAlleles` functions of `piranha`, fixing errors that caused the program to stop due to issues with among other things `ls`, plus minor change to `alignAlleles` (not worth a mention).
