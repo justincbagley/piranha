@@ -3,12 +3,13 @@
 # ##################################################
 # Shared bash functions used by PIrANHA bash scripts.
 #
-# VERSION 1.0.0
+# VERSION 1.0.1
 #
 # HISTORY
 # * 2019-03-08 - v1.0.0 - First Creation (edited from sharedVariables.sh script
 #                         by Nate Landau, from a forked version of his shell-scripts repository,
 #                         which he last had as v1.0.3, last updated 2016-01-13 (see below))
+# * 2020-12-11 - v1.0.1 - Minor updates to fix Codacy-flagged issues
 #
 # Pre-PIrANHA version updates by Nate Landau:
 # * 2015-01-02 - v1.0.0 - First Creation
