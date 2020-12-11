@@ -182,7 +182,7 @@ echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current d
 	echo "INFO      | $(date) |          ...  $count / $MY_N_LOCI_FOLD ..."
 (
 	for i in ./locus*/; do 
-		MY_LOCUS="$(echo $i | sed 's/\.\///g; s/\///g; s/\ //g')"; 
+		MY_LOCUS="$(echo "$i" | sed 's/\.\///g; s/\///g; s/\ //g')"; 
 		MY_COUNT_HUND_CHECK="$(calc $count / 100 | sed 's/^[0-9]*\.//g; s/^[0]\{1\}//g')";
 		if [[ "$MY_COUNT_HUND_CHECK" -eq "0" ]]; then
 			echo "INFO      | $(date) |          ...  $count / $MY_N_LOCI_FOLD ..."
