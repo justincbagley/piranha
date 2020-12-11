@@ -157,7 +157,7 @@ echo "INFO      | $(date) | Step #2: Check RAxML runs in subfolders in current d
 	echo "INFO      | $(date) |          Estimating numbers (no.) of loci and RAxML runs... "
 	MY_N_LOCI_FOLD="$(ls -d ./locus*/ | wc -l | sed 's/^[\ ]*//g')";
 	MY_N_COMPLETED="$(ls ./locus*/RAxML_info.raxml_out | wc -l | sed 's/^[\ ]*//g')";
-	MY_N_REMAINING="$(calc $MY_N_LOCI_FOLD - $MY_N_COMPLETED)";
+	MY_N_REMAINING="$(calc "$MY_N_LOCI_FOLD" - "$MY_N_COMPLETED")";
 
 	echo "INFO      | $(date) |          Total no. RAxML runs: $TAB$TAB$MY_N_LOCI_FOLD "
 	echo "INFO      | $(date) |          No. completed RAxML runs: $TAB$MY_N_COMPLETED "
