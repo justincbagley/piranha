@@ -3,8 +3,8 @@
 # ##################################################
 # Shared bash functions used by PIrANHA bash scripts.
 #
-# VERSION 1.0.2
-  VERSION="v1.0.2"
+# VERSION 1.0.3
+  VERSION="v1.0.3"
 #
 # HISTORY
 # Pre-PIrANHA version updates by Nate Landau:
@@ -17,9 +17,10 @@
 # * 2019-03-08 - v1.0.0 - Added to PIrANHA, edited from sharedFunctions.sh script
 #                         by Nate Landau, from a forked version of his shell-scripts
 #                         repository, which he last had as v1.4.9 (see above)
-# * 2019-xx-xx - v1.0.1 - Added checkMachineType function
+# * 2019-04+   - v1.0.1 - Added checkMachineType function
 # * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format
 # * 2020-07-31 - v1.0.2 - Minor update, added Short PWD functions
+# * 2020-12-11 - v1.0.3 - Minor updates fixing Codacy issues
 #
 # ##################################################
 
