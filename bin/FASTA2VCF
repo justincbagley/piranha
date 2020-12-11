@@ -128,9 +128,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -231,10 +231,10 @@ fi
 		MY_INPUT_VCF_FILE="$MY_OUTPUT_FILENAME".vcf 
 	fi
 	
-	grep -v "^\#" "$MY_INPUT_VCF_FILE" > ./vcf.tmp
+	grep -v "^\#" "$MY_INPUT_VCF_FILE" > ./vcf.tmp ;
 
 	## Get positions column and save to tmp file (this is always col 2 in VCF4 format VCF files):
-	cut -f2 < vcf.tmp > ./SNPpositions.tmp
+	cut -f2 < vcf.tmp > ./SNPpositions.tmp ;
 
 	## Next, use SNP positions along with partition ranges info to subsample to n SNPs per locus/
 	## partition. We can do this by using a while loop, conditionals, and redirects...
@@ -259,7 +259,7 @@ count=1
 			for position in $MY_POSITIONS; do
 				if [[ "$position" -ge "$MY_FIRST_VAL" ]] && [[ "$position" -le "$MY_SECOND_VAL" ]]; then
 					echo "$position" >> ./matching_positions.tmp
-					grep -n '^'$position'$' ./SNPpositions.tmp | sed 's/\:.*//g' >> ./matching_lines.tmp;
+					grep -n '^'$position'$' ./SNPpositions.tmp | sed 's/\:.*//g' >> ./matching_lines.tmp ;
 				fi
 			done
 
@@ -267,11 +267,11 @@ count=1
 		## all partitions:
 		MY_FIRST_MATCH_LINE="$(cat ./matching_lines.tmp | head -n1)"
 		if [[ -s ./matching_lines.tmp ]]; then
-			cat ./matching_lines.tmp | head -n1 >> ./all_first_matching_lines.txt 
+			cat ./matching_lines.tmp | head -n1 >> ./all_first_matching_lines.txt ;
 		fi
 		MY_FIRST_MATCH_POSITION="$(cat ./matching_positions.tmp | head -n1)"
 		if [[ -s ./matching_positions.tmp ]]; then
-			cat ./matching_positions.tmp | head -n1 >> ./all_first_matching_positions.txt
+			cat ./matching_positions.tmp | head -n1 >> ./all_first_matching_positions.txt ;
 		fi
 		
 		## Save corresponding line with first (ith) matching SNP to a final VCF body file (containing
@@ -280,10 +280,10 @@ count=1
 		## https://stackoverflow.com/questions/6022384/bash-tool-to-get-nth-line-from-a-file.
 		## This method is elegant in its simplicity, gives the correct subsampling, and
 		## is as follows:
-		sed ''"$MY_FIRST_MATCH_LINE"'q;d' ./vcf.tmp >> ./vcf.body.tmp;
+		sed ''"$MY_FIRST_MATCH_LINE"'q;d' ./vcf.tmp >> ./vcf.body.tmp ;
 
 		if [[ -s ./matching_positions.tmp ]] && [[ -s ./matching_lines.tmp ]]; then
-			rm ./matching_positions.tmp ./matching_lines.tmp
+			rm ./matching_positions.tmp ./matching_lines.tmp ;
 		fi
 		
 		echo "INFO      | $(date) | Extracting: "
@@ -294,14 +294,14 @@ count=1
 
 	## Put it all together. Grab the VCF header. Then concatenate the VCF header and final, 
 	## subsampled VCF body file to create a final subsampled VCF file:
-	grep '\#' "$MY_INPUT_VCF_FILE" > ./header.tmp
+	grep '\#' "$MY_INPUT_VCF_FILE" > ./header.tmp ;
 
 	if [[ "$MY_OUTPUT_FILENAME" = "NULL" ]] && [[ -s ./vcf.body.tmp ]]; then
 		echo "INFO      | $(date) | Saving subsampled SNPs to file ${MY_FASTA_BASENAME}.subsampled.vcf "
-		cat ./header.tmp ./vcf.body.tmp > "$MY_FASTA_BASENAME".subsampled.vcf
+		cat ./header.tmp ./vcf.body.tmp > "$MY_FASTA_BASENAME".subsampled.vcf ;
 	elif [[ "$MY_OUTPUT_FILENAME" != "NULL" ]] && [[ -s ./vcf.body.tmp ]]; then
 		echo "INFO      | $(date) | Saving subsampled SNPs to file ${MY_OUTPUT_FILENAME}.subsampled.vcf "
-		cat ./header.tmp ./vcf.body.tmp > "$MY_OUTPUT_FILENAME".subsampled.vcf 
+		cat ./header.tmp ./vcf.body.tmp > "$MY_OUTPUT_FILENAME".subsampled.vcf ;
 	elif [[ "$MY_OUTPUT_FILENAME" = "NULL" ]] || [[ "$MY_OUTPUT_FILENAME" != "NULL" ]] && [[ ! -s ./vcf.body.tmp ]]; then
 		echo "WARNING   | $(date) | Failed to save subsampled SNPs to file. This is probably because your FASTA file has one locus, or too few "
 		echo "WARNING   | $(date) |    loci/variable sites. Please try with another FASTA file. "
