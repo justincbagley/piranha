@@ -144,7 +144,7 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | Starting getBootTrees script... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 #echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
