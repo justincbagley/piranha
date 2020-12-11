@@ -1,6 +1,6 @@
 # README
 
-# PIrANHA installers
+## PIrANHA installers
 
 Justin C. Bagley
 
