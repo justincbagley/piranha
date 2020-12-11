@@ -201,8 +201,8 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 			echo "$j";
 			charRange="$(echo ${j} | sed 's/\,//g')";
 			echo "$charRange";
-			setLower="$(echo ${j} | sed 's/\-.*$//g')";
-			setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
+			export setLower="$(echo ${j} | sed 's/\-.*$//g')";
+			export setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
 
 			**/selectSites.pl -s $charRange $MY_FASTA > ./sites.fasta;
 			
