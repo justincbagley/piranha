@@ -157,7 +157,7 @@ END {
         }
         print str
     }
-}' $1
+}' "$1"
 }
 
 # Traps
