@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: getBootTrees.sh                                                                  #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before August 20, 2017.                              #
-# Last update: March 13, 2019                                                            #
-# Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Last update: December 11, 2020                                                         #
+# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES ORGANIZING BOOTSTRAP TREES OUTPUT BY RAxML RUNS CONDUCTED  #
@@ -136,8 +136,8 @@ function getBootTrees () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | getBootTrees, v1.0.0 March 2019  (part of PIrANHA v0.4a3)      "
-echo "INFO      | $(date) | Copyright (c) 2017-2019 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | getBootTrees, v1.0.1 December 2020  (part of PIrANHA v0.4a3)   "
+echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ######################################## START ###########################################
@@ -173,7 +173,7 @@ echo "INFO      | $(date) |          Making list of ML bootstrap trees generated
 		for j in ${MY_BOOT_TREE_LIST}; do
 			echo "$j";
 			cp "$j" ./bootstrap_trees/ ;
-			MY_LOCUS_NAME="$(echo $j | sed 's/\/[A-Za-z.\_\-]*//g')";
+			MY_LOCUS_NAME="$(echo "$j" | sed 's/\/[A-Za-z.\_\-]*//g')";
 			cp ./bootstrap_trees/RAxML_bootstrap.raxml_out ./bootstrap_trees/"$MY_LOCUS_NAME"_RAxML_boot.tre ;
 			rm ./bootstrap_trees/RAxML_bootstrap.raxml_out ;
 		done
@@ -212,7 +212,7 @@ echo ""
 # None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -260,7 +260,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 
