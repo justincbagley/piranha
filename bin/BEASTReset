@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -165,11 +165,11 @@ if [[ "${machine}" = "Mac" ]]; then
 	cat "$MY_RERUN_DIR_LIST" | while read i; do 
 		cd "$i"; 
 		echo "$i"; 
-			j=./"$MY_RUN_SCRIPT" ;
+			j=./"$MY_RUN_SCRIPT";
 			MY_RANDOM_SEED="$(python -c 'import random; print random.randint(10000,100000000000)')"; 
 			echo "$MY_RANDOM_SEED" 
 			sed -i.bak "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j" ; 
-			rm ./*.bak;
+			rm ./*.bak ;
 		cd ..; 
 	done
 )
@@ -192,7 +192,7 @@ if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "PBS" ]]; then
 			echo "$MY_RANDOM_SEED"
 			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
 
-			qsub ./"$MY_RUN_SCRIPT"
+			qsub ./"$MY_RUN_SCRIPT" ;
 
 		cd ..; 
 	done
@@ -213,7 +213,7 @@ if [[ "${machine}" = "Linux" ]] && [[ "$MY_SC_MANAGEMENT_SYS" = "SLURM" ]]; then
 			echo "$MY_RANDOM_SEED" 
 			sed -i "s/\-seed\ [0-9]*\ /\-seed\ $MY_RANDOM_SEED\ /" "$j"; 
 
-			sbatch ./"$MY_RUN_SCRIPT"
+			sbatch ./"$MY_RUN_SCRIPT" ;
 
 		cd ..; 
 	done
