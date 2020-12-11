@@ -1,11 +1,11 @@
 # bin
 
-As is typical of UNIX/Linux distributions and software, this bin/ directory contains the binary and executable files needed to run the main script and all functions within this repository.
+As is typical of UNIX/Linux distributions and software, this `bin/` directory contains the binary and executable files needed to run the main script and all functions within this repository.
 
 The full file tree for this directory is as follows:
 
 
-```
+```txt
 ..
 └─ bin
    ├── README.md
