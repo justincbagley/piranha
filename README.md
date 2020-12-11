@@ -49,7 +49,7 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE
 
 Directory tree...
 
-```sh
+```txt
 .
 ├── LICENSE
 ├── README.md
