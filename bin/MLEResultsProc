@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -164,7 +164,7 @@ echo "INFO      | $(date) | Step #2: Check BEAST version, in order to detect and
 ## files from BEAST v1, and one specific to the format of .out files from BEAST v2.
 (	
 	for i in $MY_BEAST_OUTPUT_FILES; do 
-		echo "$i" > file.tmp; 
+		echo "$i" > file.tmp ; 
 	break; 
 	done	
 )
