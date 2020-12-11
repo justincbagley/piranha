@@ -15,7 +15,7 @@
 -  **August 12, 2020:** Updated `trimSeqs` function to improve performance after bug/issue discussion with Juan Moreira. This updated fixed posix space bug, because `[:space:]` should be `[[:space:]]`.
 -  **August 3, 2020:** Updated README, as well as Quick Guide for [wiki](https://github.com/justincbagley/piranha/wiki).
 
-### PIrANHA 0.4a3 (official minor pre-release version v0.4-alpha-3) - July 31, 2020
+### PIrANHA 0.4a3 (official minor pre-release version v0.4-alpha-3), July 31, 2020
 
 -  **July 31, 2020:** Added new `trimSeqs` function and prepped 0.4a3 release by updating versioning of main `piranha` script and function scipts, and also updating Wiki and READMEs. The `trimSeqs` function automates trimming one or multiple DNA sequence alignments in PHYLIP format, with options for custom gap handling parameters for trimAl, and with trimmed alignments output to FASTA, PHYLIP, or NEXUS formats.
 -  **May 27, 2020:** Updated repo with new citation file ('CITATION.md'), code of conduct for developers ('CODE_OF_CONDUCT.md'), and license ('LICENSE').
@@ -23,11 +23,11 @@
 -  **April 18-20, 2020:** This update builds on the previous pre-release, v0.4a2, by adding minor bug fixes and improvements to several functions. With the addition of the new function `alignAlleles`, a companion script meant to be run directly after `phaseAlleles`, this release establishes a new workflow for phasing and aligning consensus sequences from HTS (e.g. targeted sequence capture data) based on reads (re)mapped to a reference assembly FASTA file (i.e. following reference-based assembly). This combination of programs was designed to be run on target capture data after first conducting cleaning, assembly, locus selection, and reference-based assembly (specifically, with SECAPR (Andermann et al. 2018) in mind, and with testing based on output from SECAPR).
 -  **April 17, 2020:** Added "Quick Guide" to wiki, entitled "Quick Guide for the Impatient," with install instructions and example code.
 
-### PIrANHA 0.4a2 (official minor pre-release version v0.4-alpha-2) - April 17, 2020
+### PIrANHA 0.4a2 (official minor pre-release version v0.4-alpha-2), April 17, 2020
 
 -  **April 13-17, 2020:** This update builds on the previous pre-release, v0.4a, by updating the main `prianha` script (including improvements to messaging and help text); addition of a new `phaseAlleles` function that automates phasing of consensus sequences from HTS (e.g. targeted sequence capture) based on a (re)mapped assembly reference FASTA; as well as minor updates to all functions (improved messaging and minor bug fixes).
 
-### PIrANHA v0.4a (official minor pre-release version 0.4-alpha) - April 13, 2020
+### PIrANHA v0.4a (official minor pre-release version 0.4-alpha), April 13, 2020
 
 -  **April 12, 2020:** Various minor updates to piranha bin/ functions, and important update to options in main `piranha` script now allows arguments to be passed to the program directly after the function call (after -f flag), without -a|--args flag. This fixes a problem where the previous implementation's reliance on `--args='<args>'` format (arguments passed in quotes) meant that Bash completion would not work while writing out the arguments. 
 -  **April 6-7, 2020:** Major `piranha` package update, including edits to main script, all functions, dir structure, and other files (e.g. test files). Bug fixes for errors when no arguments and failed `rm` calls, check and update debug code, plus updates to READMEs and help texts.
@@ -37,37 +37,37 @@
 -  **October 23, 2019:** Added new `PHYLIPsummary` function script that summarizes no. taxa and no. characters for one or multiple PHYLIP DNA sequence alignments in current directory.
 -  **October 22, 2019:** Made minor edits (e.g. fixing versioning) and bug fixes (fixing `sed` code that caused failures when user had GNU SED installed instead of BSD SED) to all of the following function scripts: `PhyloMapperNullProc`, `PHYLIPsubsampler`, `PHYLIPcleaner`, `PHYLIP2PFSubsets`, `MLEResultsProc`, `getBootTrees`, `fastSTRUCTURE`, `dropRandomHap`, `dadiUncertainty`, `dadiRunner`, `dadiPostProc`, `calcAlignmentPIS`, `BEASTRunner`, `BEAST_PSPrepper`, `RAxMLRunChecker`, `RAxMLRunner`, `SNAPPRunner`, `SpeciesIdentifier`, `AnouraNEXUSPrepper`, `concatenateSeqs`, `concatSeqsPartitions`, `FASTA2VCF`, `getTaxonNames`, `makePartitions`, `MrBayesPostProc`, `phyNcharSumm`, `pyRAD2PartitionFinder`, `pyRADLocusVarSites`, `renameForStarBeast2`, `renameTaxa`, `renameTaxa_v1`, `splitPHYLIP`, `taxonCompFilter`, `treeThinner`, `vcfSubsampler`, `completeSeqs`, `RYcoder`, `RogueNaRokRunner`, `PHYLIP2NEXUS`, `PHYLIP2Mega`, `NEXUS2PHYLIP`, `NEXUS2MultiPHYLIP`, `Mega2PHYLIP`, `BEASTReset`, `FASTA2PHYLIP`, `completeConcatSeqs`
 
-### PIrANHA v0.3a2 (official minor pre-release version 0.3-alpha.2) - July 26, 2019
+### PIrANHA v0.3a2 (official minor pre-release version 0.3-alpha.2), July 26, 2019
 
 -  **July 25, 2019:** Added new `RogueNaRokRunner` function that reads in a Newick tree file and runs it through RogueNaRok to identify rogue taxa. Additionally, I conducted a comlete rewrite of the `NEXUS2PHYLIP` function that removes its dependence on N. Takebayashi's Perl script (see previous version), and I made minor edits to `piranha` and edits and bug fixes for other functions including `RYcoder`.
 -  **July 24, 2019:** Minor updates and bug fixes for `PHYLIP2NEXUS` function.
 -  **July 11, 2019:** Minor updates and fixes for `PHYLIP2Mega` function.
 -  **June 11, 2019:** Added new `RYcoder` function that reads in a PHYLIP or NEXUS DNA sequence alignment and converts it into 'RY'-coded, binary format, with purines (A, G) coded as 0's and pyrimidines (C, T) coded as 1's. 
 
-### PIrANHA v0.3a1 (official minor pre-release version 0.3-alpha.1) - May 7, 2019
+### PIrANHA v0.3a1 (official minor pre-release version 0.3-alpha.1), May 7, 2019
 
 -  **May 7, 2019:** Fixed main `piranha` function so that it correctly reads in all arguments passed with the --args='' flag (should also work with -a), which previously caused several functions to fail and invoke `trapExit`.
 -  **April 30 – May 7, 2019:** Added bug fixes and updates to `dropRandomHap`, `PHYLIP2NEXUS`, `PHYLIP2FASTA`, `PHYLIP2Mega`, and `splitPHYLIP` functions.
 -  **April 10, 2019:** Added new `renameTaxa` function that renames taxon (sample) names in genetic data files of type FASTA, NEXUS, PHYLIP, and VCF according to user specifications.
 -  **April 9, 2019:** Added updated scripts to fix bugs in `FASTA2PHYLIP` and `getTaxonNames` functions.
 
-### PIrANHA v0.2-alpha.2 (official minor pre-release version) - April 9, 2019
+### PIrANHA v0.2-alpha.2 (official minor pre-release version), April 9, 2019
 
 This is a minor update to the pre-release version that adds a new `FASTA2VCF` function which acts as a wrapper for the software program `snp-sites` ([link](https://github.com/sanger-pathogens/snp-sites)) and converts a sequential FASTA multiple sequence alignment into a variant call format (VCF) v4.1 file, with or without subsampling 1 SNP per partition/locus. This update also includes edits to the README, index.html, changeLog.md, and travis.yml files. Importantly, I have also now created a successful [homebrew](https://brew.sh) tap for PIrANHA [here](https://github.com/justincbagley/homebrew-piranha) with a formula that is working with v0.2-alpha, and that is now described in the documentation [wiki](https://github.com/justincbagley/piranha/wiki). 
 
-### PIrANHA v0.2-alpha.1c (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha.1c (official minor pre-release version), March 15, 2019
 
 This is a minor update to the pre-release version that includes edits to the README and index.html files, and that adds this slightly updated changeLog.md file back into the repository. Other changes include removing `bin/trash` function due to conflicts with `/usr/local/bin/trash` symlink belonging to trash on macOS, which caused homebrew install to fail. After fixing this, I have also now created a successful homebrew tap for PIrANHA that is working with this release (more info soon, to be added to the README). 
 
-### PIrANHA v0.2-alpha.1b (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha.1b (official minor pre-release version), March 15, 2019
 
 This is a very minor update to the pre-release version removing some PHYLIP and FASTA DNA sequence alignments that I had previously included in the repo for my own testing purposes, and updating README and index.html files.
 
-### PIrANHA v0.2-alpha.1 (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha.1 (official minor pre-release version), March 15, 2019
 
 Since v0.2-alpha, the pre-release version of **PIrANHA v0.2-alpha.1** added several updates including redos for the PIrANHA etc/ dir, a README for bin/, and new scripts for the `MLEResultsProc`, `getTaxonNames`, `taxonCompFilter`, and `SNAPPRunner` functions.
 
-### PIrANHA v0.2-alpha (official minor pre-release version) - March 15, 2019
+### PIrANHA v0.2-alpha (official minor pre-release version), March 15, 2019
 
 Pre-release version, **PIrANHA v0.2-alpha**, involved a virtually complete rewrite and reorganization of PIrANHA (with >1,200 additions and >400 deletions). All scripts were converted to 'function' programs in bin/ or bin/MAGNET-1.0.0/ of the repo, and I have written a new program, ```piranha```, that is now the main program and runs all functions. I am _still_ in the process of updating the README and all function scripts, but I did a pre-release ratcheted up to v0.2 due to the great improvements in modularization and efficiency that this update allowed (selecting a function and passing all arguments, all from ```piranha```), and because I wanted a new release to use as a starting point to create Debian and Homebrew distribution releases (i.e. brew tap(s) to update as new versions roll out during development). The current organization of **PIrANHA** is much better suited for general use, and for adding other collaborators or developers.
 
@@ -78,7 +78,7 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 - **February – March 2019:** Added -V and --version flag options, to echo version to screen, to most scripts in the repo.
 
 
-### PIrANHA v0.1.7 (official minor version release) - February 19, 2019
+### PIrANHA v0.1.7 (official minor version release), February 19, 2019
 
 -  **February 19, 2019:** Improved ```phylipSubsampler.sh``` to check and account for differences in machine type. Now correctly accommodations UNIX (Mac) and LINUX systems.
 -  **February 19, 2019:** Updated MAGNET script by adding a getBipartTrees function to the MAGNET pipeline, which organizes RAxML bipartitions trees for each locus (= best ML trees with bootstrap proportions along nodes the corresponding bootstrap searches search; resulting from ```-f a -x```options, which are included in all MAGNET calls to RAxML). Edited header and script banner to be prepped for future official release of MAGNET with versioning 0.1.9.
@@ -96,12 +96,12 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 -  **bug fix:** - phylipSubsampler.sh (fixes bug causing incorrect number of characters on first line of input files) 
 
 
-### PIrANHA v0.1.6.1 (official minor version release) - September 13, 2017
+### PIrANHA v0.1.6.1 (official minor version release), September 13, 2017
 
 -  **August 2017:** Made several updates to README and documentation for the repository.
 
 
-### PIrANHA v0.1.6 (official minor version release) - September 13, 2017
+### PIrANHA v0.1.6 (official minor version release), September 13, 2017
 
 -  **August 2017:** Updated all README files in the repository (for PIrANHA, BEASTPostProc, BEASTRunner, ExaBayesPostProc, MLEResultsProc, and fastSTRUCTURE scripts).
 -  **August 2017:** Added new 'BEASTReset.sh' script, and corresponding README, into BEASTReset sub-folder. This script automates re-setting random starting number seeds in BEAST run submission scripts for supercomputer runs. This is a time-saving script when many failed runs need to be restarted from a different seed!
@@ -110,7 +110,7 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 -  **bug fix:** PFSubsetSum.sh (fixed script so that it works with PartitionFinder v1 and v2; last testing: v2.1.1) 
 
 
-### PIrANHA v0.1.5 (official minor version release) - August 21, 2017
+### PIrANHA v0.1.5 (official minor version release), August 21, 2017
 
 The current release, PIrANHA v0.1.5, contains the following updates, in addition to minor improvements in the code:
 
@@ -145,7 +145,7 @@ The current, modified PIrANHA v0.1.4 release contains several goodies listed bel
 I have also added a new `MrBayesPostProc.sh` script and corresponding 'mrbayes_post_proc.cfg' configuration file, which together automate summarizing the posterior distribution of trees and parameters from a single MrBayes run. I intend to extend these scripts to provide options for several other anlayses of individual MrBayes runs/input files, as well as extend them to pulling down results from multiple MrBayes runs.
 
 
-### PIrANHA v0.1.4 (official minor version release) - May 3, 2017
+### PIrANHA v0.1.4 (official minor version release), May 3, 2017
 
 #### What's new?
 
@@ -155,17 +155,17 @@ I have also added a new `MrBayesPostProc.sh` script and corresponding 'mrbayes_p
 -  **January 2017:** I added a new script called **BEAST_PSPrepper.sh** that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand!
 
 
-### PIrANHA v0.1.3 (official minor version release) - November 11, 2016
+### PIrANHA v0.1.3 (official minor version release), November 11, 2016
 
 #### What's new?
 
 This version of PIrANHA introduces the BEASTRunner.sh script for automating independent runs of BEAST1 or BEAST2 on a remote supercomputing cluster. See README for details.
 
 
-### PIrANHA v0.1.2 (official minor version release) - November 10, 2016
+### PIrANHA v0.1.2 (official minor version release), November 10, 2016
 
 
-### PIrANHA v0.1.1 (official minor version, patch release) - November 10, 2016
+### PIrANHA v0.1.1 (official minor version, patch release), November 10, 2016
 
 
-### PIrANHA v0.1.0 (pre-release version zero) - September 6, 2016
+### PIrANHA v0.1.0 (pre-release version zero), September 6, 2016
