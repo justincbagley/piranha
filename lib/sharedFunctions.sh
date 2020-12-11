@@ -33,8 +33,8 @@
 # ------------------------------------------------------
 function echoShortPWD () {
 
-		MY_ABS_PATH_LENGTH="$(echo $PWD | wc -c | sed 's/\ //g')";
-		MY_ABS_PATH_ECHO_LENGTH="$(calc $MY_ABS_PATH_LENGTH+43)";
+		MY_ABS_PATH_LENGTH="$(echo "$PWD" | wc -c | sed 's/\ //g')";
+		MY_ABS_PATH_ECHO_LENGTH="$(calc "$MY_ABS_PATH_LENGTH"+43)";
 		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
 #
 		if [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "85" ]] && [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "$MY_BASH_WINDOW_COLS" ]]; then
@@ -52,8 +52,8 @@ function echoShortPWD () {
 
 function echoShortUSPWD () {
 
-		MY_ABS_PATH_LENGTH="$(echo $PWD | wc -c | sed 's/\ //g')";
-		MY_ABS_PATH_ECHO_LENGTH="$(calc $MY_ABS_PATH_LENGTH+43)";
+		MY_ABS_PATH_LENGTH="$(echo "$PWD" | wc -c | sed 's/\ //g')";
+		MY_ABS_PATH_ECHO_LENGTH="$(calc "$MY_ABS_PATH_LENGTH"+43)";
 		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
 #
 		if [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "85" ]] && [[ "$MY_ABS_PATH_ECHO_LENGTH" -gt "$MY_BASH_WINDOW_COLS" ]]; then
