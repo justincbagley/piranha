@@ -126,9 +126,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -196,7 +196,7 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #2: Convert input FASTA file ${MY_FASTA} to PHYLIP format, & save FASTA characteristics. "
 fi
 
-	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
+	echo "$MY_FASTA" >> ./output/fileOrder.list.txt ;
 
 	echo "INFO      | $(date) | ###------    $MY_FASTA    ------### "
 
@@ -592,7 +592,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 (
 	for MY_FASTA in $MY_FASTA_FILES; do 
 
-	echo "$MY_FASTA" >> ./output/fileOrder.list.txt
+	echo "$MY_FASTA" >> ./output/fileOrder.list.txt ;
 
 	echo "INFO      | $(date) | ###------    $MY_FASTA    ------### "
 
@@ -773,7 +773,7 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 	
-		cp "$MY_FASTA" ./fasta.tmp
+		cp "$MY_FASTA" ./fasta.tmp ;
 	
 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
 			if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
