@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -231,7 +231,7 @@ echo "#!/bin/sh
 
 $MY_PIRANHA_PATH -f calcAlignmentPIS -i $INPUT_FASTA_FILE -k 0
 
-" > ./piranha_calcAlignmentPIS.sh
+" > ./piranha_calcAlignmentPIS.sh ;
 
 	chmod u+x ./piranha_calcAlignmentPIS.sh ;
 
@@ -243,7 +243,7 @@ $MY_PIRANHA_PATH -f calcAlignmentPIS -i $INPUT_FASTA_FILE -k 0
 	### POST-PROCESSING RESULTS
 	echo "File	nTax	nChar	PIS	propChar	propGap	propA	propC	propT	propG" > ./header.tmp ;
 	paste ./FASTA_order.list.tmp ./FASTA_nTax.list.txt ./FASTA_nChar.list.txt ./FASTA_PIS.list.txt ./propChar.list.tmp ./propGap.list.tmp ./propA.list.tmp ./propC.list.tmp ./propT.list.tmp ./propG.list.tmp > ./FASTA_table.tmp ;
-	cat ./header.tmp ./FASTA_table.tmp > ./FASTA_Summary.txt
+	cat ./header.tmp ./FASTA_table.tmp > ./FASTA_Summary.txt ;
 fi
 ###
 
@@ -333,11 +333,11 @@ $MY_PIRANHA_PATH -f calcAlignmentPIS -k 0
 	### POST-PROCESSING RESULTS
 	echo "File	nTax	nChar	PIS	propChar	propGap	propA	propC	propT	propG" > ./header.tmp ;
 	MY_N_FASTA_FILES="$(wc -l ./FASTA_PIS.list.txt | perl -pe $'s/\ \.\/.*//g; s/\ //g')";
-	cp ./FASTA_order.list.tmp ./FASTA_order.list2.tmp
-	head -n"$MY_N_FASTA_FILES" ./FASTA_order.list2.tmp > ./FASTA_order.list.tmp
+	cp ./FASTA_order.list.tmp ./FASTA_order.list2.tmp ;
+	head -n"$MY_N_FASTA_FILES" ./FASTA_order.list2.tmp > ./FASTA_order.list.tmp ;
 #
 	paste ./FASTA_order.list.tmp ./FASTA_nTax.list.txt ./FASTA_nChar.list.txt ./FASTA_PIS.list.txt ./propChar.list.tmp ./propGap.list.tmp ./propA.list.tmp ./propC.list.tmp ./propT.list.tmp ./propG.list.tmp > ./FASTA_table.tmp ;
-	cat ./header.tmp ./FASTA_table.tmp > ./FASTA_Summary.txt
+	cat ./header.tmp ./FASTA_table.tmp > ./FASTA_Summary.txt ;
 fi
 ###
 
