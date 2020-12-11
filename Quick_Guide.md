@@ -358,7 +358,6 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE
 
   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
-
 ### Uninstall
 
 Uninstalling Homebrew `piranha`
@@ -370,6 +369,6 @@ if [[ -f /usr/local/bin/local_piranha ]]; then rm -rf /usr/local/bin/local_piran
 if [[ -f /usr/local/bin/brew_piranha ]]; then rm -rf /usr/local/bin/brew_piranha ; fi
 ```
 
-December 9, 2020 Justin C. Bagley, Jacksonville, AL, USA
+_December 9, 2020_ - _Justin C. Bagley, Jacksonville, AL, USA_
 
 [Next (Introduction) >>](https://github.com/justincbagley/piranha/wiki/1.-Introduction)
