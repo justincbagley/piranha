@@ -9,51 +9,177 @@ PIrANHA provides a set of tools for automating file processing and analysis in (
 
 >_NOTE:_ By convention, in all content we refer to this software package as "PIrANHA" and we write the name of the main script in the package as `piranha`.
 
-Downloading PIrANHA is easy, with two options: local install or Homebrew install.
+Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thanks to Homebrew distribution.
 
-Local install
+### Homebrew install
+
+Two Homebrew Install Options:
+
+**Recommended:**
+1. Development (cutting edge) Homebrew install 'by-hand':
 
 ```bash
-## 1. Download latest release using git and move into piranha directory:
+# Install:
+brew tap justincbagley/homebrew-piranha ;
+brew update ;
+brew install --HEAD piranha ;
+piranha -i ;
+```
+
+2. Regular Homebrew install 'by-hand':
+
+(Stable, but _not_ up to date.)
+
+```bash
+# Install:
+brew tap justincbagley/homebrew-piranha ;
+brew update ;
+brew install piranha ;
+```
+
+### Updating PIrANHA
+
+**Recommended:**
+1. Upgrading development (cutting edge) version:
+
+```bash
+# Uninstall:
+brew uninstall piranha && brew untap justincbagley/homebrew-piranha ;
+
+# Upgrade:
+brew tap justincbagley/homebrew-piranha ;
+brew update ;
+brew install --HEAD piranha ;
+piranha -i ;
+```
+
+<!-- Downloading and installing PIrANHA (on macOS or Linux) is easy, with two options: local install or Homebrew install.
+
+### Local install
+
+```bash
+# Download latest release using git and move into piranha directory:
 cd ~ ; 
 git clone https://github.com/justincbagley/piranha.git ./piranha-master/ ;
 cd piranha-master/ ;
 
-## 2. Install:
+# Install:
 cd install/ ;
 chmod u+x ./* ;
 local_piranha ;
-#
-cp local_piranha ~/bin/ ; # makes installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual)
+
+# Make installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual):
+cp local_piranha ~/bin/ ;
 ```
 
-Homebrew install
+### Homebrew install (on macOS)
+
+Three Homebrew Install Options:
+
+**Recommended:**
+1. Development (cutting edge) Homebrew install 'by-hand':
 
 ```bash
-## 1A. Homebrew install 'by-hand':
-brew tap justincbagley/homebrew-piranha
-brew update
-brew install piranha
-echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
-echo "alias piranha=\"/usr/local/Cellar/piranha/0.4a2/piranha\"" >> ~/.bash_profile ; ## Add to ~/.bash_profile etc. for automatic loading
-source ~/.bash_profile ;
+# Install:
+brew tap justincbagley/homebrew-piranha ;
+brew update ;
+brew install --HEAD piranha ;
 
-## OR 1B. Automated Homebrew install using installer:
+echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
+HEAD_VERSION="$(which /usr/local/Cellar/piranha/*/piranha | sed 's/^.*piranha\///g; s/\/piranha//g')";
+# Add alias to ~/.bash_profile for automatic loading:
+echo "alias piranha=\"/usr/local/Cellar/piranha/${HEAD_VERSION}/piranha\"" >> ~/.bash_profile ;
+echo "source \"/usr/local/Cellar/piranha/${HEAD_VERSION}/completions/init.sh\"" >> ~/.bash_profile ;
+source ~/.bash_profile ;
+```
+
+2. Regular Homebrew install 'by-hand':
+
+```bash
+# Install:
+brew tap justincbagley/homebrew-piranha ;
+brew update ;
+brew install piranha ;
+
+echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
+VERSION="$(which /usr/local/Cellar/piranha/*/piranha | sed 's/^.*piranha\///g; s/\/piranha//g')";
+# Add alias to ~/.bash_profile for automatic loading:
+echo "alias piranha=\"/usr/local/Cellar/piranha/${VERSION}/piranha\"" >> ~/.bash_profile ;
+echo "source \"/usr/local/Cellar/piranha/${VERSION}/completions/init.sh\"" >> ~/.bash_profile ;
+source ~/.bash_profile ;
+```
+
+3. Automated regular Homebrew install using installer:
+
+```bash
+# Download:
 cd ~ ; 
 git clone https://github.com/justincbagley/piranha.git ./piranha-master/ ;
 cd piranha-master/ ;
+
+# Install:
 cd install/ ;
 chmod u+x ./* ;
 brew_piranha ;
-#
-cp brew_piranha ~/bin/ ; # makes installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual)
+source ~/.bash_profile ;
+
+# Make installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual):
+cp brew_piranha ~/bin/ ;
 ```
 
-Get the `piranha` help text and a list of functions available in PIrANHA like so: 
+### Updating PIrANHA (macOS example)
+
+1. Updating Homebrew install 'by-hand':
+
+```bash
+sed -i '' -e '/\#\#\ HOMEBREW\ PIrANHA\ ALIAS\:/,+1d' ~/.bash_profile ;
+sed -i '' '/piranha\/.*\/completions\/init\.sh/d' ~/.bash_profile ;
+
+brew update ;
+brew update ;
+brew upgrade --fetch-HEAD piranha ;
+
+echo "#################### HOMEBREW PIrANHA ALIAS:" >> ~/.bash_profile ;
+HEAD_VERSION="$(which /usr/local/Cellar/piranha/*/piranha | sed 's/^.*piranha\///g; s/\/piranha//g')";
+# Add alias to ~/.bash_profile for automatic loading:
+echo "alias piranha=\"/usr/local/Cellar/piranha/${HEAD_VERSION}/piranha\"" >> ~/.bash_profile ;
+echo "source \"/usr/local/Cellar/piranha/${HEAD_VERSION}/completions/init.sh\"" >> ~/.bash_profile ;
+source ~/.bash_profile ;
+```
+
+2. Automated Homebrew update using installer:
+
+```bash
+if [[ -s $(which brew_piranha) ]]; then
+	brew_piranha ;
+else
+	# Download:
+	cd ~ ; 
+	git clone https://github.com/justincbagley/piranha.git ./piranha-master/ ;
+	cd piranha-master/ ;
+
+	# Install:
+	cd install/ ;
+	chmod u+x ./* ;
+	brew_piranha ;
+	source ~/.bash_profile ;
+
+	# Make installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual):
+	cp brew_piranha ~/bin/ ;
+fi
+```
+-->
+
+
+### Help
+
+Get the help text and a list of functions available in PIrANHA like so (notice `<TAB>` for dynamic completion): 
 
 ```bash
 piranha -h
+piranha -f <TAB>
 piranha -f list
+piranha -s|--shortlist
 ```
 
 Get the help text for a particular function: 
@@ -61,6 +187,8 @@ Get the help text for a particular function:
 ```bash
 piranha -f <function> -h
 ```
+
+### Example usage
 
 Convert between DNA alignment formats like so:
 
@@ -197,40 +325,51 @@ Conduct post-processing of results from standard evolutionary analysis programs 
 
 Use the documentation links in the sidebar at _right_ to navigate this documentation and learn more about PIrANHA, and [contact the author for technical support](https://github.com/justincbagley/piranha/wiki/6.-Contact) or [raise an issue](https://github.com/justincbagley/piranha/issues).
 
-## PIrANHA Publications
+### PIrANHA Publications
 
 We are working on a paper describing PIrANHA while we develop towards major release v1.0 (hopefully later this year, in 2020). However, the alpha pre-release versions of PIrANHA have been used in several of our publications, including:
-- Bagley, J.C., Hickerson, M.J. and Johnson, J.B., 2018. Testing hypotheses of diversification in Panamanian frogs and freshwater fishes using hierarchical approximate Bayesian computation with model averaging. Diversity, 10(4), 120.
-- Bagley, J.C., Mayden, R.L. and Harris, P.M., 2018. Phylogeny and divergence times of suckers (Cypriniformes: Catostomidae) inferred from Bayesian total-evidence analyses of molecules, morphology, and fossils. PeerJ, 6, p.e5168.
-- Bagley, J.C., Uribe-Convers, S., Carlsen, M., Muchhala, N., 2020. Utility of targeted sequence capture for phylogenomics in rapid, recent angiosperm radiations: Neotropical _Burmeistera_ bellflowers as a case study. Molecular Phylogenetics and Evolution. Available online. PubMed: https://www.ncbi.nlm.nih.gov/pubmed/32081762. doi: https://doi:10.1016/j.ympev.2020.106769.
+-  Bagley, J.C., Hickerson, M.J. and Johnson, J.B., 2018. Testing hypotheses of diversification in Panamanian frogs and freshwater fishes using hierarchical approximate Bayesian computation with model averaging. Diversity, 10(4), 120.
+-  Bagley, J.C., Mayden, R.L. and Harris, P.M., 2018. Phylogeny and divergence times of suckers (Cypriniformes: Catostomidae) inferred from Bayesian total-evidence analyses of molecules, morphology, and fossils. PeerJ, 6, p.e5168.
+-  Bagley, J.C., Uribe-Convers, S., Carlsen, M., Muchhala, N., 2020. Utility of targeted sequence capture for phylogenomics in rapid, recent angiosperm radiations: Neotropical _Burmeistera_ bellflowers as a case study. Molecular Phylogenetics and Evolution. Available online. PubMed: https://www.ncbi.nlm.nih.gov/pubmed/32081762. doi: https://doi:10.1016/j.ympev.2020.106769.
 
-## Contact Info
+### Contact Info
 
 Questions? Comments? Concerns? Bug fix requests? Feature requests for existing functions, or requests for new functions? If so, please get in touch [here](https://github.com/justincbagley/piranha/wiki/6.-Contact).
 
-## License
+### License
 
-All code within **PIrANHA v0.4a2** repository is available "AS IS" under a 3-Clause BSD license. See the [LICENSE](LICENSE) file for more information.
+All code within **PIrANHA v0.4a3** repository is available "AS IS" under a 3-Clause BSD license. See the [LICENSE](LICENSE) file for more information.
 
-## Citation
+### Citation
 
 If you use scripts from this repository as part of your published research, please cite the repository as follows (also see DOI information below): 
   
-- Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
+-  Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, provide the following link to this software repository in your manuscript:
 
-- https://github.com/justincbagley/PIrANHA
+-  https://github.com/justincbagley/PIrANHA
 
-## DOI
+### DOI
 
 The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE](https://explore.openaire.eu/)), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.596766.svg)](https://doi.org/10.5281/zenodo.596766). Here are some examples of citing PIrANHA using the DOI: 
   
-  Bagley, J.C. 2020. PIrANHA v0.4a2. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
+  Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
 
-July 31, 2020 Justin C. Bagley, Jacksonville, AL, USA
+### Uninstall
+
+Uninstalling Homebrew `piranha`
+
+```bash
+# Uninstall:
+brew uninstall piranha && brew untap justincbagley/homebrew-piranha ;
+if [[ -f /usr/local/bin/local_piranha ]]; then rm -rf /usr/local/bin/local_piranha ; fi
+if [[ -f /usr/local/bin/brew_piranha ]]; then rm -rf /usr/local/bin/brew_piranha ; fi
+```
+
+December 9, 2020 Justin C. Bagley, Jacksonville, AL, USA
 
 [Next (Introduction) >>](https://github.com/justincbagley/piranha/wiki/1.-Introduction)
