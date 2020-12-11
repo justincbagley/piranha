@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
 # Last update: March 13, 2019                                                            #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES SUBSAMPLING EACH OF ONE TO MULTIPLE PHYLIP ALIGNMENT       #
@@ -201,8 +201,8 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 			echo "$j";
 			charRange="$(echo ${j} | sed 's/\,//g')";
 			echo "$charRange";
-			setLower="$(echo ${j} | sed 's/\-.*$//g')";
-			setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
+			export setLower="$(echo ${j} | sed 's/\-.*$//g')";
+			export setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
 
 			**/selectSites.pl -s $charRange $MY_FASTA > ./sites.fasta;
 			
