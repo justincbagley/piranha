@@ -199,12 +199,12 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 	(
 		for j in ${MY_NEXUS_CHARSETS}; do
 			echo "$j";
-			charRange="$(echo ${j} | sed 's/\,//g')";
+			charRange="$(echo "$j" | sed 's/\,//g')";
 			echo "$charRange";
-			export setLower="$(echo ${j} | sed 's/\-.*$//g')";
-			export setUpper="$(echo ${j} | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
+			export setLower="$(echo "$j" | sed 's/\-.*$//g')";
+			export setUpper="$(echo "$j" | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
 
-			**/selectSites.pl -s $charRange $MY_FASTA > ./sites.fasta;
+			**/selectSites.pl -s "$charRange" "$MY_FASTA" > ./sites.fasta;
 			
 			**/fasta2phylip.pl ./sites.fasta > ./sites.phy;
 
@@ -241,10 +241,10 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
         		if [ $MY_INDIV_MISSING_DATA == 0 ]; then
 					sed '1d' ./sites_nogaps.phy | egrep -v 'NNNNNNNNNN|nnnnnnnnnn' > ./cleanLocus.tmp ;
 					cleanLocus_ntax="$(cat ./cleanLocus.tmp | wc -l)" ;
-					echo locus"$((count++))" $cleanLocus_ntax $locus_nchar > ./locus_top.tmp ;
+					echo locus"$((count++))" "$cleanLocus_ntax" "$locus_nchar" > ./locus_top.tmp ;
 					cat ./locus_top.tmp ./cleanLocus.tmp >> ./gphocs_body.txt ;
 				else
-					echo locus"$((count++))" $locus_ntax $locus_nchar > ./locus_top.tmp ;
+					echo locus"$((count++))" "$locus_ntax" "$locus_nchar" > ./locus_top.tmp ;
 					cat ./locus_top.tmp ./sites_nogaps.phy >> ./gphocs_body.txt ;
 				fi
 
@@ -254,7 +254,7 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 	)
 
 	grep -v "^[0-9]*\ [0-9]*.*$" ./gphocs_body.txt > ./gphocs_body_fix.txt ;
-	cat ./gphocs_top.txt ./gphocs_body_fix.txt > $MY_NEXUS_BASENAME.gphocs ;
+	cat ./gphocs_top.txt ./gphocs_body_fix.txt > "$MY_NEXUS_BASENAME".gphocs ;
 
 	############ STEP #4: CLEANUP: REMOVE UNNECESSARY FILES
 	rm ./gphocs_top.txt ;
