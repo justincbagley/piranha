@@ -19,7 +19,7 @@
 # * 2019-04+   - v1.0.1 - Added checkMachineType function
 # * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format
 # * 2020-07-31 - v1.0.2 - Minor update, added Short PWD functions
-# * 2020-12-11 - v1.0.3 - Minor updates fixing Codacy issues
+# * 2020-12-11 - v1.0.3 - Minor updates fixing Codacy-flagged issues
 #
 # ##################################################
 
@@ -112,7 +112,7 @@ fi
 # Usage: calc <math_commands>, e.g. calc 1+2, or with 
 # variables, e.g. calc $VAR1+$VAR2
 function calc () {
-	bc -l <<< "$@"
+	bc -l <<< "$@" ;
 }
 
 # Check machine type
@@ -121,7 +121,7 @@ function calc () {
 # variables.
 # ------------------------------------------------------
 function checkMachineType () {
-unameOut="$(uname -s)"
+unameOut="$(uname -s)";
 case "${unameOut}" in
 	Linux*)     machine=Linux;;
 	Darwin*)    machine=Mac;;
@@ -224,7 +224,7 @@ function convertsecs() {
   ((h=${1}/3600))
   ((m=(${1}%3600)/60))
   ((s=${1}%60))
-  printf "%02d:%02d:%02d\n" $h $m $s ;
+  printf "%02d:%02d:%02d\n" "$h" "$m" "$s" ;
 }
 
 function pushover() {
