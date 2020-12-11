@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -218,7 +218,7 @@ deleteOldLogs='$DELETE_OLDLOGS'
 nrOfSteps='$NUM_PS_STEPS'>
 cd $RUNELEM_DIR_VAR
 java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_RESUME $RUNELEM_JAVA_FLAG $RUNELEM_SEED_FLAG $RUNELEM_SEED_VAR beast.xml
-" > new_run_element.tmp
+" > new_run_element.tmp ;
 
 				## Make new xml file, replacing original file:
 				if [[ -s "$i" ]]; then rm "$i" ; fi
@@ -267,7 +267,7 @@ deleteOldLogs='$DELETE_OLDLOGS'
 nrOfSteps='$NUM_PS_STEPS'>
 cd $RUNELEM_DIR_VAR
 java $RUNELEM_CP_FLAG $RUNELEM_JAVA_CLASS beast.app.beastapp.BeastMain $RUNELEM_RESUME $RUNELEM_JAVA_FLAG $RUNELEM_SEED_FLAG $RUNELEM_SEED_VAR beast.xml
-" > new_run_element.tmp
+" > new_run_element.tmp ;
 
 		## Make new xml file, replacing original file:
 		if [[ -s "$MY_INPUTXMLFILE_VAR" ]]; then rm "$MY_INPUTXMLFILE_VAR" ; fi
