@@ -51,11 +51,11 @@ Despite the importance of gene trees in species tree and network inference, few 
 
 MAGNET v1.1.1 is a software package composed of shell, R, and Perl scripts and also calls several software programs that it relies on as dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included with the MAGNET distribution:
 
-- Perl (available at: https://www.perl.org/get.html).
-- Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
-- Python (available at: https://www.python.org/downloads/).
-- bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for ```NEXUS2gphocs.sh```).
-- RAxML, installed and running on local machine (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
+-  Perl (available at: https://www.perl.org/get.html).
+-  Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
+-  Python (available at: https://www.python.org/downloads/).
+-  bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for ```NEXUS2gphocs.sh```).
+-  RAxML, installed and running on local machine (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
 
 Users must install all software not included in MAGNET, and ensure that it is available via the command line on their local machine. On the user's local machine, Perl should be available by simply typing "Perl" at the command line; Python should be available by typing "python" at the command line; and bioscripts.convert package should be available by typing "convbioseq" at the command line. Also, RAxML should be compiled using SSE3 install commands, so that RAxML can be called by simply typing "raxmlHPC-SSE3" on the command line. For detailed instructions for setting up RAxML this way, refer to the newest RAxML user manual (available at: http://sco.h-its.org/exelixis/resource/download/NewManual.pdf).
 
@@ -80,7 +80,8 @@ A new feature of MAGNET (as of December 2018) is the --resume flag, a long optio
 ## USAGE
 
 Additional input file and usage information is available in the usage or help texts. To get regular usage info for MAGNET, type ```$ ./MAGNET.sh```, ```$ ./MAGNET.sh -h .```, or ```./MAGNET.sh -help``` while in the MAGNET directory. However, it is more useful (particularly when running for the first time) to get _verbose usage info_ for MAGNET, including detailed descriptions of each option; do this by typing ```$ ./MAGNET.sh -H .``` or ```./MAGNET.sh -Help``` (capital "H" flag) at the command line while in the MAGNET directory. The verbose usage text is as follows:
-```
+
+```sh
 $ piranha -f MAGNET --args='-H'
 .
 .
@@ -208,9 +209,9 @@ Usage: MAGNET [OPTION]...
 
 ### NOTES ON NEXUS2gphocs USAGE
 
-- You may use ```NEXUS2gphocs.sh``` as a standalone script for converting prior to running G-PhoCS on your data. 
-- However, in its current form, you must move ```NEXUS2gphocs.sh``` (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target <inputFile> is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target <inputFile>.
-- You can get the usage info for ```NEXUS2gphocs.sh```, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The ```NEXUS2gphocs``` usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
+-  You may use ```NEXUS2gphocs.sh``` as a standalone script for converting prior to running G-PhoCS on your data. 
+-  However, in its current form, you must move ```NEXUS2gphocs.sh``` (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target <inputFile> is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target <inputFile>.
+-  You can get the usage info for ```NEXUS2gphocs.sh```, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The ```NEXUS2gphocs``` usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
 
 
 ### USAGE EXAMPLES
@@ -218,7 +219,8 @@ Usage: MAGNET [OPTION]...
 **Below I give some examples of how to use the software under the two most common scenarios:**
 
 **SCENARIO 1.** If your data contain very little missing data and, in particular, they contain no individuals with all missing data for a locus, then it should be fine to run MAGNET using the default options on either a single input file (-f 1) or multiple PHYLIP input files (-f 2), as follows:
-```
+
+```sh
 ##--Scenario 1, generic usage:
 piranha -f MAGNET --args='-i <inputFile> -f1'
 piranha -f MAGNET --args='-f2' 	 	## multiple PHYLIP input files case.
@@ -232,7 +234,8 @@ piranha -f MAGNET --args='-f2'   	## multiple PHYLIP input files case.
 **SCENARIO 2.** If your data are relatively lower quality data (e.g. from NGS runs) and you have lots of missing data, including individuals with all missing data for a locus (as is common for RAD tag/SNP data), then RAxML will not run properly under the default MAGNET options. You will likely get up to ~10 messages like "ERROR: Sequence XXXXX consists entirely of undetermined values which will be treated as missing data", follwed by a summary like this: "ERROR: Found 10 sequences that consist entirely of undetermined values, exiting...", and RAxML will quit. The rest of the pipeline will be affected, for example the final summary gene tree file will make no sense because it will simply include a concatenation of all files in the working directory. 
 
 To avoid the above issues caused by large amounts of missing data, you should run MAGNET while **setting the -m flag to 0** (indivMissingData=0) to specify that individuals with missing data are NOT allowed:
-```
+
+```sh
 ##--Scenario 2, all params except indivMissingData set to default options:
 piranha -f MAGNET --args='-i <inputFile> -f1 -m0'
 piranha -f MAGNET --args='-f1 -m0'   	## multiple PHYLIP input files case.
@@ -244,7 +247,8 @@ piranha -f MAGNET --args='-f2 -m0'  	## multiple PHYLIP input files case.
 ```
 
 In addition to the above, here are illustrations of varying the **RAxML options**:
-```
+
+```sh
 ##--Scenario 1, GTRCAT model, instead of the default GTRGAMMA model:
 piranha -f MAGNET --args='-i <inputFile> -f1 -rGTRCAT'
 piranha -f MAGNET --args='-f2 -rGTRCAT'     ## multiple PHYLIP input files case.
@@ -272,16 +276,16 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 
 ## REFERENCES
 
-- Chifman J, Kubatko L (2014) Quartet inference from SNP data under the coalescent model. Bioinformatics, 30, pages 3317–3324.
-- Eaton DAR (2014) PyRAD: assembly of de novo RADseq loci for phyloge-netic analyses. Bioinformatics, 30, 1844–1849.
-- Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
-- Larget BR, Kotha SK, Dewey CN, Ané C (2010) BUCKy: gene tree/species tree reconciliation with Bayesian concordance analysis. Bioinformatics, 26(22):2910-2911.
-- Liu L, Yu L, Edwards SV (2010) A maximum pseudo-likelihood approach for estimating species trees under the coalescent model. BMC Evol Biol, 10(1):302.
-- Liu L, Yu L (2011) Estimating species trees from unrooted gene trees. Syst Biol, 60(5):661-667.
-- Mirarab S, Warnow T (2015) ASTRAL-II: coalescent-based species tree estimation with many hundreds of taxa and thousands of genes. Bioinformatics, 30:44-52.
-- Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
-- Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30.9, 1312-1313.
-- Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
+-  Chifman J, Kubatko L (2014) Quartet inference from SNP data under the coalescent model. Bioinformatics, 30, pages 3317–3324.
+-  Eaton DAR (2014) PyRAD: assembly of de novo RADseq loci for phyloge-netic analyses. Bioinformatics, 30, 1844–1849.
+-  Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
+-  Larget BR, Kotha SK, Dewey CN, Ané C (2010) BUCKy: gene tree/species tree reconciliation with Bayesian concordance analysis. Bioinformatics, 26(22):2910-2911.
+-  Liu L, Yu L, Edwards SV (2010) A maximum pseudo-likelihood approach for estimating species trees under the coalescent model. BMC Evol Biol, 10(1):302.
+-  Liu L, Yu L (2011) Estimating species trees from unrooted gene trees. Syst Biol, 60(5):661-667.
+-  Mirarab S, Warnow T (2015) ASTRAL-II: coalescent-based species tree estimation with many hundreds of taxa and thousands of genes. Bioinformatics, 30:44-52.
+-  Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
+-  Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30.9, 1312-1313.
+-  Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
 
 
 July 31, 2020
