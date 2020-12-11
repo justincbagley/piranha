@@ -136,7 +136,7 @@ function NEXUS2gphocs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2gphocs, v1.5.0 December 2020  (part of PIrANHA v0.4a3)   "
+echo "INFO      | $(date) | NEXUS2gphocs, v1.5.1 December 2020  (part of PIrANHA v0.4a3)   "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -283,7 +283,7 @@ MY_GAP_THRESHOLD=0.001
 MY_INDIV_MISSING_DATA=1
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename $0) [OPTION]...
+USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) input NEXUS file
@@ -346,7 +346,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
-	echo "$(basename $0) $VERSION";
+	echo "$(basename "$0") $VERSION";
 	exit
 fi
 
