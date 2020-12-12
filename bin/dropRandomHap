@@ -128,9 +128,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -238,7 +238,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]
 				echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
@@ -352,7 +352,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 	
 			if [[ "${machine}" = "Mac" ]]; then
 				sed -i.bak '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Mac
-				rm ./*.bak;
+				rm ./*.bak ;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Linux
@@ -367,7 +367,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 				echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
