@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -234,7 +234,7 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "FALSE" ]]; then
 		## results summary file with run folder prefix to "runs_output" dir in working 
 		## dir (one dir up):
 		if [ ! -d "../runs_output" ]; then
-			mkdir ../runs_output/;
+			mkdir ../runs_output/ ;
 		fi
 #				
 		cp ./"$MY_OUTPUT_BASENAME"_results.txt ../runs_output/ ;
@@ -291,7 +291,7 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "TRUE" ]]; then
 						if [[ "${machine}" = "Mac" ]]; then
 							sed -i.bak $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"$MY_OUTPUT_BASENAME"_BFP.tmp ;
 							sed -i.bak 's/^$//g' ./"$MY_OUTPUT_BASENAME"_BFP.tmp ;
-							rm ./*.bak;
+							rm ./*.bak ;
 						fi
 						if [[ "${machine}" = "Linux" ]]; then
 							sed -i $'s/^[0-9]*\:.*\ \[//g; s/\]//g; s/\ /\t/g; s/\t\t\t/\t/g; s/\t\t/\t/g; s/^\t//g' ./"$MY_OUTPUT_BASENAME"_BFP.tmp ;
