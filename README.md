@@ -31,11 +31,11 @@ Should you cite **PIrANHA**? See https://github.com/mr-c/shouldacite/blob/master
 
 If you use scripts from this repository as part of your published research, please cite the repository as follows (also see DOI information below): 
   
-- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
+-   Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, provide the following link to this software repository in your manuscript:
 
-- https://github.com/justincbagley/PIrANHA
+-   https://github.com/justincbagley/PIrANHA
 
 ## DOI
 
