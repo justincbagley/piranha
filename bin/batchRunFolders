@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -320,7 +320,7 @@ $(printf '\t')$(printf '\t')$(printf '\t')done
 echo \$(date) job \$JOB_NAME done
 
 exit 0
-" > "$MY_BATCH_FILE_PREFIX"1.sh
+" > "$MY_BATCH_FILE_PREFIX"1.sh ;
 
 	## Fix the first submission script file by removing the first (empty) line:
 	if [[ "${machine}" = "Mac" ]]; then
@@ -416,7 +416,7 @@ $(printf '\t')$(printf '\t')$(printf '\t')done
 echo \$(date) job \$JOB_NAME done
 
 exit 0
-" > "$MY_BATCH_FILE_PREFIX"1.sh
+" > "$MY_BATCH_FILE_PREFIX"1.sh ;
 
 	## Fix the first submission script file by removing the first (empty) line:
 	if [[ "${machine}" = "Mac" ]]; then
@@ -436,7 +436,7 @@ exit 0
 #
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's/'"$MY_BATCH_FILE_PREFIX"'1/'"$MY_BATCH_FILE_PREFIX"''"$i"'/g' "$MY_BATCH_FILE_PREFIX""${i}".sh ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/'"$MY_BATCH_FILE_PREFIX"'1/'"$MY_BATCH_FILE_PREFIX"''"$i"'/g' "$MY_BATCH_FILE_PREFIX""${i}".sh ;
