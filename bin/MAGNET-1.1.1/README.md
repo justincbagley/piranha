@@ -213,7 +213,6 @@ Usage: MAGNET [OPTION]...
 -   However, in its current form, you must move ```NEXUS2gphocs.sh``` (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target <inputFile> is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target <inputFile>.
 -   You can get the usage info for ```NEXUS2gphocs.sh```, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The ```NEXUS2gphocs``` usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
 
-
 ### USAGE EXAMPLES
 
 **Below I give some examples of how to use the software under the two most common scenarios:**
@@ -286,7 +285,6 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 -   Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
 -   Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30.9, 1312-1313.
 -   Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
-
 
 July 31, 2020
 Justin C. Bagley, St. Louis, MO, USA
