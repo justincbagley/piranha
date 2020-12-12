@@ -121,9 +121,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -206,7 +206,7 @@ echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
 			while read orig_name; do
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak '/'"$orig_name"'/{N;d;}' "$MY_FASTA" ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i '/'"$orig_name"'/{N;d;}' "$MY_FASTA" ;
@@ -262,7 +262,7 @@ echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
 		## Remove old PHYLIP header:
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak '1d' "$MY_PHYLIP" ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i '1d' "$MY_PHYLIP" ;
@@ -307,7 +307,7 @@ echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
 			while read orig_name; do
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak '/'"$orig_name"'/d' "$MY_NEXUS" ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i '/'"$orig_name"'/d' "$MY_NEXUS" ;
@@ -337,7 +337,7 @@ echo "INFO      | $(date) | name list ${MY_TAX_NAMES_FILE}. "
 		while read orig_name; do
 			if [[ "${machine}" = "Mac" ]]; then
 				sed -i.bak '/'"$orig_name"'/d' "$MY_VCF" ;
-				rm ./*.bak;
+				rm ./*.bak ;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '/'"$orig_name"'/d' "$MY_VCF" ;
