@@ -46,7 +46,6 @@ Despite the importance of gene trees in species tree and network inference, few 
 
 :thumbsup: No special hardware or setup is necessary, unless the user is interested in estimating gene trees on a remote supercomputing cluster (see below). <!--In that case, the user is referred to the c-MAGNET or "cluster MAGNET" software repository (https://github.com/justincbagley/c-MAGNET/; under development).-->
 
-
 ## SOFTWARE DEPENDENCIES
 
 MAGNET v1.1.1 is a software package composed of `shell`, `R`, and Perl scripts and also calls several software programs that it relies on as dependencies. These dependencies are described in some detail in README files for different scripts in the package. However, here I provide a list of them, with asterisks preceding those already included with the MAGNET distribution:
