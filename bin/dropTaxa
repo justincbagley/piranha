@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -411,7 +411,7 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 			fi
 		else
 			echo "WARNING   | $(date) | ERROR: Found no file named $INPUT_FILE in working directory. Quitting... " 
-			exit
+			exit ;
 		fi
 	fi
 fi
@@ -437,7 +437,7 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 					if [[ "$KEEP_ORIG_FILE_SWITCH" != "0" ]]; then
 						echo "INFO      | $(date) | <keepFile> switch activated. Saving original FASTA input file to ./orig_fasta/ ... ";
 						if [[ ! -s ./orig_fasta/  ]]; then mkdir ./orig_fasta/ ; fi 
-						cp "$i" ./orig_fasta/ 
+						cp "$i" ./orig_fasta/ ;
 					fi
 					echo "INFO      | $(date) | Removing unwanted taxa from FASTA input file $((count++)) ... ";
 				fi
@@ -447,7 +447,7 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 				if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 					if [[ "${machine}" = "Mac" ]]; then
 						sed -i.bak '/^[[:space:]]*$/d' "$i" ;
-						rm ./*.bak;
+						rm ./*.bak ;
 					fi
 					if [[ "${machine}" = "Linux" ]]; then
 						sed -i '/^[[:space:]]*$/d' "$i" ;
@@ -459,7 +459,7 @@ if [[ "$MY_FILE_TYPE" = "fasta" ]] || [[ "$MY_FILE_TYPE" = "fas" ]] || [[ "$MY_F
 				if [[ "$(grep -n '\#' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 					if [[ "${machine}" = "Mac" ]]; then
 						sed -i.bak '/\#/d' "$i" ;
-						rm ./*.bak;
+						rm ./*.bak ;
 					fi
 					if [[ "${machine}" = "Linux" ]]; then
 						sed -i '/\#/d' "$i" ;
