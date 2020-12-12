@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -172,7 +172,7 @@ echo "INFO      | $(date) | Checking the following loci: "
 		echo "INFO      | $(date) | Using critical threshold of $MY_THRESH_CRIT. "
 	fi
 
-		mkdir filter_"$USER_TAX_COMP_THRESHOLD"/;
+		mkdir filter_"$USER_TAX_COMP_THRESHOLD"/ ;
 
 count=1
 (
@@ -181,30 +181,30 @@ count=1
 #		echo "INFO      | $(date) | Count: $((count++)) "
 		echo "INFO      | $(date) | ###--------------   $((count++)). $i   --------------###"
 		MY_PHY_BASENAME="$(basename $i .phy)"
-		cp "$i" "$MY_PHY_BASENAME".tmp
+		cp "$i" "$MY_PHY_BASENAME".tmp ;
 #
 		MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' ${MY_PHY_BASENAME}.tmp | sed 's/\ .*//g')"; 
-		MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)"
+		MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)";
 #
 		if [[ "${machine}" = "Mac" ]]; then
 			## Remove _[01], spaces after tip taxon names, and all sequences:
-			sed -i.bak 's/\ .*//g' "$MY_PHY_BASENAME".tmp
-			sed -i.bak 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp
-			sed -i.bak '1d' "$MY_PHY_BASENAME".tmp
-			rm ./*.bak;
+			sed -i.bak 's/\ .*//g' "$MY_PHY_BASENAME".tmp ;
+			sed -i.bak 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp ;
+			sed -i.bak '1d' "$MY_PHY_BASENAME".tmp ;
+			rm ./*.bak ;
 		fi
 
 		if [[ "${machine}" = "Linux" ]]; then
 			## Remove _[01], spaces after tip taxon names, and all sequences:
-			sed -i 's/\ .*//g' "$MY_PHY_BASENAME".tmp
-			sed -i 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp
-			sed -i '1d' "$MY_PHY_BASENAME".tmp
+			sed -i 's/\ .*//g' "$MY_PHY_BASENAME".tmp ;
+			sed -i 's/\_[01]$//g' "$MY_PHY_BASENAME".tmp ;
+			sed -i '1d' "$MY_PHY_BASENAME".tmp ;
 		fi
 #
 		## Count number of nonredundant taxa, our metric for applying the user-specified 
 		## taxonomic completeness threshold:
 		echo "INFO      | $(date) | Counting nonredundant taxa... "
-		MY_NUM_NONREDUND_TAX="$(sort -u "$MY_PHY_BASENAME".tmp | wc -l | perl -pe 's/\ //g')"
+		MY_NUM_NONREDUND_TAX="$(sort -u "$MY_PHY_BASENAME".tmp | wc -l | perl -pe 's/\ //g')";
 		echo "INFO      | $(date) | Num. nonredundant taxa: $MY_NUM_NONREDUND_TAX "
 #
 #		## Convert user-specified taxonomic completeness threshold from decimal to whole 
@@ -221,7 +221,7 @@ count=1
 #
 		echo "INFO      | $(date) | Checking against user-specified criterion... "
 		if [[ "$MY_NUM_NONREDUND_TAX" -ge "$MY_THRESH_CRIT" ]]; then
-			cp "$i" filter_"$USER_TAX_COMP_THRESHOLD"/;
+			cp "$i" filter_"$USER_TAX_COMP_THRESHOLD"/ ;
 			echo "INFO      | $(date) | Kept."
 		else
 			echo "INFO      | $(date) | Not kept."
