@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -155,9 +155,9 @@ echo "INFO      | $(date) | Checking availability of RogueNaRok programs from th
 ## This provides a prelim check on availability of RogueNaRok programs from the command line.
 ## If the programs are not available, then the code below will not run. So you will need to
 ## throw an error message and quit.
-	MY_RNR_LSI_CHECK="$(which rnr-lsi)"
-	MY_RNR_MAST_CHECK="$(which rnr-mast)"
-	MY_RNR_TII_CHECK="$(which rnr-tii)"
+	MY_RNR_LSI_CHECK="$(which rnr-lsi)";
+	MY_RNR_MAST_CHECK="$(which rnr-mast)";
+	MY_RNR_TII_CHECK="$(which rnr-tii)";
 	if [[ ! -z "$MY_RNR_LSI_CHECK" ]] && [[ ! -z "$MY_RNR_MAST_CHECK" ]] && [[ ! -z "$MY_RNR_TII_CHECK" ]]; then
 		echo "INFO      | $(date) | Check PASSED... "	
 	elif [[ -z "$MY_RNR_LSI_CHECK" ]] || [[ -z "$MY_RNR_MAST_CHECK" ]] || [[ -z "$MY_RNR_TII_CHECK" ]]; then
@@ -172,7 +172,7 @@ echo "INFO      | $(date) | Step #2: Clean tree file, and check tree file charac
 ############ STEP #2: GET TREE FILE CHARACTERISTICS (NO. TREES, NO. TAXA; NO. TAX CHECK) AND THEN RUN ROGUENAROK
 echo "INFO      | $(date) | Moving trees to temporary file (trees.tmp) and cleaning... "
 ## Copy inputFile (trees file) to temporary file for manipulation:
-	cp "$INPUT_FILE" ./trees.tmp 
+	cp "$INPUT_FILE" ./trees.tmp ;
 
 ## Clean file by removing new lines, empty lines or commented out lines (starting with the
 ## pound sign):
