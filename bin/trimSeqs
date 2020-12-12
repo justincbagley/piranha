@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -160,7 +160,7 @@ sequential_FASTA2PHYLIP () {
 			## convert it, so use file as is.
 			
 			## Count number of taxa/tips present in FASTA file:
-			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')"
+			MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')";
 			
 			## This is the base name of the original FASTA file, so you have it. This will work regardless 
 			## of whether the FASTA filename extension is written in lowercase or in all caps, as 
@@ -231,7 +231,7 @@ BEGIN DATA;
 
 echo ";
 END;
-" > NEXUS_bottom.tmp
+" > NEXUS_bottom.tmp ;
 
 	MY_PHYLIP_BASENAME="$(basename "$INPUT_PHYLIP_FILE" '.phy')" ;
 
@@ -253,7 +253,7 @@ END;
 			for i in $MY_UNWANTED_NEXUS_LINES; do
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak ''"$i"'d' "$MY_PHYLIP_BASENAME".nex ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i ''"$i"'d' "$MY_PHYLIP_BASENAME".nex ;
@@ -268,7 +268,7 @@ END;
 	if [[ "$(sed -n '7p' "$MY_PHYLIP_BASENAME".nex | wc -c | sed 's/\ //g')" -lt "20" ]]; then 
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak '7d' "$MY_PHYLIP_BASENAME".nex ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i '7d' ./"$MY_PHYLIP_BASENAME".nex ;
@@ -279,7 +279,7 @@ END;
 	if [[ "$( grep -h '\?' "$MY_PHYLIP_BASENAME".nex | wc -l )" -gt "0" ]]; then 
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's/\?/N/g' "$MY_PHYLIP_BASENAME".nex ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/\?/N/g' "$MY_PHYLIP_BASENAME".nex ;
