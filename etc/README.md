@@ -20,7 +20,7 @@ This is the default configuration file for the `RAxMLRunner` function, with four
 
 ## pushover.cfg.sample
 
-To use the [Pushover][1] notification function in your scripts take the following steps.
+To use the [Pushover][1] notification function in your scripts, take the following steps:
 
 1.   If you haven't done so already, create a [Pushover][1] account and create a Pushover application.
 2.   Rename `pushover.cfg.sample` to `pushover.cfg`
