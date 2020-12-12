@@ -218,7 +218,7 @@ count=1
 
 			while read line; do
 				MY_TAXON_NAME="$(echo "$line" | sed 's/\ //g')" ;
-				echo $MY_TAXON_NAME
+				echo "$MY_TAXON_NAME"
 
 				if [[ ! -z "$(grep -n "$MY_TAXON_NAME" "$i" )" ]]; then 
 					# Extract/copy corresponding sequence from $i and paste it to end of
@@ -227,7 +227,7 @@ count=1
 					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" "$i" | perl -pe 's/^.*\ //g' | sed 's/\ //g')" ;
 					if [[ "${machine}" = "Mac" ]]; then
 						sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
-						rm ./*.bak;
+						rm ./*.bak ;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then
@@ -243,7 +243,7 @@ count=1
 						MY_SEQUENCE="$(printf 'N%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
 						if [[ "${machine}" = "Mac" ]]; then
 							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
-							rm ./*.bak;
+							rm ./*.bak ;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then
@@ -255,7 +255,7 @@ count=1
 						MY_SEQUENCE="$(printf 'n%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
 						if [[ "${machine}" = "Mac" ]]; then
 							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
-							rm ./*.bak;
+							rm ./*.bak ;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then
@@ -267,7 +267,7 @@ count=1
 						MY_SEQUENCE="$(printf '?%.0s' {$(seq 1 $MY_PHYLIP_NCHAR)})";
 						if [[ "${machine}" = "Mac" ]]; then
 							sed -i.bak 's/\(^'"$MY_TAXON_NAME"'[\ ]*\)/\1'"$MY_SEQUENCE"'/g' "$j" ;
-							rm ./*.bak;
+							rm ./*.bak ;
 						fi
 	
 						if [[ "${machine}" = "Linux" ]]; then
