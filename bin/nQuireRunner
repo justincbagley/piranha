@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -651,11 +651,11 @@ if [[ "$(ls -1 ./*.bam 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
 
 			if [[ -s "${MY_BAM_BASENAME}"_base.bin ]]; then
 				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file ${MY_BAM_BASENAME}_base.bin... "
-				nQuire view "${MY_BAM_BASENAME}"_base.bin > "${MY_BAM_BASENAME}"_base.bin.view.txt
+				nQuire view "${MY_BAM_BASENAME}"_base.bin > "${MY_BAM_BASENAME}"_base.bin.view.txt ;
 			fi
 			if [[ -s "${MY_BAM_BASENAME}"_base_denoised.bin ]]; then
 				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file ${MY_BAM_BASENAME}_base_denoised.bin... "
-				nQuire view "${MY_BAM_BASENAME}"_base_denoised.bin > "${MY_BAM_BASENAME}"_base_denoised.bin.view.txt
+				nQuire view "${MY_BAM_BASENAME}"_base_denoised.bin > "${MY_BAM_BASENAME}"_base_denoised.bin.view.txt ;
 			fi			
 
 		done
@@ -680,11 +680,11 @@ if [[ "$(ls -1 ./*.bam 2>/dev/null | wc -l | sed 's/\ //g')" = "0"  ]]; then
 	
 			if [[ -s "$i" ]]; then
 				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file for ${MY_BAM_BASENAME}_base.bin... "
-				nQuire view "${MY_BAM_BASENAME}"_base.bin > "${MY_BAM_BASENAME}"_base.bin.view.txt
+				nQuire view "${MY_BAM_BASENAME}"_base.bin > "${MY_BAM_BASENAME}"_base.bin.view.txt ;
 			fi
 			if [[ -s "${MY_BAM_BASENAME}"_base_denoised.bin ]]; then
 				echo "INFO      | $(date) | nQuireViewMaker |              Creating view file ${MY_BAM_BASENAME}_base_denoised.bin... "
-				nQuire view "${MY_BAM_BASENAME}"_base_denoised.bin > "${MY_BAM_BASENAME}"_base_denoised.bin.view.txt
+				nQuire view "${MY_BAM_BASENAME}"_base_denoised.bin > "${MY_BAM_BASENAME}"_base_denoised.bin.view.txt ;
 			fi			
 
 		done
@@ -775,7 +775,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 				rm ./*.tmp ;
 		#
 			echo "$((count++)) "  >/dev/null 2>&1 ;
-			done < ./denoised_bin_histotest_out_fileOrder.list.txt   ;
+			done < ./denoised_bin_histotest_out_fileOrder.list.txt  ;
 		)
 	else
 		echo "WARNING   | $(date) | SNPsCoverageSummary | NOT FOUND: Reference file 'denoised_bin_histotest_out_fileOrder.list.txt' needed for this script."
