@@ -4,8 +4,7 @@ This test/ directory contains example DNA sequence alignments (files) and alignm
 
 The full file tree for this directory is currently as follows:
 
-
-```
+```txt
 ..
 └─ test
    ├── README.md
