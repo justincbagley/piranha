@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -150,7 +150,6 @@ echo "INFO      | $(date) | $PWD "
 echo "INFO      | $(date) | Input file: $INPUT_FILE "
 echo "INFO      | $(date) | Examining current directory, setting variables... "
 checkMachineType
-
 
 
 echo "INFO      | $(date) | Step #2: Check and produce summaries of characteristics of input PHYLIP file(s). "
