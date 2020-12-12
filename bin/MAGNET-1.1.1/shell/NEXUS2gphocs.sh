@@ -238,7 +238,7 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 			locus_ntax="$(head -n1 ./sites_nogaps.phy | sed 's/[\ ]*[.0-9]*$//g')" ;
 			locus_nchar="$(head -n1 ./sites_nogaps.phy | sed 's/[0-9]*\ //g')" ;
 			
-        		if [ $MY_INDIV_MISSING_DATA == 0 ]; then
+        		if [[ "$MY_INDIV_MISSING_DATA" == 0 ]]; then
 					sed '1d' ./sites_nogaps.phy | egrep -v 'NNNNNNNNNN|nnnnnnnnnn' > ./cleanLocus.tmp ;
 					cleanLocus_ntax="$(cat ./cleanLocus.tmp | wc -l)" ;
 					echo locus"$((count++))" "$cleanLocus_ntax" "$locus_nchar" > ./locus_top.tmp ;
@@ -248,7 +248,10 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 					cat ./locus_top.tmp ./sites_nogaps.phy >> ./gphocs_body.txt ;
 				fi
 
-			rm ./sites.fasta ./sites.phy ./*.tmp ;
+			rm ./sites.fasta ./sites.phy ;
+			if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+				rm ./*.tmp ; 
+			fi
 			rm ./sites_nogaps.phy ;
 		done
 	)
@@ -257,9 +260,9 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 	cat ./gphocs_top.txt ./gphocs_body_fix.txt > "$MY_NEXUS_BASENAME".gphocs ;
 
 	############ STEP #4: CLEANUP: REMOVE UNNECESSARY FILES
-	rm ./gphocs_top.txt ;
-	rm ./gap_threshold.txt ;
-	rm ./gphocs_body.txt ;
+	if [[ -s ./gphocs_top.txt ]]; then rm ./gphocs_top.txt ; fi
+	if [[ -s ./gap_threshold.txt ]]; then rm ./gap_threshold.txt ; fi
+	if [[ -s ./gphocs_body.txt ]]; then rm ./gphocs_body.txt ; fi
 
 #echo "INFO      | $(date) | Successfully created a '.gphocs' input file from the existing NEXUS file... "
 #echo "INFO      | $(date) | Bye.
@@ -337,7 +340,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 	ancient human demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
 
  Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.
- Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
