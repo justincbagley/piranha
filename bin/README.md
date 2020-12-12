@@ -4,7 +4,6 @@ As is typical of UNIX/Linux distributions and software, this `bin/` directory co
 
 The full file tree for this directory is as follows:
 
-
 ```txt
 ..
 └─ bin
