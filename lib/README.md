@@ -7,7 +7,7 @@ This script must be sourced from all additional scripts in PIrANHA.  Contained w
 
 1.   **Logging:**  All scripts use the logging functions.  There are nine different levels of logs. All log levels are called from within a script in the format `info "some message"`.  The levels of logging are:
 
- *   **die** - Prints an error and exits the script 
+ -   **die** - Prints an error and exits the script 
  *   **error** - prints an error and continues to run the script
  *   **warning** - prints a warning
  *   **notice** - prints a notice to the user
