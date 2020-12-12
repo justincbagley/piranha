@@ -76,8 +76,8 @@ Pre-release version, **PIrANHA v0.2-alpha**, involved a virtually complete rewri
 The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLog.md) is not yet up to date (not even for v0.2-alpha) and the repository is close but still not ready for a v1.0 major release, but we're getting there!!
 
 -    **March 2019:** Changed license to 3\-Clause BSD license. Need to delete old versions still available on GitHub or Zenodo with GPLv2+ license, so that only this release, with current license, is available.
--    **March 2019:** Updated script headers, dates, and copyright information, most scripts.
--    **February \– March 2019:** Added `-V` and `--version` flag options, to echo version to screen, to most scripts in the repo.
+-    **March 2019:** Updated script headers, dates, and copyright information for most scripts.
+-    **February to March 2019:** Added `-V` and `--version` flag options, to echo version to screen, to most scripts in the repo.
 
 ### PIrANHA v0.1.7 (official minor version release), February 19, 2019
 
