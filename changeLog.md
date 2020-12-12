@@ -114,11 +114,14 @@ The current release, PIrANHA v0.1.5, contains the following updates, in addition
 
 -   **August 2017:** Added a Change Log file ('changeLog.md') to supplement releases page and provide log file within master.
 -   **August 2017:** Updated MAGNET pipeline by editing `MAGNET.sh` by adding three new command line options (`\-e`, `\-m`, and `\-o` flags), as follows:
-  \-e   executable (def: raxmlHPC-SSE3) name of RAxML executable, accessible from command line
+
+```bash
+  -e   executable (def: raxmlHPC-SSE3) name of RAxML executable, accessible from command line
        on user's machine
-  \-m   indivMissingData (def: 1=allowed; 0=removed)
-  \-o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
-       separted list   
+  -m   indivMissingData (def: 1=allowed; 0=removed)
+  -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-separated list   
+```
+
 -   **August 2017:** Updated MAGNET pipeline by adding `getBootTrees.sh` script, which collates and organizes bootstrap trees from all RAxML runs in sub-folders of a working directory, especially results of a MAGNET run. This is the standalone version of the script.  
 -   **August 2017:** Updated `BEASTPostProc.sh`
 -   **August 2017:** Updated `BEASTRunner.sh`
