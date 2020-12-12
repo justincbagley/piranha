@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -201,9 +201,9 @@ if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE"
 
 		## Make final RY coded alignment file:
 		cat ./nexus_header.tmp ./matrixRY.tmp ./nexus_tail.tmp > "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
-		sed -i.bak 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
-		sed -i.bak 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
-		sed -i.bak 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed -i.bak 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
+		sed -i.bak 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
+		sed -i.bak 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
 		rm ./*.bak;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
@@ -227,9 +227,9 @@ if [[ "$INPUT_FILE" != "NULL" ]] && [[ -s "$INPUT_FILE" ]] && [[ "$MY_FILE_TYPE"
 		
 		## Make final RY coded alignment file:
 		cat ./nexus_header.tmp ./matrixRY.tmp ./nexus_tail.tmp > "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
-		sed 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
-		sed 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
-		sed 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION"
+		sed 's/DATATYPE\=DNA/DATATYPE\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
+		sed 's/datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
+		sed 's/Datatype\=DNA/datatype\=integerdata\ symbols\=\"01\"/g' "$INPUT_BASENAME"_RY."$MY_INPUT_EXTENSION" ;
 	fi
 
 fi
@@ -296,7 +296,7 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 		## in the matrix are question marks, '?'s, and not 'N's or 'n's.
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed 's/N/\?/g; s/n/\?/g' ./matrixOnlyRY.tmp ; 
@@ -321,7 +321,7 @@ if [[ "$ADDITIONAL_OUT_SWITCH" != "NULL" ]] && [[ -s "$INPUT_BASENAME"_RY."$MY_I
 		cp ./matrixRY.tmp "$INPUT_BASENAME"_RY.fas ;
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's/^/\>/g' "$INPUT_BASENAME"_RY.fas ;
-			rm ./*.bak;
+			rm ./*.bak ;
 			perl -p -i -e 's/\ +/\n/g; s/\t//g' "$INPUT_BASENAME"_RY.fas ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
