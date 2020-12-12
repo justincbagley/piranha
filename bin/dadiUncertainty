@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -445,7 +445,7 @@ echo "INFO      | $(date) | Step #4: Fix bootstrapped data files so that all gen
 				done < ./"$i"
 
 			rm "$i";
-			mv ./file2.tmp "$i";
+			mv ./file2.tmp "$i" ;
 		done
 	)
 
@@ -489,7 +489,7 @@ for i in range(1,$MY_NUM_BOOT_DATASETS_PLUSONE):
 \TABprint(step3_reset_fs % iter)
 \TABprint(step4_save_fs_file % iter)
 
-" > scriptMaker.py
+" > scriptMaker.py ;
 
 ##--Fix "\quote" in ./scriptMaker.py by adding in real double quote, '\"'; fix \TAB by adding in 
 ##--real tab, '\t'. Do this using in-place sed editing (-i flag):
@@ -529,7 +529,7 @@ from numpy import array
 from dadi import Misc,Spectrum,Numerics,PhiManip,Integration
 import json
 
-" > py_header.tmp
+" > py_header.tmp ;
 
 ##--Make final makeBootFS.py python script that, when called, will use ∂a∂i to create a data 
 ##--dictionary and make the fs for each bootstrapped dataset: 
@@ -632,11 +632,11 @@ echo "
 #!/usr/bin/env python
 
 ###  GIM ANALYSIS  ###
-" > py_shebang_header.tmp
+" > py_shebang_header.tmp ;
 
 if [[ "${machine}" = "Mac" ]]; then
 	sed -i.bak '1d' ./py_shebang_header.tmp  ;
-	rm ./*.bak;
+	rm ./*.bak ;
 fi
 if [[ "${machine}" = "Linux" ]]; then
 	sed -i '1d' ./py_shebang_header.tmp  ;
@@ -662,14 +662,14 @@ fi
 echo "
 ## Unfolded case: Save best-fit parameter estimates from the run in popt:
 popt = [$MY_BESTMOD_PARAM_ESTIMATES]
-" > popt.tmp
+" > popt.tmp ;
 
 	elif [[ "$MY_FOLDED_TEST" -gt "0" ]]; then
 
 echo "
 ## Folded case: Save best-fit parameter estimates from the run in popt:
 popt = array([$MY_BESTMOD_PARAM_ESTIMATES])
-" > popt.tmp
+" > popt.tmp ;
 
 	fi
 
@@ -689,7 +689,7 @@ all_boot = [dadi.Spectrum.from_file(\'$MY_WORKING_DIR/bootstrap_fs/{0:02d}.fs'.f
 uncerts_GIM = dadi.Godambe.GIM_uncert(func_ex, $MY_PTS_VAR_NAME, all_boot, popt, data, multinom=True)
 
 
-" > all_boot_runGIM.tmp
+" > all_boot_runGIM.tmp ;
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runGIM.tmp
 	if [[ "${machine}" = "Mac" ]]; then
@@ -708,10 +708,10 @@ uncerts_GIM
 ## Save uncertainty estimates from numpy array to file:
 np.savetxt('uncerts_GIM.tmp', uncerts_GIM, fmt='%2.10f', delimiter=',')
 
-" > ./printResults.tmp
+" > ./printResults.tmp ;
 	
 ##--Use cat to make final custom GIM analysis script:
-	cat ./py_shebang_header.tmp ./py_preamble.tmp ./popt*tmp ./all_boot_runGIM.tmp ./printResults.tmp > ./customGIM.py
+	cat ./py_shebang_header.tmp ./py_preamble.tmp ./popt*tmp ./all_boot_runGIM.tmp ./printResults.tmp > ./customGIM.py ;
 
 ##--RUN CUSTOM GIM SCRIPT:
 	echo "INFO      | $(date) | Running uncertainty analysis using the GIM... "
@@ -760,7 +760,7 @@ echo "
 #!/usr/bin/env python
 
 ###  FIM ANALYSIS  ###
-" > py_shebang_header.tmp
+" > py_shebang_header.tmp ;
 
 if [[ "${machine}" = "Mac" ]]; then
 	sed -i.bak '1d' ./py_shebang_header.tmp  ;	
@@ -790,14 +790,14 @@ fi
 echo "
 ## Unfolded case: Save best-fit parameter estimates from the run in popt:
 popt = [$MY_BESTMOD_PARAM_ESTIMATES]
-" > popt.tmp
+" > popt.tmp ;
 
 	elif [[ "$MY_FOLDED_TEST" -gt "0" ]]; then
 
 echo "
 ## Folded case: Save best-fit parameter estimates from the run in popt:
 popt = array([$MY_BESTMOD_PARAM_ESTIMATES])
-" > popt.tmp
+" > popt.tmp ;
 
 	fi
 
@@ -816,7 +816,7 @@ all_boot = [dadi.Spectrum.from_file(\'$MY_WORKING_DIR/bootstrap_fs/{0:02d}.fs'.f
 
 uncerts_FIM = dadi.Godambe.FIM_uncert(func_ex, $MY_PTS_VAR_NAME, popt, data, multinom=True)
 
-" > all_boot_runFIM.tmp
+" > all_boot_runFIM.tmp ;
 
 ##--Use sed to unescape the escaped single quote in the 'all_boot =...' line of all_boot_runFIM.tmp
 	if [[ "${machine}" = "Mac" ]]; then
@@ -835,7 +835,7 @@ uncerts_FIM
 ## Save uncertainty estimates from numpy array to file:
 np.savetxt('uncerts_FIM.tmp', uncerts_FIM, fmt='%2.10f', delimiter=',')
 
-" > ./printResults.tmp
+" > ./printResults.tmp ;
 	
 ##--Use cat to make final custom FIM analysis script:
 	cat ./py_shebang_header.tmp ./py_preamble.tmp ./popt*tmp ./all_boot_runFIM.tmp ./printResults.tmp > ./customFIM.py ;
