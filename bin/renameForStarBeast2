@@ -133,9 +133,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -163,8 +163,8 @@ echo "INFO      | $(date) | Step #2: Read and process ASTRAL-III style taxon-ass
 ## Split input ASTRAL-III-type taxon-assignment file into separate .tmp files for species
 ## (*_assign_names.tmp) and individuals or tips (*_assign_tips.tmp)
 echo "INFO      | $(date) | Splitting up assignment file... "
-perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 1 > ./species_assign_names.tmp
-perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 3- > ./species_assign_tips.tmp
+perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 1 > ./species_assign_names.tmp ;
+perl -pe $'s/\ /\t/g' "$USER_SPEC_ASSIGNMENT_FILE" | cut -f 3- > ./species_assign_tips.tmp ;
 
 ## Count number of species assignments and tips:
 MY_NUM_SPECIES_ASSIGN="$(wc -l ./species_assign_names.tmp | sed 's/\ //g; s/\.\/.*//g')"
@@ -223,8 +223,8 @@ echo "INFO      | $(date) | Step #4: Clean up workspace by deleting temporary fi
 echo "INFO      | $(date) | Removing temporary files... "
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 
-	if [[ -s ./species_assign_names.tmp ]]; then ; fi 
-	if [[ -s ./species_assign_tips.tmp ]]; then ; fi 
+	if [[ -s ./species_assign_names.tmp ]]; then rm ./species_assign_names.tmp; fi 
+	if [[ -s ./species_assign_tips.tmp ]]; then rm ./species_assign_tips.tmp; fi 
 
 echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
