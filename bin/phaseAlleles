@@ -128,9 +128,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -205,7 +205,7 @@ echo "INFO      | $(date) | ----------------------------------- "
 
 	###### C. CALC FUNCTION:
 	calc () { 
-		bc -l <<< "$@"  
+		bc -l <<< "$@"  ;
 }
 
 	####### D. CHECK MACHINE TYPE:
