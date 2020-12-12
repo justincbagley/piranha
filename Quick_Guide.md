@@ -18,7 +18,7 @@ Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thank
 Two Homebrew install options:
 
 **Recommended:**
-1. Development (cutting edge) Homebrew install 'by-hand':
+1.  Development (cutting edge) Homebrew install 'by-hand':
 
 ```bash
 # Install:
@@ -28,9 +28,9 @@ brew install --HEAD piranha ;
 piranha -i ;
 ```
 
-2. Regular Homebrew install 'by-hand':
+2.  Regular Homebrew install 'by-hand':
 
-(Stable, but _not_ up to date.)
+(Stable, but *not* up to date.)
 
 ```bash
 # Install:
@@ -42,7 +42,7 @@ brew install piranha ;
 ### Updating PIrANHA
 
 **Recommended:**
-1. Upgrading development (cutting edge) version:
+1.  Upgrading development (cutting edge) version:
 
 ```bash
 # Uninstall:
@@ -164,7 +164,7 @@ Phase consensus sequences from HTS (e.g. targeted sequence capture) using refere
     piranha -f phaseAlleles -i <input> -o <output> -r <reference> -m 1
 ```
 
-Run standard evolutionary analysis programs (run with -h for help text first):
+Run standard evolutionary analysis programs (run with `-h` for help text first):
 
 ```bash
 # Run BEAST:
@@ -190,7 +190,7 @@ Run standard evolutionary analysis programs (run with -h for help text first):
     piranha -f SNAPPRunner
 ```
 
-Conduct post-processing of results from standard evolutionary analysis programs (run with -h for help text first):
+Conduct post-processing of results from standard evolutionary analysis programs (run with `-h` for help text first):
 
 ```bash
 # Process output from BEAST:
@@ -207,14 +207,15 @@ Conduct post-processing of results from standard evolutionary analysis programs 
     piranha -f MrBayesPostProc
 ```
 
-Use the documentation links in the sidebar at _right_ to navigate this documentation and learn more about PIrANHA, and [contact the author for technical support](https://github.com/justincbagley/piranha/wiki/6.-Contact) or [raise an issue](https://github.com/justincbagley/piranha/issues).
+Use the documentation links in the sidebar at *right* to navigate this documentation and learn more about PIrANHA, and [contact the author for technical support](https://github.com/justincbagley/piranha/wiki/6.-Contact) or [raise an issue](https://github.com/justincbagley/piranha/issues).
 
 ### PIrANHA Publications
 
 We are working on a paper describing PIrANHA while we develop towards major release v1.0 (hopefully later this year, in 2020). However, the alpha pre-release versions of PIrANHA have been used in several of our publications, including:
--  Bagley, J.C., Hickerson, M.J. and Johnson, J.B., 2018. Testing hypotheses of diversification in Panamanian frogs and freshwater fishes using hierarchical approximate Bayesian computation with model averaging. Diversity, 10(4), 120.
--  Bagley, J.C., Mayden, R.L. and Harris, P.M., 2018. Phylogeny and divergence times of suckers (Cypriniformes: Catostomidae) inferred from Bayesian total-evidence analyses of molecules, morphology, and fossils. PeerJ, 6, p.e5168.
--  Bagley, J.C., Uribe-Convers, S., Carlsen, M., Muchhala, N., 2020. Utility of targeted sequence capture for phylogenomics in rapid, recent angiosperm radiations: Neotropical _Burmeistera_ bellflowers as a case study. Molecular Phylogenetics and Evolution. Available online. PubMed: https://www.ncbi.nlm.nih.gov/pubmed/32081762. doi: https://doi:10.1016/j.ympev.2020.106769.
+
+-   Bagley, J.C., Hickerson, M.J. and Johnson, J.B., 2018. Testing hypotheses of diversification in Panamanian frogs and freshwater fishes using hierarchical approximate Bayesian computation with model averaging. Diversity, 10(4), 120.
+-   Bagley, J.C., Mayden, R.L. and Harris, P.M., 2018. Phylogeny and divergence times of suckers (Cypriniformes: Catostomidae) inferred from Bayesian total-evidence analyses of molecules, morphology, and fossils. PeerJ, 6, p.e5168.
+-   Bagley, J.C., Uribe-Convers, S., Carlsen, M., Muchhala, N., 2020. Utility of targeted sequence capture for phylogenomics in rapid, recent angiosperm radiations: Neotropical *Burmeistera* bellflowers as a case study. Molecular Phylogenetics and Evolution. Available online. PubMed: https://www.ncbi.nlm.nih.gov/pubmed/32081762. doi: https://doi:10.1016/j.ympev.2020.106769.
 
 ### Contact Info
 
@@ -228,11 +229,11 @@ All code within **PIrANHA v0.4a3** repository is available "AS IS" under a 3-Cla
 
 If you use scripts from this repository as part of your published research, please cite the repository as follows (also see DOI information below): 
   
--  Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
+-   Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, provide the following link to this software repository in your manuscript:
 
--  https://github.com/justincbagley/PIrANHA
+-   https://github.com/justincbagley/PIrANHA
 
 ### DOI
 
