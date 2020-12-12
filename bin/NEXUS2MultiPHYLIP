@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -170,15 +170,15 @@ characterizeNexus () {
 ## Count number of loci present in the NEXUS file, based on number of charsets defined.
 ## Also get corrected count starting from 0 for numbering loci below...
 #	MY_NLOCI="$(echo $MY_NEXUS_CHARSETS | wc -l)"
-	MY_NLOCI="$(egrep "charset|CHARSET|Charset" $MY_NEXUS | wc -l)";
+	MY_NLOCI="$(egrep "charset|CHARSET|Charset" "$MY_NEXUS" | wc -l)";
 	MY_CORR_NLOCI="$(calc $MY_NLOCI - 1)";
 
 ## Extract number of taxa from header of NEXUS file:
-	MY_NTAX_NUMCHECK="$(head -n10 $MY_NEXUS | egrep "ntax|NTAX|nTax" | wc -l | sed 's/\ //g' )";
+	MY_NTAX_NUMCHECK="$(head -n10 "$MY_NEXUS" | egrep "ntax|NTAX|nTax" | wc -l | sed 's/\ //g' )";
 	if [[ "$MY_NTAX_NUMCHECK" = "1" ]]; then
-		MY_NTAX="$(head -n10 $MY_NEXUS | egrep "ntax|NTAX|nTax" | sed 's/^.*ntax\=//g; s/^.*NTAX\=//g; s/^.*nTax\=//g' | sed 's/\ .*//g')";
+		MY_NTAX="$(head -n10 "$MY_NEXUS" | egrep "ntax|NTAX|nTax" | sed 's/^.*ntax\=//g; s/^.*NTAX\=//g; s/^.*nTax\=//g' | sed 's/\ .*//g')";
 	elif [[ "$MY_NTAX_NUMCHECK" != "1" ]]; then
-		MY_NTAX="$(head -n10 $MY_NEXUS | egrep "ntax|NTAX|nTax" | head -n1 | sed 's/^.*ntax\=//g; s/^.*NTAX\=//g; s/^.*nTax\=//g' | sed 's/\ .*//g')";
+		MY_NTAX="$(head -n10 "$MY_NEXUS" | egrep "ntax|NTAX|nTax" | head -n1 | sed 's/^.*ntax\=//g; s/^.*NTAX\=//g; s/^.*nTax\=//g' | sed 's/\ .*//g')";
 	fi
 
 ## This is the base name of the original NEXUS file so that you have it. This WILL work 
@@ -200,7 +200,7 @@ fi
 
 	###### START/END LINES
 	# Get final line of NEXUS header:
-	MY_HEADER_ENDLINE="$(grep -n 'matrix\|MATRIX\|Matrix' $MY_NEXUS | sed 's/\:.*//g')";
+	MY_HEADER_ENDLINE="$(grep -n 'matrix\|MATRIX\|Matrix' "$MY_NEXUS" | sed 's/\:.*//g')";
 	# END line of alignment assuming the following END format (two lines of code to end
 	# alignment matrix):
 	# "
@@ -208,7 +208,7 @@ fi
 	#END;
 	# "
 	# and the final line of matrix containing sequence data (by subtraction):
-	MY_ALIGN_ENDLINE="$(grep -n 'end\|END\|End' $MY_NEXUS | head -n1 | sed 's/\:.*//g')";
+	MY_ALIGN_ENDLINE="$(grep -n 'end\|END\|End' "$MY_NEXUS" | head -n1 | sed 's/\:.*//g')";
 	MY_LAST_ALIGN_LINE="$(calc $MY_ALIGN_ENDLINE - 2)";
 	MY_ALIGN_ENDLINE_MINUSONE="$(calc $MY_ALIGN_ENDLINE - 1)";
 	#
