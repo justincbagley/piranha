@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -231,7 +231,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]]; then
 
 (
 	for i in "$INPUT_PHYLIP_FILE"; do 
-		MY_PHYLIP_BASENAME="$(echo $i | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
+		MY_PHYLIP_BASENAME="$(echo "$i" | sed 's/\.\///g; s/\.phy//g; s/\/$//g')";
 		echo "$MY_PHYLIP_BASENAME";
 
 			head -n+1 "$i" > ./head.tmp ; 
