@@ -125,9 +125,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -218,9 +218,9 @@ count=1
 
 			# Make concatenated seqs file from complete locus1 PHYLIP file, and move original
 			# locus1 PHYLIP file to orig_phylip/ subfolder.
-			mkdir orig_phylip/;
+			mkdir orig_phylip/ ;
 			cp "$i" ./concatenated_seqs.phy ;
-			cp "$i" ./orig_phylip/;
+			cp "$i" ./orig_phylip/ ;
 
 			# Make partitions/charsets files with information from locus1...
 			#locus="$(echo $i | perl -pe 's/\.\///g; s/\.[A-Za-z]{3,}$//g')"
@@ -243,7 +243,7 @@ count=1
 					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')";
 					if [[ "${machine}" = "Mac" ]]; then
 						sed -i.bak '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy  ;
-						rm ./*.bak;
+						rm ./*.bak ;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then
@@ -278,7 +278,7 @@ count=1
 		cat ./concatenated_seqs.phy | tail -n+2 > ./concatenated_seqs.tmp  ;
 		MY_CONCAT_PHY_NTAX="$(cat ./concatenated_seqs.phy | tail -n+2 | wc -l | perl -pe 's/\t//g; s/\ //g')";
 		MY_CONCAT_PHY_NCHAR="$(head -n2 ./concatenated_seqs.phy | tail -n1 | perl -pe 's/^[A-Za-z0-9\-\_]*[\ ]*//; s/\ //g; s/$//g; s/\s//g' | wc -c | perl -pe 's/\t//g; s/\ //g')"
-		echo "$MY_CONCAT_PHY_NTAX  $MY_CONCAT_PHY_NCHAR" > ./concat_header.tmp   ;
+		echo "$MY_CONCAT_PHY_NTAX  $MY_CONCAT_PHY_NCHAR" > ./concat_header.tmp  ;
 		
 		# Overwrite original phy file with new phy file:
 		cat ./concat_header.tmp ./concatenated_seqs.tmp > ./concatenated_seqs.phy  ;
