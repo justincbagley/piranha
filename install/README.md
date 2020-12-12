@@ -11,7 +11,7 @@ December 7, 2020
 
 ## AUTOMATED LOCAL GIT INSTALL
 
-### Local `git` install and setup:
+### Local `git` install and setup
 
 ```
 cd piranha-master/ ;
@@ -24,7 +24,7 @@ cp local_piranha ~/bin/ ; # makes installer available from command line, for fut
 
 ## AUTOMATED HOMEBREW INSTALL
 
-### `brew` install and setup:
+### `brew` install and setup
 
 ```
 cd piranha-master/ ;
