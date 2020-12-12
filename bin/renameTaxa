@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -186,14 +186,14 @@ echo "INFO      | $(date) | Step #2: Convert name lists ${MY_ORIG_NAMES_FILE} an
 #					if [[ "$MY_ORIG_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
 #						echo "WARNING   | $(date) | Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
 #						sed -i.bak 's/\ /\\_/g' ./orig_taxon_names.tmp  ; 
-#	 					rm ./*.bak;
+#	 					rm ./*.bak ;
 #					fi
 #					
 #					MY_NEW_NAMES_W_SPACES_CHECK="$(grep -n '\ ' ./new_taxon_names.tmp | wc -l | sed 's/\ .*//g' )";
 #					if [[ "$MY_NEW_NAMES_W_SPACES_CHECK" -gt "0" ]]; then 
 #						echo "WARNING   | $(date) | Found taxon names with spaces, which is not allowed. Converting spaces to underscores... "
 #						sed -i.bak 's/\ /\\_/g' ./new_taxon_names.tmp  ; 
-#						rm ./*.bak;
+#						rm ./*.bak ;
 #					fi
 				fi
 #
@@ -233,7 +233,7 @@ echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_
 			new_name="$(sed -n ${name_count}p ./new_taxon_names.tmp | perl -pe 's/\ .*//g' )"
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak 's/'"$orig_name"'/'"$new_name"'/g' "$MY_FASTA"  ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/'"$orig_name"'/'"$new_name"'/g' "$MY_FASTA"  ;
@@ -286,7 +286,7 @@ echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_
 			new_name="$(sed -n ${name_count}p ./new_taxon_names.tmp | perl -pe 's/\ .*//g' )"
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak 's/'"$orig_name"'/'"$new_name"'/g' "$MY_NEXUS"  ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/'"$orig_name"'/'"$new_name"'/g' "$MY_NEXUS"  ;
@@ -312,7 +312,7 @@ echo "INFO      | $(date) | name lists ${MY_ORIG_NAMES_FILE} and ${MY_NEW_NAMES_
 			new_name="$(sed -n ${name_count}p ./new_taxon_names.tmp | perl -pe 's/\ .*//g' )"
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak 's/'"$orig_name"'/'"$new_name"'/g' "$MY_VCF"  ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i 's/'"$orig_name"'/'"$new_name"'/g' "$MY_VCF"  ;
