@@ -7,7 +7,7 @@
 
 PIrANHA provides a set of tools for automating file processing and analysis in (phylo*=) phylogenetics, phylogenomics, and phylogeography.
 
->_NOTE:_ By convention, in all content we refer to this software package as "PIrANHA" and we write the name of the main script in the package as `piranha`.
+>*NOTE:* By convention, in all content we refer to this software package as "PIrANHA" and we write the name of the main script in the package as `piranha`.
 
 Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thanks to [Homebrew](https://brew.sh) distribution.
 
@@ -15,7 +15,7 @@ Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thank
 
 [See here.](https://github.com/justincbagley/homebrew-piranha)
 
-Two Homebrew Install Options:
+Two Homebrew install options:
 
 **Recommended:**
 1. Development (cutting edge) Homebrew install 'by-hand':
@@ -241,7 +241,6 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE
   Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
-
 
 ### Uninstall
 
