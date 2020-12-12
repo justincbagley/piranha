@@ -2,8 +2,6 @@
 
 ### PIrANHA v1.0 (official major version release #1) - TBA - _Coming soon! Join in on development and help us get there sooner!!_
 
-...
-
 <!-- ### Updates since last pre-release (for PIrANHA v0.4a3 draft): -->
 
 -   **December 11, 2020:** Made various minor fixes to code, READMEs, Quick Guide, etc. fixing Codacy issues.
@@ -77,7 +75,6 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 -    **March 2019:** Updated script headers, dates, and copyright information, most scripts.
 -    **February – March 2019:** Added -V and --version flag options, to echo version to screen, to most scripts in the repo.
 
-
 ### PIrANHA v0.1.7 (official minor version release), February 19, 2019
 
 -   **February 19, 2019:** Improved ```phylipSubsampler.sh``` to check and account for differences in machine type. Now correctly accommodations UNIX (Mac) and LINUX systems.
@@ -95,11 +92,9 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 -   **September 2017:** Updated README. A specific fix to the README is giving an updated DOI in the Zenodo badge (DOI section). Another fix was switching the DOI in example citations to a Zenodo DOI that applies to all versions; the new DOI will always resolve to the latest release tracked by Zenodo.
 -   **August-September 2017:** - Bug fix for `phylipSubsampler.sh` (fixes bug causing incorrect number of characters on first line of input files) 
 
-
 ### PIrANHA v0.1.6.1 (official minor version release), September 13, 2017
 
 -   **August 2017:** Made several updates to README and documentation for the repository.
-
 
 ### PIrANHA v0.1.6 (official minor version release), September 13, 2017
 
@@ -108,7 +103,6 @@ The [changeLog.md](https://github.com/justincbagley/PIrANHA/blob/master/changeLo
 -   **bug fix:** `MLEResultsProc.sh` (expands capability of detecting and accounting for PS/SS runs conducted in different versions of BEAST, i.e. v1 vs. v2) 
 -   **bug fix:** `PFSubsetSum.sh` (fixes incorrect ordering of summary statistics) 
 -   **bug fix:** `PFSubsetSum.sh` (fixed script so that it works with PartitionFinder v1 and v2; last testing: v2.1.1) 
-
 
 ### PIrANHA v0.1.5 (official minor version release), August 21, 2017
 
@@ -129,7 +123,6 @@ The current release, PIrANHA v0.1.5, contains the following updates, in addition
 -   **bug fix:** - `getGeneTrees.sh` (unused code)
 -   **bug fix:** - `BEASTRunner.sh`
 
-
 ### PIrANHA v0.1.4 (modified minor version release - several changes after official v0.1.4 release)
 
 The current, modified PIrANHA v0.1.4 release contains several goodies listed below, in addition to minor improvements in the code!!
@@ -144,7 +137,6 @@ The current, modified PIrANHA v0.1.4 release contains several goodies listed bel
 
 I have also added a new `MrBayesPostProc.sh` script and corresponding 'mrbayes_post_proc.cfg' configuration file, which together automate summarizing the posterior distribution of trees and parameters from a single MrBayes run. I intend to extend these scripts to provide options for several other anlayses of individual MrBayes runs/input files, as well as extend them to pulling down results from multiple MrBayes runs.
 
-
 ### PIrANHA v0.1.4 (official minor version release), May 3, 2017
 
 #### What's new?
@@ -154,18 +146,14 @@ I have also added a new `MrBayesPostProc.sh` script and corresponding 'mrbayes_p
 -   **April 2017:** I added new `dadiRunner.sh` script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo). *n.b.: A `dadiPostProc.sh` script is also in the works (but unreleased) that conducts post-processing and graphical plotting of results from multiple dadi runs*
 -   **January 2017:** I added a new script called `BEAST_PSPrepper.sh` that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand!
 
-
 ### PIrANHA v0.1.3 (official minor version release), November 11, 2016
 
 #### What's new?
 
 This version of PIrANHA introduces the `BEASTRunner.sh` script for automating independent runs of BEAST1 or BEAST2 on a remote supercomputing cluster. See README for details.
 
-
 ### PIrANHA v0.1.2 (official minor version release), November 10, 2016
 
-
 ### PIrANHA v0.1.1 (official minor version, patch release), November 10, 2016
-
 
 ### PIrANHA v0.1.0 (pre-release version zero), September 6, 2016
