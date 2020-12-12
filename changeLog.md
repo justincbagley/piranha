@@ -6,7 +6,7 @@
 
 **v1.0 is TBA - *Coming soon! Join in on development and help us get there sooner!* **
 
-<!-- ### Updates since last pre-release (for PIrANHA v0.4a3 draft): -->
+### Updates since last pre-release (for current _draft release_, PIrANHA v0.4a4)
 
 -   **December 11, 2020:** Made various minor fixes to code, READMEs, Quick Guide, etc. fixing Codacy issues.
 -   **December 7, 2020:** Another update to `piranha` script (now v1.1.6) to make sure that function name tab completions are automatically sourced when running `piranha`. Also updates to installer scripts and documentation, plus the change log.
@@ -14,7 +14,7 @@
 -   **November 23 and December 1, 2020:** Bug fixes and updates for `assembleReads` and `phaseAlleles` functions of `piranha`, fixing errors that caused the program to stop due to issues with among other things `ls`, plus minor change to `alignAlleles` (not worth a mention).
 -   **November 13, 2020:** Bug fix for `PHYLIP2NEXUS` because failing regex test for hexadecimal characters, if produced, in the resulting (output) NEXUS files. Problem solved by posix solution.
 -   **October 20, 2020** Bug fixes for `FASTA2PHYLIP` function, which in aggregate fix problems completely for the single-FASTA, `-f 1` option.
--   **August 12, 2020:** Updated `trimSeqs` function to improve performance after bug/issue discussion with Juan Moreira. This updated fixed posix space bug, because `[:space:]` should be `[[:space:]]`.
+-   **August 12, 2020:** Updated `trimSeqs` function to improve performance after issue discussion with Juan Moreira. This updated fixed posix space bug, because `[:space:]` should be `[[:space:]]`.
 -   **August 3, 2020:** Updated README, as well as Quick Guide for [wiki](https://github.com/justincbagley/piranha/wiki).
 
 ### PIrANHA 0.4a3 (official minor pre-release version v0.4-alpha-3), July 31, 2020
