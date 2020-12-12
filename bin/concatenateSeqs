@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -228,7 +228,7 @@ count=1
 					MY_SEQUENCE="$(grep -h "$MY_TAXON_NAME" $i | perl -pe 's/^[A-Za-z0-9\-\_\ ]*\ //g' | sed 's/\ //g')" ;
 					if [[ "${machine}" = "Mac" ]]; then
 						sed -i.bak '/^'"$MY_TAXON_NAME"'/s/$/'"$MY_SEQUENCE"'/' ./concatenated_seqs.phy ;
-						rm ./*.bak;
+						rm ./*.bak ;
 					fi
 
 					if [[ "${machine}" = "Linux" ]]; then
@@ -243,7 +243,6 @@ count=1
 
 	echo "$((count++))" > count.tmp ;
 
-		
 	done
 )
 
