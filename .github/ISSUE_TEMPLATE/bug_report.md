@@ -30,22 +30,28 @@ A clear and concise description of what you expected to happen.
 
 If applicable, add screenshots to help explain your problem.
 
-### Desktop
+### Machine
+
+#### Desktop
 
 Please complete the following information.
 
--   OS [e.g. iOS]
--   Browser [e.g. chrome, safari]
--   Version [e.g. 22]
+-   Machine type
+-   OS (e.g. macOS)
+-   Terminal program (e.g. Terminal)
+-   Default shell (e.g. `bash`, `zsh`)
+-   Bash version (e.g. `echo $BASH_VERSION`)
+-   Other relevant info
 
-### Smartphone
+#### Remote machine/cluster
 
 Please complete the following information.
 
--   Device [e.g. iPhone6]
--   OS [e.g. iOS8.1]
--   Browser [e.g. stock browser, safari]
--   Version [e.g. 22]
+-   Linux distribution (e.g. CentOS, redhat)
+-   Resource management system (e.g. SLURM, PBS)
+-   Default shell (e.g. `bash`, `zsh`)
+-   Bash version (e.g. `echo $BASH_VERSION`)
+-   Other relevant info
 
 ### Additional context
 
