@@ -124,9 +124,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -604,7 +604,7 @@ echo "#!/bin/sh
 
 $MY_PIRANHA_PATH -f FASTAsummary -m 1
 
-" > ./piranha_FASTAsummary.sh
+" > ./piranha_FASTAsummary.sh ;
 
 			chmod u+x ./piranha_FASTAsummary.sh ;
 
