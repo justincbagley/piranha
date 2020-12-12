@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -157,20 +157,20 @@ if [[ "${machine}" = "Mac" ]]; then
 	echo "INFO      | $(date) | Checking for SpeciesIdentifier... "
 	cd $HOME;
 		## checks 1 & 2:
-		MY_SPECIESIDENT_DIR_CHECK1="$(locate SpeciesIdentifier-1.8)"
-		MY_SPECIESIDENT_DIR_CHECK2="$(which SpeciesIdentifier-1.8)"
-		MY_SPECIESIDENT_JAR_CHECK1="$(locate SpeciesIdentifier.jar)"
-		MY_SPECIESIDENT_JAR_CHECK2="$(which SpeciesIdentifier.jar)"
+		MY_SPECIESIDENT_DIR_CHECK1="$(locate SpeciesIdentifier-1.8)";
+		MY_SPECIESIDENT_DIR_CHECK2="$(which SpeciesIdentifier-1.8)";
+		MY_SPECIESIDENT_JAR_CHECK1="$(locate SpeciesIdentifier.jar)";
+		MY_SPECIESIDENT_JAR_CHECK2="$(which SpeciesIdentifier.jar)";
 	
 		## checks 3 & 4:
-		find / "SpeciesIdentifier-1.8" -type d 2>&1 | grep -v 'Permission denied' > ./find.dir.out
-		find / "SpeciesIdentifier.jar" -type f 2>&1 | grep -v 'Permission denied' > ./find.jar.out
+		find / "SpeciesIdentifier-1.8" -type d 2>&1 | grep -v 'Permission denied' > ./find.dir.out ;
+		find / "SpeciesIdentifier.jar" -type f 2>&1 | grep -v 'Permission denied' > ./find.jar.out ;
 		MY_SPECIESIDENT_DIR_CHECK3="$(grep -h 'No such file or directory' ./find.dir.out | wc -l)";
 		MY_SPECIESIDENT_JAR_CHECK3="$(grep -h 'No such file or directory' ./find.jar.out | wc -l)";
 
 		## Set Applications/ check value:
 		if [[ ! -f /Applications/SpeciesIdentifier-1.8/SpeciesIdentifier.jar ]]; then
-			MY_SPECIESIDENT_JAR_CHECK4="1"
+			MY_SPECIESIDENT_JAR_CHECK4="1";
 		fi
 	
 		##
@@ -259,7 +259,7 @@ echo "INFO      | $(date) | Step #3: Attempt to run recent SpeciesIdentifier ins
 	cd "$USER_SPEC_PATH";
 	echoCDWorkingDir	
 	
-	java -Xmx2000M -jar /Applications/SpeciesIdentifier-1.8/SpeciesIdentifier.jar 
+	java -Xmx2000M -jar /Applications/SpeciesIdentifier-1.8/SpeciesIdentifier.jar ;
 
 
 echo "INFO      | $(date) | Done."
