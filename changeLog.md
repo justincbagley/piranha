@@ -1,6 +1,6 @@
 # PIrANHA Change Log
 
-### PIrANHA v1.0 (official major version release #1) - TBA - _Coming soon! Join in on development and help us get there sooner!!_
+### PIrANHA v1.0 (official major version release #1) - TBA - _Coming soon! Join in on development and help us get there sooner._
 
 <!-- ### Updates since last pre-release (for PIrANHA v0.4a3 draft): -->
 
