@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -197,18 +197,18 @@ echo "## ALIGNMENT FILE ##
 
 	## DATA BLOCKS: see manual for how to define ##
 	[data_blocks]
-	" > PF_top.tmp
+	" > PF_top.tmp ;
 
 echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	[schemes]
 	search = rcluster;
 
 	#user schemes go here if search=user. See manual for how to define.#
-	" > PF_bottom.tmp
+	" > PF_bottom.tmp ;
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg ;  	## Make PartitionFinder configuration file.
 	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
-		rm ./PF_top.tmp ./PF_bottom.tmp;  												## Remove unnecessary files.
+		rm ./PF_top.tmp ./PF_bottom.tmp ;  												## Remove unnecessary files.
 	fi
 
 
@@ -249,18 +249,18 @@ echo "## ALIGNMENT FILE ##
 
 	## DATA BLOCKS: see manual for how to define ##
 	[data_blocks]
-	" > PF_top.tmp
+	" > PF_top.tmp ;
 
 echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	[schemes]
 	search = greedy;
 
 	#user schemes go here if search=user. See manual for how to define.#
-	" > PF_bottom.tmp
+	" > PF_bottom.tmp ;
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
 	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
-		rm ./PF_top.tmp ./PF_bottom.tmp;  											## Remove unnecessary files.
+		rm ./PF_top.tmp ./PF_bottom.tmp ;  											## Remove unnecessary files.
 	fi
 
 
@@ -302,18 +302,18 @@ echo "## ALIGNMENT FILE ##
 
 	## DATA BLOCKS: see manual for how to define ##
 	[data_blocks]
-	" > PF_top.tmp
+	" > PF_top.tmp ;
 
 echo "## SCHEMES, search: all | greedy | rcluster | hcluster | user ##
 	[schemes]
 	search = hcluster;
 
 	#user schemes go here if search=user. See manual for how to define.#
-	" > PF_bottom.tmp
+	" > PF_bottom.tmp ;
 
 	cat ./PF_top.tmp ./*.newPartitions.txt ./PF_bottom.tmp > partition_finder.cfg  	## Make PartitionFinder configuration file.
 	if [[ -s ./PF_top.tmp ]] && [[ -s ./PF_bottom.tmp ]]; then 
-		rm ./PF_top.tmp ./PF_bottom.tmp;  											## Remove unnecessary files.
+		rm ./PF_top.tmp ./PF_bottom.tmp ;  											## Remove unnecessary files.
 	fi
 
 if [[ "$MY_PF_RUN_SWITCH" -eq "1" ]]; then
