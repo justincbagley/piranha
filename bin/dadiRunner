@@ -122,9 +122,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -226,7 +226,7 @@ python ${i} > ${MY_INPUT_BASENAME}.out.txt
 
 $MY_SC_PBS_WKDIR_CODE
 
-exit 0" > dadi_pbs.sh
+exit 0" > dadi_pbs.sh ;
 
 			chmod +x dadi_pbs.sh ;
 			mv ./dadi_pbs.sh ./"$(ls ${i} | sed 's/.py$//g')" ;
@@ -260,7 +260,7 @@ python ${i} > ${MY_INPUT_BASENAME}.out.txt
 
 $MY_SC_PBS_WKDIR_CODE
 
-exit 0" > dadi_pbs.sh
+exit 0" > dadi_pbs.sh ;
 
 			chmod +x dadi_pbs.sh ;
 			mv ./dadi_pbs.sh ./"$(ls ${i} | sed 's/.py$//g')" ;
@@ -293,7 +293,7 @@ echo "INFO      | $(date) | Copying run folders to working dir on supercomputer.
 echo "#!/bin/bash
 
 $(cat ./virtualenv.txt)
-" > batch_qsub_top.txt
+" > batch_qsub_top.txt ;
 
 	(
 		for j in ./*/; do
@@ -302,7 +302,7 @@ $(cat ./virtualenv.txt)
 
 echo "cd $MY_SC_DESTINATION$FOLDERNAME
 qsub dadi_pbs.sh
-" >> cd_and_qsub_commands.txt
+" >> cd_and_qsub_commands.txt ;
 
 		done
 	)
@@ -310,7 +310,7 @@ qsub dadi_pbs.sh
 echo "
 $MY_SC_PBS_WKDIR_CODE
 exit 0
-" > batch_qsub_bottom.txt
+" > batch_qsub_bottom.txt ;
 
 cat batch_qsub_top.txt cd_and_qsub_commands.txt batch_qsub_bottom.txt > dadirunner_batch_qsub.sh ;
 
