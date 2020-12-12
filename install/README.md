@@ -13,7 +13,7 @@ December 7, 2020
 
 ### Local `git` install and setup
 
-```
+```bash
 cd piranha-master/ ;
 cd install/ ;
 chmod u+x ./* ;
@@ -26,7 +26,7 @@ cp local_piranha ~/bin/ ; # makes installer available from command line, for fut
 
 ### `brew` install and setup
 
-```
+```bash
 cd piranha-master/ ;
 cd install/ ;
 chmod u+x ./* ;
