@@ -146,7 +146,7 @@ I have also added a new `MrBayesPostProc.sh` script and corresponding 'mrbayes_p
 
 ### PIrANHA v0.1.4 (official minor version release), May 3, 2017
 
-#### What's new?
+#### What's new
 
 -   **May 2017:** Build now contains new `BEASTRunner.sh` script and 'beast_runner.cfg' configuration file. `BEASTRunner` now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
 -   **April 2017:** Build now contains new `pyRADLocusVarSites.sh` script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
@@ -155,7 +155,7 @@ I have also added a new `MrBayesPostProc.sh` script and corresponding 'mrbayes_p
 
 ### PIrANHA v0.1.3 (official minor version release), November 11, 2016
 
-#### What's new?
+#### What's new
 
 This version of PIrANHA introduces the `BEASTRunner.sh` script for automating independent runs of BEAST1 or BEAST2 on a remote supercomputing cluster. See README for details.
 
