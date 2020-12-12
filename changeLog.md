@@ -6,7 +6,7 @@
 
 **v1.0 is TBA - *Coming soon! Join in on development and help us get there sooner!* **
 
-### Updates since last pre-release (for current _draft release_, PIrANHA v0.4a4)
+### Updates since last pre-release (for *current draft release*, PIrANHA v0.4a4)
 
 -   **December 11, 2020:** Made various minor fixes to code, READMEs, Quick Guide, etc. fixing Codacy issues.
 -   **December 7, 2020:** Another update to `piranha` script (now v1.1.6) to make sure that function name tab completions are automatically sourced when running `piranha`. Also updates to installer scripts and documentation, plus the change log.
