@@ -1065,7 +1065,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
        individuals; takes float proportion value) gap threshold value
   -m   indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed) missing data setting
   -o   outgroup (def: NULL) outgroup given as single taxon name (tip label) or comma-
-       separted list
+       separated list
   -h   help text (also: -help) echo this help text and exit
   -H   verbose help text (also: -Help) echo verbose help text and exit
   -V   version (also: --version) echo version of this script and exit
