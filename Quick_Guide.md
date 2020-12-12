@@ -9,15 +9,16 @@ PIrANHA provides a set of tools for automating file processing and analysis in (
 
 >_NOTE:_ By convention, in all content we refer to this software package as "PIrANHA" and we write the name of the main script in the package as `piranha`.
 
-Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thanks to Homebrew distribution.
+Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thanks to [Homebrew](https://brew.sh) distribution.
 
 ### Homebrew install
+
+[See here.](https://github.com/justincbagley/homebrew-piranha)
 
 Two Homebrew Install Options:
 
 **Recommended:**
-
-1.   Development (cutting edge) Homebrew install 'by-hand':
+1. Development (cutting edge) Homebrew install 'by-hand':
 
 ```bash
 # Install:
@@ -27,7 +28,7 @@ brew install --HEAD piranha ;
 piranha -i ;
 ```
 
-2.   Regular Homebrew install 'by-hand':
+2. Regular Homebrew install 'by-hand':
 
 (Stable, but _not_ up to date.)
 
@@ -41,8 +42,7 @@ brew install piranha ;
 ### Updating PIrANHA
 
 **Recommended:**
-
-1.   Upgrading development (cutting edge) version:
+1. Upgrading development (cutting edge) version:
 
 ```bash
 # Uninstall:
@@ -212,10 +212,9 @@ Use the documentation links in the sidebar at _right_ to navigate this documenta
 ### PIrANHA Publications
 
 We are working on a paper describing PIrANHA while we develop towards major release v1.0 (hopefully later this year, in 2020). However, the alpha pre-release versions of PIrANHA have been used in several of our publications, including:
-
--   Bagley, J.C., Hickerson, M.J. and Johnson, J.B., 2018. Testing hypotheses of diversification in Panamanian frogs and freshwater fishes using hierarchical approximate Bayesian computation with model averaging. Diversity, 10(4), 120.
--   Bagley, J.C., Mayden, R.L. and Harris, P.M., 2018. Phylogeny and divergence times of suckers (Cypriniformes: Catostomidae) inferred from Bayesian total-evidence analyses of molecules, morphology, and fossils. PeerJ, 6, p.e5168.
--   Bagley, J.C., Uribe-Convers, S., Carlsen, M., Muchhala, N., 2020. Utility of targeted sequence capture for phylogenomics in rapid, recent angiosperm radiations: Neotropical _Burmeistera_ bellflowers as a case study. Molecular Phylogenetics and Evolution. Available online. PubMed: https://www.ncbi.nlm.nih.gov/pubmed/32081762. doi: https://doi:10.1016/j.ympev.2020.106769.
+-  Bagley, J.C., Hickerson, M.J. and Johnson, J.B., 2018. Testing hypotheses of diversification in Panamanian frogs and freshwater fishes using hierarchical approximate Bayesian computation with model averaging. Diversity, 10(4), 120.
+-  Bagley, J.C., Mayden, R.L. and Harris, P.M., 2018. Phylogeny and divergence times of suckers (Cypriniformes: Catostomidae) inferred from Bayesian total-evidence analyses of molecules, morphology, and fossils. PeerJ, 6, p.e5168.
+-  Bagley, J.C., Uribe-Convers, S., Carlsen, M., Muchhala, N., 2020. Utility of targeted sequence capture for phylogenomics in rapid, recent angiosperm radiations: Neotropical _Burmeistera_ bellflowers as a case study. Molecular Phylogenetics and Evolution. Available online. PubMed: https://www.ncbi.nlm.nih.gov/pubmed/32081762. doi: https://doi:10.1016/j.ympev.2020.106769.
 
 ### Contact Info
 
@@ -229,11 +228,11 @@ All code within **PIrANHA v0.4a3** repository is available "AS IS" under a 3-Cla
 
 If you use scripts from this repository as part of your published research, please cite the repository as follows (also see DOI information below): 
   
--   Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
+-  Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at: http://github.com/justincbagley/PIrANHA.
 
 Alternatively, provide the following link to this software repository in your manuscript:
 
--   https://github.com/justincbagley/PIrANHA
+-  https://github.com/justincbagley/PIrANHA
 
 ### DOI
 
@@ -242,6 +241,7 @@ The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE
   Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
 
   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
+
 
 ### Uninstall
 
@@ -254,6 +254,6 @@ if [[ -f /usr/local/bin/local_piranha ]]; then rm -rf /usr/local/bin/local_piran
 if [[ -f /usr/local/bin/brew_piranha ]]; then rm -rf /usr/local/bin/brew_piranha ; fi
 ```
 
-_December 9, 2020_ - _Justin C. Bagley, Jacksonville, AL, USA_
+*December 12, 2020* - *Justin C. Bagley, Jacksonville, AL, USA*
 
 [Next (Introduction) >>](https://github.com/justincbagley/piranha/wiki/1.-Introduction)
