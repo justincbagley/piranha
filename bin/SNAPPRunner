@@ -123,9 +123,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -301,7 +301,7 @@ java -Xmx${JAVA_MEM_ALLOC} -jar ${MY_BEAST_PATH} -beagle_sse -seed ${$MY_STARTIN
 
 $MY_SC_PBS_WKDIR_CODE
 
-exit 0" > ./snapp_sbatch.sh
+exit 0" > ./snapp_sbatch.sh ;
 
 	chmod +x ./snapp_sbatch.sh ;
 	mv ./snapp_sbatch.sh ./"$(ls ${i} | sed 's/.xml$//g')" ;
@@ -342,7 +342,7 @@ java -Xmx${JAVA_MEM_ALLOC} -jar ${MY_BEAST_PATH} -beagle_sse -seed $(python -c "
 
 $MY_SC_PBS_WKDIR_CODE
 
-exit 0" > ./snapp_sbatch.sh
+exit 0" > ./snapp_sbatch.sh ;
 
 	chmod +x ./snapp_sbatch.sh ;
 	mv ./snapp_sbatch.sh ./"$(ls ${i} | sed 's/.xml$//g')" ;
@@ -383,7 +383,7 @@ java -Xmx${JAVA_MEM_ALLOC} -jar ${MY_BEAST_PATH} -beagle_sse -seed ${MY_STARTING
 
 $MY_SC_PBS_WKDIR_CODE
 
-exit 0" > ./snapp_sbatch.sh
+exit 0" > ./snapp_sbatch.sh ;
 
 	chmod +x ./snapp_sbatch.sh ;
 	mv ./snapp_sbatch.sh ./"$(ls ${i} | sed 's/.xml$//g')" ;
@@ -415,7 +415,7 @@ echo "INFO      | $(date) | Step #4: Create batch submission file, move all run 
 echo "INFO      | $(date) | Copying run folders to working dir on supercomputer..."
 
 echo "#!/bin/bash
-" > ./qsub_top.txt
+" > ./qsub_top.txt ;
 
 (
 	for j in ./*/; do
@@ -424,7 +424,7 @@ echo "#!/bin/bash
 
 echo "cd $MY_SC_DESTINATION$FOLDERNAME
 sbatch snapp_sbatch.sh
-#" >> ./cd_and_qsub_commands.txt
+#" >> ./cd_and_qsub_commands.txt ;
 
 	done
 )
@@ -432,7 +432,7 @@ sbatch snapp_sbatch.sh
 echo "
 $MY_SC_PBS_WKDIR_CODE
 exit 0
-" > ./qsub_bottom.txt
+" > ./qsub_bottom.txt ;
 
 cat ./qsub_top.txt ./cd_and_qsub_commands.txt ./qsub_bottom.txt > ./SNAPPRunner_batch_qsub.sh ;
 
@@ -445,10 +445,10 @@ else
 fi
 
 echo "INFO      | $(date) | Also copying configuration file to supercomputer..."
-scp ./snapp_runner.cfg $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
+scp ./snapp_runner.cfg "$MY_SSH_ACCOUNT":"$MY_SC_DESTINATION" ;
 
 echo "INFO      | $(date) | Also copying sbatch_file to supercomputer..."
-scp ./SNAPPRunner_batch_qsub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
+scp ./SNAPPRunner_batch_qsub.sh "$MY_SSH_ACCOUNT":"$MY_SC_DESTINATION" ;
 
 
 
