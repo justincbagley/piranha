@@ -16,6 +16,7 @@ Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thank
 Two Homebrew Install Options:
 
 **Recommended:**
+
 1.   Development (cutting edge) Homebrew install 'by-hand':
 
 ```bash
