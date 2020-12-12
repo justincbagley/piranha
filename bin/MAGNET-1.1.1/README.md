@@ -210,7 +210,7 @@ Usage: MAGNET [OPTION]...
 ### NOTES ON NEXUS2gphocs USAGE
 
 -   You may use ```NEXUS2gphocs.sh``` as a standalone script for converting prior to running G-PhoCS on your data. 
--   However, in its current form, you must move ```NEXUS2gphocs.sh``` (out of the shell folder) _and_ rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target <inputFile> is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target <inputFile>.
+-   However, in its current form, you must move ```NEXUS2gphocs.sh``` (out of the shell folder) *and* rmGapSites.r (out of the R folder) into the MAGNET directory in order to run NEXUS2gphocs as a standalone script (this assumes the target <inputFile> is also located in the MAGNET dir). You could also move both scripts into another working directory containing your target <inputFile>.
 -   You can get the usage info for ```NEXUS2gphocs.sh```, in similar fashion to that above, by typing ```./NEXUS2gphocs.sh```, ```./NEXUS2gphocs.sh -h .```, or ```./NEXUS2gphocs.sh -help``` into the command line, and then pressing enter. The ```NEXUS2gphocs``` usage text is sufficiently similar to the latter part of the MAGNET usage printed above that it doesn't bear repeating here.
 
 ### USAGE EXAMPLES
