@@ -121,9 +121,9 @@ logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
 # manager 'Homebrew'.  Mac applications will be installed using
 # Homebrew Casks. Ruby and gems via RVM.
 # -----------------------------------
-homebrewDependencies=()
-caskDependencies=()
-gemDependencies=()
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
 
 
 
@@ -190,7 +190,7 @@ echo "INFO      | $(date) | Step #2: Run main script to count gene copies in sta
 	## Remove branch lengths:
 	if [[ "${machine}" = "Mac" ]]; then
 		sed -i.bak 's/\:[0-9e\.]*//g' ./treefile.tmp ;
-		rm ./*.bak;
+		rm ./*.bak ;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/\:[0-9e\.]*//g' ./treefile.tmp ;
@@ -199,7 +199,7 @@ echo "INFO      | $(date) | Step #2: Run main script to count gene copies in sta
 	## Remove bootstrap proportions or bayesian posterior probs:
 	if [[ "${machine}" = "Mac" ]]; then
 		sed -i.bak 's/)[0-9\.]*/)/g' ./treefile.tmp ;
-		rm ./*.bak;
+		rm ./*.bak ;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/)[0-9\.]*/)/g' ./treefile.tmp ;
@@ -227,8 +227,8 @@ echo "INFO      | $(date) | Step #2: Run main script to count gene copies in sta
 	# unique sorting names produces a file with all unique names, and after cleaning the number
 	# of lines in this file provides a count of the total number of gene copies in the gene tree
 	# dataset.
-	sort -u ./taxon_names.tmp > ./taxon_names_usort.tmp 
-	perl -p -i -e $'s/^\;$\n//g' ./taxon_names_usort.tmp 
+	sort -u ./taxon_names.tmp > ./taxon_names_usort.tmp ;
+	perl -p -i -e $'s/^\;$\n//g' ./taxon_names_usort.tmp ;
 	MY_TOTAL_GENE_COPIES="$(wc -l ./taxon_names_usort.tmp | sed 's/\ \.\/.*//g; s/\ //g')";
 	#echo "$MY_TOTAL_GENE_COPIES"
 
@@ -270,7 +270,7 @@ echo "INFO      | $(date) | (See help text (-h, --help) for additional informati
 	echo "INFO      | $(date) | - Removing branch lengths..."
 	if [[ "${machine}" = "Mac" ]]; then
 		sed -i.bak 's/\:[0-9e\.]*//g' ./treefile.tmp ;
-		rm ./*.bak;
+		rm ./*.bak ;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/\:[0-9e\.]*//g' ./treefile.tmp ;
@@ -280,7 +280,7 @@ echo "INFO      | $(date) | (See help text (-h, --help) for additional informati
 	echo "INFO      | $(date) | - Removing nodal support values..."
 	if [[ "${machine}" = "Mac" ]]; then
 		sed -i.bak 's/)[0-9\.]*/)/g' ./treefile.tmp ;
-		rm ./*.bak;
+		rm ./*.bak ;
 	fi
 	if [[ "${machine}" = "Linux" ]]; then
 		sed -i 's/)[0-9\.]*/)/g' ./treefile.tmp ;
@@ -318,9 +318,9 @@ echo "INFO      | $(date) | (See help text (-h, --help) for additional informati
 					MY_GENE_COUNT="$(sed -n ''"$i"'p' ./treefile.tmp | perl -nle '$c+=scalar(()=m/'$MY_TIP_NAME'/g);END{print $c}' | sed 's/\ //g' | perl -pe $'s/\n//g')";
 					# Only make header once, because same total # tip taxa possible in each gene. 
 					if [[ "$count" = "1" ]]; then
-						echo "${MY_SPECIES_CODE}${TAB}" >> ./gc_header.tmp
+						echo "${MY_SPECIES_CODE}${TAB}" >> ./gc_header.tmp ;
 					fi
-						echo "${MY_GENE_COUNT}${TAB}" >> ./gc"$count".tmp
+						echo "${MY_GENE_COUNT}${TAB}" >> ./gc"$count".tmp ;
 				done < "$MY_ASSIGN_FILE"
 			)
 #
