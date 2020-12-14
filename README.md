@@ -17,7 +17,18 @@ _New features_ include tab completion of function names, as follows:
 <!-- ![piranha-tab-completion](https://raw.githubusercontent.com/justincbagley/piranha/master/assets/piranha_tab_completion2-min.gif) -->
 <p align="center"><img src="/assets/piranha_tab_completion2-min.gif?raw=true"/></p>
 
-## DOCUMENTATION
+## INSTALL \& DOCUMENTATION
+
+### Homebrew install
+
+[See here.](https://github.com/justincbagley/homebrew-tap)
+
+```bash
+brew tap justincbagley/homebrew-tap ;
+brew install piranha ;
+source /usr/local/Cellar/piranha/*/bin/source_piranha_compl.sh ;
+source ~/.bash_profile ;
+```
 
 For additional information on this distribution, including overview, dependencies, installation, updating, usage, workflows, etc., please see the documentation given in the **Quick Guide** ([here](https://github.com/justincbagley/piranha/wiki#quick-guide-for-the-impatient) or [here](Quick_Guide.pdf)) and the **[PIrANHA wiki!!!](https://github.com/justincbagley/PIrANHA/wiki)**
 
