@@ -37,6 +37,13 @@ brew update ;
 brew install piranha ;
 ```
 
+After running one of the installs *above*, it is recommended that users do `source ~/.bash_profile` next on **macOS**, or `source ~/.bashrc` next on **Linux**. To ensure PIrANHA install success, or if `piranha` executable is not available with dynamnic tab completion (shown [here](https://github.com/justincbagley/piranha#piranha)) at the command line interface (CLI), then do:
+
+```bash
+source /usr/local/Cellar/piranha/*/bin/source_piranha_compl.sh ;
+source ~/.bash_profile ;
+```
+
 ### Updating PIrANHA
 
 **Recommended:**
