@@ -202,10 +202,16 @@ escape() { echo "${@}" | sed 's/[]\.|$(){}?+*^]/\\&/g'; }
 # If a script needs sudo access, call this function which
 # requests sudo access and then keeps it alive.
 # ------------------------------------------------------
+
 function needSudo() {
-  # Update existing sudo time stamp if set, otherwise do nothing.
+# Update existing sudo time stamp if set, otherwise do nothing.
   sudo -v
-  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null & ;
+  while true; do 
+    sudo -n true ; 
+    sleep 60 ; 
+    kill -0 "$$" || exit ; 
+  #done 2>/dev/null & ;
+  done 2>/dev/null ;
 }
 
 # convertsecs
