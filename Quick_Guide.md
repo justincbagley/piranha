@@ -7,34 +7,32 @@
 
 PIrANHA provides a set of tools for automating file processing and analysis in (phylo*=) phylogenetics, phylogenomics, and phylogeography.
 
->*NOTE:* By convention, in all content we refer to this software package as "PIrANHA" and we write the name of the main script in the package as `piranha`.
+>_NOTE:_ By convention, in all content we refer to this software package as "PIrANHA" and we write the name of the main script in the package as `piranha`.
 
 Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thanks to [Homebrew](https://brew.sh) distribution.
 
 ### Homebrew install
 
-[See here.](https://github.com/justincbagley/homebrew-piranha)
+[See here.](https://github.com/justincbagley/homebrew-tap)
 
-Two Homebrew install options:
+Two Homebrew Install Options:
 
 **Recommended:**
-1.  Development (cutting edge) Homebrew install 'by-hand':
+1. Development (cutting edge) Homebrew install 'by-hand':
 
 ```bash
 # Install:
-brew tap justincbagley/homebrew-piranha ;
+brew tap justincbagley/homebrew-tap ;
 brew update ;
 brew install --HEAD piranha ;
 piranha -i ;
 ```
 
-2.  Regular Homebrew install 'by-hand':
-
-(Stable, but *not* up to date.)
+2. Regular Homebrew install 'by-hand' (stable, but may not be up to date):
 
 ```bash
 # Install:
-brew tap justincbagley/homebrew-piranha ;
+brew tap justincbagley/homebrew-tap ;
 brew update ;
 brew install piranha ;
 ```
@@ -42,14 +40,14 @@ brew install piranha ;
 ### Updating PIrANHA
 
 **Recommended:**
-1.  Upgrading development (cutting edge) version:
+1. Upgrading development (cutting edge) version:
 
 ```bash
 # Uninstall:
-brew uninstall piranha && brew untap justincbagley/homebrew-piranha ;
+brew uninstall piranha && brew untap justincbagley/homebrew-tap ;
 
 # Upgrade:
-brew tap justincbagley/homebrew-piranha ;
+brew tap justincbagley/homebrew-tap ;
 brew update ;
 brew install --HEAD piranha ;
 piranha -i ;
@@ -254,6 +252,6 @@ if [[ -f /usr/local/bin/local_piranha ]]; then rm -rf /usr/local/bin/local_piran
 if [[ -f /usr/local/bin/brew_piranha ]]; then rm -rf /usr/local/bin/brew_piranha ; fi
 ```
 
-*December 12, 2020* - *Justin C. Bagley, Jacksonville, AL, USA*
+*December 14, 2020* - *Justin C. Bagley, Jacksonville, AL, USA*
 
 [Next (Introduction) >>](https://github.com/justincbagley/piranha/wiki/1.-Introduction)
