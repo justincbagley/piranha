@@ -247,7 +247,7 @@ Uninstalling Homebrew `piranha`
 
 ```bash
 # Uninstall:
-brew uninstall piranha && brew untap justincbagley/homebrew-piranha ;
+brew uninstall piranha && brew untap justincbagley/homebrew-tap ;
 if [[ -f /usr/local/bin/local_piranha ]]; then rm -rf /usr/local/bin/local_piranha ; fi
 if [[ -f /usr/local/bin/brew_piranha ]]; then rm -rf /usr/local/bin/brew_piranha ; fi
 ```
