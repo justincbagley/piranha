@@ -147,6 +147,13 @@ piranha () {
 ######################################## START ###########################################
 ##########################################################################################
 
+if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ ! -z "$FUNCTION_ARGUMENTS" ]] && \
+   [[ "$FUNCTION_ARGUMENTS" = "-V" ]] || [[ "$FUNCTION_ARGUMENTS" = "--version" ]]; then
+  MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
+  "$MY_EXECUTION_PATH" -V ;
+  safeExit ;
+fi
+
 echo "
 piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 15 00:15:01 CST 2020)                    "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
