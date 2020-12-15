@@ -655,6 +655,7 @@ count=1
 			############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 			############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
+echo "P0"
 				MY_EMPTY_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 echo "P1"
 				if [[ "$MY_EMPTY_LINE_CHECK" -gt "0" ]]; then 
@@ -883,19 +884,19 @@ echo "H2"
 			cp "$MY_FASTA" ./fasta.tmp ;
 		
 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
-				MY_EMPTY_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+				MY_EMPTY_LINE_CHECK="$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 echo "P1-2"
 				if [[ "$MY_EMPTY_LINE_CHECK" -gt "0" ]]; then 
 echo "P2-2"
 					if [[ "$machine" = "Mac" ]]; then
 echo "P3a-2"
-						sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
+						sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
 echo "P4a-2"
 						rm ./*.bak ;
 					fi
 					if [[ "$machine" = "Linux" ]]; then
 echo "P3b-2"
-						sed -i '/^[[:space:]]*$/d' "$MY_FASTA" ;
+						sed -i '/^[[:space:]]*$/d' ./fasta.tmp ;
 echo "P4b-2"
 					fi
 				fi
@@ -903,17 +904,17 @@ echo "P5-2"
 			
 			##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 			##--Unlike sequence lines, these lines will all contain '#' characters.
-				MY_COMMENT_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '\#' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+				MY_COMMENT_LINE_CHECK="$(cat ./fasta.tmp | grep -n '\#' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 echo "P6-2"
 				if [[ "$MY_COMMENT_LINE_CHECK" -gt "0" ]]; then 
 echo "P7-2"
 					if [[ "$machine" = "Mac" ]]; then
 echo "P8-2"
-						sed -i.bak '/\#/d' "$MY_FASTA" ;
+						sed -i.bak '/\#/d' ./fasta.tmp ;
 						rm ./*.bak ;
 					fi
 					if [[ "$machine" = "Linux" ]]; then
-						sed -i '/\#/d' "$MY_FASTA" ;
+						sed -i '/\#/d' ./fasta.tmp ;
 					fi
 				fi
 echo "P9-2"
@@ -956,12 +957,12 @@ echo "P9-2"
 				## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 			
 				if [[ "$machine" = "Mac" ]]; then 
-					sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
+					sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
 					rm ./*.bak ;
 				fi
 echo "G2-2"
 				if [[ "$machine" = "Linux" ]]; then 
-					sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
+					sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
 				fi
 echo "H2-2"
 
@@ -977,8 +978,13 @@ echo "H2-2"
 			
 				## Need empty line check here again:
 				if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-					sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
-					rm ./*.bak ;
+					if [[ "$machine" = "Mac" ]]; then 
+						sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
+						rm ./*.bak ;
+					fi
+					if [[ "$machine" = "Linux" ]]; then 
+						sed -i '/^[[:space:]]*$/d' ./fasta.tmp ;
+					fi
 				fi
 			
 				## May also need to make sure the last line has EOF line (i.e. a blank line with no 
