@@ -878,19 +878,6 @@ echo "P8-2"
 				fi
 echo "P9-2"
 
-# 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
-# 				if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-# 					sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
-# 					rm ./*.bak ;
-# 				fi
-# 			
-# 			##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
-# 			##--Unlike sequence lines, these lines will all contain '#' characters.
-# 				if [[ "$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-# 					sed -i.bak '/\#/d' ./fasta.tmp ;
-# 					rm ./*.bak ;
-# 				fi
-			
 			##--Generate metric used below to test FASTA file format and identify whether file contains 
 			##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
 			
