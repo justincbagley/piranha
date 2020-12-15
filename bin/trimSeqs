@@ -714,7 +714,7 @@ Usage: piranha -f $(basename "$0") [Options]...
   -t, --ident     identityThreshold (def: 0.98) max. average identity threshold allowed for
                   alignments
   -s, --st        similarityThreshold (def: NULL) similarity threshold: minimum average 
-                  sequence similarity allowed (recommendation: 0.2?) for sequences
+                  sequence similarity allowed for sequences (recommendation: 0.2?)
   -k, --keep      keepPHYLIP (def: 1, keep; 0, on) whether or not to keep original file(s)
   -n, --nogaps    noGaps (def: 0, off; 1, on) deletes all positions with gaps in alignments
   -a, --allgaps   allGaps (def: 0, off; 1, on) deletes columns composed only of gaps
@@ -722,6 +722,85 @@ Usage: piranha -f $(basename "$0") [Options]...
                   with user-specified name (default is on, so allows changing log file name)
   -v, --verbose   verbose (def: 1, on; 0, off) output more information to screen (stdout)
   -h, --help      echo this help text and exit
+  -H, --Help      echo verbose help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates trimming and filtering one or multiple PHYLIP (Felsenstein 2002) DNA 
+ sequence alignment files using the trimAl software program (Capella-Gutiérrez et al. 2009). 
+ If run with default settings, sequences will be trimmed using a conservation threshold of 
+ 60% and a gap threshold of 0.2, and also alignments will be screened to determine whether 
+ they meet an average sequence identity threshold (-t, --ident). By default, the identity 
+ threshold is set to 0.98, meaning that loci with high average identity (>98%) will be 
+ filtered out of the overall dataset and placed into a discarded_alignments/ subfolder. This 
+ way, only trimmed alignments that are most informative are retained (Bernardes et al. 2007).
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 5/6/7 Linux, but should 
+ work on many other versions of macOS or Linux. Other than standard UNIX/Linux utility 
+ software, the main dependency is trimAl (Capella-Gutiérrez et al. 2009), which can be 
+ obtained from GitHub (available at: https://github.com/scapella/trimal). 
+
+ ${bold}ADDITIONAL DETAILS${reset}
+ ${bold}${red}*IMPORTANT*: manual and automatic modes for gap handling cannot be mixed in trimAl.${reset}
+ So, if you want to specify custom conservation and gap thresholds with the -c and -g flags,
+ then <noGaps> and <allGaps> must be switched off (set to 0), which is the default setting.
+ For example, you could run with options '-c 60 -g 0.1' but you ${underline}cannot${reset} specify values for 
+ -c and -g flags with -n 1 or -a 1. You also ${underline}cannot${reset} turn on both automatic modes, by 
+ setting -n 1 and -a 1 at the same time, as this would cause the run to fail.
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f trimSeqs -i <inputPHYLIP>                                    Trim single <inputPHYLIP> file, with defaults
+    piranha -f trimSeqs -i <inputPHYLIP> -k 0                               Same as above, but deleting original file
+    piranha -f trimSeqs -m 1                                                Trim and filter multiple PHYLIP files using defaults
+    piranha -f trimSeqs -m 1 -k 0                                           Trim and filter multiple PHYLIP files, while deleting
+                                                                            originals
+    piranha -f trimSeqs -m 1 -o phylip -t 0.99 -s 0.2                       Trim and filter multiple PHYLIP files using 
+    piranha -f trimSeqs -h                                                  Show this help text and exit
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Capella-Gutiérrez, S., Silla-Martínez, J.M., and Gabaldon, T., 2009. TRIMAL: a tool for 
+	automated alignment trimming in large-scale phylogenetic analyses. Bioinformatics, 25(15), 
+	1972–1973.
+ Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
+	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
+
+ Created by Justin Bagley on Mon, Jul 27 16:37:22 CDT 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+VERBOSE_USAGE="
+Usage: piranha -f $(basename "$0") [Options]...
+
+ ${bold}Options:${reset}
+  -i, --input     inputPHYLIP (def: NULL) name of input PHYLIP DNA sequence alignment file
+  -m, --multi     multiPHYLIP (def: 0, turned off; 1, on) trim multiple PHYLIP files in  
+                  current working directory
+  -o, --output    outputFormat (def: fasta; also: phylip, nexus) Mandatory output format for 
+                  trimmed alignment file(s)
+  -c, --cons      consThreshold (def: 60) minimum conservation threshold (-cons), i.e. 
+                  min. percentage of original sites to conserve (e.g. 60%)
+  -g, --gt        gapThreshold (def: 0.2) gap threshold, given as 1 - fraction of sequences
+                  with gap allowed per site
+  -t, --ident     identityThreshold (def: 0.98) max. average identity threshold allowed for
+                  alignments
+  -s, --st        similarityThreshold (def: NULL) similarity threshold: minimum average 
+                  sequence similarity allowed for sequences (recommendation: 0.2?)
+  -k, --keep      keepPHYLIP (def: 1, keep; 0, on) whether or not to keep original file(s)
+  -n, --nogaps    noGaps (def: 0, off; 1, on) deletes all positions with gaps in alignments
+  -a, --allgaps   allGaps (def: 0, off; 1, on) deletes columns composed only of gaps
+  -l, --logfile   logFile (def: trimSeqs_log.txt) log screen output to file in working dir 
+                  with user-specified name (default is on, so allows changing log file name)
+  -v, --verbose   verbose (def: 1, on; 0, off) output more information to screen (stdout)
+  -h, --help      echo this help text and exit
+  -H, --Help      echo verbose help text and exit
   -V, --version   echo version and exit
   -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
 
