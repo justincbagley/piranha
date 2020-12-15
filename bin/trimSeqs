@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: trimSeqs.sh                                                                      #
-  VERSION="v1.0.0"                                                                       #
+  VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Jul 27 16:37:22 CDT 2020.                       #
-# Last update: July 31, 2020                                                             #
+# Last update: December 14 2020                                                          #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # THIS SCRIPT AUTOMATES TRIMMING AND FILTERING DNA SEQUENCES IN SEQUENTIAL PHYLIP        #
@@ -215,7 +215,7 @@ INPUT_PHYLIP_FILE="$1"
 ###
 	MY_PHYLIP_LENGTH="$(cat $INPUT_PHYLIP_FILE | wc -l | sed 's/(\ )*//g')";
 	MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
-	## This "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines; was going to call it "MY_SEQUENCE_AND_EOF_LINES" but thought that name was too long.
+	## "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines.
 	tail -n$MY_BODY_LENGTH $INPUT_PHYLIP_FILE > sequences.tmp;
 	MY_NTAX="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
 	MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
@@ -304,7 +304,7 @@ trimSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | trimSeqs, v1.0.0 July 2020                                     "
+echo "INFO      | $(date) | trimSeqs, v1.0.1 December 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -762,7 +762,7 @@ Usage: piranha -f $(basename "$0") [Options]...
  then <noGaps> and <allGaps> must be switched off (set to 0), which is the default setting.
  For example, you could run with options '-c 60 -g 0.1' but you ${underline}cannot${reset} specify values for 
  -c and -g flags with -n 1 or -a 1. You also ${underline}cannot${reset} turn on both automatic modes, by 
- setting -n 1 and -a 1, at the same time (this would cause the run to fail).
+ setting -n 1 and -a 1 at the same time, as this would cause the run to fail.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
