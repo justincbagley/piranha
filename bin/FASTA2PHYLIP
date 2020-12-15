@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  export VERSION="v1.3.4"                                                                #
+  export VERSION="v1.3.5"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
 # Last update: December 15, 2020                                                         #
@@ -139,7 +139,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.4 December 2020                             "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.5 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -238,14 +238,16 @@ fi
 		##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
 		
 			## Get first ID delimiter line number:
-			MY_FIRST_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | head -n1)";
-			
+			# MY_FIRST_ID_LINE="$(grep -n '>' "$MY_FASTA" | head -n2 | sed 's/\:.*//g' | head -n1)";
+			MY_FIRST_ID_LINE="$(awk '/>/{++n; if (n==1) { print NR; exit}}' "$MY_FASTA")";
+				
 			## Get second ID delimiter line number:
-			MY_SECOND_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+			# MY_SECOND_ID_LINE="$(grep -n '>' "$MY_FASTA" | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+			MY_SECOND_ID_LINE="$(awk '/>/{++n; if (n==2) { print NR; exit}}' "$MY_FASTA")";
 		
 			## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 			## If 2, unwrapped; if greater than 2, hard-wrapped.
-			MY_FORMAT_METRIC="$(calc $MY_SECOND_ID_LINE - $MY_FIRST_ID_LINE)";
+			MY_FORMAT_METRIC="$(calc "$MY_SECOND_ID_LINE" - "$MY_FIRST_ID_LINE")";
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -258,8 +260,13 @@ fi
 			echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
-			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
-			rm ./*.bak ;
+			if [[ "$machine" = "Mac" ]]; then 
+				sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
+				rm ./*.bak ;
+			fi
+			if [[ "$machine" = "Linux" ]]; then 
+				sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
+			fi
 
 			perl -p -i -e 's/\n//g' "$MY_FASTA" ;
 			perl -p -i -e 's/MARK\_EOL/\n/g' "$MY_FASTA" ;
@@ -454,8 +461,13 @@ fi
 			echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
 			## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
 		
-			sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
-			rm ./*.bak ;
+			if [[ "$machine" = "Mac" ]]; then 
+				sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
+				rm ./*.bak ;
+			fi
+			if [[ "$machine" = "Linux" ]]; then 
+				sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
+			fi
 			
 			perl -p -i -e 's/\n//g' ./fasta.tmp ;
 			perl -p -i -e 's/MARK\_EOL/\n/g' ./fasta.tmp ;
@@ -870,11 +882,13 @@ count=1
 			
 echo "P1"
 				## Get first ID delimiter line number:
-				MY_FIRST_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | head -n1)";
+				# MY_FIRST_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | head -n1)";
+				MY_FIRST_ID_LINE="$(awk '/>/{++n; if (n==1) { print NR; exit}}' ./fasta.tmp)";
 echo "P2"
 				
 				## Get second ID delimiter line number:
-				MY_SECOND_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+				# MY_SECOND_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+				MY_SECOND_ID_LINE="$(awk '/>/{++n; if (n==2) { print NR; exit}}' ./fasta.tmp)";
 echo "P3"
 			
 				## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
@@ -904,12 +918,6 @@ echo "G2-2"
 					sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
 				fi
 echo "H2-2"
-
-# 				echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
-# 				## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
-# 			
-# 				sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' ./fasta.tmp ;
-# 				rm ./*.bak ;
 				
 				perl -p -i -e 's/\n//g' ./fasta.tmp ;
 				perl -p -i -e 's/MARK\_EOL/\n/g' ./fasta.tmp ;
