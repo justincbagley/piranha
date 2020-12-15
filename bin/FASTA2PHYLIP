@@ -634,7 +634,6 @@ checkMachineType
 ###### Loop through fastas in current working directory, allowing for multiple file extensions,
 ###### and perform operations. However, extension '.fasta' is preferred.
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-echo "current"
 	echo "INFO      | $(date) | Step #2: Convert all FASTA files in cwd to PHYLIP format, & save orig. FASTA order and characteristics. "
 fi
 
@@ -652,6 +651,7 @@ count=1
 			echo "INFO      | $(date) |      A. Clean file, get FASTA file and data characteristics. "
 		fi
 		
+echo "Keep fasta setting: $MY_KEEP_FASTA_SWITCH"
 		if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
 			############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 			############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
