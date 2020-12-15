@@ -442,16 +442,13 @@ echo "G"
 		
 			## Get first ID delimiter line number:
 			MY_FIRST_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | head -n1)";
-echo "H"
 			
 			## Get second ID delimiter line number:
 			MY_SECOND_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | tail -n+2)";
-echo "I"
 		
 			## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 			## If 2, unwrapped; if greater than 2, hard-wrapped.
-			MY_FORMAT_METRIC="$(calc $MY_SECOND_ID_LINE - $MY_FIRST_ID_LINE)";
-echo "J"
+			MY_FORMAT_METRIC="$(calc "$MY_SECOND_ID_LINE" - "$MY_FIRST_ID_LINE")";
 		
 		
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -659,33 +656,22 @@ echo "Keep fasta setting: $MY_KEEP_FASTA_SWITCH"
 			############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 			############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
-echo "P0"
-				MY_EMPTY_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
-echo "P1"
-				if [[ "$MY_EMPTY_LINE_CHECK" -gt "0" ]]; then 
-echo "P2"
+			#	MY_EMPTY_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+				if [[ "$(grep -n '^[\s]*$' "$MY_FASTA" | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 					if [[ "$machine" = "Mac" ]]; then
-echo "P3a"
 						sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
-echo "P4a"
 						rm ./*.bak ;
 					fi
 					if [[ "$machine" = "Linux" ]]; then
-echo "P3b"
 						sed -i '/^[[:space:]]*$/d' "$MY_FASTA" ;
-echo "P4b"
 					fi
 				fi
-echo "P5"
 			
 			##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 			##--Unlike sequence lines, these lines will all contain '#' characters.
-				MY_COMMENT_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '\#' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
-echo "P6"
-				if [[ "$MY_COMMENT_LINE_CHECK" -gt "0" ]]; then 
-echo "P7"
+			#	MY_COMMENT_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '\#' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+				if [[ "$(grep -n '\#' "$MY_FASTA" | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 					if [[ "$machine" = "Mac" ]]; then
-echo "P8"
 						sed -i.bak '/\#/d' "$MY_FASTA" ;
 						rm ./*.bak ;
 					fi
@@ -693,49 +679,28 @@ echo "P8"
 						sed -i '/\#/d' "$MY_FASTA" ;
 					fi
 				fi
-	
-	# 		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
-	# 		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
-	# 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
-	# 			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-	# 					sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
-	# 					rm ./*.bak ;
-	# 			fi
-	# 		
-	# 		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
-	# 		##--Unlike sequence lines, these lines will all contain '#' characters.
-	# 			if [[ "$(grep -n '\#' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-	# 					sed -i.bak '/\#/d' "$MY_FASTA" ;
-	# 					rm ./*.bak ;
-	# 			fi
 			
 			##--Generate metric used below to test FASTA file format and identify whether file contains 
 			##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
-echo "A2"
+
 				## Get first ID delimiter line number:
-	#			MY_FIRST_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | head -n1)";
-				MY_FIRST_ID_LINE="$(cat "$MY_FASTA" | grep -n '>' | head -n2 | sed 's/\:.*//g' | head -n1)";
+				MY_FIRST_ID_LINE="$(grep -n '>' "$MY_FASTA" | head -n2 | sed 's/\:.*//g' | head -n1)";
 				
-echo "B2"
 				## Get second ID delimiter line number:
-	#			MY_SECOND_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | tail -n+2)";
-				MY_SECOND_ID_LINE="$(cat "$MY_FASTA" | grep -n '>' | head -n2 | sed 's/\:.*//g' | tail -n+2)";
-echo "C2"
+				MY_SECOND_ID_LINE="$(grep -n '>' "$MY_FASTA" | head -n2 | sed 's/\:.*//g' | tail -n+2)";
 			
 				## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 				## If 2, unwrapped; if greater than 2, hard-wrapped.
 				MY_FORMAT_METRIC="$(calc "$MY_SECOND_ID_LINE" - "$MY_FIRST_ID_LINE")";
-echo "D2"
 			
 			
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |      B. Convert FASTA to PHYLIP format conditional on sequence line break format. "
 			fi
-echo "E2"
+
 			#####  SEQUENTIAL, HARD-WRAPPED FASTA2PHYLIP CONVERSION CODE  #####
 			
 			if [[ "$MY_FORMAT_METRIC" -gt "2" ]]; then
-echo "F2"
 			
 				echo "INFO      | $(date) | Hard wrapped sequences detected. Converting to sequential FASTA format..."
 				## The FASTA file has hard-wrapped sequences. Convert it to sequential, unwrapped FASTA format.
@@ -744,11 +709,9 @@ echo "F2"
 					sed -i.bak 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
 					rm ./*.bak ;
 				fi
-echo "G2"
 				if [[ "$machine" = "Linux" ]]; then 
 					sed -i 's/^\(\>.*\)/\1MARK\_EOL/g' "$MY_FASTA" ;
 				fi
-echo "H2"
 	
 				perl -p -i -e 's/\n//g' "$MY_FASTA" ;
 				perl -p -i -e 's/MARK\_EOL/\n/g' "$MY_FASTA" ;
@@ -885,35 +848,27 @@ echo "H2"
 			############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 			############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 		
-echo "P0-2a"
 			cp "$MY_FASTA" ./fasta.tmp ;
 		
-echo "P0-2"
 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
 #				cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g' ;
 #				MY_EMPTY_LINE_CHECK="$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
-echo "P1-2"
-				if [[ "$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-echo "P2-2"
+				if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 					if [[ "$machine" = "Mac" ]]; then
-echo "P3a-2"
 						sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
-echo "P4a-2"
 						rm ./*.bak ;
 					fi
 					if [[ "$machine" = "Linux" ]]; then
-echo "P3b-2"
 						sed -i '/^[[:space:]]*$/d' ./fasta.tmp ;
-echo "P4b-2"
 					fi
 				fi
 echo "P5-2"
 			
 			##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 			##--Unlike sequence lines, these lines will all contain '#' characters.
-				MY_COMMENT_LINE_CHECK="$(cat ./fasta.tmp | grep -n '\#' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+#				MY_COMMENT_LINE_CHECK="$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 echo "P6-2"
-				if [[ "$MY_COMMENT_LINE_CHECK" -gt "0" ]]; then 
+				if [[ "$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 echo "P7-2"
 					if [[ "$machine" = "Mac" ]]; then
 echo "P8-2"
