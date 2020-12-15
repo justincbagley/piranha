@@ -155,7 +155,6 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH"
 	exec 2>&1
-#
 	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
 fi
 
@@ -199,7 +198,8 @@ fi
 
 	echo "$MY_FASTA" >> ./output/fileOrder.list.txt ;
 
-	echo "INFO      | $(date) | ###------    $MY_FASTA    ------### "
+#	echo "INFO      | $(date) | ###------    $MY_FASTA    ------### "
+	echo "INFO      | $(date) | ----------------- ${MY_FASTA} "
 
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -210,37 +210,38 @@ fi
 		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
-echo "A"
 			MY_EMPTY_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
-echo "B"
 			if [[ "$MY_EMPTY_LINE_CHECK" -gt "0" ]]; then 
-echo "C"
-				sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
-				rm ./*.bak ;
+				if [[ "$machine" = "Mac" ]]; then
+					sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
+					rm ./*.bak ;
+				fi
+				if [[ "$machine" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' "$MY_FASTA" ;
+				fi
 			fi
 		
 		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 		##--Unlike sequence lines, these lines will all contain '#' characters.
-echo "D"
 			MY_COMMENT_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '\#' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
-echo "E"
 			if [[ "$MY_COMMENT_LINE_CHECK" -gt "0" ]]; then 
-echo "F"
-				sed -i.bak '/\#/d' "$MY_FASTA" ;
-				rm ./*.bak ;
+				if [[ "$machine" = "Mac" ]]; then
+					sed -i.bak '/\#/d' "$MY_FASTA" ;
+					rm ./*.bak ;
+				fi
+				if [[ "$machine" = "Linux" ]]; then
+					sed -i '/\#/d' "$MY_FASTA" ;
+				fi
 			fi
-echo "G"
 		
 		##--Generate metric used below to test FASTA file format and identify whether file contains 
 		##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
 		
 			## Get first ID delimiter line number:
 			MY_FIRST_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | head -n1)";
-echo "H"
 			
 			## Get second ID delimiter line number:
 			MY_SECOND_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | tail -n+2)";
-echo "I"
 		
 			## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 			## If 2, unwrapped; if greater than 2, hard-wrapped.
@@ -571,7 +572,6 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH"
 	exec 2>&1
-#
 	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
 fi
 
@@ -580,8 +580,10 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Step #1: Set up workspace by defining useful environmental variables and functions, and check machine type. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#echoCDWorkingDir
+echoShortPWD
+checkMachineType
 
 ## Organize working directory structure:
 	if [[ ! -s ./output/ ]]; then
@@ -601,13 +603,14 @@ if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 fi
 
 MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname \*.fa -o -iname \*.FASTA -o -iname \*.FAS -o -iname \*.FA \))"
+
+count=1
 (
 	for MY_FASTA in $MY_FASTA_FILES; do 
 
 	echo "$MY_FASTA" >> ./output/fileOrder.list.txt ;
 
-	echo "INFO      | $(date) | ###------    $MY_FASTA    ------### "
-
+	echo "INFO      | $(date) | ----------------- Converting file ${count}. ${MY_FASTA} "
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) |      A. Clean file, get FASTA file and data characteristics. "
@@ -617,26 +620,55 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
-			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+			MY_EMPTY_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+			if [[ "$MY_EMPTY_LINE_CHECK" -gt "0" ]]; then 
+				if [[ "$machine" = "Mac" ]]; then
 					sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
 					rm ./*.bak ;
+				fi
+				if [[ "$machine" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' "$MY_FASTA" ;
+				fi
 			fi
 		
 		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 		##--Unlike sequence lines, these lines will all contain '#' characters.
-			if [[ "$(grep -n '\#' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+			MY_COMMENT_LINE_CHECK="$(cat "$MY_FASTA" | grep -n '\#' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+			if [[ "$MY_COMMENT_LINE_CHECK" -gt "0" ]]; then 
+				if [[ "$machine" = "Mac" ]]; then
 					sed -i.bak '/\#/d' "$MY_FASTA" ;
 					rm ./*.bak ;
+				fi
+				if [[ "$machine" = "Linux" ]]; then
+					sed -i '/\#/d' "$MY_FASTA" ;
+				fi
 			fi
+
+# 		############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
+# 		############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
+# 		##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
+# 			if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+# 					sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
+# 					rm ./*.bak ;
+# 			fi
+# 		
+# 		##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
+# 		##--Unlike sequence lines, these lines will all contain '#' characters.
+# 			if [[ "$(grep -n '\#' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+# 					sed -i.bak '/\#/d' "$MY_FASTA" ;
+# 					rm ./*.bak ;
+# 			fi
 		
 		##--Generate metric used below to test FASTA file format and identify whether file contains 
 		##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
 		
 			## Get first ID delimiter line number:
-			MY_FIRST_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | head -n1)";
+#			MY_FIRST_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | head -n1)";
+			MY_FIRST_ID_LINE="$(cat "$MY_FASTA" | grep -n '>' | head -n2 | sed 's/\:.*//g' | head -n1)";
 			
 			## Get second ID delimiter line number:
-			MY_SECOND_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+#			MY_SECOND_ID_LINE="$(grep -n '>' $MY_FASTA | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+			MY_SECOND_ID_LINE="$(cat "$MY_FASTA" | grep -n '>' | head -n2 | sed 's/\:.*//g' | tail -n+2)";
 		
 			## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 			## If 2, unwrapped; if greater than 2, hard-wrapped.
@@ -951,6 +983,8 @@ MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname 
 		fi
 	
 	fi
+
+	echo "$((count++)) "  >/dev/null 2>&1 ;
 
 	done
 )
