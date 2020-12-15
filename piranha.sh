@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  export VERSION="v1.1.6"                                                                #
+  export PIRANHA_VERSION="v1.1.6"                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
 # Last update: December 15, 2020                                                         #
@@ -574,7 +574,7 @@ while [[ ${1} = -?* ]]; do
     --saveDir) shift; saveDir="$1" ;;
     -h|--help) usage >&2; safeExit ;;
     --force) force=true ;;
-    -V|--version) echo "${SCRIPT_NAME} $VERSION"; safeExit ;;
+    -V|--version) echo "${SCRIPT_NAME} $PIRANHA_VERSION"; safeExit ;;
     -v|--verbose) verbose=true ;;
     -l|--log) printLog=true ;;
     -q|--quiet) quiet=true ;;
