@@ -147,14 +147,6 @@ piranha () {
 ######################################## START ###########################################
 ##########################################################################################
 
-if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ "$FUNCTION_TO_RUN" = "-V" ]] || \
-   [[ "$FUNCTION_TO_RUN" = "--version" ]]; then
-echo "
-piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 15 00:15:01 CST 2020)                    "
-echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
-  safeExit ;
-fi
-
 echo "
 piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 15 00:15:01 CST 2020)                    "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
