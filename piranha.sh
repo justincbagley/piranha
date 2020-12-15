@@ -148,7 +148,7 @@ piranha () {
 ##########################################################################################
 
 if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_ARGUMENTS" = "-V" ]] || [[ "$FUNCTION_ARGUMENTS" = "--version" ]]; then
-	MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
+	MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})";
 	"$MY_EXECUTION_PATH" -V ;
 	safeExit ;
 fi
