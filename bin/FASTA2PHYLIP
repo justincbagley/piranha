@@ -289,7 +289,7 @@ fi
 		
 			## Count corrected number of characters in DNA alignment
 			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
-			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			MY_CORRECTED_NCHAR="$(calc "$MY_INITIAL_NCHAR" - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
@@ -349,7 +349,7 @@ fi
 		
 			## Count corrected number of characters in DNA alignment
 			MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
-			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			MY_CORRECTED_NCHAR="$(calc "$MY_INITIAL_NCHAR" - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
@@ -485,7 +485,7 @@ fi
 		
 			## Count corrected number of characters in DNA alignment
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
-			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			MY_CORRECTED_NCHAR="$(calc "$MY_INITIAL_NCHAR" - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
@@ -542,7 +542,7 @@ fi
 		
 			## Count corrected number of characters in DNA alignment
 			MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
-			MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+			MY_CORRECTED_NCHAR="$(calc "$MY_INITIAL_NCHAR" - 1)";
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 			fi
@@ -798,7 +798,7 @@ count=1
 			
 				## Count corrected number of characters in DNA alignment
 				MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
-				MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+				MY_CORRECTED_NCHAR="$(calc "$MY_INITIAL_NCHAR" - 1)";
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 					echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 				fi
@@ -879,7 +879,7 @@ echo "P3"
 			
 				## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 				## If 2, unwrapped; if greater than 2, hard-wrapped.
-				MY_FORMAT_METRIC="$(calc "$MY_SECOND_ID_LINE"-"$MY_FIRST_ID_LINE")";
+				MY_FORMAT_METRIC="$(calc "$MY_SECOND_ID_LINE" - "$MY_FIRST_ID_LINE")";
 echo "P4"
 			
 			
@@ -944,7 +944,7 @@ echo "H2-2"
 			
 				## Count corrected number of characters in DNA alignment
 				MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
-				MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+				MY_CORRECTED_NCHAR="$(calc "$MY_INITIAL_NCHAR" - 1)";
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 					echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 				fi
@@ -1005,7 +1005,7 @@ echo "P10"
 			
 				## Count corrected number of characters in DNA alignment
 				MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
-				MY_CORRECTED_NCHAR="$(calc $MY_INITIAL_NCHAR - 1)";
+				MY_CORRECTED_NCHAR="$(calc "$MY_INITIAL_NCHAR" - 1)";
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 					echo "INFO      | $(date) |      Number of characters: $MY_CORRECTED_NCHAR bp "
 				fi
