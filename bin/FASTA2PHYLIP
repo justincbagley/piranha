@@ -851,8 +851,6 @@ echo "Keep fasta setting: $MY_KEEP_FASTA_SWITCH"
 			cp "$MY_FASTA" ./fasta.tmp ;
 		
 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
-#				cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g' ;
-#				MY_EMPTY_LINE_CHECK="$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 				if [[ "$(grep -n '^[\s]*$' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 					if [[ "$machine" = "Mac" ]]; then
 						sed -i.bak '/^[[:space:]]*$/d' ./fasta.tmp ;
@@ -866,7 +864,6 @@ echo "P5-2"
 			
 			##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 			##--Unlike sequence lines, these lines will all contain '#' characters.
-#				MY_COMMENT_LINE_CHECK="$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 echo "P6-2"
 				if [[ "$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 echo "P7-2"
