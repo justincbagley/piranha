@@ -654,6 +654,7 @@ count=1
 		fi
 		
 echo "Keep fasta setting: $MY_KEEP_FASTA_SWITCH"
+
 		if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
 			############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 			############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
@@ -884,8 +885,10 @@ echo "H2"
 			############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 			############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
 		
+echo "P0-2a"
 			cp "$MY_FASTA" ./fasta.tmp ;
 		
+echo "P0-2"
 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
 				MY_EMPTY_LINE_CHECK="$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 echo "P1-2"
