@@ -860,15 +860,12 @@ echo "Keep fasta setting: $MY_KEEP_FASTA_SWITCH"
 						sed -i '/^[[:space:]]*$/d' ./fasta.tmp ;
 					fi
 				fi
-echo "P5-2"
 			
 			##--If present, remove lines that have been commented out from input FASTA file, $MY_FASTA. 
 			##--Unlike sequence lines, these lines will all contain '#' characters.
-echo "P6-2"
+
 				if [[ "$(grep -n '\#' ./fasta.tmp | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-echo "P7-2"
 					if [[ "$machine" = "Mac" ]]; then
-echo "P8-2"
 						sed -i.bak '/\#/d' ./fasta.tmp ;
 						rm ./*.bak ;
 					fi
@@ -876,16 +873,15 @@ echo "P8-2"
 						sed -i '/\#/d' ./fasta.tmp ;
 					fi
 				fi
-echo "P9-2"
 
 			##--Generate metric used below to test FASTA file format and identify whether file contains 
 			##--unwrapped (single line) or hard-wrapped (multiple line) DNA sequences.
 			
 				## Get first ID delimiter line number:
-				MY_FIRST_ID_LINE="$(cat ./fasta.tmp | grep -n '>' | head -n2 | sed 's/\:.*//g' | head -n1)";
+				MY_FIRST_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | head -n1)";
 				
 				## Get second ID delimiter line number:
-				MY_SECOND_ID_LINE="$(cat ./fasta.tmp | grep -n '>' | head -n2 | sed 's/\:.*//g' | tail -n+2)";
+				MY_SECOND_ID_LINE="$(grep -n '>' ./fasta.tmp | head -n2 | sed 's/\:.*//g' | tail -n+2)";
 			
 				## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 				## If 2, unwrapped; if greater than 2, hard-wrapped.
