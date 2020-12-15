@@ -1162,84 +1162,173 @@ fi
 	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
 	if [[ -s ./args1.txt ]]; then rm ./args1.txt ; fi ;
-
+	if [[ -f ./grep ]] && [[ ! -s ./grep ]]; then rm ./grep ; fi ;
 	ALL_MY_ARGUMENTS="$(echo "$@")"
-	echo "$ALL_MY_ARGUMENTS" > ./args.txt
-	cp ./args.txt ./args1.txt ;
-
-	## Get input file name:
-	#MY_INPUT="$(cat args1.txt | sed 's/.*\-i\ //g; s/\(\.fasta\).*/\1/g')";
-	export MY_INPUT="$(cat args1.txt | sed 's/.*\ \-i\ //g; s/\ \-i//g; s/\ \-k.*//g; s/\ \-o.*//g; s/\ \-v.*//g')";
-	
-	## As a precaution, conditionally fix $MY_FASTA filename so that it contains no "-" (dash/hyphen) 
-	## or " " (space) characters, if needed:
-	MY_HYPHEN_CHECK="$(echo "$MY_INPUT" | grep -h '\-' | wc -l | sed 's/\ //g')";
-	MY_SPACE_CHECK="$(echo "$MY_INPUT" | grep -h '\ ' | wc -l | sed 's/\ //g')";
-	if [[ "$MY_HYPHEN_CHECK" != "0" ]] || [[ "$MY_SPACE_CHECK" != "0" ]] || [[ "$MY_HYPHEN_CHECK" = "1" ]] || [[ "$MY_SPACE_CHECK" = "1" ]]; then
-		if [[ -s "$MY_INPUT" ]]; then 
-			echo "WARNING!  | $(date) |      Hyphens or spaces detected in input FASTA file name. "
-			echo "INFO      | $(date) |      Attempting to fix file name... "
-			mv "$MY_INPUT" "$(echo "$MY_INPUT" | sed 's/\-/\_/g; s/\ /\_/g')";
-		fi
-	fi
-
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt 
 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
-	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
-
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-output/\-\-output/g' ./args.txt
+	perl -p -i -e $'s/\-filetype/\-\-filetype/g' ./args.txt
+	perl -p -i -e $'s/\-keep/\-\-keep/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
 
 ############ MANUALLY PARSE THE OPTIONS FROM ARGS
 
 ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
-	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-filetype' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		STARTING_FILE_TYPE=1 ;
-	else 
+	elif [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-filetype' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
 		STARTING_FILE_TYPE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-filetype' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-filetype' ./args.txt | perl -pe 's/\-\-filetype//g' | perl -pe 's/\ //g')";
+		STARTING_FILE_TYPE="$MY_ARG" ;
+		if [[ -z "$STARTING_FILE_TYPE" ]] && [[ "$STARTING_FILE_TYPE" != "1" ]] && [[ "$STARTING_FILE_TYPE" != "0" ]]; then STARTING_FILE_TYPE=0 ; fi
 	fi
 #
-	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_FASTA=NULL ;
-	else 
-		if [[ "$MY_HYPHEN_CHECK" != "0" ]] || [[ "$MY_SPACE_CHECK" != "0" ]] || [[ "$MY_HYPHEN_CHECK" = "1" ]] || [[ "$MY_SPACE_CHECK" = "1" ]]; then
-			export MY_FASTA="$(echo "$MY_INPUT" | sed 's/\-/\_/g; s/\ /\_/g')";
-		else
-			MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
-			MY_FASTA="$MY_ARG" ;
-		fi
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_FASTA="$MY_ARG" ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
+		MY_FASTA="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-keep' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_KEEP_FASTA_SWITCH=0 ;
-	else 
+	elif [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-keep' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
 		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-keep' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-keep' ./args.txt | perl -pe 's/\-\-keep//g' | perl -pe 's/\ //g')";
+		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_KEEP_FASTA_SWITCH" ]] && [[ "$MY_KEEP_FASTA_SWITCH" != "0" ]] && [[ "$MY_KEEP_FASTA_SWITCH" != "1" ]]; then MY_KEEP_FASTA_SWITCH=1 ; fi
 	fi
 #
-	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_OUTPUT_FILE_SWITCH=NULL ;
-	else 
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
-		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+		MY_OUTPUT_DIR="$MY_ARG" ;
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-output' ./args.txt | perl -pe 's/\-\-output//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_DIR="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+
+# 	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_LOGFILE_SWITCH=aligning_log.txt  ;
+# 	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+# 		MY_LOGFILE_SWITCH="$MY_ARG" ;
+# 	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+# 		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+# 		MY_LOGFILE_SWITCH="$MY_ARG" ;
+# 	fi
+
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_VERBOSE_OUT_SWITCH=0 ;
-	else 
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
 	fi
 #
-	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_DEBUG_MODE_SWITCH=0 ;
-	else 
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
 		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
 	fi
-	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_DEBUG_MODE_SWITCH=0 ;
-	else 
-		MY_DEBUG_MODE_SWITCH=1 ;
-	fi
+#
+
+# 	cp ./args.txt ./args1.txt ;
+# 
+# 	## Get input file name:
+# 	#MY_INPUT="$(cat args1.txt | sed 's/.*\-i\ //g; s/\(\.fasta\).*/\1/g')";
+# 	export MY_INPUT="$(cat ./args1.txt | sed 's/.*\ \-i\ //g; s/\ \-i//g; s/\ \-k.*//g; s/\ \-o.*//g; s/\ \-v.*//g')";
+# 	
+# 	## As a precaution, conditionally fix $MY_FASTA filename so that it contains no "-" (dash/hyphen) 
+# 	## or " " (space) characters, if needed:
+# 	MY_HYPHEN_CHECK="$(echo "$MY_INPUT" | grep -h '\-' | wc -l | sed 's/\ //g')";
+# 	MY_SPACE_CHECK="$(echo "$MY_INPUT" | grep -h '\ ' | wc -l | sed 's/\ //g')";
+# 	if [[ "$MY_HYPHEN_CHECK" != "0" ]] || [[ "$MY_SPACE_CHECK" != "0" ]] || [[ "$MY_HYPHEN_CHECK" = "1" ]] || [[ "$MY_SPACE_CHECK" = "1" ]]; then
+# 		if [[ -s "$MY_INPUT" ]]; then 
+# 			echo "WARNING!  | $(date) |      Hyphens or spaces detected in input FASTA file name. "
+# 			echo "INFO      | $(date) |      Attempting to fix file name... "
+# 			mv "$MY_INPUT" "$(echo "$MY_INPUT" | sed 's/\-/\_/g; s/\ /\_/g')";
+# 		fi
+# 	fi
+# 
+# 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+# 	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+# 
+# 
+# ############ MANUALLY PARSE THE OPTIONS FROM ARGS
+# 
+# ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+# 	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		STARTING_FILE_TYPE=1 ;
+# 	else 
+# 		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
+# 		STARTING_FILE_TYPE="$MY_ARG" ;
+# 	fi
+# #
+# 	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_FASTA=NULL ;
+# 	else 
+# 		if [[ "$MY_HYPHEN_CHECK" != "0" ]] || [[ "$MY_SPACE_CHECK" != "0" ]] || [[ "$MY_HYPHEN_CHECK" = "1" ]] || [[ "$MY_SPACE_CHECK" = "1" ]]; then
+# 			export MY_FASTA="$(echo "$MY_INPUT" | sed 's/\-/\_/g; s/\ /\_/g')";
+# 		else
+# 			MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+# 			MY_FASTA="$MY_ARG" ;
+# 		fi
+# 	fi
+# #
+# 	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_KEEP_FASTA_SWITCH=0 ;
+# 	else 
+# 		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
+# 		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
+# 	fi
+# #
+# 	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_OUTPUT_FILE_SWITCH=NULL ;
+# 	else 
+# 		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+# 		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+# 	fi
+# #
+# 	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_VERBOSE_OUT_SWITCH=0 ;
+# 	else 
+# 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+# 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+# 	fi
+# #
+# 	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_DEBUG_MODE_SWITCH=0 ;
+# 	else 
+# 		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+# 		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+# 	fi
+# 	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+# 		MY_DEBUG_MODE_SWITCH=0 ;
+# 	else 
+# 		MY_DEBUG_MODE_SWITCH=1 ;
+# 	fi
 
 # ############ PARSE THE OPTIONS
 # while getopts 'k:o:v:' opt ; do
