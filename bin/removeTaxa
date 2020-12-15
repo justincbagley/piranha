@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: removeTaxa.sh                                                                    #
-  VERSION="v1.0.0"                                                                       #
+  export VERSION="v1.0.1"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Apr 21 16:29:40 CDT 2020.                       #
-# Last update: April 21, 2020                                                            #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # REMOVE TIP TAXA (SAMPLES) FROM FASTA, PHYLIP, NEXUS, OR VCF FILES IN CURRENT DIR BASED #
@@ -134,7 +134,7 @@ removeTaxa () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | removeTaxa, v1.0.0 April 2020                                  "
+echo "INFO      | $(date) | removeTaxa, v1.0.1 December 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -152,7 +152,7 @@ echo "INFO      | $(date) | - <fileType> option = ${MY_FILE_TYPE} "
 
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 checkMachineType
 

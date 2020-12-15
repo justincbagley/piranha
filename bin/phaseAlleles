@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: phaseAlleles.sh                                                                  #
-  VERSION="v1.0.2"                                                                       #
+  export VERSION="v1.0.3"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 15 17:10:14 CDT 2020.                       #
-# Last update: December 1, 2020                                                          #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -141,7 +141,7 @@ phaseAlleles () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | phaseAlleles, v1.0.2 December 2020                             "
+echo "INFO      | $(date) | phaseAlleles, v1.0.3 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 

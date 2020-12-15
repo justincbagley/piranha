@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitFile.sh                                                                     #
-  VERSION="v1.0.2"                                                                       #
+  export VERSION="v1.0.4"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.                      #
-# Last update: April 21, 2020                                                            #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT TO SPLIT AN INPUT FILE INTO N EQUAL PARTS (HORIZONTALLY, BY ROWS), WITH   #
@@ -141,7 +141,7 @@ splitFile () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitFile, v1.0.2 April 2020                                   "
+echo "INFO      | $(date) | splitFile, v1.0.4 December 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 

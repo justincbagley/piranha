@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRADLocusVarSites.sh                                                            #
-  VERSION="v1.0.2"                                                                       #
+  export VERSION="v1.0.3"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.                      #
-# Last update: July 31, 2020                                                             #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -140,7 +140,7 @@ pyRADLocusVarSites () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRADLocusVarSites, v1.0.2 July 2020                           "
+echo "INFO      | $(date) | pyRADLocusVarSites, v1.0.3 December 2020                       "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 

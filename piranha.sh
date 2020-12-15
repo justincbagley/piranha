@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  VERSION="v1.1.6"                                                                       #
+  export VERSION="v1.1.6"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: December 11, 2020                                                         #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -148,7 +148,7 @@ piranha () {
 ##########################################################################################
 
 echo "
-piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 4 17:34:49 CST 2020)                    "
+piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 15 00:15:01 CST 2020)                    "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 

@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: taxonCompFilter.sh                                                               #
-  VERSION="v1.0.3"                                                                       #
+  export VERSION="v1.0.4"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 15 11:20:02 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description: Taxon completeness filter. Starts from a set of PHYLIP gene multiple      #
 # sequence alignments (MSAs) in current working directory and filters out alignments not #
@@ -136,7 +136,7 @@ taxonCompFilter () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | taxonCompFilter, v1.0.3 April 2020                             "
+echo "INFO      | $(date) | taxonCompFilter, v1.0.4 December 2020                          "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 

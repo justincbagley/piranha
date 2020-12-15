@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: nQuireRunner.sh                                                                  #
-  VERSION="v1.0.7"                                                                       #
+  export VERSION="v1.0.8"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Oct 17 11:59:08 CDT 2019.                       #
-# Last update: June 22, 2020                                                             #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES RUNNING nQuire TO DETERMINE SAMPLE PLOIDY LEVEL FROM NGS   #
@@ -136,7 +136,7 @@ nQuireRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | nQuireRunner, v1.0.7 June 2020                                 "
+echo "INFO      | $(date) | nQuireRunner, v1.0.8 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 

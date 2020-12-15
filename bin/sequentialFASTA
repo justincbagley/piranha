@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: sequentialFASTA.sh                                                               #
-  VERSION="v1.0.0"                                                                       #
+  export VERSION="v1.0.1"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, May 11 13:17:31 CDT 2020.                       #
-# Last update: May 12, 2020                                                              #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # THIS SCRIPT CONVERTS SEQUENTIAL FASTA SEQUENCE ALIGNMENTS WHOSE SEQUENCES ARE HARD-    #
@@ -139,7 +139,7 @@ sequentialFASTA () {
 
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) |----------------------------------------------------------------"
-	echo "INFO      | $(date) | sequentialFASTA, v1.0.0 May 2020                               "
+	echo "INFO      | $(date) | sequentialFASTA, v1.0.1 December 2020                          "
 	echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 	echo "INFO      | $(date) |----------------------------------------------------------------"
 fi

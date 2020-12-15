@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: trimSeqs.sh                                                                      #
-  VERSION="v1.0.1"                                                                       #
+  export VERSION="v1.0.2"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Jul 27 16:37:22 CDT 2020.                       #
-# Last update: December 14 2020                                                          #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -304,7 +304,7 @@ trimSeqs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | trimSeqs, v1.0.1 December 2020                                 "
+echo "INFO      | $(date) | trimSeqs, v1.0.2 December 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 

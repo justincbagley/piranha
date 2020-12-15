@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: pyRAD2PartitionFinder.sh                                                         #
-  VERSION="v1.2.5"                                                                       #
+  export VERSION="v1.2.6"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, 27 Jul 2016 00:36:32 -0300.                     #
-# Last update: July 31, 2020                                                             #
+# Last update: December 15, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ pyRAD2PartitionFinder () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.5 July 2020                        "
+echo "INFO      | $(date) | pyRAD2PartitionFinder, v1.2.6 December 2020                    "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
