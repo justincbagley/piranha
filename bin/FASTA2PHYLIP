@@ -634,14 +634,16 @@ checkMachineType
 ###### Loop through fastas in current working directory, allowing for multiple file extensions,
 ###### and perform operations. However, extension '.fasta' is preferred.
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "current"
 	echo "INFO      | $(date) | Step #2: Convert all FASTA files in cwd to PHYLIP format, & save orig. FASTA order and characteristics. "
 fi
 
-MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname \*.fa -o -iname \*.FASTA -o -iname \*.FAS -o -iname \*.FA \))";
+#MY_FASTA_FILES="$(find . -type f \( -iname \*.fasta -o -iname \*.fas  -o -iname \*.fa -o -iname \*.FASTA -o -iname \*.FAS -o -iname \*.FA \))";
 
 count=1
 	(
-		for MY_FASTA in $MY_FASTA_FILES; do 
+#		for MY_FASTA in $MY_FASTA_FILES; do 
+		for MY_FASTA in ./*.{fasta,fas,FASTA,FAS} ; do
 	
 		echo "$MY_FASTA" >> ./output/fileOrder.list.txt ;
 	
