@@ -3,7 +3,7 @@
 # ##################################################
 # Shared bash functions used by PIrANHA bash scripts.
 #
-  VERSION="v1.0.3"
+# VERSION 1.0.3
 #
 # HISTORY
 # Pre-PIrANHA version updates by Nate Landau:
