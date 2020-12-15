@@ -650,8 +650,6 @@ count=1
 			echo "INFO      | $(date) |      A. Clean file, get FASTA file and data characteristics. "
 		fi
 		
-echo "Keep fasta setting: $MY_KEEP_FASTA_SWITCH"
-
 		if [[ "$MY_KEEP_FASTA_SWITCH" = "0" ]]; then
 			############ STEP #2A: CLEAN FILE, GET FASTA FILE AND DATA CHARACTERISTICS (USED TO CHECK FOR UN-
 			############ WRAPPED VERSUS HARD-WRAPPED FORMAT).
@@ -885,7 +883,7 @@ echo "Keep fasta setting: $MY_KEEP_FASTA_SWITCH"
 			
 				## Difference between first two ID lines is metric for unwrapped vs. hard-wrapped test.
 				## If 2, unwrapped; if greater than 2, hard-wrapped.
-				MY_FORMAT_METRIC="$(calc "$MY_SECOND_ID_LINE" - "$MY_FIRST_ID_LINE")";
+				MY_FORMAT_METRIC="$(calc "$MY_SECOND_ID_LINE"-"$MY_FIRST_ID_LINE")";
 			
 			
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
