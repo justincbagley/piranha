@@ -147,11 +147,10 @@ piranha () {
 ######################################## START ###########################################
 ##########################################################################################
 
-if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ ! -z "$FUNCTION_ARGUMENTS" ]] && \
-   [[ "$FUNCTION_ARGUMENTS" = "-V" ]] || [[ "$FUNCTION_ARGUMENTS" = "--version" ]]; then
-  MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
-  "$MY_EXECUTION_PATH" -V ;
-  safeExit ;
+if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_ARGUMENTS" = "-V" ]] || [[ "$FUNCTION_ARGUMENTS" = "--version" ]]; then
+	MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
+	"$MY_EXECUTION_PATH" -V ;
+	safeExit ;
 fi
 
 echo "
@@ -160,8 +159,8 @@ echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.            
 echo "----------------------------------------------------------------------------------------------------------"
 
 if [[ -z "$FUNCTION_TO_RUN" ]] && [[ -z "$FUNCTION_ARGUMENTS" ]]; then
-  usage ;
-  safeExit ;
+	usage ;
+	safeExit ;
 fi
 
 if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
