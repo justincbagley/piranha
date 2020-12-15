@@ -156,7 +156,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 	MY_PHYLIP_LENGTH="$(cat $INPUT_PHYLIP_FILE | wc -l | sed 's/(\ )*//g')";
 	MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
 	## This "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines; was going to call it "MY_SEQUENCE_AND_EOF_LINES" but thought that name was too long.
-	tail -n$MY_BODY_LENGTH $INPUT_PHYLIP_FILE > sequences.tmp;
+	tail -n$MY_BODY_LENGTH $INPUT_PHYLIP_FILE > sequences.tmp ;
 	MY_NTAX="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
 	MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
 
@@ -169,11 +169,11 @@ echo "#NEXUS
 BEGIN DATA;
 	DIMENSIONS NTAX="${MY_NTAX}" NCHAR="${MY_NCHAR}";
 	FORMAT DATATYPE=DNA GAP=- MISSING=N;
-	MATRIX" > NEXUS_top.tmp
+	MATRIX" > NEXUS_top.tmp ;
 
 echo ";
 END;
-" > NEXUS_bottom.tmp
+" > NEXUS_bottom.tmp ;
 
 	MY_PHYLIP_BASENAME="$(echo $INPUT_PHYLIP_FILE | sed 's/\.phy//g')" ;
 
@@ -186,14 +186,14 @@ if [[ "$MY_PARTITIONS_FILE" = "NULL" ]]; then
 
 elif [[ "$MY_PARTITIONS_FILE" != "NULL" ]] && [[ "$MY_PARTFILE_FORMAT" = "raxml" ]]; then
 	echo "INFO      | $(date) | Read RAxML-style partitions file. Adding partition information to final NEXUS file... "
-	echo "begin sets;" > ./begin.tmp
+	echo "begin sets;" > ./begin.tmp ;
 	sed $'s/^DNA\,\ /\tcharset\ /g; s/$/\;/g' "$MY_PARTITIONS_FILE" > NEXUS_charsets.tmp ;
-	echo "end;" > ./end.tmp
+	echo "end;" > ./end.tmp ;
 #	
 		# Accommodating different machine types...
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak $'s/$/\\\n/' ./end.tmp ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/$/\n/' ./end.tmp ;
@@ -236,7 +236,7 @@ perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ;
 		# sed 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
@@ -253,7 +253,7 @@ perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ;
 			for i in $MY_UNWANTED_NEXUS_LINES; do
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
-					rm ./*.bak;
+					rm ./*.bak ;
 				fi
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
@@ -269,7 +269,7 @@ perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ;
 		echo "INFO      | $(date) | Fixing NEXUS matrix... "
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak '7d' ./"$MY_PHYLIP_BASENAME".nex ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i '7d' ./"$MY_PHYLIP_BASENAME".nex ;
@@ -281,7 +281,7 @@ perl -p -i -e $'s/^'"$MY_NTAX"'\t[0-9]*.*\n//g' ./"$MY_PHYLIP_BASENAME".nex ;
 		echo "INFO      | $(date) | Fixing missing data characters... "
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak 's/\?/N/g' ./"$MY_PHYLIP_BASENAME".nex ;
-			rm ./*.bak;
+			rm ./*.bak ;
 		fi
 		if [[ "${machine}" = "Linux" ]]; then
 			sed -i 's/\?/N/g' ./"$MY_PHYLIP_BASENAME".nex ;
@@ -314,11 +314,11 @@ echo "INFO      | $(date) | Step #2: Convert multiple PHYLIP files in working di
 BEGIN DATA;
 	DIMENSIONS NTAX="${MY_NTAX}" NCHAR="${MY_NCHAR}";
 	FORMAT DATATYPE=DNA GAP=- MISSING=N;
-	MATRIX" > NEXUS_top.tmp
+	MATRIX" > NEXUS_top.tmp ;
 
 echo ";
 END;
-" > NEXUS_bottom.tmp
+" > NEXUS_bottom.tmp ;
 
 	MY_PHYLIP_BASENAME="$(echo $INPUT_PHYLIP_FILE | sed 's/\.phy//g')" ;
 
@@ -337,7 +337,7 @@ END;
 			# Accommodating different machine types...
 			if [[ "${machine}" = "Mac" ]]; then
 				sed -i.bak $'s/$/\\\n/' ./end.tmp ;
-				rm ./*.bak;
+				rm ./*.bak ;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i 's/$/\n/' ./end.tmp ;
@@ -379,7 +379,7 @@ END;
 			# sed 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex
 			if [[ "${machine}" = "Mac" ]]; then
 				sed -i.bak 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
-				rm ./*.bak;
+				rm ./*.bak ;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i 's'/"$(printf "\x0D")"'//g' ./"$MY_PHYLIP_BASENAME".nex ;
@@ -396,7 +396,7 @@ END;
 				for i in $MY_UNWANTED_NEXUS_LINES; do
 					if [[ "${machine}" = "Mac" ]]; then
 						sed -i.bak ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
-						rm ./*.bak;
+						rm ./*.bak ;
 					fi
 					if [[ "${machine}" = "Linux" ]]; then
 						sed -i ''"$i"'d' ./"$MY_PHYLIP_BASENAME".nex ;
@@ -412,7 +412,7 @@ END;
 			echo "INFO      | $(date) | Fixing NEXUS matrix... "
 			if [[ "${machine}" = "Mac" ]]; then
 				sed -i.bak '7d' ./"$MY_PHYLIP_BASENAME".nex ;
-				rm ./*.bak;
+				rm ./*.bak ;
 			fi
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '7d' ./"$MY_PHYLIP_BASENAME".nex ;
