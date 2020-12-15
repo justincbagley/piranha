@@ -634,6 +634,7 @@ checkMachineType
 ###### Loop through fastas in current working directory, allowing for multiple file extensions,
 ###### and perform operations. However, extension '.fasta' is preferred.
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+echo "current"
 	echo "INFO      | $(date) | Step #2: Convert all FASTA files in cwd to PHYLIP format, & save orig. FASTA order and characteristics. "
 fi
 
