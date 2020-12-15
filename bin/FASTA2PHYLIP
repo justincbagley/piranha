@@ -891,9 +891,9 @@ echo "P0-2a"
 echo "P0-2"
 			##--If present, remove empty lines / newlines from input FASTA file, $MY_FASTA.
 				cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g' ;
-				MY_EMPTY_LINE_CHECK="$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
+#				MY_EMPTY_LINE_CHECK="$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')";
 echo "P1-2"
-				if [[ "$MY_EMPTY_LINE_CHECK" -gt "0" ]]; then 
+				if [[ "$(cat ./fasta.tmp | grep -n '^[\s]*$' | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 echo "P2-2"
 					if [[ "$machine" = "Mac" ]]; then
 echo "P3a-2"
