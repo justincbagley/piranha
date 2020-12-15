@@ -582,7 +582,7 @@ while [[ ${1} = -?* ]]; do
     --saveDir) shift; saveDir="$1" ;;
     -h|--help) usage >&2; safeExit ;;
     --force) force=true ;;
-#   -V|--version) echo "${SCRIPT_NAME} $PIRANHA_VERSION"; safeExit ;;
+    -V|--version) echo "${SCRIPT_BASENAME} $PIRANHA_VERSION"; safeExit ;;
     -v|--verbose) verbose=true ;;
     -l|--log) printLog=true ;;
     -q|--quiet) quiet=true ;;
