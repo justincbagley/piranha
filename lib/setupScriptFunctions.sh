@@ -184,6 +184,9 @@ function doInstall () {
 # ------------------------------------------------------
 # Similar to doInstall (above), but modified by JCB for 
 # conda packages (added: Tue Dec 15 17:40:26 CST 2020).
+#
+# NOTE: ${INSTALLCOMMAND} is set to "conda install" in the checkDependencies
+# function.
 # ------------------------------------------------------
 function to_install() {
   local debugger desired installed i desired_s installed_s remain
@@ -215,43 +218,43 @@ function doCondaInstall () {
       for item in "${list[@]}"; do
         notice "Installing ${item}... "
         if [[ "${item}" = "samtools" ]]; then
-          conda install -c bioconda samtools ;
+          ${INSTALLCOMMAND} -c bioconda samtools ;
         elif [[ "${item}" = "dDocent" ]] || [[ "${item}" = "ddocent" ]]; then
-          conda install -c bioconda ddocent ;
+          ${INSTALLCOMMAND} -c bioconda ddocent ;
         elif [[ "${item}" = "bcftools" ]]; then
-          conda install -c bioconda bcftools ;
+          ${INSTALLCOMMAND} -c bioconda bcftools ;
         elif [[ "${item}" = "iqtree" ]]; then
-          conda install -c bioconda iqtree ;
+          ${INSTALLCOMMAND} -c bioconda iqtree ;
         elif [[ "${item}" = "raxml" ]]; then
-          conda install -c bioconda raxml ;
+          ${INSTALLCOMMAND} -c bioconda raxml ;
         elif [[ "${item}" = "mafft" ]]; then
-          conda install -c bioconda mafft ;
+          ${INSTALLCOMMAND} -c bioconda mafft ;
         elif [[ "${item}" = "trimal" ]] || [[ "${item}" = "trimAl" ]]; then
-          conda install -c bioconda trimal  ;
+          ${INSTALLCOMMAND} -c bioconda trimal  ;
         elif [[ "${item}" = "dadi" ]]; then
-          conda install -c bioconda dadi ;
+          ${INSTALLCOMMAND} -c bioconda dadi ;
         elif [[ "${item}" = "BEAST" ]] || [[ "${item}" = "beast" ]]; then
-          conda install -c bioconda beast ;
+          ${INSTALLCOMMAND} -c bioconda beast ;
         elif [[ "${item}" = "BEAST2" ]] || [[ "${item}" = "beast2" ]]; then
-          conda install -c bioconda beast2 ;
+          ${INSTALLCOMMAND} -c bioconda beast2 ;
         elif [[ "${item}" = "phyluce" ]] || [[ "${item}" = "Phyluce" ]]; then
-          conda install -c bioconda phyluce ;
+          ${INSTALLCOMMAND} -c bioconda phyluce ;
         elif [[ "${item}" = "sepp" ]] || [[ "${item}" = "SEPP" ]]; then
-          conda install -c bioconda sepp ;
+          ${INSTALLCOMMAND} -c bioconda sepp ;
         elif [[ "${item}" = "mrbayes" ]] || [[ "${item}" = "MrBayes" ]]; then
-          conda install -c bioconda mrbayes ;
+          ${INSTALLCOMMAND} -c bioconda mrbayes ;
         elif [[ "${item}" = "blast" ]] || [[ "${item}" = "BLAST" ]]; then
-          conda install -c bioconda blast ;
+          ${INSTALLCOMMAND} -c bioconda blast ;
         elif [[ "${item}" = "ipyrad" ]] || [[ "${item}" = "pyRAD" ]] || [[ "${item}" = "pyrad" ]]; then
-          conda install -c bioconda ipyrad ;
+          ${INSTALLCOMMAND} -c bioconda ipyrad ;
         elif [[ "${item}" = "biopython" ]] || [[ "${item}" = "Biopython" ]]; then
-          conda install -c anaconda biopython ;
+          ${INSTALLCOMMAND} -c anaconda biopython ;
         elif [[ "${item}" = "newick_utils" ]] || [[ "${item}" = "Newick_Utils" ]]; then
-          conda install -c bioconda newick_utils ;
+          ${INSTALLCOMMAND} -c bioconda newick_utils ;
         elif [[ "${item}" = "exonerate" ]] || [[ "${item}" = "Exonerate" ]]; then
-          conda install -c bioconda exonerate ;
+          ${INSTALLCOMMAND} -c bioconda exonerate ;
         elif [[ "${item}" = "secapr" ]] || [[ "${item}" = "SECAPR" ]]; then
-          conda install -c bioconda secapr ;
+          ${INSTALLCOMMAND} -c bioconda secapr ;
         else
           ${INSTALLCOMMAND} "${item}"
         fi
