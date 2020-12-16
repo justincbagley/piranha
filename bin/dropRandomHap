@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+## #!/bin/sh
 
 ##########################################################################################
 #  __  o  __   __   __  |__   __                                                         #
@@ -50,10 +51,8 @@ FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to 
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
 if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
-  #source "${FUNCS_LOCATION}" ;
-  #source "${VARS_LOCATION}" ;
-  . "${FUNCS_LOCATION}" ;
-  . "${VARS_LOCATION}" ;
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
 else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
