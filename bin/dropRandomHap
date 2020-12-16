@@ -428,9 +428,9 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 				fi
 			elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
 				mv "$i" ./orig_phylip/ ;
-#echo "A"
+echo "A"
 				if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
-#echo "B"
+echo "B"
 						(
 							while read line; do
 								MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
@@ -443,13 +443,14 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 						)
 				fi
 			fi
-#echo "C"
+echo "C"
 
-			MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
-#echo "D"
+			#MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+			MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*[[:space:]]*[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+echo "D"
 			
 			if [[ -s "$MY_PHYLIP_BASENAME".phy ]] && [[ "$MY_PHYLIP_HEADER_CHECK" = "0" ]]; then
-#echo "E"
+echo "E"
 				## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
 				## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
 				## number of lines (and same/original number of characters):
