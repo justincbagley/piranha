@@ -92,6 +92,22 @@ install_ffmpeg () {
 }
 
 ################################### UNDER DEVELOPMENT ####################################
+
+## ------------------------------------------------------
+## ISSUE:
+## ------------------------------------------------------
+## The 'to_install' function is causing the following error when sourced from this script 
+## ('setupScriptFunctions.sh') in a piranha function script that is a shell script.
+## 
+## ERROR:
+##    /usr/local/Cellar/piranha/HEAD-8fbf84b/lib/setupScriptFunctions.sh: line 118: syntax error near unexpected token `<'
+##    /usr/local/Cellar/piranha/HEAD-8fbf84b/lib/setupScriptFunctions.sh: line 118: `    read -ra desired < <(echo "$1" | tr '\n' ' ')'
+##
+## Apparently bash process substitution (`< <()`) is not supported by sh.
+##
+## Urgency level: low-medium
+## Why: It would be nice to be able to use checkDependencies.
+
 # # doInstall
 # # ------------------------------------------------------
 # # Reads a list of items, checks if they are installed, installs
