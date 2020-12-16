@@ -91,160 +91,162 @@ install_ffmpeg () {
   fi
 }
 
-# doInstall
-# ------------------------------------------------------
-# Reads a list of items, checks if they are installed, installs
-# those which are needed.
-#
-# Variables needed are:
-# LISTINSTALLED:  The command to list all previously installed items.
-#                 Ex: "brew list" or "gem list | awk '{print $1}'"
-#
-# INSTALLCOMMAND: The Install command for the desired items.
-#                 Ex:  "brew install" or "gem install"
-#
-# RECIPES:      The list of packages to install.
-#               Ex: RECIPES=(
-#                     package1
-#                     package2
-#                   )
-#
-# Credit: https://github.com/cowboy/dotfiles
-# ------------------------------------------------------
-function to_install () {
-  local debugger desired installed i desired_s installed_s remain
-  if [[ "$1" == 1 ]]; then debugger=1; shift; fi
-    # Convert args to arrays, handling both space- and newline-separated lists.
-    read -ra desired < <(echo "$1" | tr '\n' ' ')
-    read -ra installed < <(echo "$2" | tr '\n' ' ')
-    # Sort desired and installed arrays.
-    unset i; while read -r; do desired_s[i++]=$REPLY; done < <(
-      printf "%s\n" "${desired[@]}" | sort
-    )
-    unset i; while read -r; do installed_s[i++]=$REPLY; done < <(
-      printf "%s\n" "${installed[@]}" | sort
-    )
-    # Get the difference. comm is awesome.
-    unset i; while read -r; do remain[i++]=$REPLY; done < <(
-      comm -13 <(printf "%s\n" "${installed_s[@]}") <(printf "%s\n" "${desired_s[@]}")
-  )
-  [[ "$debugger" ]] && for v in desired desired_s installed installed_s remain; do
-    echo "$v ($(eval echo "\${#$v[*]}")) $(eval echo "\${$v[*]}")"
-  done
-  echo "${remain[@]}"
-}
-
-# Install the desired items that are not already installed.
-function doInstall () {
-  list=$(to_install "${RECIPES[*]}" "$(${LISTINSTALLED})")
-  if [[ "${list}" ]]; then
-    seek_confirmation "Confirm each package before installing?"
-    if is_confirmed; then
-      for item in "${list[@]}"
-      do
-        seek_confirmation "Install ${item}?"
-        if is_confirmed; then
-          notice "Installing ${item}"
-          # FFMPEG takes additional flags
-          if [[ "${item}" = "ffmpeg" ]]; then
-            install_ffmpeg
-          elif [[ "${item}" = "tldr" ]]; then
-            brew tap tldr-pages/tldr ;
-            brew install tldr ;
-          else
-            ${INSTALLCOMMAND} "${item}" ;
-          fi
-        fi
-      done
-    else
-      for item in "${list[@]}"
-      do
-        notice "Installing ${item}... "
-        # FFMPEG takes additional flags
-        if [[ "${item}" = "ffmpeg" ]]; then
-          install_ffmpeg
-        elif [[ "${item}" = "tldr" ]]; then
-          brew tap tldr-pages/tldr ;
-          brew install tldr ;
-        else
-          ${INSTALLCOMMAND} "${item}" ;
-        fi
-      done
-    fi
-  else
-    # Only print notice when not checking dependencies via another script.
-    if [ -z "$homebrewDependencies" ] && [ -z "$caskDependencies" ] && [ -z "$gemDependencies" ]; then
-      notice "Nothing to install. You've already installed all your recipes."
-    fi
-
-  fi
-}
-
-# doCondaInstall
-# ------------------------------------------------------
-# Similar to doInstall (above), but modified by JCB for 
-# conda packages (added: Tue Dec 15 17:40:26 CST 2020).
-#
-# NOTES: ${INSTALLCOMMAND} is set to "conda install" in the checkDependencies
-# function; 'to_install' is already defined above under 'doInstall'
-# function.
-# ------------------------------------------------------
-# Install the desired conda packages/software, if not already installed.
-function doCondaInstall () {
-  list=$(to_install "${RECIPES[*]}" "$(${LISTINSTALLED})")
-  if [[ "${list}" ]]; then
-      for item in "${list[@]}"; do
-        notice "Installing ${item}... "
-        if [[ "${item}" = "samtools" ]]; then
-          ${INSTALLCOMMAND} -c bioconda samtools ;
-        elif [[ "${item}" = "dDocent" ]] || [[ "${item}" = "ddocent" ]]; then
-          ${INSTALLCOMMAND} -c bioconda ddocent ;
-        elif [[ "${item}" = "bcftools" ]]; then
-          ${INSTALLCOMMAND} -c bioconda bcftools ;
-        elif [[ "${item}" = "iqtree" ]]; then
-          ${INSTALLCOMMAND} -c bioconda iqtree ;
-        elif [[ "${item}" = "raxml" ]]; then
-          ${INSTALLCOMMAND} -c bioconda raxml ;
-        elif [[ "${item}" = "mafft" ]]; then
-          ${INSTALLCOMMAND} -c bioconda mafft ;
-        elif [[ "${item}" = "trimal" ]] || [[ "${item}" = "trimAl" ]]; then
-          ${INSTALLCOMMAND} -c bioconda trimal  ;
-        elif [[ "${item}" = "dadi" ]]; then
-          ${INSTALLCOMMAND} -c bioconda dadi ;
-        elif [[ "${item}" = "BEAST" ]] || [[ "${item}" = "beast" ]]; then
-          ${INSTALLCOMMAND} -c bioconda beast ;
-        elif [[ "${item}" = "BEAST2" ]] || [[ "${item}" = "beast2" ]]; then
-          ${INSTALLCOMMAND} -c bioconda beast2 ;
-        elif [[ "${item}" = "phyluce" ]] || [[ "${item}" = "Phyluce" ]]; then
-          ${INSTALLCOMMAND} -c bioconda phyluce ;
-        elif [[ "${item}" = "sepp" ]] || [[ "${item}" = "SEPP" ]]; then
-          ${INSTALLCOMMAND} -c bioconda sepp ;
-        elif [[ "${item}" = "mrbayes" ]] || [[ "${item}" = "MrBayes" ]]; then
-          ${INSTALLCOMMAND} -c bioconda mrbayes ;
-        elif [[ "${item}" = "blast" ]] || [[ "${item}" = "BLAST" ]]; then
-          ${INSTALLCOMMAND} -c bioconda blast ;
-        elif [[ "${item}" = "ipyrad" ]] || [[ "${item}" = "pyRAD" ]] || [[ "${item}" = "pyrad" ]]; then
-          ${INSTALLCOMMAND} -c bioconda ipyrad ;
-        elif [[ "${item}" = "biopython" ]] || [[ "${item}" = "Biopython" ]]; then
-          ${INSTALLCOMMAND} -c anaconda biopython ;
-        elif [[ "${item}" = "newick_utils" ]] || [[ "${item}" = "Newick_Utils" ]]; then
-          ${INSTALLCOMMAND} -c bioconda newick_utils ;
-        elif [[ "${item}" = "exonerate" ]] || [[ "${item}" = "Exonerate" ]]; then
-          ${INSTALLCOMMAND} -c bioconda exonerate ;
-        elif [[ "${item}" = "secapr" ]] || [[ "${item}" = "SECAPR" ]]; then
-          ${INSTALLCOMMAND} -c bioconda secapr ;
-        else
-          ${INSTALLCOMMAND} "${item}"
-        fi
-      done
-  else
-    # Only print notice when no dependencies specified at all:
-    if [ -z "$condaDependencies" ] && [ -z "$homebrewDependencies" ] && [ -z "$caskDependencies" ] && [ -z "$gemDependencies" ]; then
-      notice "Nothing to install. You've already installed all your conda-distributed dependencies."
-    fi
-
-  fi
-}
+################################### UNDER DEVELOPMENT ####################################
+# # doInstall
+# # ------------------------------------------------------
+# # Reads a list of items, checks if they are installed, installs
+# # those which are needed.
+# #
+# # Variables needed are:
+# # LISTINSTALLED:  The command to list all previously installed items.
+# #                 Ex: "brew list" or "gem list | awk '{print $1}'"
+# #
+# # INSTALLCOMMAND: The Install command for the desired items.
+# #                 Ex:  "brew install" or "gem install"
+# #
+# # RECIPES:      The list of packages to install.
+# #               Ex: RECIPES=(
+# #                     package1
+# #                     package2
+# #                   )
+# #
+# # Credit: https://github.com/cowboy/dotfiles
+# # ------------------------------------------------------
+# function to_install () {
+#   local debugger desired installed i desired_s installed_s remain
+#   if [[ "$1" == 1 ]]; then debugger=1; shift; fi
+#     # Convert args to arrays, handling both space- and newline-separated lists.
+#     read -ra desired < <(echo "$1" | tr '\n' ' ')
+#     read -ra installed < <(echo "$2" | tr '\n' ' ')
+#     # Sort desired and installed arrays.
+#     unset i; while read -r; do desired_s[i++]=$REPLY; done < <(
+#       printf "%s\n" "${desired[@]}" | sort
+#     )
+#     unset i; while read -r; do installed_s[i++]=$REPLY; done < <(
+#       printf "%s\n" "${installed[@]}" | sort
+#     )
+#     # Get the difference. comm is awesome.
+#     unset i; while read -r; do remain[i++]=$REPLY; done < <(
+#       comm -13 <(printf "%s\n" "${installed_s[@]}") <(printf "%s\n" "${desired_s[@]}")
+#   )
+#   [[ "$debugger" ]] && for v in desired desired_s installed installed_s remain; do
+#     echo "$v ($(eval echo "\${#$v[*]}")) $(eval echo "\${$v[*]}")"
+#   done
+#   echo "${remain[@]}"
+# }
+# 
+# # Install the desired items that are not already installed.
+# function doInstall () {
+#   list=$(to_install "${RECIPES[*]}" "$(${LISTINSTALLED})")
+#   if [[ "${list}" ]]; then
+#     seek_confirmation "Confirm each package before installing?"
+#     if is_confirmed; then
+#       for item in "${list[@]}"
+#       do
+#         seek_confirmation "Install ${item}?"
+#         if is_confirmed; then
+#           notice "Installing ${item}"
+#           # FFMPEG takes additional flags
+#           if [[ "${item}" = "ffmpeg" ]]; then
+#             install_ffmpeg
+#           elif [[ "${item}" = "tldr" ]]; then
+#             brew tap tldr-pages/tldr ;
+#             brew install tldr ;
+#           else
+#             ${INSTALLCOMMAND} "${item}" ;
+#           fi
+#         fi
+#       done
+#     else
+#       for item in "${list[@]}"
+#       do
+#         notice "Installing ${item}... "
+#         # FFMPEG takes additional flags
+#         if [[ "${item}" = "ffmpeg" ]]; then
+#           install_ffmpeg
+#         elif [[ "${item}" = "tldr" ]]; then
+#           brew tap tldr-pages/tldr ;
+#           brew install tldr ;
+#         else
+#           ${INSTALLCOMMAND} "${item}" ;
+#         fi
+#       done
+#     fi
+#   else
+#     # Only print notice when not checking dependencies via another script.
+#     if [ -z "$homebrewDependencies" ] && [ -z "$caskDependencies" ] && [ -z "$gemDependencies" ]; then
+#       notice "Nothing to install. You've already installed all your recipes."
+#     fi
+# 
+#   fi
+# }
+# 
+# # doCondaInstall
+# # ------------------------------------------------------
+# # Similar to doInstall (above), but modified by JCB for 
+# # conda packages (added: Tue Dec 15 17:40:26 CST 2020).
+# #
+# # NOTES: ${INSTALLCOMMAND} is set to "conda install" in the checkDependencies
+# # function; 'to_install' is already defined above under 'doInstall'
+# # function.
+# # ------------------------------------------------------
+# # Install the desired conda packages/software, if not already installed.
+# function doCondaInstall () {
+#   list=$(to_install "${RECIPES[*]}" "$(${LISTINSTALLED})")
+#   if [[ "${list}" ]]; then
+#       for item in "${list[@]}"; do
+#         notice "Installing ${item}... "
+#         if [[ "${item}" = "samtools" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda samtools ;
+#         elif [[ "${item}" = "dDocent" ]] || [[ "${item}" = "ddocent" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda ddocent ;
+#         elif [[ "${item}" = "bcftools" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda bcftools ;
+#         elif [[ "${item}" = "iqtree" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda iqtree ;
+#         elif [[ "${item}" = "raxml" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda raxml ;
+#         elif [[ "${item}" = "mafft" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda mafft ;
+#         elif [[ "${item}" = "trimal" ]] || [[ "${item}" = "trimAl" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda trimal  ;
+#         elif [[ "${item}" = "dadi" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda dadi ;
+#         elif [[ "${item}" = "BEAST" ]] || [[ "${item}" = "beast" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda beast ;
+#         elif [[ "${item}" = "BEAST2" ]] || [[ "${item}" = "beast2" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda beast2 ;
+#         elif [[ "${item}" = "phyluce" ]] || [[ "${item}" = "Phyluce" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda phyluce ;
+#         elif [[ "${item}" = "sepp" ]] || [[ "${item}" = "SEPP" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda sepp ;
+#         elif [[ "${item}" = "mrbayes" ]] || [[ "${item}" = "MrBayes" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda mrbayes ;
+#         elif [[ "${item}" = "blast" ]] || [[ "${item}" = "BLAST" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda blast ;
+#         elif [[ "${item}" = "ipyrad" ]] || [[ "${item}" = "pyRAD" ]] || [[ "${item}" = "pyrad" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda ipyrad ;
+#         elif [[ "${item}" = "biopython" ]] || [[ "${item}" = "Biopython" ]]; then
+#           ${INSTALLCOMMAND} -c anaconda biopython ;
+#         elif [[ "${item}" = "newick_utils" ]] || [[ "${item}" = "Newick_Utils" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda newick_utils ;
+#         elif [[ "${item}" = "exonerate" ]] || [[ "${item}" = "Exonerate" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda exonerate ;
+#         elif [[ "${item}" = "secapr" ]] || [[ "${item}" = "SECAPR" ]]; then
+#           ${INSTALLCOMMAND} -c bioconda secapr ;
+#         else
+#           ${INSTALLCOMMAND} "${item}"
+#         fi
+#       done
+#   else
+#     # Only print notice when no dependencies specified at all:
+#     if [ -z "$condaDependencies" ] && [ -z "$homebrewDependencies" ] && [ -z "$caskDependencies" ] && [ -z "$gemDependencies" ]; then
+#       notice "Nothing to install. You've already installed all your conda-distributed dependencies."
+#     fi
+# 
+#   fi
+# }
+################################### UNDER DEVELOPMENT ####################################
 
 # brewUpgrade
 # ------------------------------------------------------
