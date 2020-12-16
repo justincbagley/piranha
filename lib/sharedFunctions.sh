@@ -3,7 +3,7 @@
 # ##################################################
 # Shared bash functions used by PIrANHA bash scripts.
 #
-# VERSION 1.0.4
+# VERSION 1.6.0
 #
 # HISTORY
 # Pre-PIrANHA version updates by Nate Landau:
@@ -13,15 +13,15 @@
 # * 2016-01-11 - v1.4.9   - Added 'httpStatus' function.
 #
 # PIrANHA version updates by Justin Bagley:
-# * 2019-03-08 - v1.0.0 - Added to PIrANHA, edited from sharedFunctions.sh script
-#                         by Nate Landau, from a forked version of his shell-scripts
-#                         repository, which he last had as v1.4.9 (see above).
-# * 2019-04+   - v1.0.1 - Added checkMachineType function.
-# * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format.
-# * 2020-07-31 - v1.0.2 - Minor update, added Short PWD functions.
-# * 2020-12-11 - v1.0.3 - Minor updates fixing Codacy-flagged issues (mainly in
-#                         needSudo) and VERSION.
-# * 2020-12-15 - v1.0.4 - Added condaDependencies to checkDependencies function.
+# * 2019-03-08 - v1.4.10  - Added to PIrANHA, edited from sharedFunctions.sh script
+#                           by Nate Landau, from a forked version of his shell-scripts
+#                           repository, which he last had as v1.4.9 (see above).
+# * 2019-04+   - v1.5.0   - Added 'checkMachineType' function.
+# * 2020-04-21 - v1.5.1   - Minor updates to function messaging and format.
+# * 2020-07-31 - v1.5.2   - Minor update, added Short PWD functions.
+# * 2020-12-11 - v1.5.3   - Minor updates fixing Codacy-flagged issues (mainly in
+#                           needSudo) and VERSION.
+# * 2020-12-15 - v1.6.0   - Added 'condaDependencies' to 'checkDependencies' function.
 #
 # ##################################################
 
@@ -132,7 +132,7 @@ esac;
 # Transpose file
 # ------------------------------------------------------
 # Common function for transposing a file (switching columns
-# to rows)
+# to rows).
 #
 # Function to transpose file and send to screenout, so save
 # results with a redirect.
@@ -160,11 +160,11 @@ END {
 
 # Traps
 # ------------------------------------------------------
-# These functions are for use with different trap scenarios
+# These functions are for use with different trap scenarios.
 # ------------------------------------------------------
 
 # Non destructive exit for when script exits naturally.
-# Usage: Add this function at the end of every script
+# Usage: Add this function at the end of every script.
 function safeExit() {
   # Delete temp files, if any
   if is_dir "${tmpDir}"; then
@@ -191,7 +191,7 @@ function readFile() {
 
 # Escape a string
 # ------------------------------------------------------
-# usage: var=$(escape "String")
+# Usage: var=$(escape "String")
 # ------------------------------------------------------
 escape() { echo "${@}" | sed 's/[]\.|$(){}?+*^]/\\&/g'; }
 
@@ -214,7 +214,7 @@ function needSudo() {
 
 # convertsecs
 # ------------------------------------------------------
-# Convert Seconds to human readable time
+# Convert Seconds to human readable time.
 #
 # To use this, pass a number (seconds) into the function as this:
 # print "$(convertsecs $TOTALTIME)"

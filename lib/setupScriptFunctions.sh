@@ -3,7 +3,7 @@
 # ##################################################
 # Shared bash functions
 #
-# VERSION 1.0.1
+# VERSION 1.1.0
 #
 # HISTORY
 #
@@ -12,10 +12,10 @@
 #                          used by my mac setup scripts.").
 #
 # PIrANHA version updates by Justin Bagley:
-# * 2019-03-08 - v1.0.0 - Added to PIrANHA (approximate date).
-# * 2020-12-15 - v1.0.1 - Coded doCondaInstall from doInstall,
-#                         added brewUpgrade, plus various minor
-#                         edits.
+# * 2019-03-08 - v1.0.1  - Added to PIrANHA (approximate date).
+# * 2020-12-15 - v1.1.0  - Coded doCondaInstall from doInstall,
+#                          added brewUpgrade, plus various minor
+#                          edits.
 #
 # ##################################################
 
@@ -97,7 +97,7 @@ install_ffmpeg () {
 # those which are needed.
 #
 # Variables needed are:
-# LISTINSTALLED:  The command to list all previously installed items
+# LISTINSTALLED:  The command to list all previously installed items.
 #                 Ex: "brew list" or "gem list | awk '{print $1}'"
 #
 # INSTALLCOMMAND: The Install command for the desired items.
@@ -115,8 +115,8 @@ function to_install() {
   local debugger desired installed i desired_s installed_s remain
   if [[ "$1" == 1 ]]; then debugger=1; shift; fi
     # Convert args to arrays, handling both space- and newline-separated lists.
-    read -ra desired <<(echo "$1" | tr '\n' ' ')
-    read -ra installed <<(echo "$2" | tr '\n' ' ')
+    read -ra desired < <(echo "$1" | tr '\n' ' ')
+    read -ra installed < <(echo "$2" | tr '\n' ' ')
     # Sort desired and installed arrays.
     unset i; while read -r; do desired_s[i++]=$REPLY; done < <(
       printf "%s\n" "${desired[@]}" | sort
