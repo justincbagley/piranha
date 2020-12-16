@@ -111,7 +111,7 @@ install_ffmpeg () {
 #
 # Credit: https://github.com/cowboy/dotfiles
 # ------------------------------------------------------
-function to_install() {
+function to_install () {
   local debugger desired installed i desired_s installed_s remain
   if [[ "$1" == 1 ]]; then debugger=1; shift; fi
     # Convert args to arrays, handling both space- and newline-separated lists.
@@ -185,32 +185,10 @@ function doInstall () {
 # Similar to doInstall (above), but modified by JCB for 
 # conda packages (added: Tue Dec 15 17:40:26 CST 2020).
 #
-# NOTE: ${INSTALLCOMMAND} is set to "conda install" in the checkDependencies
+# NOTES: ${INSTALLCOMMAND} is set to "conda install" in the checkDependencies
+# function; 'to_install' is already defined above under 'doInstall'
 # function.
 # ------------------------------------------------------
-function to_install() {
-  local debugger desired installed i desired_s installed_s remain
-  if [[ "$1" == 1 ]]; then debugger=1; shift; fi
-    # Convert args to arrays, handling both space- and newline-separated lists.
-    read -ra desired < <(echo "$1" | tr '\n' ' ')
-    read -ra installed < <(echo "$2" | tr '\n' ' ')
-    # Sort desired and installed arrays.
-    unset i; while read -r; do desired_s[i++]=$REPLY; done < <(
-      printf "%s\n" "${desired[@]}" | sort
-    )
-    unset i; while read -r; do installed_s[i++]=$REPLY; done < <(
-      printf "%s\n" "${installed[@]}" | sort
-    )
-    # Get the difference. comm is awesome.
-    unset i; while read -r; do remain[i++]=$REPLY; done < <(
-      comm -13 <(printf "%s\n" "${installed_s[@]}") <(printf "%s\n" "${desired_s[@]}")
-  )
-  [[ "$debugger" ]] && for v in desired desired_s installed installed_s remain; do
-    echo "$v ($(eval echo "\${#$v[*]}")) $(eval echo "\${$v[*]}")"
-  done
-  echo "${remain[@]}"
-}
-
 # Install the desired conda packages/software, if not already installed.
 function doCondaInstall () {
   list=$(to_install "${RECIPES[*]}" "$(${LISTINSTALLED})")
