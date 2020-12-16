@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.6.2"                                                                       #
+  VERSION="v1.6.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: December 15, 2020                                                         #
+# Last update: December 16, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -141,7 +141,7 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.6.2 December 2020                            "
+echo "INFO      | $(date) | dropRandomHap, v1.6.3 December 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -298,7 +298,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]
 				fi
 			fi
 			
-			MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | sed 's/\ //g')";
+			MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
 			
 			if [[ -s "$MY_PHYLIP_BASENAME".phy ]] && [[ "$MY_PHYLIP_HEADER_CHECK" = "0" ]]; then
 				## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
@@ -428,7 +428,9 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 				fi
 			elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
 				mv "$i" ./orig_phylip/ ;
+#echo "A"
 				if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
+#echo "B"
 						(
 							while read line; do
 								MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
@@ -441,10 +443,13 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 						)
 				fi
 			fi
+#echo "C"
 
-			MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | sed 's/\ //g')";
+			MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+#echo "D"
 			
 			if [[ -s "$MY_PHYLIP_BASENAME".phy ]] && [[ "$MY_PHYLIP_HEADER_CHECK" = "0" ]]; then
+#echo "E"
 				## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
 				## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
 				## number of lines (and same/original number of characters):
