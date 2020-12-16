@@ -115,8 +115,8 @@ function to_install() {
   local debugger desired installed i desired_s installed_s remain
   if [[ "$1" == 1 ]]; then debugger=1; shift; fi
     # Convert args to arrays, handling both space- and newline-separated lists.
-    read -ra desired < <(echo "$1" | tr '\n' ' ')
-    read -ra installed < <(echo "$2" | tr '\n' ' ')
+    read -ra desired <<(echo "$1" | tr '\n' ' ')
+    read -ra installed <<(echo "$2" | tr '\n' ' ')
     # Sort desired and installed arrays.
     unset i; while read -r; do desired_s[i++]=$REPLY; done < <(
       printf "%s\n" "${desired[@]}" | sort
@@ -149,10 +149,10 @@ function doInstall () {
           if [[ "${item}" = "ffmpeg" ]]; then
             install_ffmpeg
           elif [[ "${item}" = "tldr" ]]; then
-            brew tap tldr-pages/tldr
-            brew install tldr
+            brew tap tldr-pages/tldr ;
+            brew install tldr ;
           else
-            ${INSTALLCOMMAND} "${item}"
+            ${INSTALLCOMMAND} "${item}" ;
           fi
         fi
       done
@@ -164,10 +164,10 @@ function doInstall () {
         if [[ "${item}" = "ffmpeg" ]]; then
           install_ffmpeg
         elif [[ "${item}" = "tldr" ]]; then
-          brew tap tldr-pages/tldr
-          brew install tldr
+          brew tap tldr-pages/tldr ;
+          brew install tldr ;
         else
-          ${INSTALLCOMMAND} "${item}"
+          ${INSTALLCOMMAND} "${item}" ;
         fi
       done
     fi
@@ -278,7 +278,7 @@ brewUpgrade () {
   PACKAGE="$1"
   seek_confirmation "Upgrade Homebrew package ${PACKAGE}? "
   if is_confirmed; then
-    brew update
+    brew update ;
     brew upgrade --fetch-HEAD "$PACKAGE" ;
   fi
 }
@@ -301,10 +301,10 @@ brewCleanup () {
     success "Please exit and restart all your shells."
   fi
 
-  brew cleanup
+  brew cleanup ;
 
   if $(brew cask > /dev/null); then
-    brew cask cleanup
+    brew cask cleanup ;
   fi
 }
 
@@ -331,7 +331,7 @@ hasDropbox () {
 
       local RECIPES=(dropbox)
       Install
-      open -a dropbox
+      open -a dropbox ;
     else
       die "Can't run this script. Install Dropbox manually."
     fi
