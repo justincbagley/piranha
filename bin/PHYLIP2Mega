@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2Mega.sh                                                                   #
-  VERSION="v1.2.4"                                                                       #
+  VERSION="v1.2.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: April 19, 2020                                                            #
+# Last update: December 16, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                             #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT FOR CONVERTING A PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENT TO MEGA FORMAT   #
@@ -135,7 +135,7 @@ PHYLIP2Mega () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2Mega, v1.2.4 April 2020                                 "
+echo "INFO      | $(date) | PHYLIP2Mega, v1.2.5 December 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -187,8 +187,8 @@ fi
 			
 				tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
 			
-				MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
-				MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
+				MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g' | sed 's/[\]*//g')";
+				MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g' | sed 's/[\]*//g' | sed 's/\ //g')";
 			
 			###### Make Mega-formatted file:
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -249,8 +249,8 @@ fi
 					
 						tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
 					
-						MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
-						MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
+						MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g' | sed 's/[\]*//g')";
+						MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g' | sed 's/[\]*//g' | sed 's/\ //g')";
 					
 					###### Make Mega-formatted file:
 						if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then

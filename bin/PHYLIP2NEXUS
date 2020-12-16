@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2NEXUS.sh                                                                  #
-  VERSION="v1.3.8"                                                                       #
+  VERSION="v1.3.9"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: November 13, 2020                                                         #
+# Last update: December 16, 2020                                                         #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ PHYLIP2NEXUS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.8 November 2020                             "
+echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.9 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -157,8 +157,8 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[ "
 	MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
 	## This "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines; was going to call it "MY_SEQUENCE_AND_EOF_LINES" but thought that name was too long.
 	tail -n$MY_BODY_LENGTH $INPUT_PHYLIP_FILE > sequences.tmp ;
-	MY_NTAX="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
-	MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
+	MY_NTAX="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/\ [0-9]*//g' | sed 's/[\]*//g')";
+	MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g' | sed 's/[\]*//g' | sed 's/\ //g')";
 
 echo "INFO      | $(date) | Step #2: Make NEXUS-formatted alignment file. "
 ###### Make NEXUS format file:
@@ -303,8 +303,8 @@ echo "INFO      | $(date) | Step #2: Convert multiple PHYLIP files in working di
 		MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
 		## This "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines; was going to call it "MY_SEQUENCE_AND_EOF_LINES" but thought that name was too long.
 		tail -n$MY_BODY_LENGTH $INPUT_PHYLIP_FILE > sequences.tmp;
-		MY_NTAX="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
-		MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g' | sed 's/\ //g')";
+		MY_NTAX="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/\ [0-9]*//g' | sed 's/[\]*//g')";
+		MY_NCHAR="$(head -n1 $INPUT_PHYLIP_FILE | sed 's/^[0-9]*\ //g' | sed 's/[\]*//g' | sed 's/\ //g')";
 
 	###### Make NEXUS format file:
 		echo "INFO      | $(date) | Converting $INPUT_PHYLIP_FILE to NEXUS format... "
