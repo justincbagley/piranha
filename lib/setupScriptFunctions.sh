@@ -85,7 +85,7 @@ hasCasks () {
 }
 
 # My preferred installation of FFMPEG
-install-ffmpeg () {
+install_ffmpeg () {
   if [ ! $(type -P "ffmpeg") ]; then
     brew install ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-libcaca --with-libass --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libvidstab --with-libsoxr --with-libssh --with-libvo-aacenc --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-schroedinger --with-speex --with-theora --with-tools --with-webp --with-x265
   fi
@@ -147,7 +147,7 @@ function doInstall () {
           notice "Installing ${item}"
           # FFMPEG takes additional flags
           if [[ "${item}" = "ffmpeg" ]]; then
-            install-ffmpeg
+            install_ffmpeg
           elif [[ "${item}" = "tldr" ]]; then
             brew tap tldr-pages/tldr
             brew install tldr
@@ -162,7 +162,7 @@ function doInstall () {
         notice "Installing ${item}... "
         # FFMPEG takes additional flags
         if [[ "${item}" = "ffmpeg" ]]; then
-          install-ffmpeg
+          install_ffmpeg
         elif [[ "${item}" = "tldr" ]]; then
           brew tap tldr-pages/tldr
           brew install tldr
