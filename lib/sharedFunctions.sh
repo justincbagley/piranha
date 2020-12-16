@@ -528,7 +528,10 @@ function checkDependencies() {
     doInstall
   fi
   if [ -n "$condaDependencies" ]; then
-    LISTINSTALLED="conda list | awk '{print $1}'"
+    # Under development:
+    # LISTINSTALLED="conda list"
+    # LISTINSTALLED="conda list | awk '{print $1}'"
+    LISTINSTALLED="conda list | grep -v '\#\|^\_' | sed 's/\ .*//g'"
     INSTALLCOMMAND="conda install"
     RECIPES=("${condaDependencies[@]}")
     # Invoke functions from setupScriptFunctions.sh
