@@ -485,7 +485,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a3 (update Dec 4 17:34:49 CST 2020).
+ This is the main script for PIrANHA v0.4a3 (update Dec 15 01:25:03 CST 2020).
 
  ${bold}Options:${reset}
   -s, --shortlist   Short list of available functions

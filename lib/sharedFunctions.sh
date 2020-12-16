@@ -3,23 +3,25 @@
 # ##################################################
 # Shared bash functions used by PIrANHA bash scripts.
 #
-# VERSION 1.0.3
+# VERSION 1.0.4
 #
 # HISTORY
 # Pre-PIrANHA version updates by Nate Landau:
-# * 2015-01-02 - v1.0.0   - First Creation
-# * 2015-04-16 - v1.2.0   - Added 'checkDependencies' and 'pauseScript'
-# * 2016-01-10 - v1.3.0   - Added 'join' function
-# * 2016-01-11 - v1.4.9   - Added 'httpStatus' function
+# * 2015-01-02 - v1.0.0   - First Creation.
+# * 2015-04-16 - v1.2.0   - Added 'checkDependencies' and 'pauseScript'.
+# * 2016-01-10 - v1.3.0   - Added 'join' function.
+# * 2016-01-11 - v1.4.9   - Added 'httpStatus' function.
 #
 # PIrANHA version updates by Justin Bagley:
 # * 2019-03-08 - v1.0.0 - Added to PIrANHA, edited from sharedFunctions.sh script
 #                         by Nate Landau, from a forked version of his shell-scripts
-#                         repository, which he last had as v1.4.9 (see above)
-# * 2019-04+   - v1.0.1 - Added checkMachineType function
-# * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format
-# * 2020-07-31 - v1.0.2 - Minor update, added Short PWD functions
-# * 2020-12-11 - v1.0.3 - Minor updates fixing Codacy-flagged issues
+#                         repository, which he last had as v1.4.9 (see above).
+# * 2019-04+   - v1.0.1 - Added checkMachineType function.
+# * 2020-04-21 - v1.0.1 - Minor updates to function messaging and format.
+# * 2020-07-31 - v1.0.2 - Minor update, added Short PWD functions.
+# * 2020-12-11 - v1.0.3 - Minor updates fixing Codacy-flagged issues (mainly in
+#                         needSudo) and VERSION.
+# * 2020-12-15 - v1.0.4 - Added condaDependencies to checkDependencies function.
 #
 # ##################################################
 
@@ -32,7 +34,6 @@
 # specified PWD.
 # ------------------------------------------------------
 function echoShortPWD () {
-
 		MY_ABS_PATH_LENGTH="$(echo "$PWD" | wc -c | sed 's/\ //g')";
 		MY_ABS_PATH_ECHO_LENGTH="$(calc "$MY_ABS_PATH_LENGTH"+43)";
 		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
@@ -42,8 +43,7 @@ function echoShortPWD () {
 			MY_NUM_FINAL_PWD_CHARS="$(calc "$MY_ABS_PATH_LENGTH"-"$MY_CORRECTION_LENGTH")";
 			SHORT_PWD="$(echo ${PWD:${#PWD}<$MY_NUM_FINAL_PWD_CHARS?0:-$MY_NUM_FINAL_PWD_CHARS})";   ## Get last $MY_NUM_FINAL_PWD_CHARS characters of $PWD
 			echo "INFO      | $(date) | Starting input directory (using current dir): "
-			echo "INFO      | $(date) | ...$SHORT_PWD"	
-
+			echo "INFO      | $(date) | ...$SHORT_PWD"
 		else
 			echo "INFO      | $(date) | Starting input directory (using current dir): "
 			echo "INFO      | $(date) | $PWD"	
@@ -51,7 +51,6 @@ function echoShortPWD () {
 }
 
 function echoShortUSPWD () {
-
 		MY_ABS_PATH_LENGTH="$(echo "$PWD" | wc -c | sed 's/\ //g')";
 		MY_ABS_PATH_ECHO_LENGTH="$(calc "$MY_ABS_PATH_LENGTH"+43)";
 		MY_BASH_WINDOW_COLS="$(tput cols | sed 's/\ //g')";
@@ -62,7 +61,6 @@ function echoShortUSPWD () {
 			SHORT_PWD="$(echo ${PWD:${#PWD}<$MY_NUM_FINAL_PWD_CHARS?0:-$MY_NUM_FINAL_PWD_CHARS})";   ## Get last $MY_NUM_FINAL_PWD_CHARS characters of $PWD
 			echo "INFO      | $(date) | User-specified input directory: "
 			echo "INFO      | $(date) | ...$SHORT_PWD"	
-
 		else
 			echo "INFO      | $(date) | User-specified input directory: "
 			echo "INFO      | $(date) | $PWD"	
@@ -106,11 +104,11 @@ fi
 # ------------------------------------------------------
 # Function to send commands to Bash's arbitrary precision
 # calculator language.
-# ------------------------------------------------------
-
+#
 # A calculator function, which echos input to Bash bc. 
 # Usage: calc <math_commands>, e.g. calc 1+2, or with 
 # variables, e.g. calc $VAR1+$VAR2
+# ------------------------------------------------------
 function calc () {
 	bc -l <<< "$@" ;
 }
@@ -135,12 +133,12 @@ esac;
 # ------------------------------------------------------
 # Common function for transposing a file (switching columns
 # to rows)
-# ------------------------------------------------------
-
+#
 # Function to transpose file and send to screenout, so save
 # results with a redirect.
 # Usage: "$ transposeFile <file> > <outputFilename>", with redirect
 # Adapted from URL: https://stackoverflow.com/questions/1729824/an-efficient-way-to-transpose-a-file-in-bash
+# ------------------------------------------------------
 function transposeFile () {
 awk '
 {
@@ -233,17 +231,16 @@ function convertsecs() {
   printf "%02d:%02d:%02d\n" "$h" "$m" "$s" ;
 }
 
+# pushover
+# ------------------------------------------------------
+# Sends notifications via Pushover.
+# Requires a file named 'pushover.cfg' be placed in '../etc/'.
+#
+# Usage: pushover "Title Goes Here" "Message Goes Here"
+#
+# Credit: http://ryonsherman.blogspot.com/2012/10/shell-script-to-send-pushover.html
+# ------------------------------------------------------
 function pushover() {
-  # pushover
-  # ------------------------------------------------------
-  # Sends notifications view Pushover
-  # Requires a file named 'pushover.cfg' be placed in '../etc/'
-  #
-  # Usage: pushover "Title Goes Here" "Message Goes Here"
-  #
-  # Credit: http://ryonsherman.blogspot.com/2012/10/shell-script-to-send-pushover.html
-  # ------------------------------------------------------
-
   # Check for config file containing API Keys
   if [ ! -f "${SOURCEPATH}/../etc/pushover.cfg" ]; then
    error "Please locate the pushover.cfg to send notifications to Pushover."
@@ -270,8 +267,9 @@ function pushover() {
 
 # Join
 # ----------------------------------------------
-# This function joins items together with a user specified separator
-# Taken whole cloth from: http://stackoverflow.com/questions/1527049/bash-join-elements-of-an-array
+# This function joins items together with a user specified separator.
+# Taken whole cloth from: 
+# http://stackoverflow.com/questions/1527049/bash-join-elements-of-an-array
 #
 # Usage:
 #   join , a "b c" d #a,b c,d
@@ -403,12 +401,12 @@ function is_os() {
 # y/n are the only possible answers.
 #
 # USAGE:
-# seek_confirmation "Ask a question"
-# if is_confirmed; then
-#   some action
-# else
-#   some other action
-# fi
+#   seek_confirmation "Ask a question"
+#   if is_confirmed; then
+#     some action
+#   else
+#     some other action
+#   fi
 #
 # Credt: https://github.com/kevva/dotfiles
 # ------------------------------------------------------
@@ -468,7 +466,7 @@ function skip() {
 # unmountDrive
 # ------------------------------------------------------
 # If an AFP drive is mounted as part of a script, this
-# will unmount the volume.  This will only work on Macs.
+# will unmount the volume. This will only work on Macs.
 # ------------------------------------------------------
 function unmountDrive() {
   if [ -d "$1" ]; then
@@ -479,7 +477,7 @@ function unmountDrive() {
 # help
 # ------------------------------------------------------
 # Prints help for a script when invoked from the command
-# line.  Typically via '-h'.  If additional flags or help
+# line. Typically via '-h'. If additional flags or help
 # text is available in the script they will be printed
 # in the '$usage' variable.
 # ------------------------------------------------------
@@ -496,7 +494,7 @@ function help () {
 # Dependencies
 # -----------------------------------
 # Arrays containing package dependencies needed to execute this script.
-# The script will fail if dependencies are not installed.  For Mac users,
+# The script will fail if dependencies are not installed. For Mac users,
 # most dependencies can be installed automatically using the package
 # manager 'Homebrew'.
 # Usage in script:  $ homebrewDependencies=(package1 package2)
@@ -529,6 +527,13 @@ function checkDependencies() {
     # Invoke functions from setupScriptFunctions.sh
     doInstall
   fi
+  if [ -n "$condaDependencies" ]; then
+    LISTINSTALLED="conda list | awk '{print $1}'"
+    INSTALLCOMMAND="conda install"
+    RECIPES=("${condaDependencies[@]}")
+    # Invoke functions from setupScriptFunctions.sh
+    doCondaInstall
+  fi
   IFS=$saveIFS
 }
 
@@ -558,7 +563,7 @@ function in_array() {
 # Text Transformations
 # -----------------------------------
 # Transform text using these functions.
-# Adapted from https://github.com/jmcantrell/bashful
+# Adapted from: https://github.com/jmcantrell/bashful
 # -----------------------------------
 
 lower() {
@@ -595,8 +600,8 @@ trim() {
 }
 
 squeeze() {
-  # Removes leading/trailing whitespace and condenses all other consecutive
-  # whitespace into a single space.
+  # Removes leading/trailing whitespace and condenses all other 
+  # consecutive whitespace into a single space.
   #
   # Usage examples:
   #     echo "  foo  bar   baz  " | squeeze  #==> "foo bar baz"
@@ -623,7 +628,7 @@ progressBar() {
   # To use this function you must pass the total number of
   # times the loop will run to the function.
   #
-  # usage:
+  # Usage:
   #   for number in $(seq 0 100); do
   #     sleep 1
   #     progressBar 100
@@ -637,7 +642,7 @@ progressBar() {
   width=30
   bar_char="#"
 
-  # Don't run this function when scripts are running in verbose mode
+  # Don't run this function when scripts are running in verbose mode.
   if ${verbose}; then return; fi
 
   # Reset the count
@@ -645,7 +650,7 @@ progressBar() {
     progressBarProgress=0
   fi
 
-  # Do nothing if the output is not a terminal
+  # Do nothing if the output is not a terminal.
   if [ ! -t 1 ]; then
       echo "Output is not a terminal" 1>&2
       return ;
@@ -857,7 +862,7 @@ function makeCSV() {
   # Takes passed arguments and writes them as a header line to the CSV
   # Usage 'makeCSV column1 column2 column3'
 
-  # Set the location and name of the CSV File
+  # Set the location and name of the CSV File.
   if [ -z "${csvLocation}" ]; then
     csvLocation="${HOME}/Desktop"
   fi
@@ -867,7 +872,7 @@ function makeCSV() {
   csvFile="${csvLocation}/${csvName}"
 
   # Overwrite existing file? If not overwritten, new content is added
-  # to the bottom of the existing file
+  # to the bottom of the existing file.
   if [ -f "${csvFile}" ]; then
     seek_confirmation "${csvFile} already exists. Overwrite?"
     if is_confirmed; then
@@ -878,7 +883,7 @@ function makeCSV() {
 }
 
 function writeCSV() {
-  # Takes passed arguments and writes them as a comma separated line
+  # Takes passed arguments and writes them as a comma separated line.
   # Usage 'writeCSV column1 column2 column3'
 
   csvInput=($@)
@@ -890,11 +895,11 @@ function writeCSV() {
 }
 
 function json2yaml() {
-  # convert json files to yaml using python and PyYAML
+  # Convert json files to yaml using python and PyYAML.
   python -c 'import sys, yaml, json; yaml.safe_dump(json.load(sys.stdin), sys.stdout, default_flow_style=False)' < "$1" ;
 }
 
 function yaml2json() {
-  # convert yaml files to json using python and PyYAML
+  # Convert yaml files to json using python and PyYAML.
   python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < "$1" ;
 }
