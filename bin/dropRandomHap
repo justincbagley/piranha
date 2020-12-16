@@ -443,9 +443,12 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 			fi
 echo "C"
 
-			#MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
-			#MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*[[:space:]]*[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
-			MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ +[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+			# MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ \{1,\}[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+			# MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*[[:space:]]*[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+			# MY_PHYLIP_HEADER_CHECK="$(grep '^[0-9]*\ +[0-9]*$' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+			# to try: 
+			# MY_PHYLIP_HEADER_CHECK="$(sed '/^[0-9]*\ +[0-9]*$/p' "$MY_PHYLIP_BASENAME".phy | wc -l | sed 's/\ //g')";
+			MY_PHYLIP_HEADER_CHECK="$(head -n1 "$MY_PHYLIP_BASENAME".phy | grep '^[0-9]*\ *[0-9]*$' | wc -l | sed 's/\ //g')";
 echo "D"
 			
 			if [[ -s "$MY_PHYLIP_BASENAME".phy ]] && [[ "$MY_PHYLIP_HEADER_CHECK" = "0" ]]; then
