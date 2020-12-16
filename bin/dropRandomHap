@@ -201,7 +201,9 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]
 	echo "INFO      | $(date) | Running on single input file: ${INPUT_PHYLIP_FILE} " | tee -a "$MY_LOGFILE_SWITCH"
 	(
 		for i in "$INPUT_PHYLIP_FILE"; do
-			echo "INFO      | $(date) | ###--------------   $i   --------------###" | tee -a "$MY_LOGFILE_SWITCH"
+
+			echo "INFO      | $(date) | ----------------- Processing $i " | tee -a "$MY_LOGFILE_SWITCH"
+
 			MY_PHYLIP_BASENAME="$(basename "$i" '.phy')";
 			MY_NTAX="$(head -n1 "$i" | perl -pe  's/\ +.*//g')";
 			MY_NCHAR="$(head -n1 "$i" | sed 's/^[0-9]*\ //g')";
@@ -338,10 +340,13 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 	echo "INFO      | $(date) | Running on multiple PHYLIP files in current directory... " | tee -a "$MY_LOGFILE_SWITCH"
 	MY_NUM_PHYLIP_FILES="$(ls ./*.phy | wc -l | sed 's/\ //g')";
 	echo "INFO      | $(date) | No. PHYLIP files:         ${MY_NUM_PHYLIP_FILES}" | tee -a "$MY_LOGFILE_SWITCH"
+
+	count=1
 	(
 		for i in ./*.phy; do
 
-			echo "INFO      | $(date) | ###--------------   $i   --------------###" | tee -a "$MY_LOGFILE_SWITCH"
+			echo "INFO      | $(date) | ----------------- Processing file ${count}. $i " | tee -a "$MY_LOGFILE_SWITCH"
+
 			MY_PHYLIP_BASENAME="$(basename "$i" '.phy')";
 			MY_NTAX="$(head -n1 "$i" | perl -pe  's/\ +.*//g')";
 			MY_NCHAR="$(head -n1 "$i" | sed 's/^[0-9]*\ //g')";
@@ -463,6 +468,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 				sed -i 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
 			fi
 
+			echo "$((count++)) "  >/dev/null 2>&1 ;
 		done
 	)
 fi
