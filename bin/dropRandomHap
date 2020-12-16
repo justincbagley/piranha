@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropRandomHap.sh                                                                 #
-  VERSION="v1.6.3"                                                                       #
+  VERSION="v1.7.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
 # Last update: December 16, 2020                                                         #
@@ -141,7 +141,7 @@ dropRandomHap () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropRandomHap, v1.6.3 December 2020                            "
+echo "INFO      | $(date) | dropRandomHap, v1.7.0 December 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -167,7 +167,7 @@ echo "INFO      | $(date) | Step #2: Set log file. "
 if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
 	MY_LOGFILE_SWITCH="$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | dropRandomHap, v1.6.1 April 2020                               " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | dropRandomHap, v1.7.0 December 2020                            " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Starting dropRandomHap analysis... " >> "$MY_LOGFILE_SWITCH"
@@ -176,7 +176,7 @@ if [[ "$MY_LOGFILE_SWITCH" != "NULL" ]]; then
 else
 	MY_LOGFILE_SWITCH=./dropRandomHap_output.txt
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
-	echo "INFO      | $(date) | dropRandomHap, v1.6.1 April 2020                               " >> "$MY_LOGFILE_SWITCH"
+	echo "INFO      | $(date) | dropRandomHap, v1.7.0 December 2020                            " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. " >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) |----------------------------------------------------------------" >> "$MY_LOGFILE_SWITCH"
 	echo "INFO      | $(date) | Starting dropRandomHap analysis... " >> "$MY_LOGFILE_SWITCH"
@@ -207,124 +207,183 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]
 			MY_PHYLIP_BASENAME="$(basename "$i" '.phy')";
 			MY_NTAX="$(head -n1 "$i" | perl -pe  's/\ +.*//g')";
 			MY_NCHAR="$(head -n1 "$i" | sed 's/^[0-9]*\ //g')";
+			MY_FILESIZE="$(wc -c "$i" | sed 's/\ \.\/.*//g; s/\ //g')";
 			echo "INFO      | $(date) | Basename: ${MY_PHYLIP_BASENAME} " | tee -a "$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | No. taxa: ${MY_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
 			
-			###### GOALS: FOR EACH PHYLIP FILE...
-			## Get taxon names, making sure that list contains only basenames by using in-place search
-			## and replace followed by a unique sort command. Goal is 1) to obtain taxon names file with
-			## basenames by removing allele designations, if present. Then will 2) randomize PHYLIP file
-			## "$i" and save file with randomized sequence (row) order to tmp file, and finish by 3) looping
-			## through taxon names in file from #1 and grepping out first matching sequence/line in randomized
-			## PHY tmp file from #2. Appending redirects in #3 will create final file of one random allele 
-			## (haplotype) per taxon/species (basename). After making new reduced PHYLIP file, next 4) update
-			## the PHYLIP header to reflect new number of taxa in the file.
-			
-			if [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names.tmp ]] && [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ]]; then
-				## 1. Taxon names. - Make taxon names file of unique basenames with allele designations removed (if present):
-				echo "INFO      | $(date) | Making taxon names file ... " | tee -a "$MY_LOGFILE_SWITCH"
-				cp "$i" "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
-				perl -p -i -e 's/\ +.*//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Isolate taxon names
-		
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i.bak '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Mac
-					rm ./*.bak;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Linux
-				fi
-		
-				## Taxon names check for allele designations:
-				MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' "$MY_PHYLIP_BASENAME"_taxon_names.tmp | wc -l | perl -pe 's/\t//g; s/\ //g')";
-		
-				## Conditionally remove allele designations:
-				echo "INFO      | $(date) | Checking for allele designations (_0 and _1) in taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
-				if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
-					echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+			# ------------------------------------------------------
+			if [[ "$MY_NCHAR" -ge "7000" ]] && [[ "$MY_FILESIZE" -gt "4500000" ]]; then 
+				
+				# LARGE FILE ROUTINE:
+				# ------------------------------------------------------
+				# This is a routine for large alignments whose characteristics
+				# are beyond threshold sizes (see conditional above, edit as 
+				# desired).
+				# 
+				# For these alignments, we make a compromise: play it safe, only 
+				# keep major phased alleles (_0 suffixed sequences), but 
+				# keep script running.
+				# ------------------------------------------------------
+				echo "WARNING   | $(date) | Large alignment file detected. " | tee -a "$MY_LOGFILE_SWITCH"
+				echo "INFO      | $(date) | Running large file routine... " | tee -a "$MY_LOGFILE_SWITCH"
+				
+				###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
 					if [[ "${machine}" = "Mac" ]]; then
-						sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
-						rm ./*.bak ;
+						sed -i.bak '/^[[:space:]]*$/d' "$i" ;
+						rm ./*.bak;
 					fi
 					if [[ "${machine}" = "Linux" ]]; then
-						sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+						sed -i '/^[[:space:]]*$/d' "$i" ;
+					fi
+				
+				###### Update PHYLIP by removing alt allele sequences (phased gene sequences with 
+				###### _1 suffix added to tip/sequence label):
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i '' '/^[A-z0-9\-\_]*\_1[[:space:]].*$/d' "$i" ;
+					fi
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i '/^[A-z0-9\-\_]*\_1[[:space:]].*$/d' "$i" ;
+					fi
+
+				###### Get and update PHYLIP characteristics:
+					# Get and fix no. characters ($MY_NCHAR):
+					MY_NCHAR="$(sed -n '2p' "$i" | sed 's/^[A-z0-9\-\_]*\_0*[[:space:]]*//g' | wc -c | sed 's/\ //g')";	
+					let MY_NCHAR-=1 ;
+					
+					# Get and fix no. taxa ($MY_NTAX):
+					MY_NTAX="$(wc -l "$i" | sed 's/\.\/.*//g; s/\ //g')";
+					let MY_NTAX-=1 ;
+
+				###### Update PHYLIP header:
+					## Replace whole header line ('if 1' applies changes only to first line, and 
+					## we have already removed empty lines, so logically the first line should 
+					## now be the header line):
+					perl -i -pe 's/^[0-9]*\ +[0-9]*/'"$MY_NTAX"'\ \ '"$MY_NCHAR"'/g if 1' "$i" ;
+
+			else
+				
+				# REGULAR FILE ROUTINE:
+				# ------------------------------------------------------
+				# This is the routine for alignments whose characteristics
+				# are within the threshold sizes.
+				# ------------------------------------------------------
+
+				###### GOALS: FOR EACH PHYLIP FILE...
+				## Get taxon names, making sure that list contains only basenames by using in-place search
+				## and replace followed by a unique sort command. Goal is 1) to obtain taxon names file with
+				## basenames by removing allele designations, if present. Then will 2) randomize PHYLIP file
+				## "$i" and save file with randomized sequence (row) order to tmp file, and finish by 3) looping
+				## through taxon names in file from #1 and grepping out first matching sequence/line in randomized
+				## PHY tmp file from #2. Appending redirects in #3 will create final file of one random allele 
+				## (haplotype) per taxon/species (basename). After making new reduced PHYLIP file, next 4) update
+				## the PHYLIP header to reflect new number of taxa in the file.
+				
+				if [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names.tmp ]] && [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ]]; then
+					## 1. Taxon names. - Make taxon names file of unique basenames with allele designations removed (if present):
+					echo "INFO      | $(date) | Making taxon names file ... " | tee -a "$MY_LOGFILE_SWITCH"
+					cp "$i" "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+					perl -p -i -e 's/\ +.*//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Isolate taxon names
+			
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i.bak '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Mac
+						rm ./*.bak;
+					fi
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Linux
+					fi
+			
+					## Taxon names check for allele designations:
+					MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' "$MY_PHYLIP_BASENAME"_taxon_names.tmp | wc -l | perl -pe 's/\t//g; s/\ //g')";
+			
+					## Conditionally remove allele designations:
+					echo "INFO      | $(date) | Checking for allele designations (_0 and _1) in taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+					if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
+						echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+							rm ./*.bak ;
+						fi
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+						fi
+					fi
+					
+					# Get unique basenames only make final alt file:
+					sort -u "$MY_PHYLIP_BASENAME"_taxon_names.tmp > "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+					rm "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+				fi	
+		
+	
+				if [[ ! -s "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp ]]; then
+					## 2. Shuffle PHYLIP - Shuffle PHYLIP file to have random sequence order (randomize row order) 
+					## using Perl (idea from URL: https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel)
+					## ...and conditionally save shuffled PHYLIP in separate temporary file, leaving original untouched, 
+					## when user invokes -k 1 option.
+					echo "INFO      | $(date) | Shuffling PHYLIP file, randomizing row order... " | tee -a "$MY_LOGFILE_SWITCH"
+	
+					perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$i" > "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp  ;
+				fi
+				
+				## 3. Loop through taxon names from #1, grep out 1st matches from #2, replacing original
+				## file unless user calls -k 1 to keep originals:
+				echo "INFO      | $(date) | Looping through taxon names... " | tee -a "$MY_LOGFILE_SWITCH"
+				if [[ "$MY_KEEP_PHYLIP_SWITCH" = "0" ]]; then
+					rm "$i" ;
+					if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
+						(
+							while read line; do
+								MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
+								if [[ "$MY_RAND_NO" = "1" ]]; then
+									grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+								else
+									grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+								fi
+							done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+						)
+					fi
+				elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
+					mv "$i" ./orig_phylip/ ;
+					if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
+						(
+							while read line; do
+								MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
+								if [[ "$MY_RAND_NO" = "1" ]]; then
+									grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+								else
+									grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+								fi
+							done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+						)
 					fi
 				fi
 				
-				# Get unique basenames only make final alt file:
-				sort -u "$MY_PHYLIP_BASENAME"_taxon_names.tmp > "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
-				rm "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
-			fi	
+				## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
+				## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
+				## number of lines (and same/original number of characters):
+				echo "INFO      | $(date) | Fixing reduced PHYLIP header... " | tee -a "$MY_LOGFILE_SWITCH"
+				MY_CORR_NTAX="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+				echo "$MY_CORR_NTAX  $MY_NCHAR" > header.tmp ;
+				mv "$MY_PHYLIP_BASENAME".phy "$MY_PHYLIP_BASENAME".phy.tmp ; 
 	
-
-			if [[ ! -s "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp ]]; then
-				## 2. Shuffle PHYLIP - Shuffle PHYLIP file to have random sequence order (randomize row order) 
-				## using Perl (idea from URL: https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel)
-				## ...and conditionally save shuffled PHYLIP in separate temporary file, leaving original untouched, 
-				## when user invokes -k 1 option.
-				echo "INFO      | $(date) | Shuffling PHYLIP file, randomizing row order... " | tee -a "$MY_LOGFILE_SWITCH"
-
-				perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$i" > "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp  ;
-			fi
-			
-			## 3. Loop through taxon names from #1, grep out 1st matches from #2, replacing original
-			## file unless user calls -k 1 to keep originals:
-			echo "INFO      | $(date) | Looping through taxon names... " | tee -a "$MY_LOGFILE_SWITCH"
-			if [[ "$MY_KEEP_PHYLIP_SWITCH" = "0" ]]; then
-				rm "$i" ;
-				if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
-					(
-						while read line; do
-							MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
-							if [[ "$MY_RAND_NO" = "1" ]]; then
-								grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
-							else
-								grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
-							fi
-						done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
-					)
+				echo "INFO      | $(date) | Making final reduced PHYLIP... " | tee -a "$MY_LOGFILE_SWITCH"
+				cat header.tmp "$MY_PHYLIP_BASENAME".phy.tmp > "$MY_PHYLIP_BASENAME".phy ;
+				rm header.tmp ;
+				echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+				echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
+				echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
+	
+				## Remove allele designations from final PHYLIP files with search and replace:
+				echo "INFO      | $(date) | Cleaning reduced PHYLIP taxon names by removing allele designations... " | tee -a "$MY_LOGFILE_SWITCH"
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+					rm ./*.bak;
 				fi
-			elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
-				mv "$i" ./orig_phylip/ ;
-				if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
-					(
-						while read line; do
-							MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
-							if [[ "$MY_RAND_NO" = "1" ]]; then
-								grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
-							else
-								grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
-							fi
-						done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
-					)
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
 				fi
 			fi
-			
-			## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
-			## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
-			## number of lines (and same/original number of characters):
-			echo "INFO      | $(date) | Fixing reduced PHYLIP header... " | tee -a "$MY_LOGFILE_SWITCH"
-			MY_CORR_NTAX="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
-			echo "$MY_CORR_NTAX  $MY_NCHAR" > header.tmp ;
-			mv "$MY_PHYLIP_BASENAME".phy "$MY_PHYLIP_BASENAME".phy.tmp ; 
-
-			echo "INFO      | $(date) | Making final reduced PHYLIP... " | tee -a "$MY_LOGFILE_SWITCH"
-			cat header.tmp "$MY_PHYLIP_BASENAME".phy.tmp > "$MY_PHYLIP_BASENAME".phy ;
-			rm header.tmp ;
-			echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
-			echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
-			echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
-
-			## Remove allele designations from final PHYLIP files with search and replace:
-			echo "INFO      | $(date) | Cleaning reduced PHYLIP taxon names by removing allele designations... " | tee -a "$MY_LOGFILE_SWITCH"
-			if [[ "${machine}" = "Mac" ]]; then
-				sed -i.bak 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
-				rm ./*.bak;
-			fi
-			if [[ "${machine}" = "Linux" ]]; then
-				sed -i 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
-			fi
-
+			# ------------------------------------------------------
 		done
 	)
 fi
@@ -350,86 +409,130 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 			MY_PHYLIP_BASENAME="$(basename "$i" '.phy')";
 			MY_NTAX="$(head -n1 "$i" | perl -pe  's/\ +.*//g')";
 			MY_NCHAR="$(head -n1 "$i" | sed 's/^[0-9]*\ //g')";
+			MY_FILESIZE="$(wc -c "$i" | sed 's/\ \.\/.*//g; s/\ //g')";
 			echo "INFO      | $(date) | Basename: ${MY_PHYLIP_BASENAME} " | tee -a "$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | No. taxa: ${MY_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
 			echo "INFO      | $(date) | No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
 			
-			###### GOALS: FOR EACH PHYLIP FILE...
-			## Get taxon names, making sure that list contains only basenames by using in-place search
-			## and replace followed by a unique sort command. Goal is 1) to obtain taxon names file with
-			## basenames by removing allele designations, if present. Then will 2) randomize PHYLIP file
-			## "$i" and save file with randomized sequence (row) order to tmp file, and finish by 3) looping
-			## through taxon names in file from #1 and grepping out first matching sequence/line in randomized
-			## PHY tmp file from #2. Appending redirects in #3 will create final file of one random allele 
-			## (haplotype) per taxon/species (basename). After making new reduced PHYLIP file, next 4) update
-			## the PHYLIP header to reflect new number of taxa in the file.
-			
-			if [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names.tmp ]] && [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ]]; then
-				## 1. Taxon names. - Make taxon names file of unique basenames with allele designations removed (if present):
-				echo "INFO      | $(date) | Making taxon names file ... "
-				cp "$i" "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
-				perl -p -i -e 's/\ +.*//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Isolate taxon names
-					
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i.bak '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Mac
-					rm ./*.bak ;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Linux
-				fi
-		
-				## Taxon names check for allele designations:
-				MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' "$MY_PHYLIP_BASENAME"_taxon_names.tmp | wc -l | perl -pe 's/\t//g; s/\ //g')";
-		
-				## Conditionally remove allele designations:
-				echo "INFO      | $(date) | Checking for allele designations (_0 and _1) in taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
-				if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
-					echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+			# ------------------------------------------------------
+			if [[ "$MY_NCHAR" -ge "7000" ]] && [[ "$MY_FILESIZE" -gt "4500000" ]]; then 
+				
+				# LARGE FILE ROUTINE:
+				# ------------------------------------------------------
+				# This is a routine for large alignments whose characteristics
+				# are beyond threshold sizes (see conditional above, edit as 
+				# desired).
+				# 
+				# For these alignments, we make a compromise: play it safe, only 
+				# keep major phased alleles (_0 suffixed sequences), but 
+				# keep script running.
+				# ------------------------------------------------------
+				echo "WARNING   | $(date) | Large alignment file detected. " | tee -a "$MY_LOGFILE_SWITCH"
+				echo "INFO      | $(date) | Running large file routine... " | tee -a "$MY_LOGFILE_SWITCH"
+				
+				###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
 					if [[ "${machine}" = "Mac" ]]; then
-						sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+						sed -i.bak '/^[[:space:]]*$/d' "$i" ;
+						rm ./*.bak;
+					fi
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i '/^[[:space:]]*$/d' "$i" ;
+					fi
+				
+				###### Update PHYLIP by removing alt allele sequences (phased gene sequences with 
+				###### _1 suffix added to tip/sequence label):
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i '' '/^[A-z0-9\-\_]*\_1[[:space:]].*$/d' "$i" ;
+					fi
+					if [[ "${machine}" = "Linux" ]]; then
+						sed -i '/^[A-z0-9\-\_]*\_1[[:space:]].*$/d' "$i" ;
+					fi
+
+				###### Get and update PHYLIP characteristics:
+					# Get and fix no. characters ($MY_NCHAR):
+					MY_NCHAR="$(sed -n '2p' "$i" | sed 's/^[A-z0-9\-\_]*\_0*[[:space:]]*//g' | wc -c | sed 's/\ //g')";	
+					let MY_NCHAR-=1 ;
+					
+					# Get and fix no. taxa ($MY_NTAX):
+					MY_NTAX="$(wc -l "$i" | sed 's/\.\/.*//g; s/\ //g')";
+					let MY_NTAX-=1 ;
+
+				###### Update PHYLIP header:
+					## Replace whole header line ('if 1' applies changes only to first line, and 
+					## we have already removed empty lines, so logically the first line should 
+					## now be the header line):
+					perl -i -pe 's/^[0-9]*\ +[0-9]*/'"$MY_NTAX"'\ \ '"$MY_NCHAR"'/g if 1' "$i" ;
+
+			else
+				
+				# REGULAR FILE ROUTINE:
+				# ------------------------------------------------------
+				# This is the routine for alignments whose characteristics
+				# are within the threshold sizes.
+				# ------------------------------------------------------
+
+				###### GOALS: FOR EACH PHYLIP FILE...
+				## Get taxon names, making sure that list contains only basenames by using in-place search
+				## and replace followed by a unique sort command. Goal is 1) to obtain taxon names file with
+				## basenames by removing allele designations, if present. Then will 2) randomize PHYLIP file
+				## "$i" and save file with randomized sequence (row) order to tmp file, and finish by 3) looping
+				## through taxon names in file from #1 and grepping out first matching sequence/line in randomized
+				## PHY tmp file from #2. Appending redirects in #3 will create final file of one random allele 
+				## (haplotype) per taxon/species (basename). After making new reduced PHYLIP file, next 4) update
+				## the PHYLIP header to reflect new number of taxa in the file.
+				
+				if [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names.tmp ]] && [[ ! -s "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ]]; then
+					## 1. Taxon names. - Make taxon names file of unique basenames with allele designations removed (if present):
+					echo "INFO      | $(date) | Making taxon names file ... "
+					cp "$i" "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+					perl -p -i -e 's/\ +.*//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Isolate taxon names
+						
+					if [[ "${machine}" = "Mac" ]]; then
+						sed -i.bak '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Mac
 						rm ./*.bak ;
 					fi
 					if [[ "${machine}" = "Linux" ]]; then
-						sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+						sed -i '1d' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;	# Remove PHYLIP header on Linux
 					fi
+			
+					## Taxon names check for allele designations:
+					MY_TAXNAMES_EXT_CHECK="$(grep -h '\_0$\|\_1$' "$MY_PHYLIP_BASENAME"_taxon_names.tmp | wc -l | perl -pe 's/\t//g; s/\ //g')";
+			
+					## Conditionally remove allele designations:
+					echo "INFO      | $(date) | Checking for allele designations (_0 and _1) in taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+					if [[ "$MY_TAXNAMES_EXT_CHECK" -gt "0" ]]; then
+						echo "INFO      | $(date) | Removing allele designations from taxon names file... " | tee -a "$MY_LOGFILE_SWITCH"
+						if [[ "${machine}" = "Mac" ]]; then
+							sed -i.bak 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+							rm ./*.bak ;
+						fi
+						if [[ "${machine}" = "Linux" ]]; then
+							sed -i 's/\_0$//g; s/\_1$//g' "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
+						fi
+					fi
+					
+					# Get unique basenames only make final alt file:
+					sort -u "$MY_PHYLIP_BASENAME"_taxon_names.tmp > "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+					rm "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
 				fi
-				
-				# Get unique basenames only make final alt file:
-				sort -u "$MY_PHYLIP_BASENAME"_taxon_names.tmp > "$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
-				rm "$MY_PHYLIP_BASENAME"_taxon_names.tmp ;
-			fi
+		
+		
+				if [[ ! -s "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp ]]; then
+					## 2. Shuffle PHYLIP - Shuffle PHYLIP file to have random sequence order (randomize row order) 
+					## using Perl (idea from URL: https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel)
+					## ...and conditionally save shuffled PHYLIP in separate temporary file, leaving original untouched, 
+					## when user invokes -k 1 option.
+					echo "INFO      | $(date) | Shuffling PHYLIP file, randomizing row order... " | tee -a "$MY_LOGFILE_SWITCH"	
 	
-	
-			if [[ ! -s "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp ]]; then
-				## 2. Shuffle PHYLIP - Shuffle PHYLIP file to have random sequence order (randomize row order) 
-				## using Perl (idea from URL: https://stackoverflow.com/questions/2153882/how-can-i-shuffle-the-lines-of-a-text-file-on-the-unix-command-line-or-in-a-shel)
-				## ...and conditionally save shuffled PHYLIP in separate temporary file, leaving original untouched, 
-				## when user invokes -k 1 option.
-				echo "INFO      | $(date) | Shuffling PHYLIP file, randomizing row order... " | tee -a "$MY_LOGFILE_SWITCH"	
-
-				perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$i" > "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp  ;
-			fi
-				
-			## 3. Loop through taxon names from #1, grep out 1st matches from #2, replacing original
-			## file unless user calls -k 1 to keep originals:
-			echo "INFO      | $(date) | Looping through taxon names... " | tee -a "$MY_LOGFILE_SWITCH"
-			if [[ "$MY_KEEP_PHYLIP_SWITCH" = "0" ]]; then
-				rm "$i" ;
-				if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
-					(
-						while read line; do
-							MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
-							if [[ "$MY_RAND_NO" = "1" ]]; then
-								grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
-							else
-								grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
-							fi
-						done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
-					)
+					perl -MList::Util=shuffle -e 'print shuffle(<STDIN>);' < "$i" > "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp  ;
 				fi
-			elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
-				mv "$i" ./orig_phylip/ ;
-				if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
+					
+				## 3. Loop through taxon names from #1, grep out 1st matches from #2, replacing original
+				## file unless user calls -k 1 to keep originals:
+				echo "INFO      | $(date) | Looping through taxon names... " | tee -a "$MY_LOGFILE_SWITCH"
+				if [[ "$MY_KEEP_PHYLIP_SWITCH" = "0" ]]; then
+					rm "$i" ;
+					if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
 						(
 							while read line; do
 								MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
@@ -440,34 +543,49 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 								fi
 							done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
 						)
+					fi
+				elif [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] || [[ "$MY_KEEP_PHYLIP_SWITCH" != "0" ]]; then
+					mv "$i" ./orig_phylip/ ;
+					if [[ ! -s "$MY_PHYLIP_BASENAME".phy ]]; then
+							(
+								while read line; do
+									MY_RAND_NO="$(echo $(($RANDOM%2+1)))";
+									if [[ "$MY_RAND_NO" = "1" ]]; then
+										grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | head -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+									else
+										grep -h "$line" "$MY_PHYLIP_BASENAME"_shuffle.phy.tmp | tail -n1 >> "$MY_PHYLIP_BASENAME".phy  ;
+									fi
+								done < ./"$MY_PHYLIP_BASENAME"_taxon_names_usort.tmp ;
+							)
+					fi
+				fi
+	
+				## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
+				## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
+				## number of lines (and same/original number of characters):
+				echo "INFO      | $(date) | Fixing reduced PHYLIP header... " | tee -a "$MY_LOGFILE_SWITCH"
+				MY_CORR_NTAX="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
+				echo "$MY_CORR_NTAX  $MY_NCHAR" > header.tmp ;
+				mv "$MY_PHYLIP_BASENAME".phy "$MY_PHYLIP_BASENAME".phy.tmp ; 
+	
+				echo "INFO      | $(date) | Making final reduced PHYLIP... " | tee -a "$MY_LOGFILE_SWITCH"
+				cat header.tmp "$MY_PHYLIP_BASENAME".phy.tmp > "$MY_PHYLIP_BASENAME".phy ;
+				rm header.tmp ;
+				echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
+				echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
+				echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
+	
+				## Remove allele designations from final PHYLIP files with search and replace:
+				echo "INFO      | $(date) | Cleaning reduced PHYLIP taxon names by removing allele designations... " | tee -a "$MY_LOGFILE_SWITCH"
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
 				fi
 			fi
-
-			## 4. PHYLIP header - Since we've deleted individuals, we now have a different number of 
-			## lines in the file, so we need to add a new PHYLIP header updated to reflect correct
-			## number of lines (and same/original number of characters):
-			echo "INFO      | $(date) | Fixing reduced PHYLIP header... " | tee -a "$MY_LOGFILE_SWITCH"
-			MY_CORR_NTAX="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')"; 
-			echo "$MY_CORR_NTAX  $MY_NCHAR" > header.tmp ;
-			mv "$MY_PHYLIP_BASENAME".phy "$MY_PHYLIP_BASENAME".phy.tmp ; 
-
-			echo "INFO      | $(date) | Making final reduced PHYLIP... " | tee -a "$MY_LOGFILE_SWITCH"
-			cat header.tmp "$MY_PHYLIP_BASENAME".phy.tmp > "$MY_PHYLIP_BASENAME".phy ;
-			rm header.tmp ;
-			echo "INFO      | $(date) | Complete. " | tee -a "$MY_LOGFILE_SWITCH"
-			echo "INFO      | $(date) | Reduced PHYLIP No. taxa: ${MY_CORR_NTAX} " | tee -a "$MY_LOGFILE_SWITCH"
-			echo "INFO      | $(date) | Reduced PHYLIP No. char: ${MY_NCHAR} " | tee -a "$MY_LOGFILE_SWITCH"
-
-			## Remove allele designations from final PHYLIP files with search and replace:
-			echo "INFO      | $(date) | Cleaning reduced PHYLIP taxon names by removing allele designations... " | tee -a "$MY_LOGFILE_SWITCH"
-			if [[ "${machine}" = "Mac" ]]; then
-				sed -i.bak 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
-				rm ./*.bak;
-			fi
-			if [[ "${machine}" = "Linux" ]]; then
-				sed -i 's/\_0\ /\ \ \ /g; s/\_1\ /\ \ \ /g' "$MY_PHYLIP_BASENAME".phy ;
-			fi
-
+			# ------------------------------------------------------
 			echo "$((count++)) "  >/dev/null 2>&1 ;
 		done
 	)
