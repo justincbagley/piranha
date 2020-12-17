@@ -154,7 +154,7 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUN
 fi
 
 echo "
-piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a3, update Dec 15 00:15:01 CST 2020)                    "
+piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a4, update Dec 15 00:15:01 CST 2020)                    "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -485,7 +485,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a3 (update Dec 15 01:25:03 CST 2020).
+ This is the main script for PIrANHA v0.4a4 (update Dec 15 01:25:03 CST 2020).
 
  ${bold}Options:${reset}
   -s, --shortlist   Short list of available functions
@@ -517,7 +517,7 @@ usage() {
     piranha -f <function> <args> -d              Run <function> script in Bash debug mode
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.
