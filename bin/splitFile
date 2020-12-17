@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitFile.sh                                                                     #
-  export VERSION="v1.1.0"                                                                #
+  export VERSION="v1.1.1"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.                      #
 # Last update: December 17, 2020                                                         #
@@ -141,7 +141,7 @@ splitFile () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH" ;
-echo "INFO      | $(date) | splitFile, v1.1.0 December 2020                                " | tee -a "$MY_LOGFILE_SWITCH" ;
+echo "INFO      | $(date) | splitFile, v1.1.1 December 2020                                " | tee -a "$MY_LOGFILE_SWITCH" ;
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a "$MY_LOGFILE_SWITCH" ;
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH" ;
 
@@ -195,11 +195,24 @@ fi
 	echo "$TOTAL_LINES" >> ./.tmpEnds ;
 	paste ./.tmpStarts ./.tmpEnds | perl -pe $'s/\ +/\t/g' | perl -pe 's/\t/\,/g; s/\,\,/\,/g' > ./.tmpsed ;
 	#perl -p -i -e $'s/\ +/\t/g' ./.tmpsed ;
+
+	## Fix broken line ranges, if present:
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Fixing line ranges... " | tee -a "$MY_LOGFILE_SWITCH" ;
+	fi
+	if [[ "${machine}" = "Mac" ]]; then
+		sed -i '' '/^\,/d' ./.tmpsed ;
+	fi
+	if [[ "${machine}" = "Linux" ]]; then
+		sed -i '/^\,/d' ./.tmpsed ;
+	fi
+
+	## Print line ranges to log file:
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Split line ranges: " | tee -a "$MY_LOGFILE_SWITCH" ;
+		cat ./.tmpsed  | tee -a "$MY_LOGFILE_SWITCH" ;
 	fi
-	cat ./.tmpsed 
-
+	
 	## Use while loop through tmp file of sed line ranges (./.tmpsed) to make split files:
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Making split file: " | tee -a "$MY_LOGFILE_SWITCH" ;
@@ -207,15 +220,18 @@ fi
 	count=1
 	(
 		while read line; do
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | ${count}... " | tee -a "$MY_LOGFILE_SWITCH" ;
+			fi
 			sed -n ''"$line"'p' "$MY_INPUT_FILE" > "$MY_OUTPUT_BASENAME""$count".txt ;
-#			echo "INFO      | $(date) | $((count++))... " | tee -a "$MY_LOGFILE_SWITCH" ;
-			MY_INCR_COUNT="$((count++)) "
+			echo "$((count++)) "  >/dev/null 2>&1 ;
 		done < ./.tmpsed
 	)
 
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Check split files: " | tee -a "$MY_LOGFILE_SWITCH" ;
 		echo "INFO      | $(date) | " | tee -a "$MY_LOGFILE_SWITCH" ;
+		wc -l ./"$MY_OUTPUT_BASENAME"*.txt  | perl -pe $'s/^\ +//g' | tee -a "$MY_LOGFILE_SWITCH" ;
 	fi
 	wc -l ./"$MY_OUTPUT_BASENAME"*.txt  | perl -pe $'s/^\ +//g' ;
 #
