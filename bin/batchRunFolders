@@ -246,16 +246,20 @@ echo "#!/bin/sh
 $MY_PIRANHA_PATH -f splitFile -i $MY_INPUT_LIST_FILE -n $MY_NUM_BATCHES -o $MY_BATCH_FILE_PREFIX  ;
 
 " > ./piranha_splitFile.sh
+echo "A"
 
 	chmod u+x ./piranha_splitFile.sh ;
+echo "B"
 
 	. ./piranha_splitFile.sh  >/dev/null 2>&1 ;
+echo "C"
 
 
 
 	#### Organize input files into run folders (make subfolders) etc.:
 
 	if [[ ! -s orig_phylip_files/ ]]; then mkdir orig_phylip_files/ ; fi ; 
+echo "D"
 
 (
 	for i in ./"$MY_BATCH_FILE_PREFIX"[0-9]*.txt; do
@@ -274,6 +278,7 @@ $MY_PIRANHA_PATH -f splitFile -i $MY_INPUT_LIST_FILE -n $MY_NUM_BATCHES -o $MY_B
 #
 	done
 )
+echo "E"
 
 
 	####### D. PREPARE QUEUE SUBMISSION SHELL SCRIPTS:
