@@ -8,7 +8,11 @@
 
 ### Updates since last pre-release (for *current draft release*, PIrANHA v0.4a4)
 
--   **December 11, 2020:** Made various minor fixes to code, READMEs, Quick Guide, etc. fixing Codacy issues.
+### PIrANHA 0.4a4 (official minor pre-release version v0.4-alpha-4), December 17, 2020
+
+-   **December 15, 2020:** Bug fixes for bad piping and other minor errors in `batchRunFolders` and `FASTAsummary` functions, and added option for specifying number of threads when running `batchRunFolders`.
+-   **December 15, 2020:** Fixed version printing for piranha main script and functions (`piranha -V`, `piranha --version`, `piranha -f <function> -V`, and `piranha -f <function> --version` each now yield expected behavior (terse output).
+-   **December 11, 2020:** Made various minor fixes to code, READMEs, Quick Guide, etc. fixing Codacy issues (reestablished Codacy grade of "A"!).
 -   **December 7, 2020:** Another update to `piranha` script (now v1.1.6) to make sure that function name tab completions are automatically sourced when running `piranha`. Also updates to installer scripts and documentation, plus the change log.
 -   **December 3, 2020:** Added *important* updates to PIrANHA, including edits to main `piranha` script (now v1.1.5) and a new `completions/` subfolder, allowing bash tab completion of function names (expected usage: `piranha -f <TAB>`). Updated Homebrew tap and 'changelog.md' accordingly.
 -   **November 23 and December 1, 2020:** Bug fixes and updates for `assembleReads` and `phaseAlleles` functions of `piranha`, fixing errors that caused the program to stop due to issues with among other things `ls`, plus minor change to `alignAlleles` (not worth a mention).
