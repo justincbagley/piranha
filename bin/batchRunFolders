@@ -639,6 +639,7 @@ fi
 	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
 	perl -p -i -e $'s/\-filetype/\-\-filetype/g' ./args.txt
 	perl -p -i -e $'s/\-software/\-\-software/g' ./args.txt
+	perl -p -i -e $'s/\-threads/\-\-threads/g' ./args.txt
 	perl -p -i -e $'s/\-batches/\-\-batches/g' ./args.txt
 	perl -p -i -e $'s/\-prefix/\-\-prefix/g' ./args.txt
 	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
@@ -653,10 +654,10 @@ fi
 		MY_INPUT_LIST_FILE=NULL ;
 	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
-		INPUT_PHYLIP_FILE="$MY_ARG" ;
+		MY_INPUT_LIST_FILE="$MY_ARG" ;
 	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
 		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
-		INPUT_PHYLIP_FILE="$MY_ARG" ;
+		MY_INPUT_LIST_FILE="$MY_ARG" ;
 	fi
 #
 	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-filetype' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
@@ -677,6 +678,16 @@ fi
 	elif [[  "$(grep -h '\-s' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-software' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
 		MY_ARG="$(grep -h '\-\-software' ./args.txt | perl -pe 's/\-\-software//g' | perl -pe 's/\ //g')";
 		MY_SOFTWARE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-threads' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NUM_THREADS=3  ;
+	elif [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-threads' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		MY_NUM_THREADS="$MY_ARG" ;
+	elif [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-threads' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-threads' ./args.txt | perl -pe 's/\-\-threads//g' | perl -pe 's/\ //g')";
+		MY_NUM_THREADS="$MY_ARG" ;
 	fi
 #
 	if [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-batches' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
@@ -733,12 +744,13 @@ fi
 #
 
 # ############ PARSE THE OPTIONS
-# while getopts 'i:f:s:b:p:l:d:' opt ; do
+# while getopts 'i:f:s:t:b:p:l:d:' opt ; do
 #   case $opt in
 # ## PHYLIPSubsampler options:
 #     i) MY_INPUT_LIST_FILE=$OPTARG ;;
 #     f) MY_FILE_TYPE=$OPTARG ;;
 #     s) MY_SOFTWARE=$OPTARG ;;
+#     t) MY_NUM_THREADS=$OPTARG ;;
 #     b) MY_NUM_BATCHES=$OPTARG ;;
 #     p) MY_BATCH_FILE_PREFIX=$OPTARG ;;
 #     l) MY_LOGFILE_SWITCH=$OPTARG ;;
