@@ -585,7 +585,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f dropTaxa -m 1 -f phylip -t <taxonList> -k 1               Drop taxa from multiple PHYLIP files, keep original files
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}

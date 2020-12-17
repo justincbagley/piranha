@@ -193,7 +193,7 @@ Usage: MAGNET [OPTION]...
     piranha -f MAGNET -h                                  Show this help text and exit
 
  CITATION
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  REFERENCES

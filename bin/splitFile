@@ -309,7 +309,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f splitFile -h                             Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Sat, April 4 10:54:22 CDT 2020.

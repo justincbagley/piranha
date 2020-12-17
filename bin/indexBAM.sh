@@ -252,11 +252,11 @@ Usage: piranha -f $(basename "$0") [Options]...
     piranha -f indexBAM -h                   Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Wed, May 6 9:52 am CDT 2020.

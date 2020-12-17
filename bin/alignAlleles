@@ -816,11 +816,11 @@ Usage: piranha -f $(basename "$0") [Options]...
     piranha -f alignAlleles -h                                                    Show this help text and exit
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
  Katoh, K., & Standley, D.M. 2013. MAFFT multiple sequence alignment software version 7: 
 	improvements in performance and usability. Molecular Biology and Evolution, 30(4), 772–

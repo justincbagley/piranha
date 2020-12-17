@@ -136,7 +136,7 @@ function getBootTrees () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | getBootTrees, v1.0.1 December 2020  (part of PIrANHA v0.4a3)   "
+echo "INFO      | $(date) | getBootTrees, v1.0.1 December 2020  (part of PIrANHA v0.4a4)   "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -220,7 +220,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT was designed to run in a current working directory where the MAGNET pipeline
- in PIrANHA v0.4a3 (Bagley 2019) has been run to estimate maximum-likelihood (ML) gene trees 
+ in PIrANHA v0.4a4 (Bagley 2019) has been run to estimate maximum-likelihood (ML) gene trees 
  in RAxML v8+ (Stamatakis 2014) for a set of loci from DNA sequence data. Given such a 
  workspace, this script organizes the bootstrap trees resulting from all RAxML runs, in
  subfolders of the current directory. The getBootTrees function is already run during the
@@ -241,11 +241,11 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f getBootTrees --args='-h'      Print this help text
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2019. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2019. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
  Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of 
 	large phylogenies. Bioinformatics, 30, 1312-1313.

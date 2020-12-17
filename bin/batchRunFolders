@@ -595,11 +595,11 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f batchRunFolders -i input_phylip.list.txt -f phylip -s iqtree -t 4 -p iqtree
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  ${bold}REFERENCES${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
  Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.

@@ -505,7 +505,7 @@ Usage: piranha -f $(basename "$0") [Options]...
     piranha -f geneCounter --input <treeFile> --assign <assignFile>     Same as above, but using long options
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Tue, May 5 07:47:30 CDT 2020. 
