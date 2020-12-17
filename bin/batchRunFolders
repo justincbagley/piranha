@@ -582,8 +582,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f batchRunFolders -f <fileType> -p <runProgram>                     Generic usage
-    piranha -f batchRunFolders -i <inputList> -f <fileType> -p <runProgram>      Generic usage with input file list
+    piranha -f batchRunFolders -f <fileType> -s <targetSoftware>                 Generic usage
+    piranha -f batchRunFolders -i <inputList> -f <fileType> -s <targetSoftware>  Generic usage with input file list
     piranha -f batchRunFolders -h                                                Show this help text and exit
 
  ${bold}CITATION${reset}
