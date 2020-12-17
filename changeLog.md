@@ -10,7 +10,7 @@
 
 Development is on-going...
 
-### PIrANHA 0.4a4 (official minor pre-release version v0.4-alpha-4), December 17, 2020
+### PIrANHA v0.4a4 (official minor pre-release version v0.4-alpha-4), December 17, 2020
 
 -   **December 15, 2020:** Bug fixes for bad piping and other minor errors in `batchRunFolders` and `FASTAsummary` functions, and added option for specifying number of threads when running `batchRunFolders`.
 -   **December 15, 2020:** Fixed version printing for piranha main script and functions (`piranha -V`, `piranha --version`, `piranha -f <function> -V`, and `piranha -f <function> --version` each now yield expected behavior (terse output).
@@ -23,7 +23,7 @@ Development is on-going...
 -   **August 12, 2020:** Updated `trimSeqs` function to improve performance after issue discussion with Juan Moreira. This updated fixed posix space bug, because `[:space:]` should be `[[:space:]]`.
 -   **August 3, 2020:** Updated README, as well as Quick Guide for [wiki](https://github.com/justincbagley/piranha/wiki).
 
-### PIrANHA 0.4a3 (official minor pre-release version v0.4-alpha-3), July 31, 2020
+### PIrANHA v0.4a3 (official minor pre-release version v0.4-alpha-3), July 31, 2020
 
 -   **July 31, 2020:** Added new `trimSeqs` function and prepped 0.4a3 release by updating versioning of main `piranha` script and function scipts, and also updating Wiki and READMEs. The `trimSeqs` function automates trimming one or multiple DNA sequence alignments in PHYLIP format, with options for custom gap handling parameters for trimAl, and with trimmed alignments output to FASTA, PHYLIP, or NEXUS formats.
 -   **May 27, 2020:** Updated repo with new citation file ('CITATION.md'), code of conduct for developers ('CODE_OF_CONDUCT.md'), and license ('LICENSE').
@@ -31,7 +31,7 @@ Development is on-going...
 -   **April 18-20, 2020:** This update builds on the previous pre-release, v0.4a2, by adding minor bug fixes and improvements to several functions. With the addition of the new function `alignAlleles`, a companion script meant to be run directly after `phaseAlleles`, this release establishes a new workflow for phasing and aligning consensus sequences from HTS (e.g. targeted sequence capture data) based on reads (re)mapped to a reference assembly FASTA file (i.e. following reference-based assembly). This combination of programs was designed to be run on target capture data after first conducting cleaning, assembly, locus selection, and reference-based assembly (specifically, with SECAPR (Andermann et al. 2018) in mind, and with testing based on output from SECAPR).
 -   **April 17, 2020:** Added "Quick Guide" to wiki, entitled "Quick Guide for the Impatient," with install instructions and example code.
 
-### PIrANHA 0.4a2 (official minor pre-release version v0.4\-alpha\-2), April 17, 2020
+### PIrANHA v0.4a2 (official minor pre-release version v0.4\-alpha\-2), April 17, 2020
 
 -   **April 13-17, 2020:** This update builds on the previous pre-release, v0.4a, by updating the main `prianha` script (including improvements to messaging and help text); addition of a new `phaseAlleles` function that automates phasing of consensus sequences from HTS (e.g. targeted sequence capture) based on a (re)mapped assembly reference FASTA; as well as minor updates to all functions (improved messaging and minor bug fixes).
 
