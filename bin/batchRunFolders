@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: batchRunFolders.sh                                                               #
-  VERSION="v1.0.4"                                                                       #
+  VERSION="v1.0.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, May 3 11:00:32 CDT 2020.                        #
 # Last update: December 17, 2020                                                         #
@@ -137,7 +137,7 @@ batchRunFolders () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | batchRunFolders, v1.0.4 December 2020                          "
+echo "INFO      | $(date) | batchRunFolders, v1.0.5 December 2020                          "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -243,7 +243,7 @@ echo "INFO      | $(date) | Step #2: Organize input files (and other files) into
 #piranha -f splitFile -i "$MY_INPUT_LIST_FILE" -n "$MY_NUM_BATCHES" -o "$MY_BATCH_FILE_PREFIX"  ;
 echo "#!/bin/sh
 
-$MY_PIRANHA_PATH -f splitFile -i $MY_INPUT_LIST_FILE -n $MY_NUM_BATCHES -o $MY_BATCH_FILE_PREFIX  ;
+$MY_PIRANHA_PATH -f splitFile -i $MY_INPUT_LIST_FILE -n $MY_NUM_BATCHES -o $MY_BATCH_FILE_PREFIX -v 1  ;
 
 " > ./piranha_splitFile.sh
 echo "A"
