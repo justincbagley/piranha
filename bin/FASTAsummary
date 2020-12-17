@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTAsummary.sh                                                                  #
-  VERSION="v1.1.3"                                                                       #
+  VERSION="v1.1.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
-# Last update: December 15, 2020                                                         #
+# Last update: December 16, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ FASTAsummary () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTAsummary, v1.1.3 December 2020                             "
+echo "INFO      | $(date) | FASTAsummary, v1.1.4 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -227,7 +227,8 @@ if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR THE
 	### INPUT FASTA (TESTING WITH SINGLE INPUT FASTA)
 
-	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
+	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha.sh | sed 's/bin\/\.\.\///g')";
+	echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH"
 	
 echo "#!/bin/sh
 
@@ -318,7 +319,7 @@ count=1
 	### RUN calcAlignmentPIS PIrANHA FUNCTION TO GET PARSIMONY-INFORMATIVE SITES FOR
 	### MULTIPLE FASTA FILES IN CURRENT WORKING DIRECTORY
 
-	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
+	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha.sh | sed 's/bin\/\.\.\///g')";
 	echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH"
 
 echo "#!/bin/sh

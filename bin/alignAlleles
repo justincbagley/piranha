@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: alignAlleles.sh                                                                  #
-  VERSION="v1.0.3"                                                                       #
+  VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 17 13:59:38 CDT 2020.                       #
-# Last update: December 1, 2020                                                          #
+# Last update: December 16, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,7 +137,7 @@ alignAlleles () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
-echo "INFO      | $(date) | alignAlleles, v1.0.3 December 2020                             " | tee -a "$MY_LOGFILE_SWITCH"
+echo "INFO      | $(date) | alignAlleles, v1.0.4 December 2020                             " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
 
@@ -597,7 +597,7 @@ count=1
 		cd ./FASTAsummary/ ;
 		echo "INFO      | $(date) | Current dir: $PWD" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
-			MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
+			MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha.sh | sed 's/bin\/\.\.\///g')";
 			echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH" | tee -a "$MY_INPUT_DIR""$MY_LOGFILE_SWITCH"
 
 echo "#!/bin/sh
