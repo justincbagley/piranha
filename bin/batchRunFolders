@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: batchRunFolders.sh                                                               #
-  VERSION="v1.0.3"                                                                       #
+  VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, May 3 11:00:32 CDT 2020.                        #
-# Last update: December 16, 2020                                                         #
+# Last update: December 17, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,7 +137,7 @@ batchRunFolders () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | batchRunFolders, v1.0.3 December 2020                          "
+echo "INFO      | $(date) | batchRunFolders, v1.0.4 December 2020                          "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -228,7 +228,17 @@ echo "INFO      | $(date) | Step #2: Organize input files (and other files) into
 
 	echo "INFO      | $(date) | Making batch list files using PIrANHA splitFile function... "
 
-	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha.sh | sed 's/bin\/\.\.\///g')";
+	## Set PIrANHA_PATH:
+	if [[ -s "$(which piranha)" ]] && [[ -f "$(which piranha)" ]]; then 
+		MY_PIRANHA_PATH="$(which piranha | sed 's/\ //g')";
+		echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH"
+	elif [[ -s /usr/local/bin/piranha ]]; then 
+		MY_PIRANHA_PATH=/usr/local/bin/piranha ;
+		echo "INFO      | $(date) | piranha path: $MY_PIRANHA_PATH"
+	else
+		echo "INFO      | $(date) | Alternate piranha path: $(echo ${SCRIPT_PATH}/../piranha.sh | sed 's/bin\/\.\.\///g')"
+		MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha.sh | sed 's/bin\/\.\.\///g')";
+	fi
 	
 #piranha -f splitFile -i "$MY_INPUT_LIST_FILE" -n "$MY_NUM_BATCHES" -o "$MY_BATCH_FILE_PREFIX"  ;
 echo "#!/bin/sh
