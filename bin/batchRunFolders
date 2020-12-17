@@ -6,12 +6,12 @@
 # |                                                                                      #
 #                                                                                        #
 # File: batchRunFolders.sh                                                               #
-  VERSION="v1.0.2"                                                                       #
+  VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, May 3 11:00:32 CDT 2020.                        #
-# Last update: July 31, 2020                                                             #
+# Last update: December 16, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT THAT AUTOMATES PREPPING RUNS BY ORGANIZING A SET OF INPUT FILES INTO      #
@@ -137,7 +137,7 @@ batchRunFolders () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | batchRunFolders, v1.0.2 July 2020                              "
+echo "INFO      | $(date) | batchRunFolders, v1.0.3 December 2020                          "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -228,7 +228,7 @@ echo "INFO      | $(date) | Step #2: Organize input files (and other files) into
 
 	echo "INFO      | $(date) | Making batch list files using PIrANHA splitFile function... "
 
-	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha | sed 's/bin\/\.\.\///g')";
+	MY_PIRANHA_PATH="$(echo ${SCRIPT_PATH}/../piranha.sh | sed 's/bin\/\.\.\///g')";
 	
 #piranha -f splitFile -i "$MY_INPUT_LIST_FILE" -n "$MY_NUM_BATCHES" -o "$MY_BATCH_FILE_PREFIX"  ;
 echo "#!/bin/sh
@@ -279,7 +279,7 @@ $MY_PIRANHA_PATH -f splitFile -i $MY_INPUT_LIST_FILE -n $MY_NUM_BATCHES -o $MY_B
 #!/bin/bash
 
 #\$ -N ${MY_BATCH_FILE_PREFIX}1_mafft
-#\$ -pe smp 3
+#\$ -pe smp ${MY_NUM_THREADS}
 #\$ -cwd
 #\$ -V
 #\$ -S /bin/bash
@@ -296,7 +296,7 @@ echo + NSLOTS = \$NSLOTS
 
 $(printf '\t')list=${MY_BATCH_FILE_PREFIX}1.txt
 $(printf '\t')MY_BASENAME=\"\$(basename \"\$list\" '.txt')\";
-$(printf '\t')export MY_NUM_THREADS=3
+#$(printf '\t')export MY_NUM_THREADS=3
 (
 $(printf '\t')$(printf '\t')$(printf '\t')for i in ./*.{fasta,fas,FASTA,FAS} ; do
 $(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')if [[ \"\$i\" != \"./*.fasta\" ]] && [[ \"\$i\" != \"./*.fas\" ]] && [[ \"\$i\" != \"./*.FASTA\" ]] && [[ \"\$i\" != \"./*.FAS\" ]]; then 
@@ -375,7 +375,7 @@ fi
 #!/bin/bash
 
 #\$ -N ${MY_BATCH_FILE_PREFIX}1_iqtree
-#\$ -pe smp 3
+#\$ -pe smp ${MY_NUM_THREADS}
 #\$ -cwd
 #\$ -V
 #\$ -S /bin/bash
@@ -390,6 +390,9 @@ echo + NSLOTS = \$NSLOTS
 
 ######################################## START ###########################################
 
+$(printf '\t')MY_IQTREE_V1_CHECK=\"\$(iqtree --version | grep 'version\ 1' | wc -l | sed 's/\ //g')\";
+$(printf '\t')MY_IQTREE_V2_CHECK=\"\$(iqtree --version | grep 'version\ 2' | wc -l | sed 's/\ //g')\";
+
 $(printf '\t')list=${MY_BATCH_FILE_PREFIX}1.txt
 $(printf '\t')MY_BASENAME=\"\$(basename \"\$list\" '.txt')\";
 (
@@ -398,10 +401,13 @@ $(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')MY_PHYLIP_BASENAME=\"\$(
 $(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"\$i\" >> ./\"\$MY_BASENAME\"_PHYLIP_iqtree_fileOrder.list.txt
 $(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          ###------    \$i    ------### \"
 $(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          \"
-$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          Performing model selection (ModelFinder), building ML gene tree phylogeny, and performing SH-aLRT test and 1000 ultrafast bootstraps with IQ-tree... \"
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          Performing model selection (ModelFinder), building ML gene tree phylogeny, and performing SH-aLRT test and 1000 ultrafast bootstraps \"
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          with IQ-tree with ${MY_NUM_THREADS} threads...\"
 #
-$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')if [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.contree  ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.contree  ]]; then
-$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')iqtree -s \"\$i\" -alrt 1000 -bb 1000 -nt 3 ;
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')if [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.contree  ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.contree  ]] && [[ \"\$MY_IQTREE_V1_CHECK\" = \"1\" ]] && [[ \"\$MY_IQTREE_V2_CHECK\" = \"0\" ]]; then
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')iqtree -s \"\$i\" -alrt 1000 -bb 1000 -nt ${MY_NUM_THREADS} ;
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')elif [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.iqtree ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".aln.phy.contree  ]] && [[ ! -s \"\$MY_PHYLIP_BASENAME\".phy.contree  ]] && [[ \"\$MY_IQTREE_V1_CHECK\" = \"0\" ]] && [[ \"\$MY_IQTREE_V2_CHECK\" = \"1\" ]]; then
+$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')iqtree -s \"\$i\" -alrt 1000 -B 1000 -T ${MY_NUM_THREADS} ;
 $(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')fi
 #
 $(printf '\t')$(printf '\t')$(printf '\t')$(printf '\t')echo \"INFO      | \$(date) |          \"
@@ -530,6 +536,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
   -f, --filetype  fileType (def: phylip; other: fasta, nexus) input file type
   -s, --software  targetSoftware (def: mafft; other: iqtree, raxml) target run software that 
                   input files will be analyzed with
+  -t, --threads   numThreads (def: 3) number of threads for each software run (currently only 
+                  accommodates multi-threading for mafft and iqtree)
   -b, --batches   batchNumber (def: 10) number of batches (parts) to split input files into
   -p, --prefix    batchPrefix (def: align) prefix for batch parts file and other dir/file names
   -l, --logfile   logFile (def: aligning_log.txt) log screen output to file in working dir 
