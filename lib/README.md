@@ -2,10 +2,10 @@
 
 As is typical of UNIX/Linux distributions and software, the lib/ directory contains support static files (libraries and functions) that are required for running the main script and all functions within this repository.
 
-## utils.sh
+## `utils.sh`
 This script must be sourced from all additional scripts in PIrANHA.  Contained within this are two important functions.  
 
-1.   **Logging:**  All scripts use the logging functions. There are nine different levels of logs. All log levels are called from within a script in the format `info "some message"`. The levels of logging are:
+1.    **Logging:**  All scripts use the logging functions. There are nine different levels of logs. All log levels are called from within a script in the format `info "some message"`. The levels of logging are:
 
      *   **die** - Prints an error and exits the script.
      *   **error** - Prints an error and continues to run the script.
@@ -17,16 +17,16 @@ This script must be sourced from all additional scripts in PIrANHA.  Contained w
      *   **input** - Asks the user for input.
      *   **header** - Prints a header to help format logs.
 
-2.   **Sourcing Additional Files:**  This script reads a list of additional files and sources them.
+2.    **Sourcing Additional Files:**  This script reads a list of additional files and sources them.
 
-## setupScriptFunctions.sh
+## `setupScriptFunctions.sh`
 
 This script contains different functions used to install software and configure Mac computers from the scripts contained in the `setupScripts` directory.
 
-## sharedVariables.sh
+## `sharedVariables.sh`
 
 This script contains variables that can be called from any other script.
 
-## sharedFunctions.sh
+## `sharedFunctions.sh`
 
 This script contains many different functions which can be used throughout different scripts. The script is well commented.
