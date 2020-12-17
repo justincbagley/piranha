@@ -9,7 +9,7 @@
   VERSION="v1.3.9"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
-# Last update: December 16, 2020                                                         #
+# Last update: December 17, 2020                                                         #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -523,12 +523,14 @@ Usage: piranha -f $(basename "$0") [Options]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    Convert individual PHYLIP file to NEXUS with partitions:
+    # Convert individual PHYLIP file to NEXUS with partitions:
+
     piranha -f PHYLIP2NEXUS -i <inputPHYLIP> -p <partitionsFile> -f raxml
     piranha -f PHYLIP2NEXUS -i <inputPHYLIP> -p <partitionsFile> -f NEX
     piranha -f PHYLIP2NEXUS -i <inputPHYLIP> -p <partitionsFile> -f SVDquartets
 
-    Convert multiple PHYLIP files in working directory to NEXUS format:
+    # Convert multiple PHYLIP files in working directory to NEXUS format:
+
     piranha -f PHYLIP2NEXUS -m 1 
 
  ${bold}CITATION${reset}

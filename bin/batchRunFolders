@@ -586,6 +586,14 @@ USAGE="Usage: $(basename "$0") [OPTION]...
     piranha -f batchRunFolders -i <inputList> -f <fileType> -s <targetSoftware>  Generic usage with input file list
     piranha -f batchRunFolders -h                                                Show this help text and exit
 
+ 	# Set up batch folders for MAFFT runs with custom thread number and prefix:
+
+    piranha -f batchRunFolders -i input_fasta.list.txt -f fasta -s mafft -t 4 -p align
+
+ 	# Set up batch folders for IQ-TREE runs with custom thread number and prefix:
+
+    piranha -f batchRunFolders -i input_phylip.list.txt -f phylip -s iqtree -t 4 -p iqtree
+
  ${bold}CITATION${reset}
  Bagley, J.C. 2020. PIrANHA v0.4a3. GitHub repository, Available at:
 	<https://github.com/justincbagley/piranha>.
