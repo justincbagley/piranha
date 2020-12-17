@@ -8,6 +8,8 @@
 
 ### Updates since last pre-release (for *current draft release*, PIrANHA v0.4a4)
 
+[On-going...]
+
 ### PIrANHA 0.4a4 (official minor pre-release version v0.4-alpha-4), December 17, 2020
 
 -   **December 15, 2020:** Bug fixes for bad piping and other minor errors in `batchRunFolders` and `FASTAsummary` functions, and added option for specifying number of threads when running `batchRunFolders`.
