@@ -37,7 +37,7 @@ brew update ;
 brew install piranha ;
 ```
 
-After running one of the installs *above*, it is recommended that users do `source ~/.bash_profile` next on **macOS**, or `source ~/.bashrc` next on **Linux**. To ensure PIrANHA install success, or if `piranha` executable is not available with dynamnic tab completion (shown [here](https://github.com/justincbagley/piranha#piranha)) at the command line interface (CLI), then do:
+After running one of the installs _above_, it is recommended that users do `source ~/.bash_profile` next on **macOS**, or `source ~/.bashrc` next on **Linux**. To ensure PIrANHA install success, or if `piranha` executable is not available with dynamnic tab completion (shown [here](https://github.com/justincbagley/piranha#piranha)) at the command line interface (CLI), then do:
 
 ```bash
 source /usr/local/Cellar/piranha/*/bin/source_piranha_compl.sh ;
@@ -259,6 +259,6 @@ if [[ -f /usr/local/bin/local_piranha ]]; then rm -rf /usr/local/bin/local_piran
 if [[ -f /usr/local/bin/brew_piranha ]]; then rm -rf /usr/local/bin/brew_piranha ; fi
 ```
 
-*December 17, 2020* - *Justin C. Bagley, Jacksonville, AL, USA*
+_December 17, 2020_ - _Justin C. Bagley, Jacksonville, AL, USA_
 
 [Next (Introduction) >>](https://github.com/justincbagley/piranha/wiki/1.-Introduction)
