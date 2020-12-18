@@ -1,0 +1,165 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: install_piranha.sh                                                               #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Thu, Dec 17 19:01:01 CST 2020.                       #
+# Last update: December 17, 2020                                                         #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
+#                                                                                        #
+# Description:                                                                           #
+# THIS SCRIPT AUTOMATES INSTALLING PIrANHA ON MAC OR LINUX MACHINES (ATTEMPTING TO USE / #
+# INSTALL HOMEBREW, IF POSSIBLE).                                                        #
+#                                                                                        #
+##########################################################################################
+
+install_piranha () {
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | install_piranha, v1.0.0 December 2020                          "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | Initiating Homebrew PIrANHA install/setup procedures... "
+#
+		# checkMachineType
+		# ------------------------------------------------------
+		echo "INFO      | $(date) | Checking machine type... "
+		unameOut="$(uname -s)";
+		case "${unameOut}" in
+			Linux*)     machine=Linux;;
+			Darwin*)    machine=Mac;;
+			CYGWIN*)    machine=Cygwin;;
+			MINGW*)     machine=MinGw;;
+			*)          machine="UNKNOWN:${unameOut}"
+		esac;
+		echo "INFO      | $(date) | Done. Found machine type ${machine}. "
+		#
+		# hasHomebrew
+		# ------------------------------------------------------
+		echo "INFO      | $(date) | Checking for Homebrew (https://brew.sh)... "
+		if [[ "$(type -P brew)" ]] && [[ "$(type -P gcc)" ]]; then
+			echo "INFO      | $(date) | Homebrew check PASSED. "
+		elif [[ ! "$(type -P brew)" ]] && [[ "$(type -P gcc)" ]]; then
+			echo "WARNING   | $(date) | Homebrew check FAILED. Script will attempt to install Homebrew locally."
+			echo "INFO      | $(date) | Downloading Homebrew installer script and installing... "
+			echo "INFO      | $(date) | NOTE: You may need to re-run this install_piranha installer after the Homebrew install is complete. "
+			if [[ "$machine" != "Linux" ]]; then 
+				echo "INFO      | $(date) |       On Linux, this install will fail without appropriate versions of GLIBC and Ruby. In that case, "
+				echo "INFO      | $(date) |       try to install at least v2.0+ of these 'by hand' (NOT using conda or another package installer). "; 
+			fi
+			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
+		elif [[ ! "$(type -P brew)" ]] && [[ ! "$(type -P gcc)" ]] && [[ "$machine" = "Mac" ]]; then
+			echo "WARNING   | $(date) | Homebrew check FAILED. "
+	        echo "WARNING   | $(date) | XCode or the Command Line Tools for XCode must be installed first."
+			echo "INFO      | $(date) | Please install XCode with 'xcode-select --install' and then re-run this installer script. Quitting..."
+			exit 1 ;
+		elif [[ ! "$(type -P brew)" ]] && [[ ! "$(type -P gcc)" ]] && [[ "$(type -P ruby)" ]] && [[ "$machine" = "Linux" ]]; then
+			echo "WARNING   | $(date) | Homebrew check FAILED. "
+	        echo "WARNING   | $(date) | Cannot install Homebrew. A working C compiler (gcc) must be installed first."
+			echo "INFO      | $(date) | Please install GCC and then re-run this installer script. Quitting..."
+			exit 1 ;
+		elif [[ ! "$(type -P brew)" ]] && [[ ! "$(type -P gcc)" ]] && [[ ! "$(type -P ruby)" ]] && [[ "$machine" = "Linux" ]]; then
+			echo "WARNING   | $(date) | Homebrew check FAILED. "
+	        echo "WARNING   | $(date) | Cannot install Homebrew. Ruby and a working C compiler (gcc) must be installed first."
+			echo "INFO      | $(date) | Please install GCC and Ruby before running this installer script. Quitting..."
+			exit 1 ;
+		fi
+		echo "INFO      | $(date) | Done. "
+		#
+		# cleanBashConfig
+		# ------------------------------------------------------
+		echo "INFO      | $(date) | Cleaning Bash configuration ... "
+		if [[ "$machine" = "Mac" ]]; then
+			sed -i '' '/PIrANHA/d' ~/.bash_profile >/dev/null 2>&1 ;
+			sed -i '' '/piranha/d' ~/.bash_profile >/dev/null 2>&1 ;
+		elif [[ "$machine" = "Linux" ]]; then
+			sed -i '/PIrANHA/d' ~/.bash_profile >/dev/null 2>&1 ;
+			sed -i '/piranha/d' ~/.bash_profile >/dev/null 2>&1 ;
+			sed -i '/PIrANHA/d' ~/.bashrc >/dev/null 2>&1 ;
+			sed -i '/piranha/d' ~/.bashrc >/dev/null 2>&1 ;
+		fi
+		#
+		# homebrewPIrANHA
+		# ------------------------------------------------------
+		if [[ "$(type -P brew)" ]] && [[ ! "$(type -P piranha)" ]]; then
+			echo "INFO      | $(date) | Installing latest Homebrew PIrANHA version on ${USER}'s ${machine} machine... "
+			brew update ;
+			brew update ; 
+			brew tap justincbagley/homebrew-tap ;
+			brew install --HEAD piranha ; 
+			brew info piranha ;
+			MY_PIRANHA_CELLAR="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g')";
+			MY_BREW_PIRANHA_VERSION="$(brew info piranha | grep -h 'Cellar' | sed 's/\ (.*//g; s/.*\///g')";
+			echo "INFO      | $(date) | Homebrew PIrANHA version: $MY_BREW_PIRANHA_VERSION "
+			echo "INFO      | $(date) | Homebrew PIrANHA location: $MY_PIRANHA_CELLAR "
+			echo "INFO      | $(date) | Done. 
+"
+		fi
+		#
+		# localInstall
+		# ------------------------------------------------------
+		if [[ ! "$(type -P brew)" ]] && [[ ! "$(type -P piranha)" ]]; then
+			if [[ "$machine" = "Mac" ]]; then
+				echo "INFO      | $(date) | Running local PIrANHA install and setup for Mac... "
+			elif [[ "$machine" = "Linux" ]]; then
+				echo "INFO      | $(date) | Running local PIrANHA install and setup for Linux... "
+			fi
+			#
+			echo "INFO      | $(date) | Installing PIrANHA on ${USER}'s ${machine}... "
+			cd "$HOME";
+			if [[ -s ./piranha-master/ ]]; then
+				echo "INFO      | $(date) | Found piranha-master/ distribution in user home ($HOME). Compressing... "
+				tar -czvf piranha-master.tar.gz piranha-master ; if [[ -s ./piranha-master/ ]]; then rm -rf ./piranha-master/; fi; 
+			fi
+			if [[ ! -s ./piranha-master/ ]]; then
+				echo "INFO      | $(date) | Downloading piranha-master/ distribution to user home ($HOME)... "
+				git clone https://github.com/justincbagley/piranha.git ./piranha-master/  ;
+				cd ./piranha-master/bin/  ;
+					echo "INFO      | $(date) | Granting execution permissions... "
+					chmod u+x ./* ;
+					chmod u+x ./bin/MAGNET-1.1.1/MAGNET ;
+					chmod u+x ./bin/MAGNET-1.1.1/shell/*.sh ;
+					chmod u+x ../piranha ;
+					chmod u+x ../piranha.sh ;
+					chmod u+x ../completions/init.sh ;
+					chmod u+x ../completions/*.bash ;
+				cd ..; cd ..;
+			fi
+			#
+			if [[ "$machine" = "Mac" ]]; then
+				echo "INFO      | $(date) | Creating piranha executable... "
+				echo "x" > ~/bin/piranha ; # overwrites existing file, if present
+				sed -i.bak 's/x/bash\ \~\/piranha\-master\/piranha.sh\ $\*/g' ~/bin/piranha ;
+				rm ~/bin/piranha.bak ;
+				chmod u+x ~/bin/piranha ;
+				echo "source \""$HOME"\/piranha\-master\/completions\/init\.sh\"" >> ~/.bash_profile ;
+				source ~/.bash_profile ;
+			elif [[ "$machine" = "Linux" ]]; then
+				echo "INFO      | $(date) | Creating piranha executable... "
+				echo "x" > ~/bin/piranha ; # overwrites existing file, if present
+				sed -i.bak 's/x/bash\ \~\/piranha\-master\/piranha.sh\ $\*/g' ~/bin/piranha ;
+				chmod u+x ~/bin/piranha ;
+				echo "source \""$HOME"\/piranha\-master\/completions\/init\.sh\"" >> ~/.bashrc ;
+				source ~/.bashrc ;
+			fi
+		fi 
+		#
+		if [[ ! "$(type -P brew)" ]] && [[ ! "$(type -P piranha)" ]]; then
+			echo "ERROR     | $(date) | Install failed. Try Homebrew install commands in the Quick Guide and Wiki on GitHub. Quitting... "
+			exit 1 ;
+        fi
+	echo "INFO      | $(date) | Done. 
+"
+}
+
+install_piranha
+
+
+
+exit 0
+

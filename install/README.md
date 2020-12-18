@@ -7,11 +7,16 @@ Justin C. Bagley
 _Jacksonville State University_
 _Virginia Commonwealth University_
 
-December 7, 2020
+December 18, 2020
 
-## AUTOMATED LOCAL GIT INSTALL
+### AUTOMATED INSTALLER
 
-### Local `git` install and setup
+Grant privileges and run installer script:
+
+This script will check for Homebrew (and try and install it, if not present), attempt a Homebrew 
+install of the latest PIrANHA update (cutting-edge development version, including commits after 
+last stable release). If a Homebrew install is not possible, then the script will run a routine 
+for local `git` install and setup.
 
 ```bash
 cd piranha-master/ ;
@@ -22,18 +27,5 @@ local_piranha ;
 cp local_piranha ~/bin/ ; # makes installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual)
 ```
 
-## AUTOMATED HOMEBREW INSTALL
-
-### `brew` install and setup
-
-```bash
-cd piranha-master/ ;
-cd install/ ;
-chmod u+x ./* ;
-brew_piranha ;
-#
-cp brew_piranha ~/bin/ ; # makes installer available from command line, for future use (assuming ~/bin/ is in $PATH, as usual)
-```
-
-For information on options for installing 'by-hand', please see the [Quick Guide for the Impatient](https://github.com/justincbagley/piranha/wiki#quick-guide-for-the-impatient) 
+For more information on options for installing 'by-hand', please see the [Quick Guide for the Impatient](https://github.com/justincbagley/piranha/wiki#quick-guide-for-the-impatient) 
 in the PIrANHA GitHub [Wiki pages](https://github.com/justincbagley/piranha/wiki).

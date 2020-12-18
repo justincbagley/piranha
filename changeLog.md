@@ -10,7 +10,7 @@
 
 Development is on-going...
 
-### PIrANHA v0.4a4 (official minor pre-release version v0.4-alpha-4), December 17, 2020
+### PIrANHA v0.4a4 (official minor pre-release version v0.4-alpha-4), December 18, 2020
 
 -   **December 15, 2020:** Bug fixes for bad piping and other minor errors in `batchRunFolders` and `FASTAsummary` functions, and added option for specifying number of threads when running `batchRunFolders`.
 -   **December 15, 2020:** Fixed version printing for piranha main script and functions (`piranha -V`, `piranha --version`, `piranha -f <function> -V`, and `piranha -f <function> --version` each now yield expected behavior (terse output).
