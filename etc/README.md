@@ -22,9 +22,9 @@ This is the default configuration file for the `RAxMLRunner` function, with four
 
 To use the [Pushover](https://pushover.net) notification function in your scripts, take the following steps:
 
-1.    If you haven't done so already, create a [Pushover](https://pushover.net) account and create a Pushover application.
-2.    Rename `pushover.cfg.sample` to `pushover.cfg`
-3.    Add your user API key and your application API key to this file.
+1.   If you haven't done so already, create a [Pushover](https://pushover.net) account and create a Pushover application.
+2.   Rename `pushover.cfg.sample` to `pushover.cfg`
+3.   Add your user API key and your application API key to this file.
 
 If you don't want to pay for the Pushover service, then consider using the [Pullover](https://github.com/cgrossde/Pullover) client for Linux or Mac.
 <!--[1]: https://pushover.net
