@@ -212,7 +212,7 @@ Conduct post-processing of results from standard evolutionary analysis programs 
     piranha -f MrBayesPostProc
 ```
 
-Use the documentation links in the sidebar at *right* to navigate this documentation and learn more about PIrANHA, and [contact the author for technical support](https://github.com/justincbagley/piranha/wiki/6.-Contact) or [raise an issue](https://github.com/justincbagley/piranha/issues).
+See the [Wiki pages](https://github.com/justincbagley/piranha/wiki) to learn more about PIrANHA, and [contact the author for technical support](https://github.com/justincbagley/piranha/wiki/6.-Contact) or [raise an issue](https://github.com/justincbagley/piranha/issues).
 
 ### PIrANHA Publications
 
