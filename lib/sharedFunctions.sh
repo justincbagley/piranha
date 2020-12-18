@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ##################################################
-# Shared bash functions used by PIrANHA bash scripts.
+# Shared bash functions used by PIrANHA scripts.
 #
 # VERSION 1.6.0
 #
@@ -24,6 +24,7 @@
 # * 2020-12-15 - v1.6.0   - Added 'condaDependencies' to 'checkDependencies' function.
 #
 # ##################################################
+
 
 # Short present working directory (PWD) functions
 # ------------------------------------------------------

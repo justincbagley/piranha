@@ -25,7 +25,7 @@ This script contains different functions used to install software and configure 
 
 ## `sharedVariables.sh`
 
-This script contains variables that can be called from any other script.
+This script contains environmental variables that can be called from any other script.
 
 ## `sharedFunctions.sh`
 
