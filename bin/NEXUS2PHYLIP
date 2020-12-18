@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
 # Last update: April 17, 2020                                                            #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 # SHELL SCRIPT CONVERTING SEQUENTIAL NEXUS FILE INTO PHYLIP (AND OPTIONALLY ALSO FASTA)  #
