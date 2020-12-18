@@ -152,16 +152,12 @@ I have also added a new `MrBayesPostProc.sh` script and corresponding 'mrbayes_p
 
 ### PIrANHA v0.1.4 (official minor version release), May 3, 2017
 
-#### What's new
-
 -   **May 2017:** Build now contains new `BEASTRunner.sh` script and 'beast_runner.cfg' configuration file. `BEASTRunner` now has options to allow specifying 1) number of runs, 2) walltime, and 3) Java memory allocation per run, as well as calling reg or verbose help documentation from the command line.
 -   **April 2017:** Build now contains new `pyRADLocusVarSites.sh` script (with example run folder) that calculates numbers of variable sites (i.e. segregating sites, S) and parsimony-informative sites (PIS; i.e. hence with utility for phylogenetic analysis) in each SNP locus contained in .loci file from a pyRAD assembly run.
 -   **April 2017:** I added new `dadiRunner.sh` script that automates transferring and queuing multiple runs of dadi input files on a remote supercomputer (similar to BEASTRunner and RAxMLRunner scripts already in the repo). *n.b.: A `dadiPostProc.sh` script is also in the works (but unreleased) that conducts post-processing and graphical plotting of results from multiple dadi runs.*
 -   **January 2017:** I added a new script called `BEAST_PSPrepper.sh` that, while not quite polished, automates editing any existing BEAST v2+ (e.g. v2.4.4) input XML files for path sampling analysis, so that users don't have to do this by hand!
 
 ### PIrANHA v0.1.3 (official minor version release), November 11, 2016
-
-#### What's new
 
 This version of PIrANHA introduces the `BEASTRunner.sh` script for automating independent runs of BEAST1 or BEAST2 on a remote supercomputing cluster. See README for details.
 
