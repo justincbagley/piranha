@@ -18,7 +18,7 @@ Downloading, installing, and upgrading PIrANHA (on macOS or Linux) is easy thank
 Two Homebrew Install Options:
 
 **Recommended:**
-1. Development (cutting edge) Homebrew install 'by-hand':
+1.  Development (cutting edge) Homebrew install 'by-hand':
 
 ```bash
 # Install:
@@ -28,7 +28,7 @@ brew install --HEAD piranha ;
 piranha -i ;
 ```
 
-2. Regular Homebrew install 'by-hand' (stable, but may not be up to date):
+2.  Regular Homebrew install 'by-hand' (stable, but may not be up to date):
 
 ```bash
 # Install:
@@ -47,7 +47,7 @@ source ~/.bash_profile ;
 ### Updating PIrANHA
 
 **Recommended:**
-1. Upgrading development (cutting edge) version:
+1.  Upgrading development (cutting edge) version:
 
 ```bash
 # Uninstall:
@@ -259,6 +259,6 @@ if [[ -f /usr/local/bin/local_piranha ]]; then rm -rf /usr/local/bin/local_piran
 if [[ -f /usr/local/bin/brew_piranha ]]; then rm -rf /usr/local/bin/brew_piranha ; fi
 ```
 
-_December 17, 2020_ - _Justin C. Bagley, Jacksonville, AL, USA_
+_December 18, 2020_ - _Justin C. Bagley, Jacksonville, AL, USA_
 
 [Next (Introduction) >>](https://github.com/justincbagley/piranha/wiki/1.-Introduction)
