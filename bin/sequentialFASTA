@@ -16,7 +16,7 @@
 # Description:                                                                           #
 # THIS SCRIPT CONVERTS SEQUENTIAL FASTA SEQUENCE ALIGNMENTS WHOSE SEQUENCES ARE HARD-    #
 # WRAPPED ACROSS MULTIPLE LINES TO SIMPLE SEQUENTIAL FASTA FORMAT, WITH EACH SEQUENCE    #
-# ON A SINGLE LINE (AND NO EMPTY OR WRAPPED LINES)
+# ON A SINGLE LINE (AND NO EMPTY OR WRAPPED LINES)                                       #
 #                                                                                        #
 ##########################################################################################
 

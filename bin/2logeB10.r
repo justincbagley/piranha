@@ -11,7 +11,7 @@
 # Date: Created by Justin Bagley on Fri, 19 Aug 2016 00:23:07 -0300.                     #
 # Last update: March 6, 2019                                                             #
 # Copyright (c) 2016-2019 Justin C. Bagley. All rights reserved.                         #
-# Please report bugs to <jbagley@jsu.edu>.                                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
 #                                                                                        #
