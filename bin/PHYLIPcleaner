@@ -193,7 +193,7 @@ fi
 		for i in ./*.phy; do 
 
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-				echo "INFO      | $(date) | ----------------- ${i} "
+				echo "INFO      | $(date) | ----------------- Cleaning file ${count}. ${i} "
 			fi
 			
 			MY_ORIG_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
