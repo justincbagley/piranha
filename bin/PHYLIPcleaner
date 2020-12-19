@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPcleaner.sh                                                                 #
-  VERSION="v1.2.2"                                                                       #
+  VERSION="v1.3.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
-# Last update: December 18, 2020                                                         #
+# Last update: December 19, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -19,10 +19,10 @@
 #                                                                                        #
 ##########################################################################################
 
-## Check for, and remove, individuals within each gene alignment (PHYLIP file) comprised of
-## all missing data (all undetermined or gap sites). Also check for individuals with data 
-## only for a few sites (~5–20 bases) and remove them if found, conditional on experimental 
-## option being invoked.
+# Check for, and remove, individuals within each gene alignment (PHYLIP file) comprised of
+# all missing data (all undetermined or gap sites). Also check for individuals with data 
+# only for a few sites (~5–20 bases) and remove them if found, conditional on experimental 
+# option being invoked.
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -43,10 +43,8 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -57,7 +55,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -141,53 +138,252 @@ PHYLIPcleaner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPcleaner, v1.2.2 December 2020                            "
+echo "INFO      | $(date) | PHYLIPcleaner, v1.3.0 December 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
-######################################## START ###########################################
+# --------------------------------------------------
+# -- STEP #1: SETUP.
+# --------------------------------------------------
 
-################################# 1. SETUP
-
-	###### A. OPTIONAL OUTPUT TO FILE:
-	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-		if [[ ! -s ./output/ ]]; then
-			mkdir output/ ;
-		fi
-		exec >> ./output/"$MY_OUTPUT_FILE_SWITCH"
-		exec 2>&1
-		echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
+# OPTIONAL OUTPUT TO FILE
+# --------------------------------------------------
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	if [[ ! -s ./output/ ]]; then
+		mkdir output/ ;
 	fi
+	exec >> ./output/"$MY_OUTPUT_FILE_SWITCH"
+	exec 2>&1
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
+fi
 
-	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "INFO      | $(date) | Starting PHYLIPcleaner analysis... "
-		echo "INFO      | $(date) | # Step #1: Set up workspace (e.g. functions, working directory) and check machine type. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
-		echo "INFO      | $(date) | ----------------------------------- "
-	fi
-
-	###### B. START DEBUG MODE IF SET:
-	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
-
-	###### C. HANDLE WORKING DIRECTORY AND FILE SUBFOLDERS:
-	## Starting directory:
-	echoShortPWD
-
-	## Orig PHYLIP dir:
-	if [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] && [[ ! -s ./orig_phylip/ ]]; then
-		mkdir orig_phylip/ ;
-	fi
-
-	####### D. CHECK MACHINE TYPE:
-	checkMachineType
-
-
+# SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+# --------------------------------------------------
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | Starting PHYLIPcleaner analysis... "
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #1: Set up workspace (e.g. functions, working directory) and check machine type. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- "
+fi
+# Starting directory:
+echoShortPWD
+checkMachineType
+
+# START DEBUG MODE, IF CALLED
+# --------------------------------------------------
+if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+# ORGANIZE DIRECTORY STRUCTURE AND FILES
+# --------------------------------------------------	
+# Orig PHYLIP dir:
+if [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]] && [[ ! -s ./orig_phylip/ ]]; then
+	mkdir orig_phylip/ ;
+fi
+
+
+# Single PHYLIP run
+# ------------------------------------------------------
+# Run on single input PHYLIP file ('.phy') in current working 
+# directory, specified with -i flag.
+# ------------------------------------------------------
+
+if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[  "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]; then
+
+	# --------------------------------------------------
+	# -- STEP #2: CLEAN PHYLIP FILE, REMOVE INDIVIDUALS WITH ALL (OR MOSTLY) MISSING DATA.
+	# --------------------------------------------------
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | ----------------------------------- "
 		echo "INFO      | $(date) | # Step #2: Clean PHYLIP files, remove individuals with all missing data. "
 		echo "INFO      | $(date) | ----------------------------------- "
-fi
-################################# 2. CLEAN PHYLIP FILE, REMOVE INDIVIDUALS WITH ALL (OR MOSTLY) MISSING DATA.
+	fi
+		
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
+	fi
 
-	####### A. ALL PHYLIP CLEANER AND MISSING DATA CHECKER:
+	# A. ALL PHYLIP CLEANER AND MISSING DATA CHECKER
+	# --------------------------------------------------
+	# Removing empty lines (newlines) and lines that have been commented out, if present.
+	# --------------------------------------------------
+	count=1
+	(
+		for i in $INPUT_PHYLIP_FILE; do 
+
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | ----------------- Cleaning file ${count}. ${i} "
+			fi
+			
+			MY_ORIG_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
+
+			if [[ "$MY_KEEP_PHYLIP_SWITCH" = "1" ]]; then
+				cp -f "$i" orig_phylip/;
+			fi
+
+			# If present, remove empty lines / newlines from current PHYLIP file, $i.
+			# --------------------------------------------------
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
+			fi
+			if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/^[[:space:]]*$/d' "$i" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' "$i" ;
+				fi
+			fi
+		
+			# If present, remove lines that have been commented out from current PHYLIP file, $i. 
+			# Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
+			# --------------------------------------------------
+			if [[ "$(grep -n '\#' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/\#/d' "$i" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/\#/d' "$i" ;
+				fi
+			fi
+
+			# Check and remove individuals with all missing data:
+			# --------------------------------------------------
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Checking for and removing individuals comprised entirely of undetermined sites (gaps, missing characters)... "
+			fi
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak '/\ [N\-]*$/d' "$i" ;
+				sed -i.bak '/\ [n\-]*$/d' "$i" ;
+				sed -i.bak '/\ [\?\-]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-N]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-n]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-\?]*$/d' "$i" ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i '/\ [N\-]*$/d' "$i" ;
+				sed -i '/\ [n\-]*$/d' "$i" ;
+				sed -i '/\ [\?\-]*$/d' "$i" ;
+#				sed -i '/\ [\-N]*$/d' "$i" ;
+#				sed -i '/\ [\-n]*$/d' "$i" ;
+#				sed -i '/\ [\-\?]*$/d' "$i" ;
+			fi
+				
+			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
+			MY_CORR_PHY_NLINES="$(calc "$MY_PHY_NLINES" - 1)" ;
+		
+			if [[ "${machine}" = "Mac" ]]; then
+				sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+				rm ./*.bak;
+			fi
+			if [[ "${machine}" = "Linux" ]]; then
+				sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+			fi
+
+			# Echo name of PHYLIP files that have been edited (which have different numbers
+			# of taxa, NTAX now at the end of the current loop iteration than they did at
+			# the beginning) to file. First need to check whether NTAX has changed or not;
+			# if so, then echo $i to file 'cleanedPHYLIP.summary.txt' ...
+			MY_FINAL_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
+			if [[ "$MY_FINAL_NTAX" != "$MY_ORIG_NTAX" ]]; then
+				MY_NUM_PROBLEM_IND="$(calc $MY_ORIG_NTAX-$MY_FINAL_NTAX)"
+				echo "INFO      | $(date) | Removed ${MY_NUM_PROBLEM_IND} individuals comprised entirely of undetermined sites (gaps, missing characters)... "
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./output/cleanedPHYLIP.summary.txt ;
+				else
+					echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./cleanedPHYLIP.summary.txt ;
+				fi
+			fi			
+			echo "$((count++)) "  >/dev/null 2>&1 ;
+		done
+	)
+		
+	# B. MOSTLY MISSING DATA CHECKER
+	# --------------------------------------------------
+	# Removing empty lines (newlines) and lines that have been commented out, if present.
+	# --------------------------------------------------
+	if [[ "$MY_DEEP_CLEAN_SWITCH" = "1" ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "WARNING   | $(date) | Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
+			echo "INFO      | $(date) | Check results thoroughly, then start over and rerun analysis without -c flag if necessary."
+		fi
+		# Check and remove individuals with very few sites at start, finish, or only in middle 
+		# of the alignment (looking to remove indiv's with only 5-20 sites total):
+		# --------------------------------------------------
+		(
+			for i in ./*.phy; do 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
+					sed -i.bak '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
+					sed -i.bak '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
+		
+					sed -i.bak '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
+					sed -i.bak '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
+				
+					sed -i.bak '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
+					sed -i.bak '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
+					sed -i.bak '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
+					sed -i.bak '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+					rm ./*.bak;
+				fi
+	
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
+					sed -i '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
+					sed -i '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
+		
+					sed -i '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
+					sed -i '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
+				
+					sed -i '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
+					sed -i '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
+					sed -i '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
+					sed -i '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+				fi
+	
+				MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
+				MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)" ;
+				
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+				fi
+				
+			done
+		)
+	fi
+fi
+# ------------------------------------------------------
+
+
+# Multi-PHYLIP run
+# ------------------------------------------------------
+# Run on multiple PHYLIP files ('.phy') in current working 
+# directory, called with -m 1 option.
+# ------------------------------------------------------
+if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[  "$MULTIPLE_PHYLIP_SWITCH" != "0" ]] && [[ "$(ls -1 ./*.phy 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then
+
+	# --------------------------------------------------
+	# -- STEP #2: CLEAN PHYLIP FILE, REMOVE INDIVIDUALS WITH ALL (OR MOSTLY) MISSING DATA.
+	# --------------------------------------------------
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | ----------------------------------- "
+			echo "INFO      | $(date) | # Step #2: Clean PHYLIP files, remove individuals with all missing data. "
+			echo "INFO      | $(date) | ----------------------------------- "
+	fi
+	
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
+		fi
+	# A. ALL PHYLIP CLEANER AND MISSING DATA CHECKER
+	# --------------------------------------------------
+	# Removing empty lines (newlines) and lines that have been commented out, if present.
+	# --------------------------------------------------
 	count=1
 	(
 		for i in ./*.phy; do 
@@ -202,126 +398,60 @@ fi
 				cp -f "$i" orig_phylip/;
 			fi
 
+			# If present, remove empty lines / newlines from current PHYLIP file, $i.
+			# --------------------------------------------------
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 			fi
-			## If present, remove empty lines / newlines from current PHYLIP file, $i.
-				if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-					if [[ "${machine}" = "Mac" ]]; then
-						sed -i.bak '/^[[:space:]]*$/d' "$i" ;
-						rm ./*.bak;
-					fi
-					if [[ "${machine}" = "Linux" ]]; then
-						sed -i '/^[[:space:]]*$/d' "$i" ;
-					fi
+			if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/^[[:space:]]*$/d' "$i" ;
+					rm ./*.bak;
 				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/^[[:space:]]*$/d' "$i" ;
+				fi
+			fi
 		
-			## If present, remove lines that have been commented out from current PHYLIP file, $i. 
-			## Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
-				if [[ "$(grep -n '\#' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
-					if [[ "${machine}" = "Mac" ]]; then
-						sed -i.bak '/\#/d' "$i" ;
-						rm ./*.bak;
-					fi
-					if [[ "${machine}" = "Linux" ]]; then
-						sed -i '/\#/d' "$i" ;
-					fi
+			# If present, remove lines that have been commented out from current PHYLIP file, $i. 
+			# Unlike sequence lines, these lines will all contain '#' characters at their beginning (^).
+			# --------------------------------------------------
+			if [[ "$(grep -n '\#' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/\#/d' "$i" ;
+					rm ./*.bak;
 				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/\#/d' "$i" ;
+				fi
+			fi
 
+			# Check and remove individuals with all missing data:
+			# --------------------------------------------------
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) | Checking for and removing individuals comprised entirely of undetermined sites (gaps, missing characters)... "
 			fi
-			## Check and remove individuals with all missing data:
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i.bak '/\ [N\-]*$/d' "$i" ;
-					sed -i.bak '/\ [n\-]*$/d' "$i" ;
-					sed -i.bak '/\ [\?\-]*$/d' "$i" ;
-#					sed -i.bak '/\ [\-N]*$/d' "$i" ;
-#					sed -i.bak '/\ [\-n]*$/d' "$i" ;
-#					sed -i.bak '/\ [\-\?]*$/d' "$i" ;
-					rm ./*.bak;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '/\ [N\-]*$/d' "$i" ;
-					sed -i '/\ [n\-]*$/d' "$i" ;
-					sed -i '/\ [\?\-]*$/d' "$i" ;
-#					sed -i '/\ [\-N]*$/d' "$i" ;
-#					sed -i '/\ [\-n]*$/d' "$i" ;
-#					sed -i '/\ [\-\?]*$/d' "$i" ;
-				fi
-				
-				MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
-				MY_CORR_PHY_NLINES="$(calc "$MY_PHY_NLINES" - 1)" ;
-		
-				if [[ "${machine}" = "Mac" ]]; then
-					sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
-					rm ./*.bak;
-				fi
-				if [[ "${machine}" = "Linux" ]]; then
-					sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
-				fi
-
-				## Echo name of PHYLIP files that have been edited (which have different numbers
-				## of taxa, NTAX now at the end of the current loop iteration than they did at
-				## the beginning) to file. First need to check whether NTAX has changed or not;
-				## if so, then echo $i to file 'cleanedPHYLIP.summary.txt' ...
-				MY_FINAL_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
-				if [[ "$MY_FINAL_NTAX" != "$MY_ORIG_NTAX" ]]; then
-					MY_NUM_PROBLEM_IND="$(calc $MY_ORIG_NTAX-$MY_FINAL_NTAX)"
-					echo "INFO      | $(date) | Removed ${MY_NUM_PROBLEM_IND} individuals comprised entirely of undetermined sites (gaps, missing characters)... "
-					if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-						echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./output/cleanedPHYLIP.summary.txt ;
-					else
-						echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./cleanedPHYLIP.summary.txt ;
-					fi
-				fi			
-			echo "$((count++)) "  >/dev/null 2>&1 ;
-		done
-	)
-	
-###
-if [[ "$MY_DEEP_CLEAN_SWITCH" = "1" ]]; then
-	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-		echo "WARNING   | $(date) | Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
-		echo "INFO      | $(date) | Check results thoroughly, then start over and rerun analysis without -c flag if necessary."
-	fi
-	####### B. MOSTLY MISSING DATA CHECKER:
-	## Check and remove individuals with very few sites at start, finish, or only in middle 
-	## of the alignment (looking to remove indiv's with only 5-20 sites total):
-	(
-		for i in ./*.phy; do 
 			if [[ "${machine}" = "Mac" ]]; then
-				sed -i.bak '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
-				sed -i.bak '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
-				sed -i.bak '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
-	
-				sed -i.bak '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
-				sed -i.bak '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
-			
-				sed -i.bak '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
-				sed -i.bak '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
-				sed -i.bak '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
-				sed -i.bak '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+				sed -i.bak '/\ [N\-]*$/d' "$i" ;
+				sed -i.bak '/\ [n\-]*$/d' "$i" ;
+				sed -i.bak '/\ [\?\-]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-N]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-n]*$/d' "$i" ;
+#				sed -i.bak '/\ [\-\?]*$/d' "$i" ;
 				rm ./*.bak;
 			fi
-
 			if [[ "${machine}" = "Linux" ]]; then
-				sed -i '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
-				sed -i '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
-				sed -i '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
-	
-				sed -i '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
-				sed -i '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
-			
-				sed -i '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
-				sed -i '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
-				sed -i '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
-				sed -i '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+				sed -i '/\ [N\-]*$/d' "$i" ;
+				sed -i '/\ [n\-]*$/d' "$i" ;
+				sed -i '/\ [\?\-]*$/d' "$i" ;
+#				sed -i '/\ [\-N]*$/d' "$i" ;
+#				sed -i '/\ [\-n]*$/d' "$i" ;
+#				sed -i '/\ [\-\?]*$/d' "$i" ;
 			fi
-
+				
 			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
-			MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)" ;
-			
+			MY_CORR_PHY_NLINES="$(calc "$MY_PHY_NLINES" - 1)" ;
+		
 			if [[ "${machine}" = "Mac" ]]; then
 				sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
 				rm ./*.bak;
@@ -329,45 +459,131 @@ if [[ "$MY_DEEP_CLEAN_SWITCH" = "1" ]]; then
 			if [[ "${machine}" = "Linux" ]]; then
 				sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
 			fi
-			
+
+			# Echo name of PHYLIP files that have been edited (which have different numbers
+			# of taxa, NTAX now at the end of the current loop iteration than they did at
+			# the beginning) to file. First need to check whether NTAX has changed or not;
+			# if so, then echo $i to file 'cleanedPHYLIP.summary.txt' ...
+			MY_FINAL_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
+			if [[ "$MY_FINAL_NTAX" != "$MY_ORIG_NTAX" ]]; then
+				MY_NUM_PROBLEM_IND="$(calc $MY_ORIG_NTAX-$MY_FINAL_NTAX)"
+				echo "INFO      | $(date) | Removed ${MY_NUM_PROBLEM_IND} individuals comprised entirely of undetermined sites (gaps, missing characters)... "
+				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+					echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./output/cleanedPHYLIP.summary.txt ;
+				else
+					echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./cleanedPHYLIP.summary.txt ;
+				fi
+			fi			
+			echo "$((count++)) "  >/dev/null 2>&1 ;
 		done
 	)
+		
+	# B. MOSTLY MISSING DATA CHECKER
+	# --------------------------------------------------
+	# Removing empty lines (newlines) and lines that have been commented out, if present.
+	# --------------------------------------------------
+	if [[ "$MY_DEEP_CLEAN_SWITCH" = "1" ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "WARNING   | $(date) | Experimental 'deep clean' option invoked. WARNING: this may cause errors. "
+			echo "INFO      | $(date) | Check results thoroughly, then start over and rerun analysis without -c flag if necessary."
+		fi
+		# Check and remove individuals with very few sites at start, finish, or only in middle 
+		# of the alignment (looking to remove indiv's with only 5-20 sites total):
+		# --------------------------------------------------
+		(
+			for i in ./*.phy; do 
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
+					sed -i.bak '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
+					sed -i.bak '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
+		
+					sed -i.bak '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
+					sed -i.bak '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
+				
+					sed -i.bak '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
+					sed -i.bak '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
+					sed -i.bak '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
+					sed -i.bak '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+					rm ./*.bak;
+				fi
+	
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '/\ [ACTG]\{5,20\}[N\-]*$/d' "$i" ;
+					sed -i '/\ [ACTG]\{5,20\}[n\-]*$/d' "$i" ;
+					sed -i '/\ [ACTG]\{5,20\}[\?\-]*$/d' "$i" ;
+		
+					sed -i '/\ [N\-]*[ACTG]\{5,20\}$/d' "$i" ;
+					sed -i '/\ [n\-]*[ACTG]\{5,20\}$/d' "$i" ;
+				
+					sed -i '/\ N\{50\}[ACTG]\{5,20\}N\{50\}/d' "$i" ;
+					sed -i '/\ n\{50\}[ACTG]\{5,20\}n\{50\}/d' "$i" ;
+					sed -i '/\ [N\-]\{50\}[ACTG]\{5,20\}[N\-]\{50\}/d' "$i" ;
+					sed -i '/\ [n\-]\{50\}[ACTG]\{5,20\}[n\-]\{50\}/d' "$i" ;
+				fi
+	
+				MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
+				MY_CORR_PHY_NLINES="$(calc $MY_PHY_NLINES - 1)" ;
+				
+				if [[ "${machine}" = "Mac" ]]; then
+					sed -i.bak '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+					rm ./*.bak;
+				fi
+				if [[ "${machine}" = "Linux" ]]; then
+					sed -i '1s/^\([0-9]*\)/'"$MY_CORR_PHY_NLINES"'/g' "$i" ;
+				fi
+				
+			done
+		)
+	fi
 fi
-###
+# ------------------------------------------------------
 
+
+# --------------------------------------------------
+# -- STEP #3: CLEAN UP WORKSPACE
+# --------------------------------------------------
+# Clean up workspace by removing temporary files generated during run. 
+# --------------------------------------------------
+
+echo "INFO      | $(date) | ----------------------------------- "
 echo "INFO      | $(date) | # Step #3: Clean up workspace by removing temporary files generated during run. "
 echo "INFO      | $(date) | ----------------------------------- "
 
-################################# 3. CLEAN UP WORKSPACE 
-
-	####### B. MOSTLY MISSING DATA CHECKER:
+	# SIMPLE OUTPUT DIR MOD AND REMOVE TMP FILES
+	# --------------------------------------------------
 	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-		## Do a simple operation here to make sure the output/ dir shows up at the top of current 
-		## dir when listed by date modified. Annoying when you have to look really far down in the 
-		## folder to find output dir, which intuitively should have been among last items modified.
+		# Do a simple operation here to make sure the output/ dir shows up at the top of current 
+		# dir when listed by date modified. Annoying when you have to look really far down in the 
+		# folder to find output dir, which intuitively should have been among last items modified.
 		cd output/ ; echo "" > file.txt;  rm file.txt; cd .. ;
 	fi
 
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 
-echo "INFO      | $(date) | Done." 
-echo "----------------------------------------------------------------------------------------------------------"
-echo ""
+	echo "INFO      | $(date) | Done." 
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
 
-## END DEBUG MODE
-if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
-######
+	# END DEBUG MODE
+	# --------------------------------------------------
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+
+	# PRINT OUTPUT FILE INFO
+	# --------------------------------------------------
+	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+		echo "output file(s): ./output/${MY_OUTPUT_FILE_SWITCH} "
+		echo "                ./output/cleanedPHYLIP.summary.txt  "
+	else
+		echo "output file(s): ./output/cleanedPHYLIP.summary.txt "
+	fi
 
 ##########################################################################################
 ######################################### END ############################################
-if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
-	echo "output file(s): ./output/${MY_OUTPUT_FILE_SWITCH} "
-	echo "                ./output/cleanedPHYLIP.summary.txt  "
-else
-	echo "output file(s): ./output/cleanedPHYLIP.summary.txt "
-fi
+
 }
 
+
+############################### BEGIN OPTIONS AND USAGE ##################################
 
 
 ############ CREATE USAGE & HELP TEXTS
@@ -542,6 +758,8 @@ fi
 #        exit 1 ;;
 #   esac
 # done
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############
