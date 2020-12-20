@@ -6,7 +6,7 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitPHYLIP.sh                                                                   #
-  export VERSION="v1.2.0"                                                                #
+  export VERSION="v1.2.1"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, Apr 20 08:32:39 CDT 2019.                       #
 # Last update: December 19, 2020                                                         #
@@ -132,7 +132,7 @@ splitPHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitPHYLIP, v1.2.0 December 2020                              "
+echo "INFO      | $(date) | splitPHYLIP, v1.2.1 December 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -282,6 +282,8 @@ fi
 				# WORKING, but preferred:
 				MY_PARTITION_NAME="$(awk '{if(NR=='$count') print $0}' "$MY_NAMES_FILE" | sed 's/\ //g')";
 				mv ./locus"$count".phy "$MY_PARTITION_NAME".phy ;
+				
+				echo ./"$MY_PARTITION_NAME".phy >> ./renamedPHYLIP_order.list ;
 			fi
 
 			echo "INFO      | $(date) | Splitting out locus ${count} into separate PHYLIP file... "
