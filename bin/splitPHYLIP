@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: splitPHYLIP.sh                                                                   #
-  export VERSION="v1.1.4"                                                                #
+  export VERSION="v1.2.0"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, Apr 20 08:32:39 CDT 2019.                       #
-# Last update: December 15, 2020                                                         #
+# Last update: December 19, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -132,50 +132,61 @@ splitPHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | splitPHYLIP, v1.1.4 December 2020                              "
+echo "INFO      | $(date) | splitPHYLIP, v1.2.0 December 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Starting splitPHYLIP analysis... "
-	echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and determine output file settings. "
-fi
-############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-echoCDWorkingDir
-checkMachineType
 
-
-if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #2: Set output file. "
-fi
+# --------------------------------------------------
+# -- STEP #1: SETUP.
+# --------------------------------------------------
+# SET OPTIONAL OUTPUT TO FILE
+# --------------------------------------------------
 if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 	exec >> ./"$MY_OUTPUT_FILE_SWITCH" ;
 	exec 2>&1 ;
-#
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./${MY_OUTPUT_FILE_SWITCH} ... "
 	fi
 elif [[ "$MY_OUTPUT_FILE_SWITCH" = "NULL" ]]; then
 	exec >> ./splitPHYLIP_output.txt ;
 	exec 2>&1 ;
-#
 	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 		echo "INFO      | $(date) | Default output file settings. Logging output to file at ./splitPHYLIP_output.txt ... "
 	fi
 fi
 
-
+# SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+# --------------------------------------------------
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #3: Split PHYLIP sequence alignment $MY_PHYLIP, in current directory, into multiple PHYLIP files corresponding to user-specified partitions. "
+	echo "INFO      | $(date) | Starting splitPHYLIP analysis... "
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #1: Set up workspace, check machine type, and determine output file settings. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- "
+fi
+# Starting directory:
+echoCDWorkingDir
+checkMachineType
+
+# --------------------------------------------------
+# -- STEP #2: SPLIT INPUT PHYLIP SEQUENCE ALIGNMENT INTO MULTIPLE PHYLIP FILES CORRESPONDING TO USER-SPEC PARTITIONS.
+# --------------------------------------------------
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #2: Split PHYLIP sequence alignment $MY_PHYLIP, in current directory, into multiple PHYLIP files corresponding to user-specified partitions. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- "
 fi
 
-
-######## A. READ PHYLIP FILE, GET CHARACTERISTICS, PREP SEQUENCES FOR SPLITTING FILE:
-
+	# A. READ PHYLIP FILE, GET CHARACTERISTICS, PREP SEQUENCES FOR SPLITTING FILE
+	# --------------------------------------------------
+	# Removing empty lines (newlines) and lines, as well as lines that have been commented 
+	# out, if present.
+	# --------------------------------------------------
 		MY_PHYLIP_NCHAR="$(head -n1 $MY_PHYLIP | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
 		echo "INFO      | $(date) | ###----------   $MY_PHYLIP,  $MY_PHYLIP_NCHAR bp   ----------###" ;
 		cp "$MY_PHYLIP" ./phylip.tmp ; 
 		
-		###### Remove any blank/empty lines in <inputPHYLIP> and get alignment characteristics etc.:
+		# If present, remove empty lines / newlines from current <inputPHYLIP> file.
+		# --------------------------------------------------
 		if [[ "${machine}" = "Mac" ]]; then
 			sed -i.bak '/^[[:space:]]*$/d' ./phylip.tmp;
 			rm ./*.bak;
@@ -184,39 +195,61 @@ fi
 			sed -i '/^[[:space:]]*$/d' ./phylip.tmp;
 		fi
 		
-		###### Get <inputPHYLIP> characteristics:
+		# Get <inputPHYLIP> alignment characteristics.
+		# --------------------------------------------------
 		MY_PHYLIP_BASENAME="$(basename $MY_PHYLIP '.phy')";
 		MY_PHYLIP_LENGTH="$(cat ./phylip.tmp | wc -l | sed 's/(\ )*//g')";
 		MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)" ;     ## $MY_BODY_LENGTH is number of lines comprised by sequence and EOF lines.
 		MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
 		MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g'| sed 's/[\]*//g')";
 			
-		###### Isolate <inputPHYLIP> taxon labels (sequence IDs):
+		# Isolate <inputPHYLIP> taxon labels (sequence IDs).
+		# --------------------------------------------------
 		#sed '1d' ./phylip.tmp | perl -pe $'s/[\ ]*[ACTGactgNn\-\?]*//g; s/\t*[ACTGactgNn\-\?]*//g' > ./taxonLabels.tmp ;
 		sed '1d' ./phylip.tmp | perl -pe $'s/\ +.*//g' | perl -pe $'s/\t.*//g' | sed 's/\ //g' | perl -pe $'s/\t//g' > ./taxonLabels.tmp ;
 		
-		###### Make taxon names and spaces file:
+		# Make taxon names and spaces file.
+		# --------------------------------------------------
 		perl -p -e $'s/$\n/\ x\n/g' ./taxonLabels.tmp | column -t | perl -pe $'s/x$//g' > ./taxon_names_spaces.tmp ;
 
-		###### Isolate <inputPHYLIP> sequence matrix:
-#		tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp ;
-#		sed '1d' ./phylip.tmp > ./"$MY_PHYLIP_BASENAME"_sequences.tmp ;
+		# Isolate <inputPHYLIP> sequence matrix.
+		# --------------------------------------------------
 		sed '1d' ./phylip.tmp > ./sequences.tmp ;
 		sed '1d' ./phylip.tmp | perl -pe $'s/^.*[\ ]//g; s/[\ ]//g; s/\t//g' > ./sequencesOnly.tmp ;
 
-		###### Make sequence matrix space-delimited columns, with each column corresponding to a 
-		###### different site:
+		# Make sequence matrix space-delimited columns, with each column corresponding to a 
+		# different site.
+		# --------------------------------------------------
 		#sed 's/\([ACTGactgNn\-\?]\)/\1\ /g' ./sequencesOnly.tmp > ./sequencesOnly_scol.tmp ;
 		sed 's/\(.\)/\1\ /g' ./sequencesOnly.tmp > ./sequencesOnly_scol.tmp ;
 
-######## B. SPLIT FILE BY SEQUENCE RANGES IN PARTITIONS FILE:
-
-		###### Loop through partitions file and extract character columns (bp) for current 
-		###### loop iteration partition from the seqs only, space-delimited file named
-		###### './sequencesOnly_scol.tmp' created above:
+	# B. SPLIT FILE BY SEQUENCE RANGES IN PARTITIONS FILE, RENAMING OUTPUT FILES TO 
+	#    ACTUAL GENE/PARTITION NAMES IF POSSIBLE
+	# --------------------------------------------------
+	# Loop through partitions file and extract character columns (bp) for current 
+	# loop iteration partition from the seqs only, space-delimited file named
+	# './sequencesOnly_scol.tmp' created above.
+	#
+	# OPTION: If a names file has been supplied with the -n|--names flag, then 
+	# use the names in this file (same order as partitions) to rename the 
+	# output partitions files. This will change output from generic names (e.g. 'locus1.phy', 
+	# 'locus2.phy') to actual gene/partition names (e.g. GeneAT3G05340.phy).
+	# --------------------------------------------------
+		echo "INFO      | $(date) | Splitting file... "
+		echo "INFO      | $(date) | ----------------------------------- "
+		echo "INFO      | $(date) | Names file check... "
+		if [[ "$MY_NAMES_FILE" = "NULL" ]]; then
+			echo "INFO      | $(date) | Names file NOT supplied with -n|--names flag. "
+			echo "INFO      | $(date) | Output PHYLIP files will be named locus1.phy, locus2.phy, ... "
+			echo "INFO      | $(date) | ----------------------------------- "
+		elif [[ "$MY_NAMES_FILE" != "NULL" ]]; then
+			echo "INFO      | $(date) | Names file ${MY_NAMES_FILE} supplied with -n|--names flag. "
+			echo "INFO      | $(date) | Output PHYLIP files will be renamed to corresponding gene/partition name in names file. "
+			echo "INFO      | $(date) | ----------------------------------- "
+		fi
 		echo "INFO      | $(date) | Splitting out locus 1 into separate PHYLIP file... "
-		count=1
-(
+	count=1
+	(
 		while read line; do
 			echo "$line" >> ./partition_range_order.list ;
 
@@ -225,12 +258,14 @@ fi
 			MY_PART_NCHAR="$(calc $MY_PART_UPPER_RANGE_VAL-$MY_PART_LOWER_RANGE_VAL+1)";
 			cut -d' ' -f"$MY_PART_LOWER_RANGE_VAL"-"$MY_PART_UPPER_RANGE_VAL" ./sequencesOnly_scol.tmp > ./locus"$count"_scol.tmp ;
 
-			###### Modify seqs only, space-delim file into correctly formatted PHYLIP alignment:
-			## NOTE: We currently name partitions/loci locus 1, locus 2, etc. Need a way to give
-			##       them names matching the partition names. Preferably partition names and ranges
-			##       could be read in through the partitions file, rather than having to create
-			##       separate options for the partitions (already -p flag) and the partition names
-			##       (e.g. an -n flag).
+			# Modify seqs only, space-delim file into correctly formatted PHYLIP alignment:
+			# --------------------------------------------------
+			# NOTE: We currently name partitions/loci locus 1, locus 2, etc. Need a way to give
+			#       them names matching the partition names. Preferably partition names and ranges
+			#       could be read in through the partitions file, rather than having to create
+			#       separate options for the partitions (already -p flag) and the partition names
+			#       (e.g. an -n flag).
+			# --------------------------------------------------
 			perl -p -i -e 's/[\ ]//g' ./locus"$count"_scol.tmp ;
 			echo "$MY_NTAX  $MY_PART_NCHAR" > ./header.tmp ;
 			paste ./taxon_names_spaces.tmp ./locus"$count"_scol.tmp > ./locus"$count".tmp ;
@@ -238,18 +273,35 @@ fi
 
 			echo ./locus"$count".phy >> ./partition_name_order.list ;
 			
-			echo "INFO      | $(date) | Splitting out locus $((count++)) into separate PHYLIP file... "
+			# Rename output (split) PHYLIP file to have basename of corresponding gene/partition 
+			# on corresponding line of input names file.
+			# --------------------------------------------------
+			if [[ "$MY_NAMES_FILE" != "NULL" ]]; then
+				echo "INFO      | $(date) | Renaming split PHYLIP file... "
+				# WORKING: MY_PARTITION_NAME="$(head -n"$count" charset_names.txt | tail -n+"$count" | sed 's/\ //g')"
+				# WORKING, but preferred:
+				MY_PARTITION_NAME="$(awk '{if(NR=='$count') print $0}' "$MY_NAMES_FILE" | sed 's/\ //g')";
+				mv ./locus"$count".phy "$MY_PARTITION_NAME".phy ;
+			fi
 
+			echo "INFO      | $(date) | Splitting out locus ${count} into separate PHYLIP file... "
+			echo "$((count++)) "  >/dev/null 2>&1 ;
 		done < "$MY_PARTITIONS_FILE" ;
-)
+	)
 
 		
+# --------------------------------------------------
+# -- STEP #3: CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+# --------------------------------------------------
+# Remove '.tmp' files and ./args.txt generated during run.
+# --------------------------------------------------
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-	echo "INFO      | $(date) | Step #4: Clean up workspace by removing temporary files generated during run. "
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #3: Clean up workspace by removing temporary files generated during run. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- "
 	echo "INFO      | $(date) | Deleting temporary files... "
-fi
-############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
-	
+fi	
+
 	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
 		rm ./*.tmp ; 
 	fi
@@ -288,14 +340,17 @@ echo ""
 USAGE="Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
-  -i   inputPHYLIP (def: NULL) input PHYLIP-formatted DNA sequence alignment file
-  -p   partitions (def: partitions.txt) file containing hyphen-separated nucleotide ranges 
-       for each partition in <inputPHYLIP>, with one partition range per line (e.g. 1-485)
-  -o   outputFile (def: NULL) send screen output to file in working dir with user-specified 
-       name, for example 'output.txt'
-  -v   verbose (def: 0, off; 1, on) output more information to screen (stdout)
-  -h   help text (also: --help) echo this help text and exit
-  -V   version (also: --version) echo version and exit
+  -i, --input     inputPHYLIP (def: NULL) input PHYLIP-formatted DNA sequence alignment file
+  -p, --part      partitions (def: partitions.txt) mandatory file of hyphen-separated nucleotide 
+                  ranges for each partition in <inputPHYLIP>, with one range per line (e.g. 1-485)
+  -n, --names     partitionNames (def: NULL) optional list of partition names in same order as the
+                  partitions
+  -o, --output    outputFile (def: NULL) send screen output to file in working dir with user-specified 
+                  name, for example 'output.txt'
+  -v, --verbose   verbose (def: 0, off; 1, on) output more information to screen (stdout)
+  -h, --help      echo this help text and exit
+  -V, --version   echo version and exit
+  -d, --debug     debug (def: 0, off; 1, on) run function in Bash debug mode
 
  ${bold}OVERVIEW${reset}
  THIS SCRIPT takes a single sequential PHYLIP (Felsenstein 2002) DNA sequence alignment in
@@ -305,17 +360,22 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  ranges (e.g. 1-485) for each of n partitions (equivalent to character sets), with one range 
  per line. The ordering of partitions is not important; for example, the program will work 
  regardless of whether or not the partition ranges are given in increasing numeric order.
+	The -n|--names flag allows the user to optionally supply a list file containing the 
+ partition names (alphanumeric with no spaces), one per line, in the same order as partitions
+ in the <partitions> file passed with -p|--part. Notice that long option flags are available 
+ in addition to short ones (see Usage examples below).
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
- software, with usage obtained by running the script with the -h flag. It has been tested
- on macOS High Sierra (v10.13+) and Mojave but should work on many earlier versions or Linux
- (tested on CentOS 5/6/7). Besides standard UNIX/Linux command line tools, the only other 
+ software, with usage obtained by running the script with the -h flag. Previous version have
+ been tested on macOS (v10.13+, High Sierra to Catalina) but should work on other versions or 
+ Linux (tested on CentOS 5/6/7). Besides standard UNIX/Linux command line tools, the only other 
  dependency is Perl (v5+), which is usually already installed on mac and Linux distributions.
 
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f splitPHYLIP -i input.phy -p partitions.txt      Run splitPHYLIP in current working directory
-    piranha -f splitPHYLIP -h                                  Show this help text and exit
+    piranha -f splitPHYLIP -i input.phy -p partitions.txt             Run splitPHYLIP in current working directory
+    piranha -f splitPHYLIP --input input.phy --part partitions.txt    Same as above but with long option flags
+    piranha -f splitPHYLIP -h                                         Show this help text and exit
 
  ${bold}CITATION${reset}
  Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
@@ -328,6 +388,9 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  Created by Justin Bagley on Sat, Apr 20 08:32:39 CDT 2019.
  Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
 "
+
+#  -l, --logfile   logFile (def: aligning_log.txt) log screen output to file in working dir 
+#                  with user-specified name (default is on, so allows changing log file name)
 
 if [[ -z "$*" ]]; then
 	echo "$USAGE"
@@ -353,45 +416,94 @@ fi
 	# echo "$MY_ARGS"
 
 
-############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
 	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
-
 	ALL_MY_ARGUMENTS="$(echo "$@")"
 	echo "$ALL_MY_ARGUMENTS" > ./args.txt
 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
-	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt
+	perl -p -i -e $'s/\-output/\-\-output/g' ./args.txt
+	perl -p -i -e $'s/\-part/\-\-part/g' ./args.txt
+	perl -p -i -e $'s/\-names/\-\-names/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
 
 
 ############ MANUALLY PARSE THE OPTIONS FROM ARGS
 
 ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
-	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_PHYLIP=NULL ;
-	else 
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
+		MY_PHYLIP="$MY_ARG" ;
+	elif [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-input' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-input' ./args.txt | perl -pe 's/\-\-input//g' | perl -pe 's/\ //g')";
 		MY_PHYLIP="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_PARTITIONS_FILE=NULL ;
-	else 
+	if [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-part' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_PARTITIONS_FILE=partitions.txt ;
+	elif [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-part' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-p' ./args.txt | perl -pe 's/\-p//g' | perl -pe 's/\ //g')";
+		MY_PARTITIONS_FILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-p' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-part' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-part' ./args.txt | perl -pe 's/\-\-part//g' | perl -pe 's/\ //g')";
 		MY_PARTITIONS_FILE="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-names' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_NAMES_FILE=NULL ;
+	elif [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-names' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-n' ./args.txt | perl -pe 's/\-n//g' | perl -pe 's/\ //g')";
+		MY_NAMES_FILE="$MY_ARG" ;
+	elif [[  "$(grep -h '\-n' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-names' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-names' ./args.txt | perl -pe 's/\-\-names//g' | perl -pe 's/\ //g')";
+		MY_NAMES_FILE="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_OUTPUT_FILE_SWITCH=NULL ;
-	else 
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
+		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-output' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-output' ./args.txt | perl -pe 's/\-\-output//g' | perl -pe 's/\ //g')";
 		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
 	fi
 #
-	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_VERBOSE_OUT_SWITCH=NULL ;
-	else 
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=splitPHYLIP_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
 	fi
 #
 
