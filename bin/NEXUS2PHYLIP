@@ -135,8 +135,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.6 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting NEXUS2PHYLIP pipeline... "
 	echo "INFO      | $(date) | Step #1: Set up workspace."

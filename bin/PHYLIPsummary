@@ -135,8 +135,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | PHYLIPsummary, v1.0.3 April 2020                               "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 echo "INFO      | $(date) | Starting PHYLIPsummary analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS

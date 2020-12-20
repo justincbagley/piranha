@@ -34,7 +34,6 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the functionality in this boilerplate. This script will fail if they can
 # not be found.
 # -----------------------------------
-
 UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
@@ -46,7 +45,6 @@ fi
 
 # Source shared functions and variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -143,8 +141,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | completeSeqs, v2.0.4 April 2020                                "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 #if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 echo "INFO      | $(date) | Starting completeSeqs analysis... "
 echo "INFO      | $(date) | Running with the following options: "
@@ -158,10 +154,9 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and d
 
 ################################# 1. SETUP
 
-############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-echoCDWorkingDir
-checkMachineType
+	###### SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+	echoCDWorkingDir
+	checkMachineType
 
 	###### START DEBUG MODE IF SET:
 	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi

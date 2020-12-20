@@ -135,8 +135,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | nQuireRunner, v1.0.8 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 echo "INFO      | $(date) | Starting nQuireRunner pipeline... "
 echo "INFO      | $(date) | ----------------------------------- "
 echo "INFO      | $(date) | nQuireRunner "

@@ -135,12 +135,8 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | PFSubsetSum, v1.4.2 July 2020                                  "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-#echoCDWorkingDir
 echoShortPWD
 MY_WORKING_DIR="$(pwd -P)";		## Keep, used by script a few places below.
 checkMachineType

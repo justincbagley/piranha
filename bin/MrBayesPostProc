@@ -146,12 +146,9 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | MrBayesPostProc, v1.9.0 April 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2017–2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 echo "INFO      | $(date) | Starting MrBayesPostProc analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 checkMachineType
 

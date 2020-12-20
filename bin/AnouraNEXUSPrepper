@@ -28,7 +28,6 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the functionality in this boilerplate. This script will fail if they can
 # not be found.
 # -----------------------------------
-
 UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
@@ -38,10 +37,8 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -52,7 +49,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -141,8 +137,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | AnouraNEXUSPrepper, v1.3.3 April 2020                          "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and read in NEXUS file. "
 ############ I. SET UP WORKSPACE AND CHECK MACHINE TYPE, AND READ IN NEXUS FILE.
 ## Nothing to do for working dir because script executes in current working dir (of execution/
@@ -150,9 +144,7 @@ echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and r
 MY_PATH="$(pwd -P | sed 's/$/\//g' | sed 's/.*\/\(.*\/\)\(.*\/\)/\.\.\.\/\1\2/g')";
 echo "INFO      | $(date) | Current directory: $MY_PATH "
 echoCDWorkingDir
-#echo "INFO      | $(date) | Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |      Found machine type ${machine}. "
 
 ############ READ IN NEXUS FILE.
 ## 1. Read in the input NEXUS file. Only accommodates one file at present, but could easily

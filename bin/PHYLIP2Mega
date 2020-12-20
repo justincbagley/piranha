@@ -134,15 +134,12 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | PHYLIP2Mega, v1.2.5 December 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 #echo "INFO      | $(date) | My verbose out switch: $MY_VERBOSE_OUT_SWITCH ..."
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting PHYLIP2Mega script... "
 	echo "INFO      | $(date) | Step #1: Set up workspace by creating useful variables and functions, setting working directory, and checking machine type. "
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 checkMachineType
 

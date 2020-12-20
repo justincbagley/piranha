@@ -33,7 +33,6 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the functionality in this boilerplate. This script will fail if they can
 # not be found.
 # -----------------------------------
-
 UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
@@ -43,10 +42,8 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -57,7 +54,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -144,8 +140,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | FASTA2VCF, v1.2.1 April 2020                                   "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
-
-######################################## START ###########################################
 echo "INFO      | $(date) | Starting FASTA2VCF analysis... "
 echo "INFO      | $(date) | Running with the following options: "
 echo "INFO      | $(date) | - FASTA file, <inputFASTA> = ${MY_INPUT_FASTA} "
@@ -157,7 +151,6 @@ echo "INFO      | $(date) | - <outputPHYLIP> option = ${MY_OUTPUT_PHYLIP_SWITCH}
 
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 checkMachineType
 

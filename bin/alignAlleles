@@ -28,7 +28,6 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the functionality in this boilerplate. This script will fail if they can
 # not be found.
 # -----------------------------------
-
 UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
@@ -40,7 +39,6 @@ fi
 
 # Source shared functions and variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -140,8 +138,6 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | alignAlleles, v1.0.4 December 2020                             " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH"
-
-######################################## START ###########################################
 echo "INFO      | $(date) | Starting alignAlleles analysis... " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_LOGFILE_SWITCH"
 echo "INFO      | $(date) | # Step #1: Set up workspace, check machine type, and determine output file settings. " | tee -a "$MY_LOGFILE_SWITCH"
