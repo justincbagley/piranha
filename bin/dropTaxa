@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: dropTaxa.sh                                                                      #
-  VERSION="v1.1.0"                                                                       #
+  VERSION="v1.1.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Apr 5 23:48:03 CDT 2020.                        #
-# Last update: April 19, 2020                                                            #
+# Last update: December 19, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -17,6 +17,11 @@
 # SHELL SCRIPT THAT AUTOMATES REMOVING TAXA FROM SEQUENTIAL, MULTI-INDIVIDUAL FASTA OR   #
 # PHYLIP-FORMATTED DNA SEQUENCE ALIGNMENTS, STARTING FROM A LIST                         #
 #                                                                                        #
+##########################################################################################
+# DESIRED USAGE:
+# dropTaxa -i <inputFile> | -m1 -f <fileType> -t <taxonList> 
+# where -i is single input and -f and -t are mandatory, OR -m1 indicates multiple input files 
+# of type specified by -f, and -t is also mandatory
 ##########################################################################################
 
 # Provide a variable with the location of this script.
@@ -127,17 +132,13 @@ export gemDependencies=()
 
 
 
-# DESIRED USAGE:
-# dropTaxa -i <inputFile> | -m1 -f <fileType> -t <taxonList> 
-# where -i is single input and -f and -t are mandatory, OR -m1 indicates multiple input files 
-# of type specified by -f, and -t is also mandatory
 dropTaxa () {
 
 ######################################## START ###########################################
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | dropTaxa, v1.1.0 April 2020                                    "
+echo "INFO      | $(date) | dropTaxa, v1.1.1 December 2020                                 "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -158,7 +159,7 @@ fi
 ############ PROCESS TAXON LIST FILE <taxonList> AND MAKE IT CONFORM TO SED FORMAT, WHILE SAVING
 ############ COPY OF ORIGINAL
 if [[ -s "$MY_TAXON_LIST" ]]; then
-	cp "$MY_TAXON_LIST" "$MY_TAXON_LIST"-COPY ;
+	cp "$MY_TAXON_LIST" "$MY_TAXON_LIST".backup ;
 #
 	if [[ "${machine}" = "Mac" ]]; then
 		sed -i.bak 's/\ /\_/g; s/\-/\\\-/g; s/\_/\\\_/g; s/\./\_/g' "$MY_TAXON_LIST" ;
