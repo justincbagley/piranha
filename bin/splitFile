@@ -32,7 +32,6 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the functionality in this boilerplate. This script will fail if they can
 # not be found.
 # -----------------------------------
-
 UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
@@ -42,10 +41,8 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -56,7 +53,6 @@ else
   echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
   exit 1
 fi
-
 
 # trapCleanup Function
 # -----------------------------------
@@ -144,14 +140,11 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | splitFile, v1.1.1 December 2020                                " | tee -a "$MY_LOGFILE_SWITCH" ;
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      " | tee -a "$MY_LOGFILE_SWITCH" ;
 echo "INFO      | $(date) |----------------------------------------------------------------" | tee -a "$MY_LOGFILE_SWITCH" ;
-
-######################################## START ###########################################
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting splitFile script... " | tee -a "$MY_LOGFILE_SWITCH" ;
 	echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. " | tee -a "$MY_LOGFILE_SWITCH" ;
 fi
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-#USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
 checkMachineType
 
