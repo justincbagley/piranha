@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  export PIRANHA_VERSION="v1.1.6"                                                        #
+  export PIRANHA_VERSION="v1.1.7"                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: December 15, 2020                                                         #
+# Last update: December 20, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -154,7 +154,7 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUN
 fi
 
 echo "
-piranha v1.1.6, December 2020  (main script for PIrANHA v0.4a4, update Dec 15 00:15:01 CST 2020)                    "
+piranha v1.1.7, December 2020  (main script for PIrANHA v0.4a4, update Dec 20 21:04:08 CST 2020)                "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -281,6 +281,8 @@ geneCounter            Shell script function that counts and summarizes the numb
                        taxon-species assignment file.
 getBootTrees           Function that automates organizing bootstrap trees output by RAxML runs conducted in 
                        current working directory using the MAGNET program within PIrANHA.
+getDropTaxa            Function to create drop taxon list given lists of a) all taxa and b) a subset of taxa to
+                       keep.
 getTaxonNames          Utility function that extracts tip taxon names from sequences present in one or multiple 
                        PHYLIP DNA sequence alignments in current directory, using information on maximum taxon 
                        sampling level from user.
@@ -572,7 +574,7 @@ unset options
 while [[ ${1} = -?* ]]; do
   case ${1} in
     -i|--init) shift; source "${SCRIPT_PATH}/completions/init.sh"; exit 0 ;;
-    -s|--shortlist) echo "2logeB10.r alignAlleles AnouraNEXUSPrepper assembleReads batchRunFolders BEAST_logThinner BEAST_PSPrepper BEASTPostProc BEASTReset BEASTRunner calcAlignmentPIS completeConcatSeqs completeSeqs concatenateSeqs concatSeqsPartitions dadiPostProc dadiRunner dadiUncertainty dropRandomHap dropTaxa ExaBayesPostProc FASTA2PHYLIP FASTA2VCF FASTAsummary fastSTRUCTURE geneCounter getBootTrees getTaxonNames indexBAM list MAGNET makePartitions Mega2PHYLIP mergeBAM MLEResultsProc MrBayesPostProc NEXUS2MultiPHYLIP NEXUS2PHYLIP nQuireRunner PFSubsetSum phaseAlleles PHYLIP2FASTA phylip2fasta.pl PHYLIP2Mega PHYLIP2NEXUS PHYLIP2PFSubsets PHYLIPcleaner PHYLIPsubsampler PHYLIPsummary PhyloMapperNullProc phyNcharSumm pyRAD2PartitionFinder pyRADLocusVarSites RAxMLRunChecker RAxMLRunner renameForStarBeast2 renameTaxa RogueNaRokRunner RYcoder SNAPPRunner SpeciesIdentifier splitFASTA splitFile splitPHYLIP taxonCompFilter treeThinner trimSeqs vcfSubsampler shortlist"; exit 0 ;;
+    -s|--shortlist) echo "2logeB10.r alignAlleles AnouraNEXUSPrepper assembleReads batchRunFolders BEAST_logThinner BEAST_PSPrepper BEASTPostProc BEASTReset BEASTRunner calcAlignmentPIS completeConcatSeqs completeSeqs concatenateSeqs concatSeqsPartitions dadiPostProc dadiRunner dadiUncertainty dropRandomHap dropTaxa ExaBayesPostProc FASTA2PHYLIP FASTA2VCF FASTAsummary fastSTRUCTURE geneCounter getBootTrees getDropTaxa getTaxonNames indexBAM list MAGNET makePartitions Mega2PHYLIP mergeBAM MLEResultsProc MrBayesPostProc NEXUS2MultiPHYLIP NEXUS2PHYLIP nQuireRunner PFSubsetSum phaseAlleles PHYLIP2FASTA phylip2fasta.pl PHYLIP2Mega PHYLIP2NEXUS PHYLIP2PFSubsets PHYLIPcleaner PHYLIPsubsampler PHYLIPsummary PhyloMapperNullProc phyNcharSumm pyRAD2PartitionFinder pyRADLocusVarSites RAxMLRunChecker RAxMLRunner renameForStarBeast2 renameTaxa RogueNaRokRunner RYcoder SNAPPRunner SpeciesIdentifier splitFASTA splitFile splitPHYLIP taxonCompFilter treeThinner trimSeqs vcfSubsampler shortlist"; exit 0 ;;
     -f|--func) shift; FUNCTION_TO_RUN="$1" ;;
     -a|--args) shift; FUNCTION_ARGUMENTS="$*" ;;
     -o|--output) shift; USER_OUTPUT_DIR="$1" ;;
