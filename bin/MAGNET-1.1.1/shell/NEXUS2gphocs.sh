@@ -9,7 +9,7 @@
   VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: December 11, 2020                                                         #
+# Last update: December 21, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -152,27 +152,27 @@ checkMachineType
 
 
 ############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
-##--Extract charset info from sets block at end of NEXUS file: 
+# Extract charset info from sets block at end of NEXUS file: 
 	MY_NEXUS_CHARSETS="$(egrep "charset|CHARSET" "$MY_NEXUS" | \
 	awk -F"=" '{print $NF}' | sed 's/\;/\,/g' | \
 	awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}' | \
 	sed 's/\,/\,'$CR'/g' | sed 's/^\ //g')";
 
-##--Count number of loci present in the NEXUS file, based on number of charsets defined.
-##--Also get corrected count starting from 0 for numbering loci below...
+# Count number of loci present in the NEXUS file, based on number of charsets defined.
+# Also get corrected count starting from 0 for numbering loci below...
 	MY_NLOCI="$(echo "$MY_NEXUS_CHARSETS" | wc -l | sed 's/\ //g')";
 	MY_CORR_NLOCI="$(calc "$MY_NLOCI" - 1)";
 
-##--This is the base name of the original nexus file, so you have it. This WILL work regardless of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
+# This is the base name of the original nexus file, so you have it. This WILL work regardless of whether the NEXUS filename extension is written in lowercase or in all caps, ".NEX".
 	MY_NEXUS_BASENAME="$(echo "$MY_NEXUS" | sed 's/\.\///g; s/\.[A-Za-z]\{3\}$//g')";
 
-##--Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
-##--However, if alignment is too long (>100,000 bp), then need to convert to fasta using my 
-##--script and then wrap to 60 characters with fold function (as suggested at stackexchange
-##--post URL: https://unix.stackexchange.com/questions/25173/how-can-i-wrap-text-at-a-certain-column-size).
-##--If this conversion failes because the alignment is too long, then the code to follow 
-##--will have nothing to work with. So, I am here adding a conditional quit if the fasta
-##--file is not generated.
+# Convert data file from NEXUS to fasta format using bioscripts.convert v0.4 Python package:
+# However, if alignment is too long (>100,000 bp), then need to convert to fasta using my 
+# script and then wrap to 60 characters with fold function (as suggested at stackexchange
+# post URL: https://unix.stackexchange.com/questions/25173/how-can-i-wrap-text-at-a-certain-column-size).
+# If this conversion failes because the alignment is too long, then the code to follow 
+# will have nothing to work with. So, I am here adding a conditional quit if the fasta
+# file is not generated.
 
 #---------ADD IF/THEN CONDITIONAL AND MY OWN NEXUS2fasta SCRIPT HERE!!!!----------#
 
@@ -191,7 +191,7 @@ checkMachineType
 
 ############ STEP #3: PUT COMPONENTS OF ORIGINAL NEXUS FILE AND THE FASTA FILE TOGETHER TO
 ############ MAKE A G-PhoCS-FORMATTED DATA FILE
-##--Make top (first line) of the G-Phocs format file, which should have the number of loci on the first line:
+# Make top (first line) of the G-Phocs format file, which should have the number of loci on the first line:
 echo "$MY_NLOCI" | sed 's/[\ ]*//g' > gphocs_top.txt
 
 echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
@@ -204,9 +204,9 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 			export setLower="$(echo "$j" | sed 's/\-.*$//g')";
 			export setUpper="$(echo "$j" | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
 
-			**/selectSites.pl -s "$charRange" "$MY_FASTA" > ./sites.fasta;
+			**/selectSites.pl -s "$charRange" "$MY_FASTA" > ./sites.fasta ;
 			
-			**/fasta2phylip.pl ./sites.fasta > ./sites.phy;
+			**/fasta2phylip.pl ./sites.fasta > ./sites.phy ;
 
 			##--Need to make sure there is a space between the tip taxon name (10 characters as output
 			##--by the fasta2phylip.pl Perl script) and the corresponding sequence, for all tips. Use
