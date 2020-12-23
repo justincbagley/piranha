@@ -279,6 +279,36 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[  
 #				sed -i '/\ [\-\?]*$/d' "$i" ;
 			fi
 				
+
+				# Remove gap sites: remove columns consisting of all gap '-' characters.
+				# --------------------------------------------------
+				# If .phy file has gaps in alignment, then call rmGapSites.R R script to 
+				# remove all column positions with gaps from alignment and output new, gapless 
+				# PHYLIP file named "./sites_nogaps.phy". If PHYLIP $i does not have gaps, 
+				# then go to next line of loop. 
+				# 
+				# First, copy PHYLIP $i to a holding file named 'sites.phy':
+				cp "$i" ./sites.phy ;
+
+				# Second, create a temporary file containing all lines in sites.phy with the 
+				# gap character, as a test:
+				grep -n "-" ./sites.phy > ./gaptest.tmp ;
+				
+				# Next, we test for nonzero testfile, indicating presence of gaps in $j, 
+				# using UNIX test operator "-s" (returns true if file size is not zero). 
+				# If fails, cat sites.phy into file with same name as nogaps file that
+				# is output by rmGapSites.R and move forward:
+				if [[ -s ./gaptest.tmp ]]; then
+					echo "Removing column sites in locus${count} with gaps. "
+					R CMD BATCH **/rmGapSites.R
+				else
+			   		echo ""
+			   		cat ./sites.phy > ./sites_nogaps.phy ;
+				fi
+
+
+
+
 			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
 			MY_CORR_PHY_NLINES="$(calc "$MY_PHY_NLINES" - 1)" ;
 		
@@ -775,6 +805,7 @@ fi
 #        exit 1 ;;
 #   esac
 # done
+
 
 ################################ END OPTIONS AND USAGE ###################################
 

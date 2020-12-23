@@ -9,7 +9,7 @@
   VERSION="v1.2.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
-# Last update: December 16, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -178,7 +178,7 @@ fi
 				MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
 				## ^^^ "MY_PHYLIP_LENGTH" is number of lines comprised by sequence and EOF lines.
 			
-				tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
+				tail -n"$MY_BODY_LENGTH" ./phylip.tmp > ./sequences.tmp;
 			
 				MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g' | sed 's/[\]*//g')";
 				MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g' | sed 's/[\]*//g' | sed 's/\ //g')";
@@ -240,7 +240,7 @@ fi
 						MY_BODY_LENGTH="$(calc $MY_PHYLIP_LENGTH - 1)";
 						## ^^^ "MY_BODY_LENGTH" is number of lines comprised by sequence and eof lines.
 					
-						tail -n$MY_BODY_LENGTH ./phylip.tmp > ./sequences.tmp;
+						tail -n"$MY_BODY_LENGTH" ./phylip.tmp > ./sequences.tmp;
 					
 						MY_NTAX="$(head -n1 ./phylip.tmp | sed 's/\ [0-9]*//g' | sed 's/[\]*//g')";
 						MY_NCHAR="$(head -n1 ./phylip.tmp | sed 's/^[0-9]*\ //g' | sed 's/[\]*//g' | sed 's/\ //g')";
@@ -338,6 +338,8 @@ echo ""
 
 }
 
+
+############################### BEGIN OPTIONS AND USAGE ##################################
 
 
 ############ CREATE USAGE & HELP TEXTS
@@ -452,7 +454,6 @@ fi
 	fi
 #
 
-
 # ############ PARSE THE OPTIONS
 # while getopts 'i:m:k:v:' opt ; do
 #   case $opt in
@@ -473,6 +474,9 @@ fi
 # 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

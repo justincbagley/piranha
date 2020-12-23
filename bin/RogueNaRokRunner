@@ -258,6 +258,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename "$0") [OPTION]...
@@ -365,6 +367,9 @@ fi
 #		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
 #	fi
 #
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

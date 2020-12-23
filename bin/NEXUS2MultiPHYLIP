@@ -9,7 +9,7 @@
   VERSION="v1.6.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, February 24, 2019.                              #
-# Last update: April 17, 2020                                                            #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -203,15 +203,15 @@ fi
 	# "
 	# and the final line of matrix containing sequence data (by subtraction):
 	MY_ALIGN_ENDLINE="$(grep -n 'end\|END\|End' "$MY_NEXUS" | head -n1 | sed 's/\:.*//g')";
-	MY_LAST_ALIGN_LINE="$(calc $MY_ALIGN_ENDLINE - 2)";
-	MY_ALIGN_ENDLINE_MINUSONE="$(calc $MY_ALIGN_ENDLINE - 1)";
+	MY_LAST_ALIGN_LINE="$(calc "$MY_ALIGN_ENDLINE" - 2)";
+	MY_ALIGN_ENDLINE_MINUSONE="$(calc "$MY_ALIGN_ENDLINE" - 1)";
 	#
 	# Get charset start/end lines:
-	MY_CHARSET_STARTLINE="$(grep -n 'charset\|CHARSET\|Charset' $MY_NEXUS | head -n1 | sed 's/\:.*//g')";
+	MY_CHARSET_STARTLINE="$(grep -n 'charset\|CHARSET\|Charset' "$MY_NEXUS" | head -n1 | sed 's/\:.*//g')";
 	#echo "$MY_CHARSET_STARTLINE"
 	MY_CHARSET_STARTLINE_MINUSONE="$(calc $MY_CHARSET_STARTLINE - 1)";
 	#echo "$MY_CHARSET_STARTLINE_MINUSONE"
-	MY_CHARSET_ENDLINE="$(grep -n 'charset\|CHARSET\|Charset' $MY_NEXUS | tail -n1 | sed 's/\:.*//g')";
+	MY_CHARSET_ENDLINE="$(grep -n 'charset\|CHARSET\|Charset' "$MY_NEXUS" | tail -n1 | sed 's/\:.*//g')";
 	#echo "$MY_CHARSET_ENDLINE"
 	MY_CHARSET_ENDLINE_PLUSONE="$(calc $MY_CHARSET_ENDLINE + 1)";
 	#echo "$MY_CHARSET_ENDLINE_PLUSONE"
@@ -512,6 +512,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename "$0") [OPTION]...
@@ -657,6 +659,9 @@ fi
 # 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

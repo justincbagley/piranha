@@ -459,6 +459,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="
@@ -609,8 +611,6 @@ fi
 	fi
 #
 
-
-
 # ############ PARSE THE OPTIONS
 # while getopts 'i:m:p:f:' opt ; do
 #   case $opt in
@@ -631,6 +631,9 @@ fi
 # 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

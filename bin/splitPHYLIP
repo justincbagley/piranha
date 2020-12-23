@@ -330,6 +330,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 # ############ SCRIPT OPTIONS
 # ## OPTION DEFAULTS ##
@@ -530,6 +532,9 @@ fi
 # 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

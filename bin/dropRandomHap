@@ -618,6 +618,8 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 # INPUT_PHYLIP_FILE=NULL
@@ -800,7 +802,6 @@ fi
 	fi
 #
 
-
 # ############ PARSE THE OPTIONS
 # while getopts 't:o:d:' opt ; do
 #   case $opt in
@@ -820,7 +821,10 @@ fi
 # 
 # # Store the remaining part as arguments.
 # # args+=("$@")
- 
+
+
+################################ END OPTIONS AND USAGE ###################################
+
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##
