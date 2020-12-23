@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTA2PHYLIP.sh                                                                  #
-  export VERSION="v1.3.6"                                                                #
+  export VERSION="v1.3.7"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
-# Last update: December 18, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -136,7 +136,7 @@ FASTA2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.6 December 2020                             "
+echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.7 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -278,7 +278,7 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					perl -p -i -e 's/\>/\n\>/g' "$MY_FASTA" ;
 				
 					# Need empty line check here again:
-					if [[ "$(grep -n '^[\s]*$' $MY_FASTA | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+					if [[ "$(grep -n '^[\s]*$' "$MY_FASTA" | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 						sed -i.bak '/^[[:space:]]*$/d' "$MY_FASTA" ;
 						rm ./*.bak ;
 					fi
@@ -289,7 +289,7 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					# MY_EOF_METRIC="$( some way to search for '\n$' or '$\n$' on UNIX)   grep -h $'$\n$'  "
 				
 					# Count number of taxa/tips present in FASTA file:
-					MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')";
+					MY_NTAXA="$(grep -n '^>' "$MY_FASTA" | wc -l | perl -pe 's/^\ +//g')";
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 						echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 					fi
@@ -297,7 +297,7 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					# This is the base name of the original FASTA file, so you have it. This will work regardless 
 					# of whether the FASTA filename extension is written in lowercase or in all caps, as 
 					# abbreviated (e.g. ".fa", ".fas", ".FAS") or in full (e.g. ".fasta", ".FASTA").
-					MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{2,\}$//g')";
+					MY_FASTA_BASENAME="$(echo "$MY_FASTA" | sed 's/\.\///g; s/\.[A-Za-z]\{2,\}$//g')";
 				
 					# Count corrected number of characters in DNA alignment
 					MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
@@ -314,9 +314,9 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
 				
 					sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
-					MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+					MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 					sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
-					#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+					#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA"  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 				
 					perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
 					# Commented out because of 'line too long' error on Oct 21, 2019:
@@ -350,7 +350,7 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					# convert it, so use file as is.
 				
 					# Count number of taxa/tips present in FASTA file:
-					MY_NTAXA="$(grep -n '^>' $MY_FASTA | wc -l | perl -pe 's/^\ +//g')"
+					MY_NTAXA="$(grep -n '^>' "$MY_FASTA" | wc -l | perl -pe 's/^\ +//g')"
 					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 						echo "INFO      | $(date) |      Number of taxa: $MY_NTAXA "
 					fi
@@ -358,7 +358,7 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					# This is the base name of the original FASTA file, so you have it. This will work regardless 
 					# of whether the FASTA filename extension is written in lowercase or in all caps, as 
 					# abbreviated (".fas", ".FAS") or in full (".fasta", ".FASTA").
-					MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')";
+					MY_FASTA_BASENAME="$(echo "$MY_FASTA" | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')";
 				
 					# Count corrected number of characters in DNA alignment
 					MY_INITIAL_NCHAR="$(head -n2 "$MY_FASTA" | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
@@ -375,9 +375,9 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
 				
 					sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
-					MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+					MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 					sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
-					#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+					#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA"  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 					
 					perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
 					#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
@@ -525,7 +525,9 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					# files.
 					mv "$MY_FASTA" ./orig_fasta_files/ ;
 					mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-					if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+					if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+						rm ./*.tmp ; 
+					fi
 				fi
 				
 				
@@ -547,7 +549,7 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					# This is the base name of the original FASTA file, so you have it. This will work regardless 
 					# of whether the FASTA filename extension is written in lowercase or in all caps, as 
 					# abbreviated (".fas", ".FAS") or in full (".fasta", ".FASTA").
-					MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')";
+					MY_FASTA_BASENAME="$(echo "$MY_FASTA" | sed 's/\.\///g; s/\.[A-Za-z]\{3,\}$//g')";
 				
 					# Count corrected number of characters in DNA alignment
 					MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
@@ -582,7 +584,9 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_FASTA" != "NULL" ]]; then
 					# files.
 					mv "$MY_FASTA" ./orig_fasta_files/ ;
 					mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-					if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+					if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+						rm ./*.tmp ; 
+					fi
 				fi
 			fi
 		if [[ -s ./output/fileOrder.list.txt ]]; then rm ./output/fileOrder.list.txt ; fi
@@ -766,9 +770,9 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 						perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
 					
 						sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
-						MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+						MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 						sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
-						#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+						#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 					
 						perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
 		
@@ -829,9 +833,9 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 						perl -p -i -e 's/\>(.*)\n/$1\ /g' "$MY_FASTA" ;
 					
 						sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" > ./taxonLabels.tmp ;
-						MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' $MY_FASTA | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+						MY_TAX_LABELS="$(sed 's/^\([A-Z\_a-z0-9\-]*\)[\ ]*.*/\1/g' "$MY_FASTA" | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 						sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA" > ./fastaSeqs.tmp ;
-						#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' $MY_FASTA  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
+						#MY_SEQUENCES="$(sed 's/^[A-Z\_a-z0-9\-]*[\ ]*\(.*\)/\1/g' "$MY_FASTA"  | sed 's/$/\ /g' | perl -pe 's/\n//g')";
 						
 						perl -p -i -e 's/(..)$/$1\ \ x/g' ./taxonLabels.tmp ;
 						#column -t ./taxonLabels.tmp > tmp; mv tmp ./taxonLabels.tmp ;
@@ -845,7 +849,9 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 				
 						## Remove orig FASTA file and delete temporary files.
 						rm "$MY_FASTA" ;
-						if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+						if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+							rm ./*.tmp ; 
+						fi
 					
 					fi
 				
@@ -949,7 +955,7 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 						# This is the base name of the original FASTA file, so you have it. This will work regardless 
 						# of whether the FASTA filename extension is written in lowercase or in all caps, as 
 						# abbreviated (e.g. ".fa", ".fas", ".FAS") or in full (e.g. ".fasta", ".FASTA").
-						MY_FASTA_BASENAME="$(echo $MY_FASTA | sed 's/\.\///g; s/\.[A-Za-z]\{2,\}$//g')";
+						MY_FASTA_BASENAME="$(echo "$MY_FASTA" | sed 's/\.\///g; s/\.[A-Za-z]\{2,\}$//g')";
 					
 						# Count corrected number of characters in DNA alignment
 						MY_INITIAL_NCHAR="$(head -n2 ./fasta.tmp | tail -n+2 | wc -c | sed 's/\ //g' | perl -pe 's/\t//g')";
@@ -984,7 +990,9 @@ if [[ "$STARTING_FILE_TYPE" = "2" ]]; then
 						## files.
 						mv "$MY_FASTA" ./orig_fasta_files/ ;
 						mv "$MY_FASTA_BASENAME".phy ./phylip_files/ ;
-						if [[ ! -z ./*.tmp ]]; then rm ./*.tmp ; fi
+						if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+							rm ./*.tmp ; 
+						fi
 					
 					fi
 					
@@ -1356,81 +1364,6 @@ fi
 	fi
 #
 
-# 	cp ./args.txt ./args1.txt ;
-# 
-# 	## Get input file name:
-# 	#MY_INPUT="$(cat args1.txt | sed 's/.*\-i\ //g; s/\(\.fasta\).*/\1/g')";
-# 	export MY_INPUT="$(cat ./args1.txt | sed 's/.*\ \-i\ //g; s/\ \-i//g; s/\ \-k.*//g; s/\ \-o.*//g; s/\ \-v.*//g')";
-# 	
-# 	## As a precaution, conditionally fix $MY_FASTA filename so that it contains no "-" (dash/hyphen) 
-# 	## or " " (space) characters, if needed:
-# 	MY_HYPHEN_CHECK="$(echo "$MY_INPUT" | grep -h '\-' | wc -l | sed 's/\ //g')";
-# 	MY_SPACE_CHECK="$(echo "$MY_INPUT" | grep -h '\ ' | wc -l | sed 's/\ //g')";
-# 	if [[ "$MY_HYPHEN_CHECK" != "0" ]] || [[ "$MY_SPACE_CHECK" != "0" ]] || [[ "$MY_HYPHEN_CHECK" = "1" ]] || [[ "$MY_SPACE_CHECK" = "1" ]]; then
-# 		if [[ -s "$MY_INPUT" ]]; then 
-# 			echo "WARNING!  | $(date) |      Hyphens or spaces detected in input FASTA file name. "
-# 			echo "INFO      | $(date) |      Attempting to fix file name... "
-# 			mv "$MY_INPUT" "$(echo "$MY_INPUT" | sed 's/\-/\_/g; s/\ /\_/g')";
-# 		fi
-# 	fi
-# 
-# 	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
-# 	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
-# 
-# 
-# ############ MANUALLY PARSE THE OPTIONS FROM ARGS
-# 
-# ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
-# 	if [[  "$(grep -h '\-f' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-# 		STARTING_FILE_TYPE=1 ;
-# 	else 
-# 		MY_ARG="$(grep -h '\-f' ./args.txt | perl -pe 's/\-f//g' | perl -pe 's/\ //g')";
-# 		STARTING_FILE_TYPE="$MY_ARG" ;
-# 	fi
-# #
-# 	if [[  "$(grep -h '\-i' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-# 		MY_FASTA=NULL ;
-# 	else 
-# 		if [[ "$MY_HYPHEN_CHECK" != "0" ]] || [[ "$MY_SPACE_CHECK" != "0" ]] || [[ "$MY_HYPHEN_CHECK" = "1" ]] || [[ "$MY_SPACE_CHECK" = "1" ]]; then
-# 			export MY_FASTA="$(echo "$MY_INPUT" | sed 's/\-/\_/g; s/\ /\_/g')";
-# 		else
-# 			MY_ARG="$(grep -h '\-i' ./args.txt | perl -pe 's/\-i//g' | perl -pe 's/\ //g')";
-# 			MY_FASTA="$MY_ARG" ;
-# 		fi
-# 	fi
-# #
-# 	if [[  "$(grep -h '\-k' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-# 		MY_KEEP_FASTA_SWITCH=0 ;
-# 	else 
-# 		MY_ARG="$(grep -h '\-k' ./args.txt | perl -pe 's/\-k//g' | perl -pe 's/\ //g')";
-# 		MY_KEEP_FASTA_SWITCH="$MY_ARG" ;
-# 	fi
-# #
-# 	if [[  "$(grep -h '\-o' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-# 		MY_OUTPUT_FILE_SWITCH=NULL ;
-# 	else 
-# 		MY_ARG="$(grep -h '\-o' ./args.txt | perl -pe 's/\-o//g' | perl -pe 's/\ //g')";
-# 		MY_OUTPUT_FILE_SWITCH="$MY_ARG" ;
-# 	fi
-# #
-# 	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-# 		MY_VERBOSE_OUT_SWITCH=0 ;
-# 	else 
-# 		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
-# 		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
-# 	fi
-# #
-# 	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-# 		MY_DEBUG_MODE_SWITCH=0 ;
-# 	else 
-# 		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
-# 		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
-# 	fi
-# 	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-# 		MY_DEBUG_MODE_SWITCH=0 ;
-# 	else 
-# 		MY_DEBUG_MODE_SWITCH=1 ;
-# 	fi
 
 # ############ PARSE THE OPTIONS
 # while getopts 'k:o:v:' opt ; do
