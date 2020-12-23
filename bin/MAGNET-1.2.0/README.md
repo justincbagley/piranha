@@ -70,17 +70,18 @@ MAGNET v1.2.0 is a software package composed of `shell`, `R`, and Perl scripts a
 -->
 -   **bioscripts.convert v0.4 Python package**
     -   Description: 
-        *   http://www.agapow.net/software/bioscripts.convert
+        -   http://www.agapow.net/software/bioscripts.convert
     -   Installation: 
-        *   Python Package Index: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for `NEXUS2gphocs.sh`).
-        *   `pip` install code: `pip install bioscripts.convert==0.4`
+        -   Python Package Index: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for `NEXUS2gphocs.sh`).
+        -   `pip` install code: `pip install bioscripts.convert==0.4`
+
 -   **RAxML - Randomized Axelerated Maximum Likelihood**
     -   Description:
-        *   The Exelixis Lab RAxML page - https://cme.h-its.org/exelixis/web/software/raxml/
+        -   The Exelixis Lab RAxML page - https://cme.h-its.org/exelixis/web/software/raxml/
     -   Installation: 
-        *   Source code: https://github.com/stamatak/standard-RAxML
-        *   Conda install page: https://anaconda.org/bioconda/raxml
-        *   Conda install code: `conda install -c bioconda raxml` (requires one of the Anaconda data science/Python distribution platform: https://www.anaconda.com/products/individual)
+        -   Source code: https://github.com/stamatak/standard-RAxML
+        -   Conda install page: https://anaconda.org/bioconda/raxml
+        -   Conda install code: `conda install -c bioconda raxml` (requires one of the Anaconda data science/Python distribution platform: https://www.anaconda.com/products/individual)
 
 Users must install all software not included in MAGNET, and ensure that it is available via the command line on their local machine. On the user's local machine, Perl should be available by simply typing "`Perl`" or "`perl`" at the command line; Python should be available by typing "`python`" at the command line; and bioscripts.convert package should be available by typing "`convbioseq`" at the command line. Also, RAxML should be compiled using SSE3 install commands, so that RAxML can be called by simply typing "`raxmlHPC-SSE3`" on the command line. For detailed instructions for setting up RAxML this way, refer to the newest RAxML user manual (available at: http://sco.h-its.org/exelixis/resource/download/NewManual.pdf).
 
@@ -94,7 +95,7 @@ The **_second format_** that is supported is that of a single datafile in G-Phoc
 
 For genomic data in aligned sequence format, such as aligned RAD tags (e.g. ddRAD-seq contigs) or other SNP data derived from genotyping-by-sequencing (GBS) methods, the user should assemble the data, call SNPs, and output SNP sequence data files in '.gphocs' or '.nex' format prior to running MAGNET. This can easily be done by running `pyRAD` or `ipyrad` (Eaton, 2014) while calling for output in all formats (you'll get '.gphocs' and '.nex' files). 
 
-However, this may not always be possible, and .gphocs format is not yet among the most popular file formats in phylogenomics/population genomics. Thus, I have added a `NEXUS2gphocs.sh` shell script utility within MAGNET (in the "shell" folder) that will convert a sequential NEXUS file into .gphocs format for you. An example NEXUS file "example.nex" is included in the distribution. Feel free to use the `NEXUS2gphocs.sh` utility script independently of MAGNET to convert from NEXUS to .gphocs format. However, when doing this, *make sure to follow the usage guidelines below*.
+However, this may not always be possible, and .gphocs format is not yet among the most popular file formats in phylogenomics/population genomics. Thus, I have added a `NEXUS2gphocs.sh` shell script utility within MAGNET (in the "shell" folder) that will convert a sequential NEXUS file into .gphocs format for you. An example NEXUS file "example.nex" is included in the distribution. Feel free to use the `NEXUS2gphocs.sh` utility script independently of MAGNET to convert from NEXUS to .gphocs format. However, when doing this, _make sure to follow the usage guidelines below_.
 
 The **_third format_** that is supported in MAGNET is that of DNA sequence alignments for multiple loci contained in separate PHYLIP files for each locus. 
 
