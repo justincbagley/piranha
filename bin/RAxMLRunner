@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: RAxMLRunner.sh                                                                   #
-  VERSION="v1.5.1"                                                                       #
+  VERSION="v1.5.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 19 Aug 2016 00:33:27 -0300.                     #
-# Last update: July 31, 2020                                                             #
+# Last update: December 22, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -134,108 +134,121 @@ RAxMLRunner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | RAxMLRunner, v1.5.1 July 2020                                  "
+echo "INFO      | $(date) | RAxMLRunner, v1.5.2 December 2020                              "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting RAxMLRunner pipeline... "
-echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and examine directory contents. "
-############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-echoShortPWD
-checkMachineType
 
-######
-## START DEBUG MODE
-if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+# --------------------------------------------------
+# -- STEP #1: SETUP.
+# --------------------------------------------------
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #1: Set up workspace, check machine type, and examine directory contents. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- "
 
+	# SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+	# --------------------------------------------------
+	echoShortPWD
+	checkMachineType
 
-##### Setup and run check on the number of run folders in present working directory:
+	# START DEBUG MODE, IF CALLED
+	# --------------------------------------------------
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+	# EVALUATE WORKING DIRECTORY
+	# --------------------------------------------------
+	# Setup and run check on the number of run folders in present working directory:
+	# --------------------------------------------------
 	MY_DIRCOUNT="$(find . -type d | wc -l)";
-	MY_NUM_RUN_FOLDERS="$(calc $MY_DIRCOUNT - 1)";
+	MY_NUM_RUN_FOLDERS="$(calc "$MY_DIRCOUNT" - 1)";
 	echo "INFO      | $(date) | Found ${MY_NUM_RUN_FOLDERS} run folders present in the current working directory. "
 
-echo "INFO      | $(date) | Checking for 'raxml_runner.cfg' configuration file... "
-if [[ -f ./raxml_runner.cfg ]]; then 
-	echo "INFO      | $(date) | Configuration file check passed. Moving forward with .cfg file in current directory... "
-elif [[ ! -f ./raxml_runner.cfg ]]; then 
-	echo "WARNING   | $(date) | Configuration file check FAILED. Copying default .cfg file into current directory... "
-	cp "$CONFIG_FILE_LOCATION" . ;
-	echo "INFO      | $(date) | Please edit the default 'raxml_runner.cfg' configuration file just added so that \
-it includes all pertinent information (first 3 variables) before rerunning RAxMLRunner in this directory. "
-	echo "INFO      | $(date) | Quitting... "
-	safeExit ;
-fi
+	# CHECK FOR CONFIGURATION FILE ('raxml_runner.cfg')
+	# --------------------------------------------------
+	echo "INFO      | $(date) | Checking for 'raxml_runner.cfg' configuration file... "
+	if [[ -f ./raxml_runner.cfg ]]; then 
+		echo "INFO      | $(date) | Configuration file check PASSED. Moving forward with .cfg file in current directory... "
+	elif [[ ! -f ./raxml_runner.cfg ]]; then 
+		echo "WARNING   | $(date) | Configuration file check FAILED. Copying default .cfg file into current directory... "
+		cp "$CONFIG_FILE_LOCATION" . ;
+		echo "INFO      | $(date) | Please edit the default 'raxml_runner.cfg' configuration file just added so that is includes "
+		echo "INFO      | $(date) | all pertinent information (first 3 variables) before rerunning RAxMLRunner in this directory. "
+		echo "INFO      | $(date) | Quitting... "
+		safeExit ;
+	fi
 
+# --------------------------------------------------
+# -- STEP #2: MAKE BATCH SUBMISSION FILE.
+# --------------------------------------------------
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #2: Make batch submission file; move all run folders to supercomputer; and then check that" # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+	echo "INFO      | $(date) |            batch submission file was created. "
+	echo "INFO      | $(date) | ----------------------------------- "
+	# This step assumes that you have set up passowordless access to your supercomputer
+	# account (e.g. passwordless ssh access), by creating and organizing appropriate and
+	# secure public and private ssh keys on your machine and the remote supercomputer (by 
+	# secure, I mean you closed write privledges to authorized keys by typing "chmod u-w 
+	# authorized keys" after setting things up using ssh-keygen). This is VERY IMPORTANT
+	# as the following will not work without completing this process first. The following
+	# links provide a list of useful tutorials/discussions related to doing this:
+	#	* https://www.msi.umn.edu/support/faq/how-do-i-setup-ssh-keys
+	#	* https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/ 
+	#	* https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
 
-echo "INFO      | $(date) | Step #2: Make batch submission file; move all run folders to supercomputer; and then check that \
-batch submission file was created. "
-##--This step assumes that you have set up passowordless access to your supercomputer
-##--account (e.g. passwordless ssh access), by creating and organizing appropriate and
-##--secure public and private ssh keys on your machine and the remote supercomputer (by 
-##--secure, I mean you closed write privledges to authorized keys by typing "chmod u-w 
-##--authorized keys" after setting things up using ssh-keygen). This is VERY IMPORTANT
-##--as the following will not work without completing this process first. The following
-##--links provide a list of useful tutorials/discussions related to doing this:
-#	* https://www.msi.umn.edu/support/faq/how-do-i-setup-ssh-keys
-#	* https://coolestguidesontheplanet.com/make-passwordless-ssh-connection-osx-10-9-mavericks-linux/ 
-#	* https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
+	MY_SC_DESTINATION="$(grep -n "destination_path" ./raxml_runner.cfg | awk -F"=" '{print $NF}' | sed 's/\ //g')";  # This pulls out the correct destination path on the supercomputer from the "raxml_runner.cfg" configuration file in the working directory (generated/modified by user prior to running RAxMLRunner).
 
-	MY_SC_DESTINATION="$(grep -n "destination_path" ./raxml_runner.cfg | \
-	awk -F"=" '{print $NF}' | sed 's/\ //g')";				## This pulls out the correct destination path on the supercomputer from the "raxml_runner.cfg" configuration file in the working directory (generated/modified by user prior to running RAxMLRunner).
+	MY_SSH_ACCOUNT="$(grep -n "ssh_account" ./raxml_runner.cfg | awk -F"=" '{print $NF}' | sed 's/\ //g')";
 
-	MY_SSH_ACCOUNT="$(grep -n "ssh_account" ./raxml_runner.cfg | \
-	awk -F"=" '{print $NF}' | sed 's/\ //g')";
+	# Start making batch queue submission file by making just the top with correct shebang:
+	echo "#!/bin/bash
+" > sbatch_sub_top.txt ;
 
-	##--Start making batch queue submission file by making just the top with correct shebang:
-echo "#!/bin/bash
-" > sbatch_sub_top.txt
-
-echo "INFO      | $(date) | Starting copying run folders to supercomputer... note: this may display folder contents transferred rather than folder names. "
-(
-	for i in ./*/; do
-		FOLDERNAME="$(echo $i | sed 's/\.\///g')";
-		scp -r $i $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;			## Safe copy to remote machine.
-
-echo "cd $MY_SC_DESTINATION$FOLDERNAME
+	echo "INFO      | $(date) | Starting copying run folders to supercomputer... "
+	echo "INFO      | $(date) | Note: this may display folder contents transferred rather than folder names. "
+	(
+		for i in ./*/; do
+			if [[ "$i" != "./phylip_files/" ]] && [[ "$i" != "./orig_phylip/" ]] && [[ "$i" != "./bad_genes/" ]] && [[ "$i" != "./phylip/" ]] && [[ "$i" != "./fasta/" ]] && [[ "$i" != "./orig_fasta/" ]]; then
+				FOLDERNAME="$(echo "$i" | sed 's/\.\///g')";
+				scp -r $i $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;			# Safe copy to remote machine.
+				echo "cd $MY_SC_DESTINATION$FOLDERNAME
 sbatch RAxML_sbatch.sh
-#" >> ./cd_and_sbatch_commands.txt
+#" >> ./cd_and_sbatch_commands.txt ;
+			fi
+		done
+	)
 
-	done
-)
-
-##--Finish making batch queue submission file and name it "sbatch_sub.sh".
-echo "
+	# Finish making batch queue submission file and name it "sbatch_sub.sh".
+	echo "
 $MY_SC_PBS_WKDIR_CODE
 exit 0
-" > ./sbatch_sub_bottom.txt
+" > ./sbatch_sub_bottom.txt ;
 
-cat ./sbatch_sub_top.txt ./cd_and_sbatch_commands.txt ./sbatch_sub_bottom.txt > ./raxmlrunner_sbatch_sub.sh
+	cat ./sbatch_sub_top.txt ./cd_and_sbatch_commands.txt ./sbatch_sub_bottom.txt > ./raxmlrunner_sbatch_sub.sh ;
 
-##--More flow control. Check to make sure sbatch_sub.sh file was successfully created.
-if [ -f ./raxmlrunner_sbatch_sub.sh ]; then
-    echo "INFO      | $(date) | Batch queue submission file ('raxmlrunner_sbatch_sub.sh') successfully created. "
-else
-    echo "WARNING   | $(date) | Something went wrong. Batch queue submission file ('raxmlrunner_sbatch_sub.sh') not created. Exiting... "
-    exit
-fi
+	# More flow control. Check to make sure sbatch_sub.sh file was successfully created.
+	if [ -f ./raxmlrunner_sbatch_sub.sh ]; then
+	    echo "INFO      | $(date) | Batch queue submission file ('raxmlrunner_sbatch_sub.sh') successfully created. "
+	else
+	    echo "WARNING   | $(date) | Something went wrong. Batch queue submission file ('raxmlrunner_sbatch_sub.sh') not created. Exiting... "
+	    safeExit ;
+	fi
 
-echo "INFO      | $(date) | Step #3: Move batch submission file to supercomputer. "
-echo "INFO      | $(date) | Moving batch file to supercomputer... "
+	echo "INFO      | $(date) | Step #3: Move batch submission file to supercomputer. "
+	echo "INFO      | $(date) | Moving batch file to supercomputer... "
 
-##### Pull out the correct path to user's bin folder on the supercomputer from the "raxml_runner.cfg" configuration file.
-	MY_SC_BIN="$(grep -n "bin_path" ./raxml_runner.cfg | \
-	awk -F"=" '{print $NF}' | sed 's/\ //g')" ;
+	# Pull out the correct path to user's bin folder on the supercomputer from the "raxml_runner.cfg" configuration file.
+	MY_SC_BIN="$(grep -n "bin_path" ./raxml_runner.cfg | awk -F"=" '{print $NF}' | sed 's/\ //g')" ;
 
-echo "INFO      | $(date) | Also copying sbatch_sub_file to supercomputer..."
-scp ./raxmlrunner_sbatch_sub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION
+	echo "INFO      | $(date) | Also copying sbatch_sub_file to supercomputer..."
+	scp ./raxmlrunner_sbatch_sub.sh $MY_SSH_ACCOUNT:$MY_SC_DESTINATION ;
 
-
-echo "INFO      | $(date) | Step #4: Submit all RAxML jobs to the queue. "
-##--This is the key: using ssh to connect to supercomputer and execute the "raxmlrunner_sbatch_sub.sh"
-##--submission file created and moved into sc destination folder above. The batch qsub file
-##--loops through all run folders and submits all jobs/runs (sh scripts in each folder) to the 
-##--job queue. We do this (pass the commands to the supercomputer) using bash here document syntax 
-##--(as per examples on the following web page, URL: 
-##--https://www.cyberciti.biz/faq/linux-unix-osx-bsd-ssh-run-command-on-remote-machine-server/).
+	echo "INFO      | $(date) | Step #4: Submit all RAxML jobs to the queue. "
+	# This is the key: using ssh to connect to supercomputer and execute the "raxmlrunner_sbatch_sub.sh"
+	# submission file created and moved into sc destination folder above. The batch qsub file
+	# loops through all run folders and submits all jobs/runs (sh scripts in each folder) to the 
+	# job queue. We do this (pass the commands to the supercomputer) using bash here document syntax 
+	# (as per examples on the following web page, URL: 
+	# https://www.cyberciti.biz/faq/linux-unix-osx-bsd-ssh-run-command-on-remote-machine-server/).
 
 ssh $MY_SSH_ACCOUNT << HERE
 cd $MY_SC_DESTINATION
@@ -245,30 +258,38 @@ chmod u+x ./raxmlrunner_sbatch_sub.sh
 #
 exit
 HERE
+	echo "INFO      | $(date) | Finished copying run folders to supercomputer and submitting RAxML jobs to queue!!"
 
+# --------------------------------------------------
+# -- STEP #5: CLEAN UP WORKSPACE
+# --------------------------------------------------
+# Clean up workspace by removing temporary files generated during run. 
+# --------------------------------------------------
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #5: Clean up workspace by removing temporary files generated during run. "
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | Removing temporary files from local machine..."
 
-echo "INFO      | $(date) | Finished copying run folders to supercomputer and submitting RAxML jobs to queue!!"
+		if [[ -s ./sbatch_sub_top.txt ]; then rm ./sbatch_sub_top.txt ; fi ;
+		if [[ -s ./sbatch_sub_bottom.txt ]]; then rm ./sbatch_sub_bottom.txt ; fi ;
 
-echo "INFO      | $(date) | Step #5: Clean up temporary files generated during run. "
-echo "INFO      | $(date) | Removing temporary files from local machine..."
-############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
+	# Remove arguments file generated when parsing the options:
+	echo "INFO      | $(date) | Removing arguments file generated when parsing the options..."
 
-	if [[ -s ./sbatch_sub_top.txt ]; then rm ./sbatch_sub_top.txt ; fi
-	if [[ -s ./sbatch_sub_bottom.txt ]]; then rm ./sbatch_sub_bottom.txt ; fi
-	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
-	#rm ./cd_and_sbatch_commands.txt
+		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+		#rm ./cd_and_sbatch_commands.txt
 
-	##--Optional cleanup: remove batch submission script from bin folder on supercomputer account.
-	##--ssh $MY_SSH_ACCOUNT 'rm ~/bin/raxmlrunner_sbatch_sub.sh;' NOTE: path/to/bin may be different
-	##--on another user's account.
+		# Optional cleanup: remove batch submission script from bin folder on supercomputer account.
+		# ssh $MY_SSH_ACCOUNT 'rm ~/bin/raxmlrunner_sbatch_sub.sh;' NOTE: path/to/bin may be different
+		# on another user's account.
 
-echo "INFO      | $(date) | Done."
-echo "----------------------------------------------------------------------------------------------------------"
-echo ""
+	echo "INFO      | $(date) | Done."
+	echo "----------------------------------------------------------------------------------------------------------"
+	echo ""
 
-## END DEBUG MODE
-if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
-######
+	# END DEBUG MODE
+	# --------------------------------------------------
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 ##########################################################################################
 ######################################### END ############################################
@@ -276,10 +297,6 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
-
-############ SCRIPT OPTIONS
-## OPTION DEFAULTS ##
-# None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="Usage: $(basename "$0") [OPTION]...
@@ -358,27 +375,28 @@ fi
 ############ CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
 	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
 	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
-
 	ALL_MY_ARGUMENTS="$(echo "$@")"
-	echo "$ALL_MY_ARGUMENTS" > ./args.txt
-	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
-	#wc -l ./args.txt | perl -pe 's/\.\/args\.txt.*//g' | perl -pe 's/\ //g'
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt ;
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt ;
+	perl -p -i -e $'s/\-input/\-\-input/g' ./args.txt ;
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt ;
 
 
 ############ MANUALLY PARSE THE OPTIONS FROM ARGS
 
 ### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
-	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_DEBUG_MODE_SWITCH=0 ;
-	else 
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
 		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
 		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
 	fi
-	if [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
-		MY_DEBUG_MODE_SWITCH=0 ;
-	else 
-		MY_DEBUG_MODE_SWITCH=1 ;
-	fi
+#
+
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##

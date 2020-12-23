@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTAsummary.sh                                                                  #
-  VERSION="v1.1.5"                                                                       #
+  VERSION="v1.1.6"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
-# Last update: December 17, 2020                                                         #
+# Last update: December 21, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -132,23 +132,20 @@ FASTAsummary () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTAsummary, v1.1.5 December 2020                             "
+echo "INFO      | $(date) | FASTAsummary, v1.1.6 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting FASTAsummary analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
-############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
-###### Set working directory and filetypes as different variables:
-echoShortUSPWD
-
 if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
 	echo "INFO      | $(date) | Input file: $INPUT_FILE "
 elif [[ "$INPUT_FASTA_FILE" = "NULL" ]]; then
-	echo "INFO      | $(date) | Input file: Multiple FASTA alignments in current directory "
+	echo "INFO      | $(date) | Input: Multiple FASTA alignments in current directory "
 fi
-
 echo "INFO      | $(date) | Examining current directory, setting variables... "
-
+############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
+###### Set working directory and filetypes as different variables:
+echoShortPWD
 checkMachineType
 
 ######
