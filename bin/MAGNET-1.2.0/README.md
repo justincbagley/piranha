@@ -101,10 +101,10 @@ The **_third format_** that is supported in MAGNET is that of DNA sequence align
 
 Users must specify the input fileType with the `-f` flag. Options are as follows: 
 
-*    `1` for a single NEXUS-formatted input file (<inputNEXUS>, with extension '.nex'; also accepts a G-PhoCS-formatted input file, with extension '.gphocs'), or 
-*    `2` for the multiple PHYLIP option. 
+-   `1` for a single NEXUS-formatted input file (`<inputNEXUS>`, with extension '.nex'; also accepts a G-PhoCS-formatted input file, with extension '.gphocs'), or 
+-   `2` for the multiple PHYLIP option. 
 
-If `-f 1`, then the program will expect as standard input (stdin) the name of the <inputNEXUS>. However, if `-f 2`, then MAGNET expects to encounter multiple PHYLIP files to run on in the current working directory.
+If `-f 1`, then the program will expect as standard input (stdin) the name of the `<inputNEXUS>`. However, if `-f 2`, then MAGNET expects to encounter multiple PHYLIP files to run on in the current working directory.
 
 ## PIPELINE
 
