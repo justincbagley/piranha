@@ -255,8 +255,8 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_NEXUS" != "NULL" ]]; then
 			echo "$j"
 			charRange="$(echo "$j" | sed 's/\,//g')";
 	        echo "$charRange"
-	        setLower="$(echo "$j" | sed 's/\-.*$//g')";
-			setUpper="$(echo "$j" | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
+	        export setLower="$(echo "$j" | sed 's/\-.*$//g')";
+			export setUpper="$(echo "$j" | sed 's/[0-9]*\-//g' | sed 's/\,//g; s/\ //g')";
 	
 			**/selectSites.pl -s "$charRange" "$MY_FASTA" > ./sites.fasta ;
 				
@@ -281,7 +281,7 @@ if [[ "$STARTING_FILE_TYPE" = "1" ]] && [[ "$MY_NEXUS" != "NULL" ]]; then
 				# If fails, cat sites.phy into file with same name as nogaps file that
 				# is output by rmGapSites.R and move forward:
 				if [ -s ./gaptest.tmp ]; then
-					echo "Removing column sites in locus"$count" with gaps. "
+					echo "Removing column sites in locus${count} with gaps. "
 					R CMD BATCH **/rmGapSites.R
 				else
 			   		echo ""
