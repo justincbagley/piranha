@@ -171,7 +171,7 @@ checkMachineType
 
 #---------ADD IF/THEN CONDITIONAL AND MY OWN NEXUS2fasta SCRIPT HERE!!!!----------#
 
-	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta ;
+	convbioseq fasta "$MY_NEXUS" > "$MY_NEXUS_BASENAME".fasta ;
 	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')";
 	
 	# The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
@@ -222,7 +222,7 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 				# If fails, cat sites.phy into file with same name as nogaps file that
 				# is output by rmGapSites.R and move forward:
 				if [ -s ./gaptest.tmp ]; then
-					echo "Removing column sites in locus"$count" with gaps. "
+					echo "Removing column sites in locus${count} with gaps. "
 					R CMD BATCH **/rmGapSites.R ;
 				else
 			   		echo ""
