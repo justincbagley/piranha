@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2PHYLIP.sh                                                                  #
-  VERSION="v1.6.6"                                                                       #
+  VERSION="v1.6.7"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 27 Nov 2018 13:11:13 -0600.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -132,13 +132,14 @@ NEXUS2PHYLIP () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.6 April 2020                                "
+echo "INFO      | $(date) | NEXUS2PHYLIP, v1.6.7 December 2020                             "
 echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting NEXUS2PHYLIP pipeline... "
 	echo "INFO      | $(date) | Step #1: Set up workspace."
 fi
+
 ############ STEP #1: SET UP VARIABLES AND USEFUL FUNCTIONS
 ###### Set working directory and filetypes as different variables:
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -204,7 +205,7 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" = "0" ]]; 
 	
 			## Now that the matrix is isolated, get no. characters:
 			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
-			MY_CORR_NCHAR="$(calc $MY_NCHAR-1)";
+			MY_CORR_NCHAR="$(calc "$MY_NCHAR"-1)";
 
 			## Make PHYLIP header:
 			echo "$MY_NTAX  $MY_CORR_NCHAR" > ./phylip_header.tmp ;
@@ -284,7 +285,7 @@ if [[ "$MY_CHARSETS_SWITCH" = "0" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	
 			## Now that the matrix is isolated, get no. characters:
 			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
-			MY_CORR_NCHAR="$(calc $MY_NCHAR-1)";
+			MY_CORR_NCHAR="$(calc "$MY_NCHAR"-1)";
 			
 			## Make PHYLIP header:
 			echo "$MY_NTAX  $MY_CORR_NCHAR" > ./phylip_header.tmp ;
@@ -364,7 +365,7 @@ if [[ "$MY_CHARSETS_SWITCH" = "1" ]] && [[ "$MY_NEXUS_CHARSETS_CHECK" != "0" ]];
 	
 			## Now that the matrix is isolated, get no. characters:
 			MY_NCHAR="$(head -n1 ./matrixOnly.tmp | wc -c | sed 's/\ //g')";
-			MY_CORR_NCHAR="$(calc $MY_NCHAR-1)";
+			MY_CORR_NCHAR="$(calc "$MY_NCHAR"-1)";
 			
 			## Make PHYLIP header:
 			echo "$MY_NTAX  $MY_CORR_NCHAR" > ./phylip_header.tmp ;
@@ -413,7 +414,8 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
@@ -456,7 +458,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
+VERBOSE_USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) mandatory name of input NEXUS file in sequential NEXUS format
