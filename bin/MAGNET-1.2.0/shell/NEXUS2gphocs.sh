@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: NEXUS2gphocs.sh                                                                  #
-  VERSION="v1.5.1"                                                                       #
+  VERSION="v1.5.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: December 22, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -132,7 +132,7 @@ function NEXUS2gphocs () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | NEXUS2gphocs, v1.5.1 December 2020  (part of PIrANHA v0.4a4)   "
+echo "INFO      | $(date) | NEXUS2gphocs, v1.5.2 December 2020  (part of PIrANHA v0.4a4)   "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -171,7 +171,7 @@ checkMachineType
 
 #---------ADD IF/THEN CONDITIONAL AND MY OWN NEXUS2fasta SCRIPT HERE!!!!----------#
 
-	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta ;
+	convbioseq fasta "$MY_NEXUS" > "$MY_NEXUS_BASENAME".fasta ;
 	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')";
 	
 	# The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
