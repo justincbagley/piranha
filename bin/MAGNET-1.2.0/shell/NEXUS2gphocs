@@ -233,7 +233,7 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 			locus_ntax="$(head -n1 ./sites_nogaps.phy | sed 's/[\ ]*[.0-9]*$//g')" ;
 			locus_nchar="$(head -n1 ./sites_nogaps.phy | sed 's/[0-9]*\ //g')" ;
 			
-        		if [ $MY_INDIV_MISSING_DATA == 0 ]; then
+        		if [[ "$MY_INDIV_MISSING_DATA" = "0" ]]; then
 					sed '1d' ./sites_nogaps.phy | egrep -v 'NNNNNNNNNN|nnnnnnnnnn' > ./cleanLocus.tmp ;
 					cleanLocus_ntax="$(cat ./cleanLocus.tmp | wc -l)" ;
 					echo locus"$((count++))" "$cleanLocus_ntax" "$locus_nchar" > ./locus_top.tmp ;
