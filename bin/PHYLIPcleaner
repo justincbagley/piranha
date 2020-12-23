@@ -203,7 +203,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[  
 
 	# A. ALL PHYLIP CLEANER AND MISSING DATA CHECKER
 	# --------------------------------------------------
-	# Removing empty lines (newlines) and lines that have been commented out, if present.
+	# Removing empty lines (newlines), tabs, and lines that have been commented out, if present.
 	# --------------------------------------------------
 	count=1
 	(
@@ -232,6 +232,15 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[  
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i '/^[[:space:]]*$/d' "$i" ;
 				fi
+			fi
+
+			# If present, replace tabs in current PHYLIP file with two spaces.
+			# --------------------------------------------------
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Removing tabs, if present... "
+			fi
+			if [[ "$(grep -n $'\t' "$i" | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then
+				perl -p -i -e $'s/\t/\ \ /g' "$i" ;
 			fi
 		
 			# If present, remove lines that have been commented out from current PHYLIP file, $i. 
@@ -410,6 +419,15 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[  "$MULTIPLE_PHYLIP_SWITCH" != "0" ]
 				if [[ "${machine}" = "Linux" ]]; then
 					sed -i '/^[[:space:]]*$/d' "$i" ;
 				fi
+			fi
+		
+			# If present, replace tabs in current PHYLIP file with two spaces.
+			# --------------------------------------------------
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Removing tabs, if present... "
+			fi
+			if [[ "$(grep -n $'\t' "$i" | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then
+				perl -p -i -e $'s/\t/\ \ /g' "$i" ;
 			fi
 		
 			# If present, remove lines that have been commented out from current PHYLIP file, $i. 
