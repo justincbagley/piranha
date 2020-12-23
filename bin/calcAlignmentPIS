@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: calcAlignmentPIS.sh                                                              #
-  VERSION="v1.5.6"                                                                       #
+  VERSION="v1.5.7"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: December 17, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -132,11 +132,12 @@ calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | calcAlignmentPIS, v1.5.6 December 2020                         "
+echo "INFO      | $(date) | calcAlignmentPIS, v1.5.7 December 2020                         "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting calcAlignmentPIS pipeline... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
 checkMachineType
@@ -285,6 +286,7 @@ echo "INFO      | $(date) | Step #3: Run the Rscript (which also saves output an
 ############ III. RUN RSCRIPT.
 	prepR () {
 		export TMPDIR=~/tmp ; ## set temp file directory to be within $HOME
+		if [[ ! s ~/tmp ]]; then mkdir ~/tmp ; fi ;
 		R_LOCATION="$(which R | sed 's/\ //g')";
 		alias R="$R_LOCATION";
 }
@@ -321,7 +323,7 @@ if [[ "$MY_PIS_THRESHOLD_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Editing PIS output table... "
 
 		keepPISThresholdAlignments () {
-			MY_N_ALIGN_CUTOFF="$(echo $MY_PIS_THRESHOLD_SWITCH | sed 's/\ //g')";
+			MY_N_ALIGN_CUTOFF="$(echo "$MY_PIS_THRESHOLD_SWITCH" | sed 's/\ //g')";
 
 			cp ./pis_results_table_revsort.txt ./pis.tmp ;
 
@@ -356,20 +358,20 @@ echo "INFO      | $(date) | Step #5: Clean up workspace. "
 echo "INFO      | $(date) | Cleaning up workspace by removing temporary files generated during run... "
 ############ V. CLEAN UP WORKSPACE BY REMOVING TEMPORARY FILES.
 	if [[ ! -s ./piranha_calcAlignmentPIS.sh ]]; then 
-		if [[ -s ./header.tmp ]]; then rm ./header.tmp ; fi
-		if [[ -s ./pis.tmp ]]; then rm ./pis.tmp ; fi
+		if [[ -s ./header.tmp ]]; then rm ./header.tmp ; fi ;
+		if [[ -s ./pis.tmp ]]; then rm ./pis.tmp ; fi ;
 		rm ./pis_results_table_headless_revsort.txt ./pis_results_table_headless.txt ./pis_output_table.txt ./input_file_order_filenames.txt ./input_file_order.txt ;
 	else
 		echo "INFO      | $(date) | "
 	fi
 
 	if [[ "$KEEP_R_FILES_SWITCH" = "0" ]]; then
-		if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi
-		if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi
-		if [[ -s ./.RData ]]; then rm ./.RData ; fi
+		if [[ -s ./calcAlignmentPIS.Rout ]]; then rm ./calcAlignmentPIS.Rout ; fi ;
+		if [[ -s ./calcAlignmentPIS.R ]]; then rm ./calcAlignmentPIS.R ; fi ;
+		if [[ -s ./.RData ]]; then rm ./.RData ; fi ;
 	fi
 
-	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ; 	## Remove arguments file generated when parsing the options.
 	
 echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"

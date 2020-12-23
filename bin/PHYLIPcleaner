@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPcleaner.sh                                                                 #
-  VERSION="v1.3.0"                                                                       #
+  VERSION="v1.3.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
-# Last update: December 19, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,7 +137,7 @@ PHYLIPcleaner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPcleaner, v1.3.0 December 2020                            "
+echo "INFO      | $(date) | PHYLIPcleaner, v1.3.1 December 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -224,7 +224,7 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[  
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 			fi
-			if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+			if [[ "$(grep -n '^[\s]*$' "$i" | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak '/^[[:space:]]*$/d' "$i" ;
 					rm ./*.bak;
@@ -402,7 +402,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[  "$MULTIPLE_PHYLIP_SWITCH" != "0" ]
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) | Removing empty lines (newlines) and lines that have been commented out, if present... "
 			fi
-			if [[ "$(grep -n '^[\s]*$' $i | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
+			if [[ "$(grep -n '^[\s]*$' "$i" | wc -l | sed 's/\ //g' | perl -pe 's/\t//g')" -gt "0" ]]; then 
 				if [[ "${machine}" = "Mac" ]]; then
 					sed -i.bak '/^[[:space:]]*$/d' "$i" ;
 					rm ./*.bak;
