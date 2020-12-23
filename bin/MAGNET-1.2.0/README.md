@@ -69,18 +69,18 @@ MAGNET v1.2.0 is a software package composed of `shell`, `R`, and Perl scripts a
 - Python (available at: https://www.python.org/downloads/).
 -->
 -   **bioscripts.convert v0.4 Python package**
-    *   Description: 
-        *    http://www.agapow.net/software/bioscripts.convert
-    *   Installation: 
-        *    Python Package Index: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for `NEXUS2gphocs.sh`).
+    -   Description: 
+        *   http://www.agapow.net/software/bioscripts.convert
+    -   Installation: 
+        *   Python Package Index: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for `NEXUS2gphocs.sh`).
         *   `pip` install code: `pip install bioscripts.convert==0.4`
 -   **RAxML - Randomized Axelerated Maximum Likelihood**
-    *   Description:
-        *    The Exelixis Lab RAxML page - https://cme.h-its.org/exelixis/web/software/raxml/
-    *   Installation: 
-        *    Source code: https://github.com/stamatak/standard-RAxML
-        *    Conda install page: https://anaconda.org/bioconda/raxml
-        *    Conda install code: `conda install -c bioconda raxml` (requires one of the Anaconda data science/Python distribution platform: https://www.anaconda.com/products/individual)
+    -   Description:
+        *   The Exelixis Lab RAxML page - https://cme.h-its.org/exelixis/web/software/raxml/
+    -   Installation: 
+        *   Source code: https://github.com/stamatak/standard-RAxML
+        *   Conda install page: https://anaconda.org/bioconda/raxml
+        *   Conda install code: `conda install -c bioconda raxml` (requires one of the Anaconda data science/Python distribution platform: https://www.anaconda.com/products/individual)
 
 Users must install all software not included in MAGNET, and ensure that it is available via the command line on their local machine. On the user's local machine, Perl should be available by simply typing "`Perl`" or "`perl`" at the command line; Python should be available by typing "`python`" at the command line; and bioscripts.convert package should be available by typing "`convbioseq`" at the command line. Also, RAxML should be compiled using SSE3 install commands, so that RAxML can be called by simply typing "`raxmlHPC-SSE3`" on the command line. For detailed instructions for setting up RAxML this way, refer to the newest RAxML user manual (available at: http://sco.h-its.org/exelixis/resource/download/NewManual.pdf).
 
