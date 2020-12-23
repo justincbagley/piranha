@@ -9,7 +9,7 @@
   VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.                   #
-# Last update: December 21, 2020                                                         #
+# Last update: December 22, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -139,12 +139,11 @@ echo "INFO      | $(date) |-----------------------------------------------------
 ######################################## START ###########################################
 echo "INFO      | $(date) | Starting NEXUS2gphocs analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
+export USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoCDWorkingDir
-#echo "INFO      | $(date) |          Checking machine type... "
 checkMachineType
-#echo "INFO      | $(date) |               Found machine type ${machine}. "
 
 
 ############ STEP #2: GET NEXUS FILE & DATA CHARACTERISTICS, CONVERT NEXUS TO FASTA FORMAT
@@ -175,8 +174,8 @@ checkMachineType
 	convbioseq fasta $MY_NEXUS > "$MY_NEXUS_BASENAME".fasta ;
 	MY_FASTA="$(echo "$MY_NEXUS_BASENAME".fasta | sed 's/\.\///g; s/\.nex//g')";
 	
-	##--The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
-	##--Check to make sure the fasta was created; if so, echo info, if not, echo warning and quit:
+	# The line above creates a file with the name basename.fasta, where basename is the base name of the original .nex file. For example, "hypostomus_str.nex" would be converted to "hypostomus_str.fasta".
+	# Check to make sure the fasta was created; if so, echo info, if not, echo warning and quit:
 	if [[ -s "$MY_NEXUS_BASENAME".fasta ]]; then
 		echo "INFO      | $(date) |          Input NEXUS was successfully converted to fasta format. Moving forward... "
 	else
@@ -204,24 +203,24 @@ echo "$MY_GAP_THRESHOLD" > ./gap_threshold.txt
 			
 			**/fasta2phylip.pl ./sites.fasta > ./sites.phy ;
 
-			##--Need to make sure there is a space between the tip taxon name (10 characters as output
-			##--by the fasta2phylip.pl Perl script) and the corresponding sequence, for all tips. Use
-			##--a perl search and replace for this:
+			# Need to make sure there is a space between the tip taxon name (10 characters as output
+			# by the fasta2phylip.pl Perl script) and the corresponding sequence, for all tips. Use
+			# a perl search and replace for this:
 
 			perl -p -i -e 's/^([A-Za-z0-9\-\_\ ]{10})/$1\ /g' ./sites.phy ;
 
-				##--If .phy file from NEXUS charset $j has gaps in alignment, then call 
-				##--rmGapSites.R R script to remove all column positions with gaps from
-				##--alignment and output new, gapless phylip file named "./sites_nogaps.phy". 
-				##--If charset $j does not have gaps, go to next line of loop. We do the 
-				##--above by first creating a temporary file containing all lines in
-				##--sites.phy with the gap character:
+				# If .phy file from NEXUS charset $j has gaps in alignment, then call 
+				# rmGapSites.R R script to remove all column positions with gaps from
+				# alignment and output new, gapless phylip file named "./sites_nogaps.phy". 
+				# If charset $j does not have gaps, go to next line of loop. We do the 
+				# above by first creating a temporary file containing all lines in
+				# sites.phy with the gap character:
 				grep -n "-" ./sites.phy > ./gaptest.tmp ;
 				
-				##--Next, we test for nonzero testfile, indicating presence of gaps in $j, 
-				##--using UNIX test operator "-s" (returns true if file size is not zero). 
-				##--If fails, cat sites.phy into file with same name as nogaps file that
-				##--is output by rmGapSites.R and move forward:
+				# Next, we test for nonzero testfile, indicating presence of gaps in $j, 
+				# using UNIX test operator "-s" (returns true if file size is not zero). 
+				# If fails, cat sites.phy into file with same name as nogaps file that
+				# is output by rmGapSites.R and move forward:
 				if [ -s ./gaptest.tmp ]; then
 					echo "Removing column sites in locus${count} with gaps. "
 					R CMD BATCH **/rmGapSites.R ;
@@ -315,7 +314,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  file would have had the same number of individuals across loci, the resulting file could
  have varying numbers of individuals for different loci.
 
- Dependencies: This script has the same dependencies as MAGNET v1.0.0, which it is distributed 
+ Dependencies: This script has the same dependencies as MAGNET v1.2.0, which it is distributed 
  with. See the MAGNET help text or README for more information. However a list of dependencies
  includes Perl, R, Python, the bioscripts.convert v0.4 Python package, and Naoki Takebayashi 
  Perl scripts 'fasta2phylip.pl' and 'selectSites.pl' given correct permissions in MAGNET folder, 
@@ -324,11 +323,11 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  ${bold}Usage examples:${reset}
  Call the program using PIrANHA, as follows:
 
-    piranha -f MAGNET-1.0.0/NEXUS2gphocs --args='-i <inputNEXUS> -g1 -m1'
-    piranha -f MAGNET-1.0.0/NEXUS2gphocs --args='-h'
+    piranha -f MAGNET-1.2.0/NEXUS2gphocs -i <inputNEXUS> -g1 -m1
+    piranha -f MAGNET-1.2.0/NEXUS2gphocs -h
 
  ${bold}CITATION${reset}
- Bagley, J.C. 2019. PIrANHA v0.4a4. GitHub repository, Available at:
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
 	<https://github.com/justincbagley/PIrANHA>.
 
  ${bold}REFERENCES${reset}
