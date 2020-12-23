@@ -6,7 +6,7 @@ Shell script pipeline for inferring ML gene trees for many loci (e.g. RAD loci, 
 
 ## LICENSE
 
-All code within the PIrANHA repository, including MAGNET v1.2.0 pipeline code, is available "AS IS" under a 3-clause BSD license. See the [LICENSE](LICENSE) file for more information.
+All code within the PIrANHA repository, including MAGNET v1.2.0 pipeline code, is available 'AS IS' under a 3-clause BSD license. See the [LICENSE](https://github.com/justincbagley/piranha/blob/master/LICENSE) file for more information.
 
 ## CITATION
 
@@ -22,14 +22,16 @@ Alternatively, please provide the following links to these software program in y
 -   http://github.com/justincbagley/piranha
 -   http://github.com/justincbagley/MAGNET
   
-**Example citation using the MAGNET URL:** 
-	"We estimated a gene tree for each RAD locus in RAxML v8 (Stamatakis 2014) using 
+Example citation using the MAGNET URL:
+
+-   "We estimated a gene tree for each RAD locus in RAxML v8 (Stamatakis 2014) using 
 	the MAGNET v1.2.0 pipeline (http://github.com/justincbagley/MAGNET). Each RAxML run
 	specified the GTRGAMMA model and coestimated the maximum-likelihood phylogeny and
 	bootstrap proportions from 500 bootstrap pseudoreplicates."
 
-**Example citation using the MAGNET and PIrANHA URLs:** 
-	"We estimated a gene tree for each RAD locus in RAxML v8 (Stamatakis 2014) using 
+Example citation using the MAGNET and PIrANHA URLs:
+
+-   "We estimated a gene tree for each RAD locus in RAxML v8 (Stamatakis 2014) using 
 	the MAGNET v1.2.0 pipeline (http://github.com/justincbagley/MAGNET), as distributed in
 	PIrANHA v0.4a4 (http://github.com/justincbagley/piranha). Each RAxML run specified
 	the GTRGAMMA model and coestimated the maximum-likelihood phylogeny and bootstrap
@@ -43,11 +45,11 @@ The DOI for MAGNET, via Zenodo, is as follows:  [![DOI](https://zenodo.org/badge
 
 ## INTRODUCTION
 
-The estimation of species-level phylogenies, or "species trees" is a fundamental goal in evolutionary biology. However, while "gene trees" estimated from different loci provide insight into the varying evolutionary histories of different parts of the genome, gene trees are random realizations of a stochastic evolutionary process. Thus, gene trees often exhibit conflicting topologies, being incongruent with each other and incongruent with the underlying species tree due to a variety of genetic and biological processes (e.g. gene flow, incomplete lineage sorting, introgression, selection). 
+The estimation of species-level phylogenies, or 'species trees' is a fundamental goal in evolutionary biology. However, while 'gene trees' estimated from different loci provide insight into the varying evolutionary histories of different parts of the genome, gene trees are random realizations of a stochastic evolutionary process. Thus, gene trees often exhibit conflicting topologies, being incongruent with each other and incongruent with the underlying species tree due to a variety of genetic and biological processes (e.g. gene flow, incomplete lineage sorting, introgression, selection). 
 
-With the advent of recent advances in DNA sequencing technologies, biologists now commonly sequence data from multiple loci, and even hundreds to thousands of loci can quickly be sequenced using massively parallel sequencing on NGS sequencing platforms. Full-likelihood or Bayesian algorithms for inferring species trees and population-level parameters from multiple loci, such as \*BEAST and SNAPP, are computationally burdensome and may be difficult to apply to large amounts of data or distantly related taxa (or other cases that complicate obtaining MCMC convergence). By contrast, a number of recently developed and widely used "summary-statistics" approaches rely on sets of gene trees to infer a species tree for a set of taxa (reviewed by Chifman and Kubatko, 2014; Mirarab and Warnow, 2015). These methods are specifically designed to estimate gene trees or use gene trees input by the user, which are treated as observed data points analyzed in a distance-based or coalescent algorithm. Moreover, summary-statistics approaches to species tree inference tend to be accurate and typically much faster than full-data approaches (e.g. Mirarab et al., 2014;  Chifman and Kubatko, 2014). Examples of species tree software in this category include programs such as BUCKy (Larget et al., 2010), STEM (Liu et al., 2010), spedeSTEM, NJst (Liu and Yu, 2011), ASTRAL and ASTRAL-II (Mirarab and Warnow, 2015), and ASTRID (Vachaspati and Warnow, 2015). Phylogenetic network models implemented in recent software like SplitsTree and SNaQ also improve network and inference by analyzing sets of gene trees. 
+With the advent of recent advances in DNA sequencing technologies, biologists now commonly sequence data from multiple loci, and even hundreds to thousands of loci can quickly be sequenced using massively parallel sequencing on NGS sequencing platforms. Full-likelihood or Bayesian algorithms for inferring species trees and population-level parameters from multiple loci, such as \*BEAST and SNAPP, are computationally burdensome and may be difficult to apply to large amounts of data or distantly related taxa (or other cases that complicate obtaining MCMC convergence). By contrast, a number of recently developed and widely used 'summary-statistics' approaches rely on sets of gene trees to infer a species tree for a set of taxa (reviewed by Chifman and Kubatko, 2014; Mirarab and Warnow, 2015). These methods are specifically designed to estimate gene trees or use gene trees input by the user, which are treated as observed data points analyzed in a distance-based or coalescent algorithm. Moreover, summary-statistics approaches to species tree inference tend to be accurate and typically much faster than full-data approaches (e.g. Mirarab et al., 2014;  Chifman and Kubatko, 2014). Examples of species tree software in this category include programs such as BUCKy (Larget et al., 2010), STEM (Liu et al., 2010), spedeSTEM, NJst (Liu and Yu, 2011), ASTRAL and ASTRAL-II (Mirarab and Warnow, 2015), and ASTRID (Vachaspati and Warnow, 2015). Phylogenetic network models implemented in recent software like SplitsTree and SNaQ also improve network and inference by analyzing sets of gene trees. 
 
-Despite the importance of gene trees in species tree and network inference, few resources have been specifically designed to aid rapid estimation of gene trees for different loci. MAGNET (MAny GeNE Trees) is a shell script pipeline within the PIrANHA (PhylogenetIcs ANd PHylogeogrAphy) repository (https://github.com/justincbagley/piranha) that helps fill this gap by automating inferring a maximum-likelihood (ML) gene tree for each locus in a multilocus dataset. Here, the term "locus" is used loosely to refer to a DNA alignment of homologous nucleotide characters including both variable and invariant DNA sites. The MAGNET package was originally coded up to aid analyses of RAD loci generated by massively parallel sequencing of ddRAD-seq genomic libraries (Peterson et al. 2012). However, MAGNET can be used to estimate gene trees from any multilocus dataset in the appropriate format, and three starting file types are supported: single NEXUS, single G-PhoCS, or multiple PHYLIP files.
+Despite the importance of gene trees in species tree and network inference, few resources have been specifically designed to aid rapid estimation of gene trees for different loci. MAGNET (MAny GeNE Trees) is a shell script pipeline within the [PIrANHA](https://github.com/justincbagley/piranha) software package (Bagley 2020) that helps fill this gap by automating inferring a maximum-likelihood (ML) gene tree for each locus in a multilocus dataset. Here, the term "locus" is used loosely to refer to a DNA alignment of homologous nucleotide characters including both variable and invariant DNA sites. The MAGNET package was originally coded up to aid analyses of RAD loci generated by massively parallel sequencing of ddRAD-seq genomic libraries (Peterson et al. 2012). However, MAGNET can be used to estimate gene trees from any multilocus dataset in the appropriate format, and three starting file types are supported: single NEXUS, single G-PhoCS, or multiple PHYLIP files.
 
 ## HARDWARE AND SETUP
 
@@ -64,34 +66,58 @@ MAGNET v1.2.0 is a software package composed of `shell`, `R`, and Perl scripts a
 - Nayoki Takebayashi's file conversion Perl scripts (available at: http://raven.iab.alaska.edu/~ntakebay/teaching/programming/perl-scripts/perl-scripts.html).
 - Python (available at: https://www.python.org/downloads/).
 -->
--   bioscripts.convert v0.4 Python package (available at: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for `NEXUS2gphocs.sh`).
--   RAxML, installed and running on local machine (available at: http://sco.h-its.org/exelixis/web/software/raxml/index.html).
+-   **bioscripts.convert v0.4 Python package**
+    *    Description: 
+         *    http://www.agapow.net/software/bioscripts.convert
+    *    Installation: 
+         *    Python Package Index: https://pypi.python.org/pypi/bioscripts.convert/0.4; also see README for `NEXUS2gphocs.sh`).
+         *   `pip` install code: `pip install bioscripts.convert==0.4`
+-   **RAxML - Randomized Axelerated Maximum Likelihood**
+    *    Description:
+         *    The Exelixis Lab RAxML page - https://cme.h-its.org/exelixis/web/software/raxml/
+    *    Installation: 
+         *    Source code: https://github.com/stamatak/standard-RAxML
+         *    Conda install page: https://anaconda.org/bioconda/raxml
+         *    Conda install code: `conda install -c bioconda raxml` (requires one of the Anaconda data science/Python distribution platform: https://www.anaconda.com/products/individual)
 
 Users must install all software not included in MAGNET, and ensure that it is available via the command line on their local machine. On the user's local machine, Perl should be available by simply typing "`Perl`" or "`perl`" at the command line; Python should be available by typing "`python`" at the command line; and bioscripts.convert package should be available by typing "`convbioseq`" at the command line. Also, RAxML should be compiled using SSE3 install commands, so that RAxML can be called by simply typing "`raxmlHPC-SSE3`" on the command line. For detailed instructions for setting up RAxML this way, refer to the newest RAxML user manual (available at: http://sco.h-its.org/exelixis/resource/download/NewManual.pdf).
 
 ## INPUT FILE FORMAT
 
-MAGNET assumes that you are starting from multilocus DNA sequence data in one of three formats. The *First format* that is supported is NEXUS format, with data in a single file having the extension '.nex'. The *Second format* that is supported is that of a single datafile in G-Phocs (Gronau et al. 2011) format, with the extension ".gphocs". For genomic data in aligned sequence format, such as aligned RAD tags (e.g. ddRAD-seq contigs) or other SNP data derived from genotyping-by-sequencing (GBS) methods, the user should assemble the data, call SNPs, and output SNP sequence data files in .gphocs or .nex format prior to running MAGNET. This can easily be done by running pyRAD or ipyrad (Eaton 2014) while calling for output in all formats (\*; you'll get .gphocs and .nex files). 
+MAGNET assumes that you are starting from multilocus DNA sequence data in one of three formats. 
+
+The **_first format_** that is supported is NEXUS format, with data in a single file having the extension '.nex'. 
+
+The **_second format_** that is supported is that of a single datafile in G-Phocs (Gronau et al. 2011) format, with the extension '.gphocs'. 
+
+For genomic data in aligned sequence format, such as aligned RAD tags (e.g. ddRAD-seq contigs) or other SNP data derived from genotyping-by-sequencing (GBS) methods, the user should assemble the data, call SNPs, and output SNP sequence data files in '.gphocs' or '.nex' format prior to running MAGNET. This can easily be done by running `pyRAD` or `ipyrad` (Eaton 2014) while calling for output in all formats (you'll get '.gphocs' and '.nex' files). 
 
 However, this may not always be possible, and .gphocs format is not yet among the most popular file formats in phylogenomics/population genomics. Thus, I have added a `NEXUS2gphocs.sh` shell script utility within MAGNET (in the "shell" folder) that will convert a sequential NEXUS file into .gphocs format for you. An example NEXUS file "example.nex" is included in the distribution. Feel free to use the `NEXUS2gphocs.sh` utility script independently of MAGNET to convert from NEXUS to .gphocs format. However, when doing this, *make sure to follow the usage guidelines below*.
 
-The *Third format* that is supported in MAGNET is that of DNA sequence alignments for multiple loci contained in separate PHYLIP files for each locus. 
+The **_third format_** that is supported in MAGNET is that of DNA sequence alignments for multiple loci contained in separate PHYLIP files for each locus. 
 
-Users must specify the input fileType with the `-f` flag. Options are 1 for a single NEXUS-formatted input file (<inputNEXUS>, with extension '.nex'; also accepts a G-PhoCS-formatted input file, with extension '.gphocs') or 2 for the multiple PHYLIP option. If `-f 1`, then the program will expect as standard input (stdin) the name of the <inputNEXUS>. However, if `-f 2`, then MAGNET expects to encounter multiple PHYLIP files to run on in the current working directory.
+Users must specify the input fileType with the `-f` flag. Options are as follows: 
+
+*    `1` for a single NEXUS-formatted input file (<inputNEXUS>, with extension '.nex'; also accepts a G-PhoCS-formatted input file, with extension '.gphocs'), or 
+*    `2` for the multiple PHYLIP option. 
+
+If `-f 1`, then the program will expect as standard input (stdin) the name of the <inputNEXUS>. However, if `-f 2`, then MAGNET expects to encounter multiple PHYLIP files to run on in the current working directory.
 
 ## PIPELINE
 
-Apart from input file conversion steps, the MAGNET pipeline works by calling five different scripts, in series, each designed to conduct a task whose output is processed in the next step of the pipeline. First, the `gphocs2multiPhylip.sh` shell script is used to extract loci from the input file and place each locus in a PHYLIP-formatted file with extension ".phy". Second, a shell script named `MultiRAxMLPrepper.sh` is used to place the .phy files into separate "run folders" and prepare them to be run in RAxML. Third, a script named `RAxMLRunner.sh` is called to run RAxML on the contents of each run folder. In a "clean-up" step, MAGNET moves all .phy files files remaining in the working directory to a new folder, "phylip\_files", which is created within the working directory.
+Apart from input file conversion steps, the MAGNET pipeline works by calling five different scripts, in series, each designed to conduct a task whose output is processed in the next step of the pipeline. First, the `gphocs2multiPhylip.sh` shell script is used to extract loci from the input file and place each locus in a PHYLIP-formatted file with extension '.phy'. Second, a shell script named `MultiRAxMLPrepper.sh` is used to place the .phy files into separate "run folders" and prepare them to be run in RAxML. Third, a script named `RAxMLRunner.sh` is called to run RAxML on the contents of each run folder. In a 'clean-up' step, MAGNET moves all '.phy' files files remaining in the working directory to a new folder, `phylip_files/`, which is created within the working directory.
 
-After running the MAGNET pipeline, the shell script `getGeneTrees.sh` automates post-processing of the gene trees output by RAxML, including organizing all inferred gene trees into a single "gene\_trees" folder in the working directory, and combining the individual 'best' gene trees resulting from each run into a single file named "besttrees.tre". Also, if bootstrap pseudoreplicates were performed and the bootstrap tree files are detected, then the `getBootTrees.sh` script conducts similar processing on the bootstrap trees for each loucus, which are collated, renamed, and given a list file containing the name of each file. Given the directory of bootstrap trees resulting from a MAGNET run ("bootstrap\_trees") can take up substantial disk space (>200 MB), users may wish to compress this directory to a zip file, for example using `$ zip -r bootstrap_trees.zip bootstrap_trees/` at the conclusion of a run.
+After running the MAGNET pipeline, the shell script `getGeneTrees.sh` automates post-processing of the gene trees output by RAxML, including organizing all inferred gene trees into a single `gene_trees` folder in the working directory, and combining the individual 'best' gene trees resulting from each run into a single file named "besttrees.tre". Also, if bootstrap pseudoreplicates were performed and the bootstrap tree files are detected, then the `getBootTrees.sh` script conducts similar processing on the bootstrap trees for each loucus, which are collated, renamed, and given a list file containing the name of each file. Given the directory of bootstrap trees resulting from a MAGNET run (`bootstrap_trees`) can take up substantial disk space (>200 MB), users may wish to compress this directory to a zip file, for example using `$ zip -r bootstrap_trees.zip bootstrap_trees/` at the conclusion of a run.
 
-A new feature of MAGNET (as of December 2018) is the <resume> option (`-R` and `--resume` flags; e.g. `-R 1` or `--resume 1`), which allow the user to resume a previous MAGNET run in the current working directory.
+A new feature of MAGNET (as of December 2018) is the `<resume>` option (`-R` and `--resume` flags; e.g. `-R 1` or `--resume 1`), which allow the user to resume a previous MAGNET run in the current working directory.
 
 ## USAGE
 
-Additional input file and usage information is available in the usage or help texts. To get regular usage info for MAGNET, call for the help text using piranha by typing `piranha -f MAGNET -h` or `piranha -f MAGNET --help` (long option flag). However, it is more useful (particularly when running for the first time, or after not running for awhile) to get *verbose usage info* for MAGNET, including detailed descriptions of each option; do this by typing `piranha -f MAGNET -H` or `piranha -f MAGNET --Help` (long option flag) at the command line while in the MAGNET directory. The verbose usage text is as follows:
+Additional input file and usage information is available in the usage or help texts. To get regular usage info for MAGNET, call for the help text from piranha by typing `piranha -f MAGNET -h` or `piranha -f MAGNET --help` (long option flag). However, it is more useful (particularly when running for the first time, or after not running for awhile) to get *verbose usage info* for MAGNET, including detailed descriptions of each option; do this by typing `piranha -f MAGNET -H` or `piranha -f MAGNET --Help` (long option flag) at the command line. 
 
-```sh
+The verbose usage text is as follows:
+
+```txt
 
 $ piranha -f MAGNET -H
 
@@ -270,11 +296,11 @@ piranha -f MAGNET -f2   	## multiple PHYLIP input files case.
 To avoid the above issues caused by large amounts of missing data, you should run MAGNET while **setting the -m flag to 0** (indivMissingData=0) to specify that individuals with missing data are NOT allowed:
 
 ```sh
-##--Scenario 2, all params except indivMissingData set to default options:
+# Scenario 2, all params except indivMissingData set to default options:
 piranha -f MAGNET -i <inputNEXUS> -f 1 -m 0
 piranha -f MAGNET -f 1 -m 0   	## multiple PHYLIP input files case.
 
-##--Example:
+# Example:
 cd ~/Downloads/MAGNET-master/
 piranha -f MAGNET -i example.nex -f 1 -m 0
 piranha -f MAGNET -f 2 -m 0  	## multiple PHYLIP input files case.
@@ -283,23 +309,23 @@ piranha -f MAGNET -f 2 -m 0  	## multiple PHYLIP input files case.
 In addition to the above, here are illustrations of varying the **RAxML options**:
 
 ```sh
-##--Scenario 1, GTRCAT model, instead of the default GTRGAMMA model:
+# Scenario 1, GTRCAT model, instead of the default GTRGAMMA model:
 piranha -f MAGNET -i <inputNEXUS> -f 1 -r GTRCAT
 piranha -f MAGNET -f 2 -r GTRCAT     ## multiple PHYLIP input files case.
 
-##--Scenario 1, adding name of an outgroup taxon:
+# Scenario 1, adding name of an outgroup taxon:
 piranha -f MAGNET -i <inputNEXUS> -f 1 -r GTRCAT -o outgroup
 piranha -f MAGNET -f 2 -r GTRCAT -o outgroup     ## multiple PHYLIP input files case.
 
-##--Scenario 1, overriding -r model with HKY85 and adding an outgroup:
+# Scenario 1, overriding -r model with HKY85 and adding an outgroup:
 piranha -f MAGNET -i <inputNEXUS> -f 1 -r GTRCAT -s HKY85 -o outgroup
 piranha -f MAGNET -f 2 -r GTRCAT -s HKY85 -o outgroup    ## multiple PHYLIP input files case.
 
-##--Scenario 2, 500 bootstrap reps per locus, instead of the default 100:
+# Scenario 2, 500 bootstrap reps per locus, instead of the default 100:
 piranha -f MAGNET -i <inputNEXUS> -f 1 -b 500 -m 0
 piranha -f MAGNET -f 2 -b 500 -m 0     ## multiple PHYLIP input files case.
 
-##--Scenario 2, *zero* bootstrap reps per locus:
+# Scenario 2, *zero* bootstrap reps per locus:
 piranha -f MAGNET -i <inputNEXUS> -f 1 -b 0 -m 0
 piranha -f MAGNET -f 2 -b 0 -m 0       ## multiple PHYLIP input files case.
 ```
@@ -310,16 +336,17 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 
 ## REFERENCES
 
--   Chifman J, Kubatko L (2014) Quartet inference from SNP data under the coalescent model. Bioinformatics, 30, pages 3317–3324.
--   Eaton DAR (2014) PyRAD: assembly of de novo RADseq loci for phyloge-netic analyses. Bioinformatics, 30, 1844–1849.
--   Gronau I, Hubisz MJ, Gulko B, Danko CG, Siepel A (2011) Bayesian inference of ancient human demography from individual genome sequences. Nature Genetics, 43, 1031-1034.
--   Larget BR, Kotha SK, Dewey CN, Ané C (2010) BUCKy: gene tree/species tree reconciliation with Bayesian concordance analysis. Bioinformatics, 26(22):2910-2911.
--   Liu L, Yu L, Edwards SV (2010) A maximum pseudo-likelihood approach for estimating species trees under the coalescent model. BMC Evol Biol, 10(1):302.
--   Liu L, Yu L (2011) Estimating species trees from unrooted gene trees. Syst Biol, 60(5):661-667.
--   Mirarab S, Warnow T (2015) ASTRAL-II: coalescent-based species tree estimation with many hundreds of taxa and thousands of genes. Bioinformatics, 30:44-52.
--   Peterson BK, Weber JN, Kay EH, Fisher HS, Hoekstra HE (2012) Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One, 7, e37135.
--   Stamatakis A (2014) RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics, 30.9, 1312-1313.
--   Vachaspati P, Warnow T (2015) ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics, 16(Suppl 10):S3.
+-   Bagley, J.C. 2020. PIrANHA v0.4-alpha4. GitHub repository, Available at: http://github.com/justincbagley/piranha/.
+-   Chifman, J., Kubatko, L., 2014. Quartet inference from SNP data under the coalescent model. Bioinformatics 30, 3317–3324.
+-   Eaton, D.A.R. 2014. PyRAD: assembly of de novo RADseq loci for phyloge-netic analyses. Bioinformatics 30, 1844–1849.
+-   Gronau, I., Hubisz, M.J., Gulko, B., Danko, C.G., Siepel, A. 2011. Bayesian inference of ancient human demography from individual genome sequences. Nature Genetics 43, 1031-1034.
+-   Larget, B.R., Kotha, S.K., Dewey, C.N., Ané, C. 2010. BUCKy: gene tree/species tree reconciliation with Bayesian concordance analysis. Bioinformatics 26(22):2910-2911.
+-   Liu, L., Yu, L., Edwards, S.V. 2010. A maximum pseudo-likelihood approach for estimating species trees under the coalescent model. BMC Evol Biol 10(1):302.
+-   Liu, L., Yu, L. 2011. Estimating species trees from unrooted gene trees. Syst Biol 60(5):661-667.
+-   Mirarab, S., Warnow, T. 2015. ASTRAL-II: coalescent-based species tree estimation with many hundreds of taxa and thousands of genes. Bioinformatics 30:44-52.
+-   Peterson, B.K., Weber, J.N., Kay, E.H., Fisher, H.S., Hoekstra, H.E. 2012. Double digest RADseq: an inexpensive method for de novo SNP discovery and genotyping in model and non-model species. PLoS One 7, e37135.
+-   Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics 30.9, 1312-1313.
+-   Vachaspati, P., Warnow, T. 2015. ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics 16(Suppl 10):S3.
 
 December 22, 2020
 Justin C. Bagley, Tuscaloosa, AL, USA
