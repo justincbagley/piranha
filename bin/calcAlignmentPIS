@@ -419,7 +419,8 @@ MY_PIS_THRESHOLD_SWITCH=0
 KEEP_R_FILES_SWITCH=1
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFASTA (def: NULL) input FASTA filename

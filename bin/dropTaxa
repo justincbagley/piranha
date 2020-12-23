@@ -526,7 +526,8 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFile (def: NULL) name of input DNA sequence alignment file

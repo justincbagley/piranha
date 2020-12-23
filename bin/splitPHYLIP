@@ -341,7 +341,8 @@ echo ""
 # MY_VERBOSE_OUT_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i, --input     inputPHYLIP (def: NULL) input PHYLIP-formatted DNA sequence alignment file

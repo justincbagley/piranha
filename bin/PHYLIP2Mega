@@ -343,7 +343,8 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) input PHYLIP filename; run on this individual PHYLIP file

@@ -535,7 +535,8 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 # MY_DEBUG_MODE_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i, --input     inputList (def: NULL) name of file containing list of input files

@@ -262,7 +262,8 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFile (def: NULL) input DNA sequence alignment filename

@@ -516,7 +516,8 @@ echo ""
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) mandatory input NEXUS file in sequential NEXUS format
