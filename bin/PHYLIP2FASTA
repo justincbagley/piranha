@@ -9,7 +9,7 @@
   VERSION="v1.3.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>                                                #
 #                                                                                        #
@@ -317,6 +317,8 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
 USAGE="
@@ -449,7 +451,6 @@ fi
 		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
 
-
 # ############ PARSE THE OPTIONS
 # while getopts 'i:m:k:v:d:' opt ; do
 #   case $opt in
@@ -471,6 +472,9 @@ fi
 # 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

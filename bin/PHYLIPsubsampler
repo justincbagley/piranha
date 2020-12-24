@@ -9,7 +9,7 @@
   VERSION="v1.1.9"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -298,6 +298,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -472,7 +474,6 @@ fi
 	fi
 #
 
-
 # ############ PARSE THE OPTIONS
 # while getopts 'i:m:a:l:v:d:' opt ; do
 #   case $opt in
@@ -495,6 +496,9 @@ fi
 # 
 # # Store the remaining part as arguments.
 # # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

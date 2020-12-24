@@ -329,7 +329,7 @@ count=1
 			# Concatenate $i > 1 PHYLIP sequences to concatenated seqs PHYLIP file
 			(
 				while read l; do
-					MY_TAXON_NAME="$(echo $l | sed 's/\ //g')" ;
+					MY_TAXON_NAME="$(echo "$l" | sed 's/\ //g')" ;
 					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')" ;				
 						# extract/copy corresponding sequence from $i and paste it to end of
 						# line with same name ($MY_TAXON_NAME) in tmp file $j:
@@ -346,10 +346,10 @@ count=1
 				done < "$USER_SPEC_NAMSPACES_FILE"
 			)
 			# Add ith locus information to partitions/charsets files...
-			locus="$(basename $i '.phy')" ;
+			locus="$(basename "$i" '.phy')" ;
 			#MY_PREV_NCHAR="$(cat ./previous_nchar.tmp)" ;
-			MY_NEW_START_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + 1)" ;
-			MY_NEW_END_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + $MY_PHYLIP_NCHAR)" ;
+			MY_NEW_START_RANGE_VAL="$(calc "$MY_PREV_END_RANGE_VAL" + 1)" ;
+			MY_NEW_END_RANGE_VAL="$(calc "$MY_PREV_END_RANGE_VAL" + "$MY_PHYLIP_NCHAR")" ;
 			echo "DNA, ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL}" >> ./raxml_partitions.part ;
 			echo "${locus}=$MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> partitionfinder_subsets.txt ;
 			echo "  charset ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_lowercase.txt ;
@@ -360,11 +360,7 @@ count=1
 			cp "$i" ./orig_phylip/ ;
 
 		fi
-
-
 		echo "$((count++))" > count.tmp ;
-
-		
 	done
 )
 
@@ -411,9 +407,12 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNamesSpaces (def: NULL) mandatory taxon 'names and spaces' file
@@ -558,6 +557,9 @@ fi
 	else 
 		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

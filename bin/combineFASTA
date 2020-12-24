@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, May 11 13:37:30 CDT 2020.                       #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -249,6 +249,7 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
 
 
 # ############ SCRIPT OPTIONS
@@ -398,6 +399,9 @@ fi
 		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
 	fi
 #
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

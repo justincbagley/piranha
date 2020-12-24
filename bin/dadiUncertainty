@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 3 Oct 2017 13:49:59 -0400.                      #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -707,7 +707,7 @@ np.savetxt('uncerts_GIM.tmp', uncerts_GIM, fmt='%2.10f', delimiter=',')
 
 ##--RUN CUSTOM GIM SCRIPT:
 	echo "INFO      | $(date) | Running uncertainty analysis using the GIM... "
-	python ./customGIM.py
+	python ./customGIM.py ;
 
 ##--Fix output uncerts_GIM.tmp file so that it contains each parameter name followed by its 
 ##--stdev estimate, in tab-separated text file format:
@@ -879,6 +879,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -893,7 +895,8 @@ MY_BESTMOD_PARAM_ESTIMATES=0.1,0.1,0.1,0.1,0.1,0.1
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -v   inputVCFFile (def: input.vcf) input VCF file for run
@@ -1020,6 +1023,9 @@ done
 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

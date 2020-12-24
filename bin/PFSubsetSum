@@ -9,7 +9,7 @@
   VERSION="v1.4.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Sep 7 01:07:20 2016 -0300.                      #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -160,10 +160,10 @@ echo "INFO      | $(date) | Step #3: Compute summary statistics for each data su
 echo "INFO      | $(date) | Extracting and organizing subsets...  "
 
 	##--Extract subsets from PartitionFinder output file:
-	MY_NUM_SUBSETS=$(grep -n "^DNA," $MY_BEST_SCHEME_FILE | wc -l);
+	MY_NUM_SUBSETS=$(grep -n "^DNA," "$MY_BEST_SCHEME_FILE" | wc -l);
 	MY_START_LINE_NUM="$(cat $MY_BEST_SCHEME_FILE | grep -n '^DNA,' | head -n1 | sed 's/\:.*//')";
 	MY_END_LINE_NUM="$(cat $MY_BEST_SCHEME_FILE | grep -n '^DNA,' | tail -n1 | sed 's/\:.*//')";
-	sed -n "$MY_START_LINE_NUM","$MY_END_LINE_NUM"p $MY_BEST_SCHEME_FILE > ./subsets.txt;
+	sed -n "$MY_START_LINE_NUM","$MY_END_LINE_NUM"p "$MY_BEST_SCHEME_FILE" > ./subsets.txt;
 	MY_SUBSETS_FILE=./subsets.txt;
 
 echo "INFO      | $(date) | The best scheme from PartitionFinder contains $MY_NUM_SUBSETS subsets.  "
@@ -174,9 +174,9 @@ echo "INFO      | $(date) | The best scheme from PartitionFinder contains $MY_NU
 	##--scheme identified by PartitionFinder. So, we can do this with a simple for loop
 	##--across different p's:
 (
-	for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
+	for (( i=1; i<=MY_NUM_SUBSETS; i++ )); do
 		SUBSET_NAME="$(echo p$i)";
-		sed -n "$i"p $MY_SUBSETS_FILE | sed 's/DNA\,//g; s/p[0-9]*//g; s/^[\ =]*//g' > "$SUBSET_NAME".txt ;		##--This cleans up the subset data by removing everything except the charsets (e.g. deleting "DNA, "...).
+		sed -n "$i"p "$MY_SUBSETS_FILE" | sed 's/DNA\,//g; s/p[0-9]*//g; s/^[\ =]*//g' > "$SUBSET_NAME".txt ;		##--This cleans up the subset data by removing everything except the charsets (e.g. deleting "DNA, "...).
 
 		echo "$SUBSET_NAME" >> ./subset_names.txt ;
 
@@ -189,10 +189,10 @@ echo "INFO      | $(date) | 1. Calculating numCharsets (number of character sets
 	mkdir "$MY_WORKING_DIR"/numCharsets/ ;
 
 (
-    for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
+    for (( i=1; i<=MY_NUM_SUBSETS; i++ )); do
         SUBSET_NAME="$(echo p$i)";
         SUBSET_FILE="$(echo ./$SUBSET_NAME.txt)";
-        number_of_occurrences=$(grep -o "\-" <<< cat $SUBSET_FILE | wc -l);
+        number_of_occurrences=$(grep -o "\-" <<< cat "$SUBSET_FILE" | wc -l);
         echo "$number_of_occurrences" > "$SUBSET_NAME"_numCharsets.out ;
 		
 		cat ./"$SUBSET_NAME"_numCharsets.out >> ./numCharsets/ALL_numCharsets.txt ;
@@ -215,8 +215,8 @@ echo "INFO      | $(date) | 2. Calculating subsetLengths (alignment lengths in b
 	mkdir "$MY_WORKING_DIR"/subsetLengths/ ;
 
 (
-    for (( i=1; i<=$MY_NUM_SUBSETS; i++ )); do
-        SUBSET_NAME="$(echo p$i)";
+    for (( i=1; i<=MY_NUM_SUBSETS; i++ )); do
+        SUBSET_NAME="$(echo p"$i")";
         SUBSET_FILE="$(echo ./$SUBSET_NAME.txt)";
 		cat "$SUBSET_FILE" > ./Rinput.txt;
 		CHARSET_DUMP="$(cat ./Rinput.txt)";
@@ -252,7 +252,7 @@ mv ./*.Rout ./subsetLengths/ ;
 echo "INFO      | $(date) | 3. Extracting subsetModels (selected models of DNA sequence evolution) for each subset in the scheme...  "
 	grep -n "^[0-9]" ./best_scheme.txt > ./subset_mods_prep.txt ;
 	MY_SUBSET_MODELS_PREPPER=./subset_mods_prep.txt ;
-	sed 's/^[0-9:\ |]*//g; s/\ \ \ \ |\ p.*$//g' $MY_SUBSET_MODELS_PREPPER > ./subsetModels.txt ;
+	sed 's/^[0-9:\ |]*//g; s/\ \ \ \ |\ p.*$//g' "$MY_SUBSET_MODELS_PREPPER" > ./subsetModels.txt ;
 	if [[ -s ./subset_mods_prep.txt ]]; then rm ./subset_mods_prep.txt ; fi 
 
 
@@ -265,10 +265,10 @@ cat ./table_header.txt ./table.txt > ./sumstats.txt ;
 
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	if [[ -s ./table_header.txt ]]; then rm ./table_header.txt ; fi 
-	if [[ -s ./table.txt ]]; then rm ./table.txt ; fi 
-	if [[ -s ./subset_names.txt ]]; then rm ./subset_names.txt ; fi 
-	if [[ -s ./subsetModels.txt ]]; then rm ./subsetModels.txt ; fi 
+	if [[ -s ./table_header.txt ]]; then rm ./table_header.txt ; fi ;
+	if [[ -s ./table.txt ]]; then rm ./table.txt ; fi ;
+	if [[ -s ./subset_names.txt ]]; then rm ./subset_names.txt ; fi ;
+	if [[ -s ./subsetModels.txt ]]; then rm ./subsetModels.txt ; fi ;
 
 echo "INFO      | $(date) | Done."
 echo "----------------------------------------------------------------------------------------------------------"
@@ -281,9 +281,12 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -352,6 +355,10 @@ if [[ "$1" == "-c" ]] || [[ "$1" == "-citation" ]] || [[ "$1" == "--citation" ]]
 "
 	exit
 fi
+
+
+################################ END OPTIONS AND USAGE ###################################
+
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##

@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,9 +137,9 @@ echo "INFO      | $(date) | SpeciesIdentifier, v1.0.1 July 2020                 
 echo "INFO      | $(date) | Copyright (c) 2019 Justin C. Bagley. All rights reserved.      "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
-USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
-#echoCDWorkingDir
+export USER_SPEC_PATH="$(printf '%q\n' "$(pwd)")";
 echoShortPWD
 checkMachineType
 
@@ -267,13 +267,16 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 # None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -326,6 +329,10 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename "$0") $VERSION";
 	exit
 fi
+
+
+################################ END OPTIONS AND USAGE ###################################
+
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##

@@ -9,7 +9,7 @@
   export VERSION="v1.1.4"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Apr 10 08:43:01 CDT 2019.                       #
-# Last update: December 15, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -342,9 +342,12 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -o   origNames (def: NULL) list file of original taxon (sample) names (i.e. search items)
@@ -451,7 +454,6 @@ fi
 		MY_FILE_TYPE="$MY_ARG" ;
 	fi
 
-
 # ############ PARSE THE OPTIONS
 # #while getopts 'o:n:f:' opt ; do
 # while getopts 'o:n:f:' opt ; do
@@ -469,6 +471,9 @@ fi
 #        exit 1 ;;
 #   esac
 # done
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

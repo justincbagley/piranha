@@ -9,7 +9,7 @@
   export VERSION="v1.0.3"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, 8 Apr 2017 01:21:17 -0400.                      #
-# Last update: December 15, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -139,6 +139,7 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | pyRADLocusVarSites, v1.0.3 December 2020                       "
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
+
 echo "INFO      | $(date) | Step #1: Set up and test current working directory. "
 ###### STEP #1: SETUP, READ AND CHECK CURRENT WORKING DIRECTORY, INCLUDING DIR TEST FOR 
 ###### CORRECT WORKING DIR (PYRAD / IPYRAD OUTFILES/ RUN SUBFOLDER).
@@ -231,8 +232,12 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
+
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -282,6 +287,9 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename "$0") $VERSION";
 	exit
 fi
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

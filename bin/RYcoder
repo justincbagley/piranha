@@ -9,7 +9,7 @@
   VERSION="v0.1.5"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Jun 11 12:36:45 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -136,6 +136,7 @@ echo "INFO      | $(date) | RYcoder, v0.1.5 April 2020                          
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
+
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
 ###### Set working directory and filetypes as different variables:
 echo "INFO      | $(date) | Setting user-specified path to: "
@@ -375,9 +376,12 @@ fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputFile (def: NULL) name of input NEXUS or PHYLIP DNA sequence alignment file
@@ -500,6 +504,9 @@ fi
 		MY_PARTFILE_FORMAT="$MY_ARG" ;
 	fi
 #
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

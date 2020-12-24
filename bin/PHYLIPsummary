@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Jun 19 14:04:27 CDT 2019.                       #
-# Last update: April 17, 2020                                                            #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -230,9 +230,12 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputPHYLIP (def: NULL) input PHYLIP filename
@@ -327,6 +330,10 @@ fi
 		MULTIPLE_PHYLIP_SWITCH="$MY_ARG" ;
 	fi
 #
+
+
+################################ END OPTIONS AND USAGE ###################################
+
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##

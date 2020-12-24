@@ -135,6 +135,7 @@ echo "INFO      | $(date) | dadiRunner, v1.0.2 July 2020                        
 echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting dadiRunner pipeline... "
+
 echo "INFO      | $(date) | Step #1: Set up workspace, read configuration information, and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
@@ -346,10 +347,10 @@ echo "INFO      | $(date) | Step #6: Clean up workspace by removing unnecessary 
 echo "INFO      | $(date) | Cleaning up: removing temporary files from local machine..."
 
 	for (( i=1; i<="$MY_NUM_INDEP_RUNS"; i++ )); do rm ./*_"$i".py; done;
-	if [[ -s ./batch_qsub_top.txt ]]; then rm ./batch_qsub_top.txt ; fi
-	if [[ -s ./cd_and_qsub_commands.txt ]]; then rm ./cd_and_qsub_commands.txt ; fi
-	if [[ -s ./batch_qsub_bottom.txt ]]; then rm ./batch_qsub_bottom.txt ; fi
-	if [[ -s ./dadirunner_batch_qsub.sh ]]; then rm ./dadirunner_batch_qsub.sh ; fi
+	if [[ -s ./batch_qsub_top.txt ]]; then rm ./batch_qsub_top.txt ; fi ;
+	if [[ -s ./cd_and_qsub_commands.txt ]]; then rm ./cd_and_qsub_commands.txt ; fi ;
+	if [[ -s ./batch_qsub_bottom.txt ]]; then rm ./batch_qsub_bottom.txt ; fi ;
+	if [[ -s ./dadirunner_batch_qsub.sh ]]; then rm ./dadirunner_batch_qsub.sh ; fi ;
 
 echo "INFO      | $(date) | Done. "
 echo "----------------------------------------------------------------------------------------------------------"
@@ -361,6 +362,8 @@ echo ""
 
 }
 
+
+############################### BEGIN OPTIONS AND USAGE ##################################
 
 
 ############ SCRIPT OPTIONS
@@ -422,7 +425,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
 "
 
-VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
+VERBOSE_USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   SNPInput (def: $MY_SNP_DATA_FILE) SNP data input file
@@ -538,6 +542,9 @@ done
 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIPcleaner.sh                                                                 #
-  VERSION="v1.3.1"                                                                       #
+  VERSION="v1.4.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sun, Feb 24 11:33:48 CDT 2019.                       #
-# Last update: December 23, 2020                                                         #
+# Last update: December 24, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,7 +137,7 @@ PHYLIPcleaner () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIPcleaner, v1.3.1 December 2020                            "
+echo "INFO      | $(date) | PHYLIPcleaner, v1.4.0 December 2020                            "
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
@@ -278,35 +278,103 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[  
 #				sed -i '/\ [\-n]*$/d' "$i" ;
 #				sed -i '/\ [\-\?]*$/d' "$i" ;
 			fi
-				
 
-				# Remove gap sites: remove columns consisting of all gap '-' characters.
-				# --------------------------------------------------
-				# If .phy file has gaps in alignment, then call rmGapSites.R R script to 
-				# remove all column positions with gaps from alignment and output new, gapless 
-				# PHYLIP file named "./sites_nogaps.phy". If PHYLIP $i does not have gaps, 
-				# then go to next line of loop. 
-				# 
-				# First, copy PHYLIP $i to a holding file named 'sites.phy':
-				cp "$i" ./sites.phy ;
 
-				# Second, create a temporary file containing all lines in sites.phy with the 
-				# gap character, as a test:
-				grep -n "-" ./sites.phy > ./gaptest.tmp ;
-				
-				# Next, we test for nonzero testfile, indicating presence of gaps in $j, 
-				# using UNIX test operator "-s" (returns true if file size is not zero). 
-				# If fails, cat sites.phy into file with same name as nogaps file that
-				# is output by rmGapSites.R and move forward:
-				if [[ -s ./gaptest.tmp ]]; then
-					echo "Removing column sites in locus${count} with gaps. "
-					R CMD BATCH **/rmGapSites.R
-				else
-			   		echo ""
-			   		cat ./sites.phy > ./sites_nogaps.phy ;
+			# rmGapSites FUNCTION
+			# --------------------------------------------------
+			# This is remove gap sites. The goal is to remove nucleotide sites (columns)
+			# from the alignment that consist entirely of gap characters ('-'). Steps: 
+			# Make rmGapSites.R R script. If .phy file has gaps in alignment, then call 
+			# rmGapSites.R script to remove all column positions with all gaps (proportion 
+			# = 1.0) from alignment and output new, cleaned PHYLIP file named './sites_nogaps.phy'. 
+			# If PHYLIP $i does not have gaps, then go to next line of loop. 
+			# --------------------------------------------------
+			rmGapSites_function () {
+
+			# CREATE rmGapSites R SCRIPT
+			# --------------------------------------------------
+			# First, we create the R script in current working directory, setting gap
+			# threshold to 1 (remove sites/cols composed 100% of gaps):
+			if [[ -s ./rmGapSites.R ]]; then
+				rm ./rmGapSites.R ;
+			elif [[ ! -s ./rmGapSites.R ]]; then
+echo "
+#!/usr/bin/env Rscript
+
+######################################## START ###########################################
+
+# Load needed library, R code, or package stuff. Install package if not present.
+# source('rmGapSites.R', chdir = TRUE)
+packages <- c('ape', 'readr', 'seqinr')
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+    install.packages(setdiff(packages, rownames(installed.packages())))
+}
+
+library(ape)
+library(readr)
+library(seqinr)
+
+# Read in the data, output from first part of NEXUS2gphocs loop:
+	sites <- read.dna('sites.phy', format='sequential')
+
+# Delete columns with the threshold level of gaps equivalent to all gaps (1.0 proportion):
+	sites_nogaps <- del.colgapsonly(sites, threshold=1, freq.only = FALSE)
+
+# Write new alignment, with sites with gaps removed, to file in present working directory)...
+	write.dna(sites_nogaps, file='sites_nogaps.phy', format='sequential', nbcol=-1, colw=500000)
+
+	# write.nexus(sites_nogaps, file='sites_nogaps.nex')
+
+
+######################################### END ############################################
+" > rmGapSites.R
+			fi
+
+			# CREATE HOLDING FILE
+			# --------------------------------------------------
+			# Second, copy cleaned PHYLIP file, $i, to a holding file named 'sites.phy':
+			cp "$i" ./sites.phy ;
+
+			# PREP/RUN rmGapSites.R, CONDITIONAL ON TEST FOR GAPS IN THE ALIGNMENT
+			# --------------------------------------------------
+			# Next, we test for the presence of gaps in $i. If fails or no gaps, then cat sites.phy into file with same name as nogaps 
+			# file that is output by rmGapSites.R and move forward:
+			MY_GAP_CHECK="$(grep -n '-' "$i" | wc -l | sed 's/\ //g')";
+			if [[ "$MY_GAP_CHECK" -gt "0" ]]; then
+				# Add gap_threshold parameter to file for rmGapSites:
+				echo "1" > gap_threshold.txt ;
+	
+				echo "INFO      | $(date) | Checking for and removing sites (columns) in alignment ${i} consisting entirely of gaps... "
+				R CMD BATCH ./rmGapSites.R
+			else
+		   		echo ""
+		   		cat ./sites.phy > ./sites_nogaps.phy ;
+			fi
+
+			# CHECK AND REPORT GAP CLEANING
+			# --------------------------------------------------
+				MY_NCHAR="$(head -n1 ./sites_nogaps.phy | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
+				MY_NTAX="$(head -n1 ./sites_nogaps.phy | sed 's/\ [0-9]*//g; s/\ //g')";
+				MY_COMP_NCHAR="$(head -n1 ./sites.phy | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
+				MY_DIFF="$(calc "$MY_COMP_NCHAR"-"$MY_NCHAR")";
+				#
+				if [[ "$MY_DIFF" != "0" ]]; then 
+					echo "WARNING   | $(date) | Columns removed. " ; 
+				   #echo "INFO      | $(date) | Alignment ${MY_BASENAME}.phy is ${MY_DIFF} sites smaller than the original alignment. " ; 
+					echo "INFO      | $(date) | Removed ${MY_DIFF} nucleotide site(s)/column(s) comprised entirely of gap characters ('-')... " ; 
 				fi
 
-
+			# REPLACE ORIGINAL FILE WITH MODIFIED/UNMODIFIED HOLDING FILE
+			# --------------------------------------------------
+			# Replace original PHYLIP with sites_nogaps.phy:
+			if [[ -s ./sites_nogaps.phy ]]; then 
+				cp ./sites_nogaps.phy "$i" ;
+				rm ./sites_nogaps.phy ;
+			fi
+			if [[ -s ./sites.phy ]]; then rm ./sites.phy ; fi ;
+}
+	# Run the function!
+	rmGapSites_function
 
 
 			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
@@ -327,7 +395,8 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ -s "$INPUT_PHYLIP_FILE" ]] && [[  
 			MY_FINAL_NTAX="$(head -n1 "$i" | sed 's/\ [0-9]*//g'| sed 's/[\]*//g')";
 			if [[ "$MY_FINAL_NTAX" != "$MY_ORIG_NTAX" ]]; then
 				MY_NUM_PROBLEM_IND="$(calc $MY_ORIG_NTAX-$MY_FINAL_NTAX)"
-				echo "INFO      | $(date) | Removed ${MY_NUM_PROBLEM_IND} individuals comprised entirely of undetermined sites (gaps, missing characters)... "
+				echo "WARNING   | $(date) | Rows removed. " ; 
+				echo "INFO      | $(date) | Removed ${MY_NUM_PROBLEM_IND} individual(s) comprised entirely of undetermined sites (gaps, missing characters)... "
 				if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
 					echo "$i  Removed ${MY_NUM_PROBLEM_IND} individuals" >> ./output/cleanedPHYLIP.summary.txt ;
 				else
@@ -495,7 +564,105 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[  "$MULTIPLE_PHYLIP_SWITCH" != "0" ]
 #				sed -i '/\ [\-n]*$/d' "$i" ;
 #				sed -i '/\ [\-\?]*$/d' "$i" ;
 			fi
-				
+
+
+			# rmGapSites FUNCTION
+			# --------------------------------------------------
+			# This is remove gap sites. The goal is to remove nucleotide sites (columns)
+			# from each alignment that consist entirely of gap characters ('-'). Steps: 
+			# Make rmGapSites.R R script. If .phy file has gaps in alignment, then call 
+			# rmGapSites.R script to remove all column positions with all gaps (proportion 
+			# = 1.0) from alignment and output new, cleaned PHYLIP file named './sites_nogaps.phy'. 
+			# If PHYLIP $i does not have gaps, then go to next line of loop. 
+			# --------------------------------------------------
+			rmGapSites_function () {
+
+			# CREATE rmGapSites R SCRIPT
+			# --------------------------------------------------
+			# First, we create the R script in current working directory, setting gap
+			# threshold to 1 (remove sites/cols composed 100% of gaps):
+			if [[ -s ./rmGapSites.R ]]; then
+				rm ./rmGapSites.R ;
+			elif [[ ! -s ./rmGapSites.R ]]; then
+echo "
+#!/usr/bin/env Rscript
+
+######################################## START ###########################################
+
+# Load needed library, R code, or package stuff. Install package if not present.
+# source('rmGapSites.R', chdir = TRUE)
+packages <- c('ape', 'readr', 'seqinr')
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+    install.packages(setdiff(packages, rownames(installed.packages())))
+}
+
+library(ape)
+library(readr)
+library(seqinr)
+
+# Read in the data, output from first part of NEXUS2gphocs loop:
+	sites <- read.dna('sites.phy', format='sequential')
+
+# Delete columns with the threshold level of gaps equivalent to all gaps (1.0 proportion):
+	sites_nogaps <- del.colgapsonly(sites, threshold=1, freq.only = FALSE)
+
+# Write new alignment, with sites with gaps removed, to file in present working directory)...
+	write.dna(sites_nogaps, file='sites_nogaps.phy', format='sequential', nbcol=-1, colw=500000)
+
+	# write.nexus(sites_nogaps, file='sites_nogaps.nex')
+
+
+######################################### END ############################################
+" > rmGapSites.R
+			fi
+
+			# CREATE HOLDING FILE
+			# --------------------------------------------------
+			# Second, copy cleaned PHYLIP file, $i, to a holding file named 'sites.phy':
+			cp "$i" ./sites.phy ;
+
+			# PREP/RUN rmGapSites.R, CONDITIONAL ON TEST FOR GAPS IN THE ALIGNMENT
+			# --------------------------------------------------
+			# Next, we test for the presence of gaps in $i. If fails or no gaps, then cat sites.phy into file with same name as nogaps 
+			# file that is output by rmGapSites.R and move forward:
+			MY_GAP_CHECK="$(grep -n '-' "$i" | wc -l | sed 's/\ //g')";
+			if [[ "$MY_GAP_CHECK" -gt "0" ]]; then
+				# Add gap_threshold parameter to file for rmGapSites:
+				echo "1" > gap_threshold.txt ;
+	
+				echo "INFO      | $(date) | Checking for and removing sites (columns) in alignment ${i} consisting entirely of gaps... "
+				R CMD BATCH ./rmGapSites.R
+			else
+		   		echo ""
+		   		cat ./sites.phy > ./sites_nogaps.phy ;
+			fi
+
+			# CHECK AND REPORT GAP CLEANING
+			# --------------------------------------------------
+				MY_NCHAR="$(head -n1 ./sites_nogaps.phy | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
+				MY_NTAX="$(head -n1 ./sites_nogaps.phy | sed 's/\ [0-9]*//g; s/\ //g')";
+				MY_COMP_NCHAR="$(head -n1 ./sites.phy | sed 's/[0-9]*\ //g' | sed 's/\ //g')";
+				MY_DIFF="$(calc "$MY_COMP_NCHAR"-"$MY_NCHAR")";
+				#
+				if [[ "$MY_DIFF" != "0" ]]; then 
+					echo "WARNING   | $(date) | Columns removed. " ; 
+				   #echo "INFO      | $(date) | Alignment ${MY_BASENAME}.phy is ${MY_DIFF} sites smaller than the original alignment. " ; 
+					echo "INFO      | $(date) | Removed ${MY_DIFF} nucleotide site(s)/column(s) comprised entirely of gap characters ('-')... " ; 
+				fi
+
+			# REPLACE ORIGINAL FILE WITH MODIFIED/UNMODIFIED HOLDING FILE
+			# --------------------------------------------------
+			# Replace original PHYLIP with sites_nogaps.phy:
+			if [[ -s ./sites_nogaps.phy ]]; then 
+				cp ./sites_nogaps.phy "$i" ;
+				rm ./sites_nogaps.phy ;
+			fi
+			if [[ -s ./sites.phy ]]; then rm ./sites.phy ; fi ;
+}
+	# Run the function!
+	rmGapSites_function
+
+
 			MY_PHY_NLINES="$(awk 'END {print NR,"lines"}' $i | sed 's/\ .*//g')" ; 
 			MY_CORR_PHY_NLINES="$(calc "$MY_PHY_NLINES" - 1)" ;
 		

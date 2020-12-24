@@ -9,7 +9,7 @@
   export VERSION="v1.0.4"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 15 11:20:02 CDT 2019.                       #
-# Last update: December 15, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,6 +137,7 @@ echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting taxonCompFilter analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoCDWorkingDir
 checkMachineType
@@ -247,6 +248,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -257,7 +260,8 @@ MY_NUM_TAX=NULL
 USER_TAX_COMP_THRESHOLD=0.7
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -u   unphased (def: 1, true; other: 0, false) whether or not input PHYLIP alignments 
@@ -359,6 +363,9 @@ while getopts 'u:p:o:n:t:' opt ; do
        exit 1 ;;
   esac
 done
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

@@ -9,7 +9,7 @@
   export VERSION="v0.2.3"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: created by Justin Bagley on Thu, Sep 28 09:31:25 2017 -0400.                     #
-# Last update: December 15, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -176,6 +176,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -185,7 +187,8 @@ MY_OUTPUT_VCF_FILE=subsample
 DELETE_ORIG_VCF=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  This is vcfSubsampler. It uses a list file of SNP names, <snpsFile>, to subsample a variant 
  call format (VCF) file, <inputVCFFile>, so that it only contains SNPs in the list.
@@ -245,6 +248,9 @@ while getopts 'i:s:o:d:' opt ; do
        exit 1 ;;
   esac
 done
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

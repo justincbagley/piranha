@@ -9,7 +9,7 @@
   VERSION="v1.1.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, May 8 15:48:56 CDT 2019.                        #
-# Last update: April 17, 2020                                                            #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -246,21 +246,18 @@ count=1
 
 			# Add ith locus information to partitions/charsets files...
 			locus="$(basename $i '.phy')";
-			MY_NEW_START_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + 1)";
-			MY_NEW_END_RANGE_VAL="$(calc $MY_PREV_END_RANGE_VAL + $MY_PHYLIP_NCHAR)";
+			MY_NEW_START_RANGE_VAL="$(calc "$MY_PREV_END_RANGE_VAL" + 1)";
+			MY_NEW_END_RANGE_VAL="$(calc "$MY_PREV_END_RANGE_VAL" + "$MY_PHYLIP_NCHAR")";
 			echo "DNA, ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL}" >> ./raxml_partitions.part  ;
 			echo "${locus}=$MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> partitionfinder_subsets.txt  ;
 			echo "  charset ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_lowercase.txt  ;
 			echo "  CHARSET ${locus} = $MY_NEW_START_RANGE_VAL-${MY_NEW_END_RANGE_VAL};" >> NEXUS_charsets_uppercase.txt  ;
 
-			MY_PREV_END_RANGE_VAL="$(echo $MY_NEW_END_RANGE_VAL)";
+			MY_PREV_END_RANGE_VAL="$(echo "$MY_NEW_END_RANGE_VAL")";
 
 			cp "$i" ./orig_phylip/ ;
-
 		fi
-
 	echo "$((count++))" > count.tmp ;
-		
 	done
 )
 
@@ -306,9 +303,12 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNamesSpaces (def: NULL) mandatory name of taxon 'names and spaces' file
@@ -443,6 +443,9 @@ fi
 	else 
 		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

@@ -9,7 +9,7 @@
   version="v1.9.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 4 May 2017 22:39:41 -0400.                      #
-# Last update: April 19, 2020                                                            #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -147,6 +147,7 @@ echo "INFO      | $(date) | MrBayesPostProc, v1.9.0 April 2020                  
 echo "INFO      | $(date) | Copyright (c) 2017–2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting MrBayesPostProc analysis... "
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoCDWorkingDir
@@ -373,9 +374,12 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -i   inputNEXUS (def: NULL) input NEXUS alignment file
@@ -574,6 +578,9 @@ fi
 #   esac
 # done
 # 
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

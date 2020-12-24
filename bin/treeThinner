@@ -9,7 +9,7 @@
   export VERSION="v1.2.3"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 17 Nov 2016 00:24:53 -0600.                     #
-# Last update: December 15, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -18,6 +18,17 @@
 # CONTAIN EVERY NTH TREE                                                                 #
 #                                                                                        #
 ##########################################################################################
+
+############# SCRIPT INFO
+# NOTE: try to expand to multiple treefile formats in future versions.
+
+###### A method specific to MrBayes .t trees files: 1) count the number of lines in the
+# header (NEXUS top and beginning of TREES block with translated taxon names) by
+# subtracting 1 from the line on which the first ampersand occurs; 2) cut the header
+# section out of the .t file and save it; 3) working only with lines containing trees
+# (thus with ampersands or "&U"; get these lines by using grep), get every nth line of
+# the trees; and 4) paste the header, the trees, and an appropriate final 1-2 lines
+# back together as a final output .t file that has been "thinned".
 
 # Provide a variable with the location of this script.
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -124,18 +135,6 @@ export caskDependencies=()
 export gemDependencies=()
 
 
-############# SCRIPT INFO
-## NOTE: try to expand to multiple treefile formats in future versions.
-
-###### A method specific to MrBayes .t trees files: 1) count the number of lines in the
-## header (NEXUS top and beginning of TREES block with translated taxon names) by
-## subtracting 1 from the line on which the first ampersand occurs; 2) cut the header
-## section out of the .t file and save it; 3) working only with lines containing trees
-## (thus with ampersands or "&U"; get these lines by using grep), get every nth line of
-## the trees; and 4) paste the header, the trees, and an appropriate final 1-2 lines
-## back together as a final output .t file that has been "thinned".
-
-############# 
 
 
 treeThinner () {
@@ -183,8 +182,12 @@ echo "--------------------------------------------------------------------------
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
+
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -233,6 +236,9 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename "$0") $VERSION";
 	exit
 fi
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

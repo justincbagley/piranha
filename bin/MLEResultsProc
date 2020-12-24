@@ -9,7 +9,7 @@
   VERSION="v1.5.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:21:37 -0300.                     #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -28,7 +28,6 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the functionality in this boilerplate. This script will fail if they can
 # not be found.
 # -----------------------------------
-
 UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
@@ -38,10 +37,8 @@ else
   exit 1
 fi
 
-
 # Source shared functions and variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -141,6 +138,7 @@ echo "INFO      | $(date) | MLEResultsProc, v1.5.1 July 2020                    
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting MLEResultsProc pipeline... "
+
 echo "INFO      | $(date) | Step #1: Set up workspace, check machine type, and read beast .out files into environmental variable. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
@@ -166,13 +164,13 @@ echo "INFO      | $(date) | Step #2: Check BEAST version, in order to detect and
 )
 	y="$(cat file.tmp)";
 
-	MY_BEAST1_VER_CHECK="$(grep -h 'BEAST\ v1' $y | wc -l)";
+	MY_BEAST1_VER_CHECK="$(grep -h 'BEAST\ v1' "$y" | wc -l)";
 	MY_BEAST1_VER_CHECK2="$(grep -h 'log\ marginal\ likelihood' $y | wc -l)";
 
-	MY_BEAST2_VER_CHECK="$(grep -h 'BEAST\ v2' $y | wc -l)";
-	MY_BEAST2_VER_CHECK2="$(grep -h 'marginal\ L\ estimate' $y | wc -l)";
+	MY_BEAST2_VER_CHECK="$(grep -h 'BEAST\ v2' "$y" | wc -l)";
+	MY_BEAST2_VER_CHECK2="$(grep -h 'marginal\ L\ estimate' "$y" | wc -l)";
 
-	if [[ -s ./file.tmp ]]; then rm ./file.tmp ; fi
+	if [[ -s ./file.tmp ]]; then rm ./file.tmp ; fi ;
 
 
 echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files in current directory. "
@@ -190,10 +188,10 @@ echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files
 			echo "$i"
 			echo "$(basename $i)" > "${i}"_filename.tmp ;
 #
-				grep -n "log marginal likelihood (using path sampling) from pathLikelihood.delta =" ${i} | \
+				grep -n "log marginal likelihood (using path sampling) from pathLikelihood.delta =" "$i" | \
 				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp ;
 	
-				grep -n "log marginal likelihood (using stepping stone sampling) from pathLikelihood.delta =" ${i} | \
+				grep -n "log marginal likelihood (using stepping stone sampling) from pathLikelihood.delta =" "$i" | \
 				awk -F"= " '{print $NF}' > "${i}"_SSMLEs.tmp ;
 #
 				MY_PS_RESULT="$(head -n1 ${i}_PSMLEs.tmp)";
@@ -203,9 +201,9 @@ echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files
 		done
 	)
 
-	if [[ ! -z ./*_filename.tmp ]]; then rm ./*_filename.tmp ; fi
-	if [[ ! -z ./*_PSMLEs.tmp ]]; then rm ./*_PSMLEs.tmp ; fi
-	if [[ ! -z ./*_SSMLEs.tmp ]]; then rm ./*_SSMLEs.tmp ; fi
+	if [[ ! -z ./*_filename.tmp ]]; then rm ./*_filename.tmp ; fi ;
+	if [[ ! -z ./*_PSMLEs.tmp ]]; then rm ./*_PSMLEs.tmp ; fi ;
+	if [[ ! -z ./*_SSMLEs.tmp ]]; then rm ./*_SSMLEs.tmp ; fi ;
 
 }
 
@@ -222,7 +220,7 @@ echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files
 			echo "$i"
 			echo "$(basename $i)" > "${i}"_filename.tmp ;
 #
-				grep -n "marginal L estimate =" ${i} | \
+				grep -n "marginal L estimate =" "$i" | \
 				awk -F"= " '{print $NF}' > "${i}"_PSMLEs.tmp ;
 	
 				MY_PS_RESULT="$(head -n1 ${i}_PSMLEs.tmp)" ;
@@ -243,8 +241,8 @@ echo "INFO      | $(date) | Step #3: Extract MLE results from BEAST output files
 		done
 	)
 
-	if [[ ! -z ./*_filename.tmp ]]; then rm ./*_filename.tmp ; fi
-	if [[ ! -z ./*_PSMLEs.tmp ]]; then rm ./*_PSMLEs.tmp ; fi
+	if [[ ! -z ./*_filename.tmp ]]; then rm ./*_filename.tmp ; fi ;
+	if [[ ! -z ./*_PSMLEs.tmp ]]; then rm ./*_PSMLEs.tmp ; fi ;
 }
 
 
@@ -271,8 +269,8 @@ echo "INFO      | $(date) | Step #4: Arrange MLE results in tab-delimited file w
 	cat header.txt data.tmp | sed 's/\_filename.tmp//g; s/\ /	/g' > MLE.output.txt ;
 
 	echo "INFO      | $(date) | Cleaning up... "
-	if [[ -s ./header.txt ]]; then rm header.txt ; fi
-	if [[ -s ./data.tmp ]]; then rm data.tmp ; fi
+	if [[ -s ./header.txt ]]; then rm header.txt ; fi ;
+	if [[ -s ./data.tmp ]]; then rm data.tmp ; fi ;
 
 
 echo "INFO      | $(date) | Step #5: Load MLE results into R and compute Bayes factor tables. "
@@ -310,13 +308,16 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 # None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: -help) echo this help text and exit
@@ -401,6 +402,10 @@ fi
 	else 
 		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
+
+
+################################ END OPTIONS AND USAGE ###################################
+
 
 # ############# ############# #############
 # ##       TIME TO RUN THE SCRIPT        ##

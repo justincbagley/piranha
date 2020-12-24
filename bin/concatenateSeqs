@@ -186,7 +186,7 @@ count=1
 
  		cp "$USER_SPEC_NAMSPACES_FILE" "$i".tmp ;
  		j="$i".tmp ;
- 		MY_PHYLIP_NCHAR="$(head -n1 $i | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
+ 		MY_PHYLIP_NCHAR="$(head -n1 "$i" | perl -pe 's/^[0-9]*\ +//g; s/\ //g')" ;
  		echo "###----------   $i,  $MY_PHYLIP_NCHAR bp   ----------###"
 		echo "$USER_SPEC_NAMSPACES_FILE"
 
@@ -283,9 +283,12 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNamesSpaces (def: NULL) mandatory taxon 'names and spaces' file
@@ -418,6 +421,9 @@ fi
 	else 
 		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

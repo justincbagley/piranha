@@ -9,7 +9,7 @@
   VERSION="v1.0.1"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 11 Oct 2016 09:41:06 -0300.                     #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -135,6 +135,7 @@ echo "INFO      | $(date) |-----------------------------------------------------
 echo "INFO      | $(date) | PhyloMapperNullProc, v1.0.1 July 2020                          "
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
@@ -145,7 +146,7 @@ echo "INFO      | $(date) | Step #2: Run PhyloMapperNullProc. "
 MY_LOGFILE=$(echo ./*.log)
 echo "INPUT     | $(date) | Reading files... "
 echo "INPUT     | $(date) | Read in the following PhyloMapper log file: $MY_LOGFILE "
-MY_LOGFILE_BASENAME="$(echo $MY_LOGFILE | sed 's/\.\///g; s/\.log//g')"
+MY_LOGFILE_BASENAME="$(echo $MY_LOGFILE | sed 's/\.\///g; s/\.log//g')";
 
 
 echo "INPUT     | $(date) | Focal clade: "
@@ -170,7 +171,9 @@ echo "INFO      | $(date) | Step #3: Clean up workspace by removing temporary fi
 echo "INFO      | $(date) | Deleting temporary files... "
 ############ CLEAN UP WORKING DIR BY DELETING TEMPORARY FILES.
 	
-	rm ./*.tmp ;
+	if [[ "$(ls -1 ./*.tmp 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+		rm ./*.tmp ; 
+	fi
 
 
 echo "INFO      | $(date) | Done."
@@ -183,12 +186,15 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## None at this time.
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -h   help text (also: --help) echo this help text and exit
@@ -235,6 +241,9 @@ if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
 	echo "$(basename "$0") $VERSION";
 	exit
 fi
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

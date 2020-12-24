@@ -146,6 +146,7 @@ echo "INFO      | $(date) | renameForStarBEAST2, v1.2.5 December 2020           
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
+
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
 checkMachineType
@@ -228,6 +229,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -235,7 +238,8 @@ MY_INPUT_FILE_TYPE=phylip
 USER_SPEC_ASSIGNMENT_FILE=assignment.txt
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -f   input file type (def: phylip; other: fasta) type of file(s) to be renamed
@@ -320,6 +324,9 @@ done
 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

@@ -9,7 +9,7 @@
   VERSION="v1.0.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 16 May 2017 08:17:15 -0400.                     #
-# Last update: April 17, 2020                                                            #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -175,7 +175,7 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "FALSE" ]]; then
 #			
 #
 		### EXTRACT BEST-FIT MODEL PARAMETER ESTIMATES: 
-		grep -n "Best\-fit\ parameters:" $MY_OUTPUT_FILENAME > "$MY_OUTPUT_BASENAME"_BFP.tmp ;
+		grep -n "Best\-fit\ parameters:" "$MY_OUTPUT_FILENAME" > "$MY_OUTPUT_BASENAME"_BFP.tmp ;
 		## Get starting line no. for BFPs:
 		MY_BFP_START_LN_NUM="$(sed 's/\:.*$//g' "$MY_OUTPUT_BASENAME"_BFP.tmp)";
 		MY_BFP_CLOSEBRACK_TEST="$(grep -h "\]" "$MY_OUTPUT_BASENAME"_BFP.tmp | wc -l)";
@@ -196,7 +196,7 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "FALSE" ]]; then
 			elif [[ "$MY_BFP_CLOSEBRACK_TEST" != "0" ]]; then
 
 				## Get final line no. for multi-line BFPs:
-				MY_BFP_FINISH_LN_NUM="$(grep -n '\ .*\]' $MY_OUTPUT_FILENAME | sed 's/\:.*$//g' | tail -n1)" ;
+				MY_BFP_FINISH_LN_NUM="$(grep -n '\ .*\]' "$MY_OUTPUT_FILENAME" | sed 's/\:.*$//g' | tail -n1)" ;
 
 				## Use sed to extract multi-line BFPs lines to tmp file using line nos:
 				sed -n "$MY_BFP_START_LN_NUM","$MY_BFP_FINISH_LN_NUM"p "$MY_OUTPUT_FILENAME" > ./"$MY_OUTPUT_BASENAME"_multiline_BFP.tmp ;
@@ -259,7 +259,7 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "TRUE" ]]; then
 	(
 		for i in ./*/; do
 			cd "$i"; 
-				MY_FOLDER_BASENAME="$(echo ${i} | sed 's/^.\///g; s/\///g')" ;
+				MY_FOLDER_BASENAME="$(echo "$i" | sed 's/^.\///g; s/\///g')" ;
 				echo "$MY_FOLDER_BASENAME";
 #			
 				### CHECK FOR OUTPUT FILE.
@@ -294,7 +294,7 @@ if [[ "$MY_MULTIRUN_DIR_SWITCH" = "TRUE" ]]; then
 					elif [[ "$MY_BFP_CLOSEBRACK_TEST" != "0" ]]; then
 
 						## Get final line no. for multi-line BFPs:
-						MY_BFP_FINISH_LN_NUM="$(grep -n '\ .*\]' $MY_OUTPUT_FILENAME | sed 's/\:.*$//g' | tail -n1)" ;
+						MY_BFP_FINISH_LN_NUM="$(grep -n '\ .*\]' "$MY_OUTPUT_FILENAME" | sed 's/\:.*$//g' | tail -n1)" ;
 
 						## Use sed to extract multi-line BFPs lines to tmp file using line nos:
 						sed -n "$MY_BFP_START_LN_NUM","$MY_BFP_FINISH_LN_NUM"p "$MY_OUTPUT_FILENAME" > ./"$MY_OUTPUT_BASENAME"_multiline_BFP.tmp ;
@@ -368,6 +368,8 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
@@ -376,7 +378,8 @@ MY_LOWER_MOD_NUM=1
 MY_UPPER_MOD_NUM=10
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
@@ -417,7 +420,8 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 "
 
 ############ CREATE USAGE & HELP TEXTS
-VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
+VERBOSE_USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent ∂a∂i runs per model (.py file)
@@ -507,6 +511,9 @@ done
 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

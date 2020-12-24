@@ -325,9 +325,12 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -t, --taxa      taxonNamesSpaces (def: NULL) mandatory taxon 'names and spaces' file
@@ -491,7 +494,6 @@ fi
 	fi
 #
 
-
 # ############ PARSE THE OPTIONS
 # while getopts 't:c:o:v:' opt ; do
 #   case $opt in
@@ -512,6 +514,9 @@ fi
 # 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

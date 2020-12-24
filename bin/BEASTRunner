@@ -9,7 +9,7 @@
   VERSION="v1.5.2"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600.                     #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -141,6 +141,7 @@ echo "INFO      | $(date) | Running with the following options: "
 echo "INFO      | $(date) | - Number of runs, <nRuns> = ${MY_NUM_INDEP_RUNS} "
 echo "INFO      | $(date) | - Supercomputer run <walltime> = ${MY_SC_WALLTIME} "
 echo "INFO      | $(date) | - Java memory allocation, <javaMem> = ${JAVA_MEM_ALLOC} "
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
@@ -360,9 +361,12 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -n   nRuns (def: $MY_NUM_INDEP_RUNS) number of independent BEAST runs per model (.xml file)
@@ -595,6 +599,9 @@ fi
 #        exit 1 ;;
 #   esac
 # done
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

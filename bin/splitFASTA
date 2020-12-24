@@ -356,9 +356,12 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
   ${bold}Options:${reset}
   -i   inputFASTA (def: NULL) input FASTA file
@@ -553,6 +556,9 @@ fi
 #        exit 1 ;;
 #   esac
 # done
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

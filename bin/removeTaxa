@@ -9,7 +9,7 @@
   export VERSION="v1.0.1"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Apr 21 16:29:40 CDT 2020.                       #
-# Last update: December 15, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -375,9 +375,12 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -t   taxonNames (def: NULL) list file containing names of taxa to remove (i.e. search items)
@@ -474,7 +477,6 @@ fi
 		MY_FILE_TYPE="$MY_ARG" ;
 	fi
 
-
 # ############ PARSE THE OPTIONS
 # while getopts 't:f:' opt ; do
 #   case $opt in
@@ -490,6 +492,9 @@ fi
 #        exit 1 ;;
 #   esac
 # done
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.                        #
-# Last update: July 31, 2020                                                             #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -137,6 +137,7 @@ echo "INFO      | $(date) | PHYLIP2PFSubsets, v1.0.4 July 2020                  
 echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting PHYLIP2PFSubsets pipeline... "
+
 echo "INFO      | $(date) | Step #1: Set up workspace with useful environmental variables and functions, and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
@@ -164,7 +165,7 @@ echo "INFO      | $(date) | Making concatenateAlignments function (completeSeqs 
 			echo "INFO      | $(date) |    $i,  $MY_PHYLIP_NCHAR bp "
 
 				while read k; do
-					MY_TAXON_NAME="$(echo $k | sed 's/\ //g')";
+					MY_TAXON_NAME="$(echo "$k" | sed 's/\ //g')";
 					MY_N_IND_INSTS="$(grep -n "$MY_TAXON_NAME" "$i" | wc -l | perl -pe 's/\t//g; s/\ //g')";
 					MY_1ST_INST_LINE="$(grep -n "$MY_TAXON_NAME" "$i" | head -n1 | sed 's/\:.*//g; s/\ //g' | perl -pe 's/\t//g')";
 
@@ -247,14 +248,9 @@ echo "INFO      | $(date) | Making concatenateAlignments function (completeSeqs 
 				## Remove the original PHYLIP files. Can add an option later to optionally keep these (i.e. by doing the commented out steps of creating orig_phylip/ and moving each $i there.)
 				rm "$i" ;
 			fi
-
-
 		echo "$((MY_COUNT++))" > MY_COUNT.tmp ;
-	
-			
 		done
-	)
-	
+	)	
 }
 	############################# END concatenateAlignments.sh #################################
 
@@ -417,13 +413,16 @@ echo ""
 }
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
+
 
 ############ SCRIPT OPTIONS
 ## OPTION DEFAULTS ##
 KEEP_ORIG_PHYLIP_SWITCH=0
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -k   keepPHYLIP (def: 0, off; 1, on, keep) whether or not to keep original PHYLIP file(s)
@@ -489,6 +488,9 @@ done
 
 # Store the remaining part as arguments.
 # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############

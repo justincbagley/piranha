@@ -9,7 +9,7 @@
   export VERSION="v1.0.8"                                                                #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Oct 17 11:59:08 CDT 2019.                       #
-# Last update: December 15, 2020                                                         #
+# Last update: December 23, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -819,18 +819,20 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
 if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 ######
 
+##########################################################################################
 ######################################### END ############################################
 
 }
 
-
 if [[ -s lists/ ]] && [[ -s ./denoised_bin_histotest_out_fileOrder.list.txt ]]; then cp ./denoised_bin_histotest_out_fileOrder.list.txt lists/ ; fi
 
 
+############################### BEGIN OPTIONS AND USAGE ##################################
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -b   inputBAM (def: NULL) for single-BAM run, name of input .bam file from appropriately
@@ -1020,7 +1022,6 @@ fi
 		MY_DEBUG_MODE_SWITCH=1 ;
 	fi
 
-
 # ############ PARSE THE OPTIONS
 # while getopts 'b:m:v:k:o:d:' opt ; do
 #   case $opt in
@@ -1043,6 +1044,9 @@ fi
 # 
 # # Store the remaining part as arguments.
 # # args+=("$@")
+
+
+################################ END OPTIONS AND USAGE ###################################
 
 
 # ############# ############# #############
