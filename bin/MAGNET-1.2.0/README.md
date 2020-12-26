@@ -166,24 +166,23 @@ The verbose usage text is as follows:
 
 $ piranha -f MAGNET -H
 
-Usage: $(basename "$0") [OPTION]...
+Usage: MAGNET [OPTION]...
 
  ${bold}Options:${reset}
   -f, --filetype     fileType (def: 1; also: 2) starting file type; if 1, script expects as
                      stdin a single input NEXUS file in the current directory; if 2, then
                      script expects multiple input PHYLIP files in current directory
   -i, --input        inputNEXUS (def: NULL) input NEXUS file (mandatory for -f 1)
-  -e, --exec         executable (def: $MY_RAXML_EXECUTABLE) name of RAxML executable available
+  -e, --exec         executable (def: raxml) name of RAxML executable available
                      from user's command line interface
-  -b, --boot         numBootstraps (def: $MY_NUM_BOOTREPS) RAxML bootstrap pseudoreplicates
-  -r, --raxmlmodel   raxmlModel (def: $MY_RAXML_MODEL; other: GTRGAMMAI, GTRCAT, GTRCATI)
-  -s, --simplemodel  simpleModel (def: $MY_SIMPLE_MODEL; other: JC69, K80, HKY85) specifies 
+  -b, --boot         numBootstraps (def: 100) RAxML bootstrap pseudoreplicates
+  -r, --raxmlmodel   raxmlModel (def: GTRGAMMA; other: GTRGAMMAI, GTRCAT, GTRCATI)
+  -s, --simplemodel  simpleModel (def: NULL; other: JC69, K80, HKY85) specifies 
                      simple DNA substitution model that will override any other model (even 
                      across partitions)
-  -g, --gapthresh    gapThreshold (def: $MY_GAP_THRESHOLD=essentially zero gaps allowed unless 
+  -g, --gapthresh    gapThreshold (def: 0.001=essentially zero gaps allowed unless 
                      >1000 individuals; takes float proportion value) gap threshold value
-  -m, --missing      indivMissingData (def: $MY_INDIV_MISSING_DATA=allowed; 0=removed) missing  
-                     data setting
+  -m, --missing      indivMissingData (def: 1=allowed; 0=removed) missing data setting
   -o, --outgroup     outgroup (def: NULL) outgroup given as single taxon name (tip label) or
                      comma-separted list
   -h, --help         echo this help text and exit
@@ -393,5 +392,5 @@ I gratefully acknowledge Nayoki Takebayashi, who wrote and freely provided some 
 -   Stamatakis, A. 2014. RAxML version 8: a tool for phylogenetic analysis and post-analysis of large phylogenies. Bioinformatics 30.9, 1312-1313.
 -   Vachaspati, P., Warnow, T. 2015. ASTRID: Accurate Species TRees from Internode Distances. BMC Genomics 16(Suppl 10):S3.
 
-December 22, 2020
+December 24, 2020
 Justin C. Bagley, Tuscaloosa, AL, USA
