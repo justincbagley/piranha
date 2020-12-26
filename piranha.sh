@@ -9,7 +9,7 @@
   export PIRANHA_VERSION="v1.1.7"                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: December 20, 2020                                                         #
+# Last update: December 24, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -154,7 +154,7 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]] && [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUN
 fi
 
 echo "
-piranha v1.1.7, December 2020  (main script for PIrANHA v0.4a4, update Dec 20 21:04:08 CST 2020)                "
+piranha v1.1.7, December 2020  (main script for PIrANHA v0.4a4, update Dec 24 21:04:08 CST 2020)                "
 echo "Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                                            "
 echo "----------------------------------------------------------------------------------------------------------"
 
@@ -203,7 +203,7 @@ if [[ ! -z "$FUNCTION_TO_RUN" ]]; then
 		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) | Execution path: $MY_EXECUTION_PATH"
 	elif [[ "$FUNCTION_TO_RUN" = "MAGNET" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) | Execution path: $MY_EXECUTION_PATH"
 	fi
 
@@ -434,40 +434,40 @@ Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a sta
 	## so we need to add the subfolder name (which will vary as MAGNET is updated in the 
 	## future) to the execution path, $MY_EXECUTION_PATH.
 	if [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
 		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" ;
 	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" &> piranha_MAGNET.out.log.txt ;
 	elif [[ -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
 		echo "INFO      | $(date) | Executing function without additional arguments..."
 		"$MY_EXECUTION_PATH" &> piranha_MAGNET.out.log.txt ;
 	fi
 
 	if [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" != "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" != "true" ]] && [[ "$debug" = "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
 		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" != "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha_MAGNET.out.log.txt ;
 	elif [[ ! -z "$FUNCTION_ARGUMENTS" ]] && [[ "$FUNCTION_TO_RUN" = "MAGNET" ]] && [[ "$printLog" = "true" ]] && [[ "$debug" = "true" ]]; then
-		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.1.1/${FUNCTION_TO_RUN})"
+		MY_EXECUTION_PATH="$(echo ${BIN_LOCATION}MAGNET-1.2.0/${FUNCTION_TO_RUN})"
 		echo "WARNING!  | $(date) | DEBUG MODE (attempted) is not available when calling MAGNET! Running script in regular release mode... "
 		echo "INFO      | $(date) | Executing function with -a flag arguments..."
 		"$MY_EXECUTION_PATH" "$FUNCTION_ARGUMENTS" &> piranha_MAGNET.out.log.txt ;
