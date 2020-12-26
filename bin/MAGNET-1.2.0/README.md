@@ -57,7 +57,49 @@ Despite the importance of gene trees in species tree and network inference, few 
 
 :thumbsup: No special hardware or setup is necessary, unless the user is interested in estimating gene trees on a remote supercomputing cluster (see below).
 
-**MAGNET can be installed by installing PIrANHA** as described in the [PIrANHA README](https://github.com/justincbagley/piranha) and [Wiki pages](https://github.com/justincbagley/piranha/wiki).
+### Installation
+
+Downloading, installing, and upgrading MAGNET (on macOS or Linux) is easy thanks to [Homebrew](https://brew.sh) distribution.
+
+#### A. Homebrew install
+
+[See here.](https://github.com/justincbagley/homebrew-tap)
+
+Two Homebrew Install Options:
+
+**Recommended:**
+
+1. Development (cutting edge) Homebrew install:
+
+```bash
+# Install:
+brew tap justincbagley/homebrew-tap ;
+brew update ;
+brew install --HEAD magnet ;
+piranha -i ;
+```
+
+2. Regular Homebrew install (stable, but may not be up to date):
+
+```bash
+# Install:
+brew tap justincbagley/homebrew-tap ;
+brew update ;
+brew install magnet ;
+```
+After running one of the installs *above*, it is recommended that users do `source ~/.bash_profile` next on **macOS**, or `source ~/.bashrc` next on **Linux**. 
+
+#### B. Regular installation 'by-hand':
+
+You can also install MAGNET manually by
+
+1.  conducting a `git clone` or `wget` or manual download of this repository, e.g. `git clone https://github.com/justincbagley/MAGNET.git`, then 
+2.  granting the main script execute privileges by doing `chmod +x ./MAGNET` or `chmod +x ./MAGNET.sh`, then
+3.  installing the dependencies (see below).
+
+#### C. See also: PIrANHA Homebrew install
+
+**MAGNET can also be installed by installing PIrANHA** as described in the [PIrANHA README](https://github.com/justincbagley/piranha) and [Wiki pages](https://github.com/justincbagley/piranha/wiki).
 
 ## SOFTWARE DEPENDENCIES
 
