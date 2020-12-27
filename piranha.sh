@@ -377,33 +377,39 @@ vcfSubsampler          Utility function that uses a list file to subsample a var
 
 ${bold}REFERENCES${reset}
 Aberer, A., Krompass, D., Stamatakis, A. 2013. Pruning rogue taxa improves phylogenetic 
-	accuracy: an efficient algorithm and webservice. Systematic Biology, 62(1), 162–166.
+	accuracy: an efficient algorithm and webservice. Systematic Biology 62(1), 162–166.
 Bouckaert, R., Heled, J., Künert, D., Vaughan, T.G., Wu, C.H., Xie, D., Suchard, M.A., 
 	Rambaut, A., Drummond, A.J. 2014. BEAST2: a software platform for Bayesian evolutionary 
-	analysis. PLoS Computational Biology, 10, e1003537.
+	analysis. PLoS Computational Biology 10, e1003537.
 Bryant, D., Bouckaert, R., Felsenstein, J., Rosenberg, N.A., RoyChoudhury, A. 2012. Inferring 
 	species trees directly from biallelic genetic markers: bypassing gene trees in a full 
-	coalescent analysis. Molecular Biology and Evolution, 29, 1917–1932.
+	coalescent analysis. Molecular Biology and Evolution 29, 1917–1932.
 Capella-Gutiérrez, S., Silla-Martínez, J.M., Gabaldon, T., 2009. TRIMAL: a tool for automated
-	alignment trimming in large-scale phylogenetic analyses. Bioinformatics, 25(15), 1972–1973.
+	alignment trimming in large-scale phylogenetic analyses. Bioinformatics 25(15), 1972–1973.
 Drummond, A.J., Suchard, M.A., Xie, D., Rambaut, A. 2012. Bayesian phylogenetics with BEAUti 
- 	and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
+ 	and the BEAST 1.7. Molecular Biology and Evolution 29, 1969-1973.
 Eaton, D.A. 2014. PyRAD: assembly of de novo RADseq loci for phylogenetic analyses. 
- 	Bioinformatics, 30, 1844-1849.
+ 	Bioinformatics 30, 1844-1849.
 Eaton, D.A.R., Overcast, I. 2016. ipyrad: interactive assembly and analysis of RADseq data sets. 
  	Available at: <http://ipyrad.readthedocs.io/>.
 Felsenstein, J. 2002. PHYLIP (Phylogeny Inference Package) Version 3.6 a3.
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 Lanfear, R., Calcott, B., Ho, S.Y.W., Guindon, S. 2012. Partitionfinder: combined selection of 
 	partitioning schemes and substitution models for phylogenetic analyses. Molecular Biology 
-	and Evolution, 29, 1695–1701. 
+	and Evolution 29, 1695–1701. 
 Lanfear, R., Calcott, B., Kainer, D., Mayer, C., Stamatakis, A. 2014. Selecting optimal 
-	partitioning schemes for phylogenomic datasets. BMC Evolutionary Biology, 14, 82.
+	partitioning schemes for phylogenomic datasets. BMC Evolutionary Biology 14, 82.
 Meier, R., Shiyang, K., Vaidya, G., Ng, P.K. 2006. DNA barcoding and taxonomy in Diptera: 
 	a tale of high intraspecific variability and low identification success. Systematic 
-	Biology, 55(5), 715-728.
+	Biology 55(5), 715-728.
+Minh, B.Q., Schmidt, H.A., Chernomor, O., Schrempf, D., Woodhams, M.D., Von Haeseler, A., 
+	Lanfear, R., 2020. IQ-TREE 2: New models and efficient methods for phylogenetic inference 
+	in the genomic era. Molecular Biology and Evolution 37(5), 1530-1534.
+Nguyen, L.T., Schmidt, H.A., Von Haeseler, A., Minh, B.Q., 2015. IQ-TREE: a fast and effective
+	stochastic algorithm for estimating maximum-likelihood phylogenies. Molecular Biology and 
+	Evolution 32(1), 268-274.
 Weiß, C.L., Pais, M., Cano, L.M., Kamoun, S., Burbano, H.A. 2018. nQuire: a statistical 
-	framework for ploidy estimation using next generation sequencing. BMC bioinformatics, 
+	framework for ploidy estimation using next generation sequencing. BMC Bioinformatics 
 	19(1), 122.
 
 ----------------------------------------------------------------------------------------------------------------
