@@ -1133,7 +1133,7 @@ Usage: piranha -f $(basename "$0") [Options]...
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
  tested with Perl v5.1+ on macOS High Sierra (v10.13+) and Centos 6/7 Linux, but should work 
- on many earlier versions of macOS or Linux. 
+ on many other versions of macOS or Linux. 
 
  ${bold}Usage Examples${reset}
     piranha -f FASTA2PHYLIP -f 1 -i <inputFASTA> -k 1 -v 1    Convert <inputFASTA> to PHYLIP format, keep

@@ -9,7 +9,7 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 17 13:59:38 CDT 2020.                       #
-# Last update: December 16, 2020                                                         #
+# Last update: December 26, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -166,7 +166,7 @@ echo "INFO      | $(date) | ----------------------------------- " | tee -a "$MY_
 
 	###### B. HANDLE WORKING DIRECTORY, INPUT DIRECTORY, OUTPUT DIRECTORY, AND REFERENCE ABSOLUTE PATH:
 	## Starting directory:
-	MY_STARTING_DIR="$(printf '%q\n' "$(pwd)")";
+	export MY_STARTING_DIR="$(printf '%q\n' "$(pwd)")";
 	
 	## PWD & input directory:
 	if [[ -s "$MY_INPUT_DIR" ]] && [[ "$MY_INPUT_DIR" != "NULL" ]]; then 

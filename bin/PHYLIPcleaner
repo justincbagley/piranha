@@ -838,7 +838,7 @@ Usage: piranha -f $(basename "$0") [Options]...
  saved in an ./output/ directory.
 	This program runs on UNIX-like and Linux systems using commonly distributed utility 
  software, with usage as obtained by running the script with the -h flag, and has been 
- tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many earlier versions 
+ tested with Perl v5.1+ on macOS High Sierra (v10.13+) but will work on many other versions 
  or Linux. 
 
  ${bold}Usage Examples${reset}

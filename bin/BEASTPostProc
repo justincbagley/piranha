@@ -9,7 +9,7 @@
   VERSION="v1.8.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.                     #
-# Last update: December 23, 2020                                                         #
+# Last update: December 26, 2020                                                         #
 # Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -136,6 +136,7 @@ echo "INFO      | $(date) | BEASTPostProc, v1.8.0 July 2020                     
 echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting BEASTPostProc pipeline... "
+
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
 echoShortPWD
@@ -416,7 +417,8 @@ if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
 
 
 ############ CREATE USAGE & HELP TEXTS
-USAGE="Usage: $(basename "$0") [OPTION]...
+USAGE="
+Usage: $(basename "$0") [OPTION]...
 
  ${bold}Options:${reset}
   -l   loganalyserPath (def: NULL) mandatory absolute path to loganalyser executable in 
@@ -460,7 +462,6 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  Created by Justin Bagley on Fri, 29 Jul 2016 11:18:02 -0300.
  Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
 "
-
 
 if [[ -z "$*" ]]; then
 	echo "$USAGE"
