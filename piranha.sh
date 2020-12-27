@@ -6,10 +6,10 @@
 # |                                                                                      #
 #                                                                                        #
 # File: piranha                                                                          #
-  export PIRANHA_VERSION="v1.1.7"                                                        #
+  export PIRANHA_VERSION="v1.1.8"                                                        #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Mar 8 12:43:12 CST 2019.                        #
-# Last update: December 24, 2020                                                         #
+# Last update: December 26, 2020                                                         #
 # Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -27,7 +27,6 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the functionality in this boilerplate. This script will fail if they can
 # not be found.
 # -----------------------------------
-
 UTILS_LOCATION="${SCRIPT_PATH}/lib/utils.sh" # Update this path to find the utilities.
 
 if [[ -f "${UTILS_LOCATION}" ]]; then
@@ -39,7 +38,6 @@ fi
 
 ## Source Shared Functions and Variables
 # -----------------------------------
-
 FUNCS_LOCATION="${SCRIPT_PATH}/lib/sharedFunctions.sh" # Update this path to find the shared functions.
 VARS_LOCATION="${SCRIPT_PATH}/lib/sharedVariables.sh" # Update this path to find the shared variables.
 
@@ -287,6 +285,8 @@ getTaxonNames          Utility function that extracts tip taxon names from seque
                        PHYLIP DNA sequence alignments in current directory, using information on maximum taxon 
                        sampling level from user.
 indexBAM               [In prep.]
+iqtreePostProc         Function that automates post-processing of gene tree files and log files output during 
+                       phylogenetic analyses in IQ-TREE v1 or v2 (Nguyen et al. 2015; Minh et al. 2020).
 list                   Function that prints a tabulated list of PIrANHA functions and their descriptions.
 MAGNET                 Shell pipeline for automating estimation of a maximum-likelihood (ML) gene tree in RAxML 
                        for each of many loci in a RAD-seq, UCE, or other multilocus dataset. Also contains other 
@@ -487,7 +487,7 @@ fi
 usage() {
   echo -n "${SCRIPT_NAME} [OPTION]... [FILE]...
 
- This is the main script for PIrANHA v0.4a4 (update Dec 15 01:25:03 CST 2020).
+ This is the main script for PIrANHA v0.4a4 (update Dec 26 22:53:10 CST 2020).
 
  ${bold}Options:${reset}
   -s, --shortlist   Short list of available functions
@@ -574,7 +574,7 @@ unset options
 while [[ ${1} = -?* ]]; do
   case ${1} in
     -i|--init) shift; source "${SCRIPT_PATH}/completions/init.sh"; exit 0 ;;
-    -s|--shortlist) echo "2logeB10.r alignAlleles AnouraNEXUSPrepper assembleReads batchRunFolders BEAST_logThinner BEAST_PSPrepper BEASTPostProc BEASTReset BEASTRunner calcAlignmentPIS completeConcatSeqs completeSeqs concatenateSeqs concatSeqsPartitions dadiPostProc dadiRunner dadiUncertainty dropRandomHap dropTaxa ExaBayesPostProc FASTA2PHYLIP FASTA2VCF FASTAsummary fastSTRUCTURE geneCounter getBootTrees getDropTaxa getTaxonNames indexBAM list MAGNET makePartitions Mega2PHYLIP mergeBAM MLEResultsProc MrBayesPostProc NEXUS2MultiPHYLIP NEXUS2PHYLIP nQuireRunner PFSubsetSum phaseAlleles PHYLIP2FASTA phylip2fasta.pl PHYLIP2Mega PHYLIP2NEXUS PHYLIP2PFSubsets PHYLIPcleaner PHYLIPsubsampler PHYLIPsummary PhyloMapperNullProc phyNcharSumm pyRAD2PartitionFinder pyRADLocusVarSites RAxMLRunChecker RAxMLRunner renameForStarBeast2 renameTaxa RogueNaRokRunner RYcoder SNAPPRunner SpeciesIdentifier splitFASTA splitFile splitPHYLIP taxonCompFilter treeThinner trimSeqs vcfSubsampler shortlist"; exit 0 ;;
+    -s|--shortlist) echo "2logeB10.r alignAlleles AnouraNEXUSPrepper assembleReads batchRunFolders BEAST_logThinner BEAST_PSPrepper BEASTPostProc BEASTReset BEASTRunner calcAlignmentPIS completeConcatSeqs completeSeqs concatenateSeqs concatSeqsPartitions dadiPostProc dadiRunner dadiUncertainty dropRandomHap dropTaxa ExaBayesPostProc FASTA2PHYLIP FASTA2VCF FASTAsummary fastSTRUCTURE geneCounter getBootTrees getDropTaxa getTaxonNames indexBAM iqtreePostProc list MAGNET makePartitions Mega2PHYLIP mergeBAM MLEResultsProc MrBayesPostProc NEXUS2MultiPHYLIP NEXUS2PHYLIP nQuireRunner PFSubsetSum phaseAlleles PHYLIP2FASTA phylip2fasta.pl PHYLIP2Mega PHYLIP2NEXUS PHYLIP2PFSubsets PHYLIPcleaner PHYLIPsubsampler PHYLIPsummary PhyloMapperNullProc phyNcharSumm pyRAD2PartitionFinder pyRADLocusVarSites RAxMLRunChecker RAxMLRunner renameForStarBeast2 renameTaxa RogueNaRokRunner RYcoder SNAPPRunner SpeciesIdentifier splitFASTA splitFile splitPHYLIP taxonCompFilter treeThinner trimSeqs vcfSubsampler shortlist"; exit 0 ;;
     -f|--func) shift; FUNCTION_TO_RUN="$1" ;;
     -a|--args) shift; FUNCTION_ARGUMENTS="$*" ;;
     -o|--output) shift; USER_OUTPUT_DIR="$1" ;;
