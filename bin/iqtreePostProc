@@ -1,0 +1,862 @@
+#!/bin/sh
+
+##########################################################################################
+#  __  o  __   __   __  |__   __                                                         #
+# |__) | |  ' (__( |  ) |  ) (__(                                                        # 
+# |                                                                                      #
+#                                                                                        #
+# File: iqtreePostProc.sh                                                                #
+  VERSION="v1.0.0"                                                                       #
+# Author: Justin C. Bagley                                                               #
+# Date: Created by Justin Bagley on Sat, Dec 26 19:26:30 CST 2020.                       #
+# Last update: December 26, 2020                                                         #
+# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Please report bugs to <jbagley@jsu.edu>.                                               #
+#                                                                                        #
+# Description:                                                                           #
+# SHELL SCRIPT THAT AUTOMATES POST-PROCESSING OF GENE TREES OUTPUT BY IQ-TREE (AFTER     #
+# BATCH RUN OR USER RUN WITH SIMILAR DIRECTORY STRUCTURE)                                #
+#                                                                                        #
+##########################################################################################
+
+# Provide a variable with the location of this script.
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source Scripting Utilities
+# -----------------------------------
+# These shared utilities provide many functions which are needed to provide
+# the functionality in this boilerplate. This script will fail if they can
+# not be found.
+# -----------------------------------
+UTILS_LOCATION="${SCRIPT_PATH}/../lib/utils.sh" # Update this path to find the utilities.
+
+if [[ -f "${UTILS_LOCATION}" ]]; then
+  source "${UTILS_LOCATION}"
+else
+  echo "Please find the file util.sh and add a reference to it in this script. Exiting..."
+  exit 1
+fi
+
+# Source shared functions and variables
+# -----------------------------------
+FUNCS_LOCATION="${SCRIPT_PATH}/../lib/sharedFunctions.sh" # Update this path to find the shared functions.
+VARS_LOCATION="${SCRIPT_PATH}/../lib/sharedVariables.sh" # Update this path to find the shared variables.
+
+if [[ -f "${FUNCS_LOCATION}" ]] && [[ -f "${VARS_LOCATION}" ]]; then
+  source "${FUNCS_LOCATION}" ;
+  source "${VARS_LOCATION}" ;
+else
+  echo "Please find the files sharedFunctions.sh and sharedVariables.sh and add references to them in this script. Exiting... "
+  exit 1
+fi
+
+# trapCleanup Function
+# -----------------------------------
+# Any actions that should be taken if the script is prematurely
+# exited.  Always call this function at the top of your script.
+# -----------------------------------
+trapCleanup () {
+  echo ""
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  die "Exit trapped. In function: '${FUNCNAME[*]}'"
+}
+
+# safeExit
+# -----------------------------------
+# Non destructive exit for when script exits naturally.
+# Usage: Add this function at the end of every script.
+# -----------------------------------
+safeExit () {
+  # Delete temp files, if any
+  if is_dir "${tmpDir}"; then
+    rm -r "${tmpDir}"
+  fi
+  trap - INT TERM EXIT
+  exit
+}
+
+# Set Flags
+# -----------------------------------
+# Flags which can be overridden by user input.
+# Default values are below
+# -----------------------------------
+quiet=false
+printLog=false
+verbose=false
+force=false
+strict=false
+debug=false
+args=()
+
+# Set Temp Directory
+# -----------------------------------
+# Create temp directory with three random numbers and the process ID
+# in the name.  This directory is removed automatically at exit.
+# -----------------------------------
+tmpDir="/tmp/${SCRIPT_NAME}.$RANDOM.$RANDOM.$RANDOM.$$"
+(umask 077 && mkdir "${tmpDir}") || {
+  die "Could not create temporary directory! Exiting."
+}
+
+# Logging
+# -----------------------------------
+# Log is only used when the '-l' flag is set.
+#
+# To never save a logfile change variable to '/dev/null'
+# Save to Desktop use: $HOME/Desktop/${SCRIPT_BASENAME}.log
+# Save to standard user log location use: $HOME/Library/Logs/${SCRIPT_BASENAME}.log
+# -----------------------------------
+logFile="$HOME/Library/Logs/${SCRIPT_BASENAME}.log"
+
+# Check for Dependencies
+# -----------------------------------
+# Arrays containing package dependencies needed to execute this script.
+# The script will fail if dependencies are not installed.  For Mac users,
+# most dependencies can be installed automatically using the package
+# manager 'Homebrew'.  Mac applications will be installed using
+# Homebrew Casks. Ruby and gems via RVM.
+# -----------------------------------
+export homebrewDependencies=()
+export caskDependencies=()
+export gemDependencies=()
+export condaDependencies=(newick_utils)
+
+
+
+
+iqtreePostProc () {
+
+######################################## START ###########################################
+##########################################################################################
+
+echo "INFO      | $(date) |----------------------------------------------------------------"
+echo "INFO      | $(date) | iqtreePostProc, v1.0.0 December 2020                           "
+echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) |----------------------------------------------------------------"
+
+# --------------------------------------------------
+# -- STEP #1: SETUP.
+# --------------------------------------------------
+
+# OPTIONAL OUTPUT TO FILE
+# --------------------------------------------------
+if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+	if [[ ! -s ./output/ ]]; then
+		mkdir output/ ;
+	fi
+	exec >> ./output/"$MY_OUTPUT_FILE_SWITCH"
+	exec 2>&1
+	echo "INFO      | $(date) | Output file switch activated. Logging output to file at ./output/${MY_OUTPUT_FILE_SWITCH} ... "
+fi
+
+	# SET WORKING DIRECTORY AND CHECK MACHINE TYPE
+	# --------------------------------------------------
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Starting iqtreePostProc analysis... "
+		echo "INFO      | $(date) | ----------------------------------- "
+		echo "INFO      | $(date) | # Step #1: Set up workspace (e.g. functions, working directory) and check machine type. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+		echo "INFO      | $(date) | ----------------------------------- "
+	fi
+	# Starting directory and machine type:
+	echoShortPWD
+	checkMachineType
+
+	# START DEBUG MODE, IF CALLED
+	# --------------------------------------------------
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set -xv; fi
+
+
+# --------------------------------------------------
+# -- STEP #2: CONDUCT POST-PROCESSING OF IQ-TREE RESULTS.
+# --------------------------------------------------
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #2: Evaluate directory structure and conduct post-processing of IQ-TREE results files and folders, if present. " # | tee -a "$MY_OUTPUT_FILE_SWITCH"
+	echo "INFO      | $(date) | ----------------------------------- "
+fi
+
+	# STEP #2A: EVALUATE DIRECTORY STRUCTURE AND CONDUCT POST-PROCESSING
+	# CONDITIONAL ON THAT STRUCTURE.
+	# --------------------------------------------------
+	# First, check whether subfolders are present. Are subfolders present?
+	# --------------------------------------------------
+	if [[ ! -z "$(find . -type d | sed '/^\.$/d')"  ]]; then 
+	
+		MY_SUBFOLDERS_CHECK=1
+		# Subfolders present (find search yields nonzero results). Check for IQ-TREE output 
+		# files, check/det which folders contain the results, and exit if no results files (with 
+		# expected extensions, i.e., '.iqtree', '.treefile') are present.
+		
+			MY_RUN_FOLDERS="$(find . -name *.iqtree -print0 | xargs -0 -n1 dirname | sort --unique)"; # No. folders containing .iqtree run logs, i.e. run folders.
+			MY_NUM_RUN_FOLDERS="$(find . -name *.iqtree -print0 | xargs -0 -n1 dirname | sort --unique | wc -l | sed 's/\ //g')"; # No. IQ-TREE run folders.
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Est. no. IQ-TREE run (sub)folders:  $MY_NUM_RUN_FOLDERS "
+			fi
+			MY_NUM_IQTREE_RUNS="$(find ./*[0-9]/ -name '*.iqtree' -print | wc -l)";                   # No. .iqtree run logs (i.e. "main report file" accord. to the authors).
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Est. total no. IQ-TREE runs:        $MY_NUM_IQTREE_RUNS "
+			fi
+	
+			# Organize IQ-TREE results files
+			# --------------------------------------------------
+			count=1
+			(
+				for i in $MY_RUN_FOLDERS; do
+					if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+						echo "INFO      | $(date) | ----------------- Working on run subfolder ${count}. ${i} "
+					fi
+					cd "$i";
+						if [[ ! -s ../iqtree_files/ ]]; then 
+							mkdir ../iqtree_files/;
+						else
+							mv ../iqtree_files/ ../iqtree_files-orig/ ;  mkdir ../iqtree_files/ ; 
+						fi
+						cp ./*.iqtree ../iqtree_files/ ;
+					#
+						# If .treefile files present...
+						if [[ "$(ls -1 ./*.treefile 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+							if [[ ! -s ../treefile_files/ ]]; then 
+								mkdir ../treefile_files/;
+							else
+								rm ../treefile_files/ ;  mkdir ../treefile_files/; 
+							fi
+							cp ./*.treefile ../treefile_files/ ;
+						fi
+					#
+						# If .contree files present...
+						if [[ "$(ls -1 ./*.contree 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+							if [[ ! -s ../contree_files/ ]]; then 
+								mkdir ../contree_files/;
+							else
+								rm ../contree_files/ ;  mkdir ../iqtree_files/; 
+							fi
+							cp ./*.contree ../contree_files/ ;
+						fi
+					#
+						# If uniqueseq files present...
+						if [[ "$(ls -1 ./*.uniqueseq* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+							if [[ ! -s ../uniqueseq_files/ ]]; then 
+								mkdir ../uniqueseq_files/;
+							else
+								rm ../uniqueseq_files/ ;  mkdir ../uniqueseq_files/; 
+							fi
+							cp ./*.uniqueseq* ../uniqueseq_files/ ;
+						fi
+					#
+						# If log files present...
+						if [[ "$(ls -1 ./*.log 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+							if [[ ! -s ../log_files/ ]]; then 
+								mkdir ../log_files/;
+							else
+								rm ../log_files/ ;  mkdir ../log_files/; 
+							fi
+							cp ./*.log ../log_files/ ;
+						fi
+					#
+					cd ..;
+					echo "$((count++))" >/dev/null 2>&1 ;
+				done
+			)
+	
+	else
+	
+		MY_SUBFOLDERS_CHECK=0
+		# Subfolders absent. Assume you're in a single IQ-TREE run folder. Look for the IQ-TREE
+		# output files and exit with WARNING if none are present.
+	
+		if [[ "$(ls -1 ./*.iqtree 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | IQ-TREE main report file check PASSED. Found >=1 main report file for IQ-TREE run(s)... "
+			fi
+					if [[ ! -s ./iqtree_files/ ]]; then 
+						mkdir ./iqtree_files/;
+					else
+						mv ./iqtree_files/ ./iqtree_files-orig/ ;  mkdir ./iqtree_files/ ; 
+					fi
+					cp ./*.iqtree ./iqtree_files/ ;
+				#
+					# If .treefile files present...
+					if [[ "$(ls -1 ./*.treefile 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+						if [[ ! -s ./treefile_files/ ]]; then 
+							mkdir ./treefile_files/;
+						else
+							rm ./treefile_files/ ;  mkdir ./treefile_files/; 
+						fi
+						cp ./*.treefile ./treefile_files/ ;
+					fi
+				#
+					# If .contree files present...
+					if [[ "$(ls -1 ./*.contree 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+						if [[ ! -s ./contree_files/ ]]; then 
+							mkdir ./contree_files/;
+						else
+							rm ./contree_files/ ;  mkdir ./iqtree_files/; 
+						fi
+						cp ./*.contree ./contree_files/ ;
+					fi
+				#
+					# If .contree files present...
+					if [[ "$(ls -1 ./*.uniqueseq* 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+						if [[ ! -s ./uniqueseq_files/ ]]; then 
+							mkdir ./uniqueseq_files/;
+						else
+							rm ./uniqueseq_files/ ;  mkdir ./uniqueseq_files/; 
+						fi
+						cp ./*.uniqueseq* ./uniqueseq_files/ ;
+					fi
+				#
+					# If .log files present...
+					if [[ "$(ls -1 ./*.log 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+						if [[ ! -s ./log_files/ ]]; then 
+							mkdir ./log_files/;
+						else
+							rm ./log_files/ ;  mkdir ./log_files/; 
+						fi
+						cp ./*.log ./log_files/ ;
+					fi
+				#
+		else
+			echo "WARNING   | $(date) | IQ-TREE main report file check FAILED. See log file ('iqtreePostProc_log.txt') for details. "
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "WARNING   | $(date) | IQ-TREE main report file check FAILED. "
+				echo "INFO      | $(date) | This script was designed to run on full IQ-TREE output file sets, including '.iqtree' log files (called "
+				echo "INFO      | $(date) | 'main report files' by the program's authors) for each run. No such logs encountered. Quitting... "
+			fi
+
+		fi
+	fi
+	
+	
+	# STEP #2B: MAKE FILES CONTAINING ALL GENE TREES AND THEIR ORDERS.
+	# --------------------------------------------------
+	# Cat IQ-TREE gene trees for each gene/alignment to file, while
+	# saving gene tree (GT) order to '*fileOrder.list.txt' file.
+	# --------------------------------------------------
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Make files combining all gene trees and save gene tree orders to file... "
+	fi
+	if [[ -s summary_files/ ]]; then rm -rf summary_files/ ; fi ;			## ** IMPORTANT!!! ** First creation of ./summary_files/ is here.
+	if [[ ! -s summary_files/ ]]; then mkdir summary_files/ ; fi ;
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Make summary_files/ directory... "
+	fi
+	#
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Combining regular tree files ('.treefile')... "
+	fi
+	cd treefile_files/ ;
+		(
+			for j in ./*.treefile; do
+				echo "$j" >> ../summary_files/treefiles_fileOrder.list.txt ; 
+				cat "$j" >> ../summary_files/treefiles.tre ; 
+			done
+		)
+	cd ..;
+	
+	# Save regular consensus trees files and orders.
+	# --------------------------------------------------
+	# Combine regular consensus files:
+	if [[ -s contree_files/ ]]; then
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Combining regular consensus tree files ('.contree')... "
+		fi
+		cd contree_files/ ;
+			(
+				for k in ./*.contree; do
+					echo "$k" >> ../summary_files/contrees_fileOrder.list.txt ; 
+					cat "$k" >> ../summary_files/contrees.tre ; 
+				done
+			)
+		cd ..;
+	fi
+	
+
+	# ~~~~~~~ BOOTSTRAP-BASED TREE CLEANING CODE ~~~~~~~
+	# --------------------------------------------------
+
+	if [[ "$MY_BOOT_SWITCH" = "1" ]] && [[ "$MY_BOOT_SWITCH" = "NULL" ]]; then
+
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Bootstrap switch (-b) set to 1. Conducting gene tree cleaning by bootstrap proportions next... "
+		fi	
+	
+		# MUST HAVE NEWICK UTILITIES INSTALLED (conda: newick_utils) TO CONTINUE
+		# --------------------------------------------------
+		# Conditional type check for nw_ed executable availability from the
+		# command line:
+		# --------------------------------------------------
+		MY_NWUTILS_CHECK="$(type -P nw_ed)";
+		##
+		# WORKING: if [[ "$MY_NWUTILS_CHECK" ]]; then 
+		# BETTER:
+		if [[ ! -z "$(type -P nw_ed)" ]]; then
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Newick Utilities check PASSED. Moving forward with tree cleaning routine... "
+			fi	
+			# STEP #2C: IF -b 1 RUN, THEN CLEAN GENE TREES (COLLAPSE NODES WITH LOW BOOTSTRAP SUPPORT)
+			# AND CREATE A) FOLDERS OF CLEANED GTs (BOTH contrees and treefiles) AND B) CLEANED GT FILES.
+			# --------------------------------------------------
+			# Conduct Newick Utils post-processing of IQ-TREE treefiles and consensus trees, then
+			# cat cleaned treefiles and consensus trees for each gene/alignment to file, while
+			# saving cleaned tree orders to '*fileOrder.list.txt' files. 
+			# --------------------------------------------------
+			
+			# Use nw_ed function of Newick Utils to collapse into a polytomy (or, in the parlance of  
+			# the Newick Utils author, "open") any node with BP support less than or equal to (<=) 
+			# a desired threshold level of support (t; in %), set by user with $MY_BOOT_THRESH.
+			# Example:
+			# nw_ed data/HRV.bs.nw 'i & b <= 10' o 
+			
+			# Clean treefile trees by collapsing nodes with low bootstrap proportion (BP)
+			# support using default threshold, or threshold supplied by user.
+			# --------------------------------------------------
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Cleaning tree files ('.treefile') with Newick Utilities and then combining them... "
+			fi	
+			if [[ -s ./treefile_files_BS"$MY_BOOT_THRESH"/ ]]; rm treefile_files_BS"$MY_BOOT_THRESH"/ ; fi ;
+			if [[ ! -s ./treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then cp -rf treefile_files/ treefile_files_BS"$MY_BOOT_THRESH"/ ; fi ;		
+			if [[ -z "$MY_BOOT_THRESH" ]] || [[ "$MY_BOOT_THRESH" = "NULL" ]]; then
+				MY_BOOT_THRESH=33
+				cd treefile_files_BS"$MY_BOOT_THRESH"/ ;
+					(
+						for l in ./*.treefile; do
+							MY_BASENAME="$(basename "$l" '.treefile')";
+							nw_ed "$l" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+						done
+					)
+				cd ..;
+			else
+				cd treefile_files_BS"$MY_BOOT_THRESH"/ ;
+					(
+						for l in ./*.treefile; do
+							MY_BASENAME="$(basename "$l" '.treefile')";
+							nw_ed "$l" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+						done
+					)
+				cd ..;
+			fi
+	
+			# Combine cleaned (BP-threshold) treefile files:
+			if [[ -s treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then
+				cd treefile_files_BS"$MY_BOOT_THRESH"/ ;
+					(
+						for l in ./*_BS"$MY_BOOT_THRESH".tre; do
+							echo "$l" >> ../summary_files/treefile_files_BS"$MY_BOOT_THRESH"_fileOrder.list.txt ; 
+							cat "$l" >> ../summary_files/treefile_files_BS"$MY_BOOT_THRESH".tre ; 
+						done
+					)
+				cd ..;
+			fi
+	
+			# Clean consensus trees by collapsing nodes with low bootstrap proportion (BP)
+			# support using default threshold, or threshold supplied by user.
+			# --------------------------------------------------
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "INFO      | $(date) | Cleaning consensus tree files ('.contree') with Newick Utilities and then combining them... "
+			fi	
+			if [[ -s ./contree_files_BS"$MY_BOOT_THRESH"/ ]]; rm contree_files_BS"$MY_BOOT_THRESH"/ ; fi ;
+			if [[ ! -s ./contree_files_BS"$MY_BOOT_THRESH"/ ]]; then cp -rf contree_files/ contree_files_BS"$MY_BOOT_THRESH"/ ; fi ;		
+			if [[ -z "$MY_BOOT_THRESH" ]] || [[ "$MY_BOOT_THRESH" = "NULL" ]]; then
+				MY_BOOT_THRESH=33
+				cd contree_files_BS"$MY_BOOT_THRESH"/ ;
+					(
+						for m in ./*.contree; do
+							MY_BASENAME="$(basename "$m" '.contree')";
+							nw_ed "$m" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+						done
+					)
+				cd ..;
+			else
+				cd contree_files_BS"$MY_BOOT_THRESH"/ ;
+					(
+						for m in ./*.contree; do
+							MY_BASENAME="$(basename "$m" '.contree')";
+							nw_ed "$m" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+						done
+					)
+				cd ..;
+			fi
+			
+			# Combine cleaned (BP-threshold) consensus files:
+			if [[ -s contree_files_BS"$MY_BOOT_THRESH"/ ]]; then
+				cd contree_files_BS"$MY_BOOT_THRESH"/ ;
+					(
+						for m in ./*_BS"$MY_BOOT_THRESH".tre; do
+							echo "$m" >> ../summary_files/contrees_BS"$MY_BOOT_THRESH"_fileOrder.list.txt ; 
+							cat "$m" >> ../summary_files/contrees_BS"$MY_BOOT_THRESH".tre ; 
+						done
+					)
+				cd ..;
+			fi
+		else
+			echo "WARNING   | $(date) | Newick Utilities (nw_ed) check FAILED. Cannot clean gene trees. See log file for details. "
+			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+				echo "WARNING   | $(date) | Newick Utilities check FAILED. "
+				echo "INFO      | $(date) | When run with bootstrap switch engaged (-b 1), gene trees are cleaned, and the cleaning routine contains wrapper "
+				echo "INFO      | $(date) | script code for the nw_ed executable of the Newick Utilities, which is a dependency. Newick Utils are not available "
+				echo "INFO      | $(date) | on your machine from the command line. Please install them (see Usage, -h flag, for details). "
+			fi	
+		fi
+		##
+	else
+		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+			echo "INFO      | $(date) | Bootstrap switch (-b) set to 0 (default). Skipping bootstrap-based gene tree cleaning routine... "
+		fi	
+	fi
+
+
+# --------------------------------------------------
+# -- STEP #3: FINAL FILE ORGANIZING AND WORKSPACE CLEANING
+# --------------------------------------------------
+# Clean up workspace by organizing output files and removing temporary files 
+# generated during run. 
+# --------------------------------------------------
+
+if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+	echo "INFO      | $(date) | ----------------------------------- "
+	echo "INFO      | $(date) | # Step #3: Clean up workspace by organizing output files and removing temporary files generated during run. "
+	echo "INFO      | $(date) | ----------------------------------- "
+fi
+
+	# MOVE ALL OUTPUT FILES AND DIRS INTO output/ SUBFOLDER
+	# --------------------------------------------------
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Making final output directory... "
+	fi	
+	if [[ -s ./output/ ]]; then mv ./output/ ./output-1/ ; fi ;
+	if [[ ! -s ./output/ ]]; then mkdir ./output/ ; fi ;
+	#
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		echo "INFO      | $(date) | Reorganizing output files... "
+	fi	
+	if [[ -s "$MY_OUTPUT_FILE_SWITCH" ]]; then mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ; fi ;
+	if [[ -s ./iqtree_files/ ]]; then mv ./iqtree_files/ ./output/ ; fi ;
+	if [[ -s ./treefile_files/ ]]; then mv ./treefile_files/ ./output/ ; fi ;
+	if [[ -s ./treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then mv ./treefile_files_BS"$MY_BOOT_THRESH"/ ./output/ ; fi ;
+	if [[ -s ./contree_files/ ]]; then mv ./contree_files/ ./output/ ; fi ;
+	if [[ -s ./contree_files_BS"$MY_BOOT_THRESH"/ ]]; then mv ./contree_files_BS"$MY_BOOT_THRESH"/ ./output/ ; fi ;
+	if [[ -s ./uniqueseq_files/ ]]; then mv ./uniqueseq_files/ ./output/ ; fi ;
+	if [[ -s ./summary_files/ ]]; then mv ./summary_files/ ./output/ ; fi ;
+
+	# SIMPLE OUTPUT DIR MOD AND REMOVE TMP FILES
+	# --------------------------------------------------
+	if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+		# Do a simple operation here to make sure the output/ dir shows up at the top of current 
+		# dir when listed by date modified. Annoying when you have to look really far down in the 
+		# date-sorted file list to find output dir, which intuitively should have been among last 
+		# items modified.
+		cd output/ ; echo "" > file.txt; rm file.txt; cd .. ;
+	fi
+
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
+
+	echo "INFO      | $(date) | Done." 
+	echo "----------------------------------------------------------------------------------------------------------"
+
+	# END DEBUG MODE
+	# --------------------------------------------------
+	if [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]]; then set +xv; fi
+
+	# PRINT OUTPUT FILE INFO
+	# --------------------------------------------------
+	if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
+		if [[ "$MY_OUTPUT_FILE_SWITCH" != "NULL" ]]; then
+			echo "output file(s): ./output/${MY_OUTPUT_FILE_SWITCH} "
+			if [[ -s ./output/iqtree_files/ ]]; then
+				echo "                ./output/iqtree_files/ "
+			fi
+			if [[ -s ./output/treefile_files/ ]]; then
+				echo "                ./output/treefile_files/ "
+			fi
+			if [[ -s ./output/treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/treefile_files_BS${MY_BOOT_THRESH}/ "
+			fi
+			if [[ -s ./output/contree_files/ ]]; then
+				echo "                ./output/contree_files/ "
+			fi
+			if [[ -s ./output/contree_files_BS"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/contree_files_BS${MY_BOOT_THRESH}/ "
+			fi
+			if [[ -s ./output/uniqueseq_files/ ]]; then
+				echo "                ./output/uniqueseq_files/ "
+			fi
+			if [[ -s ./output/summary_files/ ]]; then
+				echo "                ./output/summary_files/ "
+			fi
+		else
+			echo "output file(s): ./output/iqtree_files/ "
+			if [[ -s ./output/treefile_files/ ]]; then
+				echo "                ./output/treefile_files/ "
+			fi
+			if [[ -s ./output/treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/treefile_files_BS${MY_BOOT_THRESH}/ "
+			fi
+			if [[ -s ./output/contree_files/ ]]; then
+				echo "                ./output/contree_files/ "
+			fi
+			if [[ -s ./output/contree_files_BS"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/contree_files_BS${MY_BOOT_THRESH}/ "
+			fi
+			if [[ -s ./output/uniqueseq_files/ ]]; then
+				echo "                ./output/uniqueseq_files/ "
+			fi
+			if [[ -s ./output/summary_files/ ]]; then
+				echo "                ./output/summary_files/ "
+			fi
+		fi
+	else
+		if [[ -s ./output/ ]]; then
+			echo "output file location: ./output/ "
+		fi
+	fi
+	echo ""
+
+##########################################################################################
+######################################### END ############################################
+
+}
+
+
+############################### BEGIN OPTIONS AND USAGE ##################################
+
+
+# ############ SCRIPT OPTIONS
+# ## OPTION DEFAULTS ##
+# MY_BOOT_SWITCH=0                                 # Whether or not IQ-TREE results being processed include (1) or do NOT include (0) bootstrap proportion annotations at nodes (in treefiles and consensus tree files).
+# MY_BOOT_THRESH=NULL                              # Although technically this value is "NULL", in practice we set the threshold to 33 if NULL where used in the body of the main function. So really 33 is the default. This explains why the default value is "NULL" here and in options parsing, but "33" in the help text (-h option flag).
+# MY_LOGFILE_SWITCH=iqtreePostProc_log.txt         # Log file name, acts as switch to turn on logging to file (default: on; specification would, in implementation, allow the user to change the name of this file). This is not _really_ a priority; output is fine.
+# MY_VERBOSE_OUT_SWITCH=0
+# MY_DEBUG_MODE_SWITCH=0
+
+############ CREATE USAGE & HELP TEXTS
+USAGE="
+Usage: piranha -f $(basename "$0") [Options]...
+
+ ${bold}Options:${reset}
+  -b, --boot       bootstrap (def: 0, off; 1, on) bootstrap switch; indicates whether (1) or 
+                   not (0) IQ-TREE runs being processed included bootstrap proportion (BP) cal-
+                   culations (-B, -b, or -bb flags in IQ-TREE)
+  -t, --threshold  bootstrapThreshold (def: 33) bootstrap threshold value (%) below which to
+                   to collapse nodes into polytomies when cleaning IQ-TREE consensus trees
+  -l, --logfile    logFile (def: iqtreePostProc_log.txt) log screen output to file in working dir 
+                   with user-specified name (default is on, so allows changing log file name)
+  -v, --verbose    verbose (def: 0, off; 1, on) output more information to screen (stdout)
+  -h, --help       echo this help text and exit
+  -V, --version    echo version and exit
+  -d, --debug      debug (def: 0, off; 1, on) run function in Bash debug mode
+
+ ${bold}OVERVIEW${reset}
+ THIS SCRIPT automates post-processing of results files output by phylogenetic analyses 
+ conducted in IQ-TREE (Nguyen et al. 2015; Minh et al. 2019). The program expects to encounter
+ output from one or multiple IQ-TREE runs a) free (loose files) or b) organized into separate 
+ run subfolders (e.g. ./run1/, ./run2/, ...) in the current working directory. The program 
+ attempts to detect the directory structure and can identify IQ-TREE run subfolders on its 
+ own, if present. However, the user must indicate whether bootstrapping was conducted during  
+ the IQ-TREE runs using the 'bootstrap switch' set with -b|--boot flags. For example, if 
+ IQ-TREE inferred gene trees and conducted ultrafast bootstrapping (-bb or -B flags in IQ-TREE 
+ v1 vs. v2; see the manual), which is common, then pass '-b 1' to indicate that treefiles have 
+ bootstrap proportions (BPs). Failing to indicate the correct scenario here could cause problems 
+ with results. Also, runs should not be a mixed lot; they must all have either included or 
+ omitted bootstrapping, and so far as we can tell it does not matter if the bootstrapping was 
+ parametric or non-parametric).
+	If the program is run with the bootstrap switch on (-b 1), then the tree files will be 
+ cleaned by collapsing nodes with BP support less than or equal to a threshold value, t (%; 
+ e.g. 15 stands for BP <= 15%). By default this value is null (because -b 0) but with -b 1, 
+ the default value is t=33 or 33% (Kates et al. 2018; Bagley et al. 2020). The -t|--threshold 
+ option flags allow the user to specify a custom BP threshold value for tree cleaning.
+ 	By default, the program runs quietly with limited output to screen, and stderr and stdout
+ are redirected to a log file in the output directory named 'iqtreePostProc_log.txt'. Using 
+ the -v|--verbose option sends verbose output (more information) to screen during the run. 
+ Optionally, the user may supply their own name for the log file (-l, --logfile flag) and 
+ whether or not to run in Bash debug mode (-d, --debug flag).
+	This program runs on UNIX-like and Linux systems using commonly distributed utility 
+ software, with usage as obtained by running the script with the -h flag. It has been tested
+ with Perl v5.1+ on macOS Catalina (v10.15+) and Centos 6/7 Linux, but should work on many other
+ versions of macOS or Linux. Other than standard UNIX/Linux utility software, the only 
+ dependency is the Newick Utilities (Junier and Zdobnov 2010), which must be available from 
+ the user's command line interface (i.e. in your PATH) and can easily be obtained using the
+ conda package manager in Anaconda (see https://anaconda.org/bioconda/newick_utils).
+
+ ${bold}Usage examples:${reset}
+ Call the program using PIrANHA, as follows:
+
+    piranha -f iqtreePostProc                          Generic usage with default settings (-b 0) 
+
+    piranha -f iqtreePostProc -b 1                     Generic usage on IQ-TREE results including
+                                                       bootstrapping using default settings (-t 33)
+
+    piranha -f alignAlleles -h                         Show this help text and exit
+
+	# Recommended usage:
+    piranha -f alignAlleles -b 1 -t 15 -v 1                        Process IQ-TREE runs that included boot-
+                                                                   strapping, with custom bootstrap threshold 
+                                                                   for tree cleaning, plus verbose output
+
+    piranha -f alignAlleles --boot 1 --threshold 15 --verbose 1    Same as above, but using long option flags
+
+ ${bold}CITATION${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+
+ ${bold}REFERENCES${reset}
+ Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub repository, Available at:
+	<https://github.com/justincbagley/piranha>.
+ Bagley, J.C., Uribe-Convers, S., Carlsen, M.M., Muchhala, N., 2020. Utility of targeted 
+	sequence capture for phylogenomics in rapid, recent angiosperm radiations: Neotropical 
+	Burmeistera bellflowers as a case study. Molecular Phylogenetics and Evolution, 106769.
+ Junier, T., Zdobnov, E.M., 2010. The Newick utilities: high-throughput phylogenetic tree 
+	processing in the UNIX shell. Bioinformatics 26(13), 1669–1670.
+ Kates, H.R., Johnson, M.G., Gardner, E.M., Zerega, N.J., Wickett, N.J., 2018. Allele phasing 
+	has minimal impact on phylogenetic reconstruction from targeted nuclear gene sequences in 
+	a case study of Artocarpus. Am. J. Bot. 105(3), 404–416.
+ Minh, B.Q., Schmidt, H.A., Chernomor, O., Schrempf, D., Woodhams, M.D., Von Haeseler, A., 
+	Lanfear, R., 2020. IQ-TREE 2: New models and efficient methods for phylogenetic inference 
+	in the genomic era. Molecular Biology and Evolution 37(5), 1530-1534.
+ Nguyen, L.T., Schmidt, H.A., Von Haeseler, A., Minh, B.Q., 2015. IQ-TREE: a fast and effective
+	stochastic algorithm for estimating maximum-likelihood phylogenies. Molecular Biology and 
+	Evolution 32(1), 268-274.
+
+ Created by Justin Bagley on Sat, Dec 26 19:26:30 CST 2020.
+ Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+"
+
+if [[ -z "$*" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+	echo "$USAGE"
+	exit
+fi
+
+if [[ "$1" == "-V" ]] || [[ "$1" == "--version" ]]; then
+	echo "$(basename "$0") $VERSION";
+	exit
+fi
+
+############ CHECK ARGUMENTS
+	# echo "$@"; echo "$#"; echo "$1" 
+	# for i in "$@"; do
+	# 	echo "$i";
+	# done
+	# MY_ARGS="$(echo "$@" | perl -pe $'s/\ /\n/')"
+	# echo "$MY_ARGS"
+
+
+############ CLEAN WORKING DIR, CAPTURE ARGUMENTS, SEND TO FILE FOR PARSING
+	if [[ -s ./args.tmp ]]; then rm ./args.tmp ; fi ;
+	if [[ -s ./args.txt ]]; then rm ./args.txt ; fi ;
+	ALL_MY_ARGUMENTS="$(echo "$@")"
+	echo "$ALL_MY_ARGUMENTS" > ./args.txt
+	perl -p -i -e $'s/\-/\n\-/g' ./args.txt
+	perl -p -i -e $'s/\-boot/\-\-boot/g' ./args.txt
+	perl -p -i -e $'s/\-threshold/\-\-threshold/g' ./args.txt
+	perl -p -i -e $'s/\-logfile/\-\-logfile/g' ./args.txt
+	perl -p -i -e $'s/\-verbose/\-\-verbose/g' ./args.txt
+	perl -p -i -e $'s/\-debug/\-\-debug/g' ./args.txt
+
+
+# MY_BOOT_THRESH=NULL                              # Although technically this value is "NULL", in practice we set the threshold to 33 if NULL where used in the body of the main function. So really 33 is the default. This explains why the default value is "NULL" here and in options parsing, but "33" in the help text (-h option flag).
+# MY_LOGFILE_SWITCH=iqtreePostProc_log.txt         # Log file name, acts as switch to turn on logging to file (default: on; specification would, in implementation, allow the user to change the name of this file). This is not _really_ a priority; output is fine.
+# MY_VERBOSE_OUT_SWITCH=0
+# MY_DEBUG_MODE_SWITCH=0
+############ MANUALLY PARSE THE OPTIONS FROM ARGS
+
+### SET OPTIONS TO DEFAULT VALUES, EXCEPT WHERE VALUES WERE READ IN FROM USER ARGS
+	if [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-boot' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_BOOT_SWITCH=0 ;
+	elif [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-boot' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-b' ./args.txt | perl -pe 's/\-b//g' | perl -pe 's/\ //g')";
+		MY_BOOT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-b' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-boot' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-boot' ./args.txt | perl -pe 's/\-\-boot//g' | perl -pe 's/\ //g')";
+		MY_BOOT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_BOOT_SWITCH" ]] && [[ "$MY_BOOT_SWITCH" != "0" ]] && [[ "$MY_BOOT_SWITCH" != "1" ]]; then MY_BOOT_SWITCH=1 ; fi
+	fi
+#
+	if [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-threshold' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_BOOT_THRESH=NULL ;
+	elif [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-threshold' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-t' ./args.txt | perl -pe 's/\-t//g' | perl -pe 's/\ //g')";
+		MY_BOOT_THRESH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-t' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-threshold' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-threshold' ./args.txt | perl -pe 's/\-\-threshold//g' | perl -pe 's/\ //g')";
+		MY_BOOT_THRESH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_LOGFILE_SWITCH=aligning_log.txt  ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-l' ./args.txt | perl -pe 's/\-l//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-l' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-logfile' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-logfile' ./args.txt | perl -pe 's/\-\-logfile//g' | perl -pe 's/\ //g')";
+		MY_LOGFILE_SWITCH="$MY_ARG" ;
+	fi
+#
+	if [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_VERBOSE_OUT_SWITCH=0 ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-v' ./args.txt | perl -pe 's/\-v//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-v' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-verbose' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-verbose' ./args.txt | perl -pe 's/\-\-verbose//g' | perl -pe 's/\ //g')";
+		MY_VERBOSE_OUT_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_VERBOSE_OUT_SWITCH" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]] && [[ "$MY_VERBOSE_OUT_SWITCH" != "1" ]]; then MY_VERBOSE_OUT_SWITCH=1 ; fi
+	fi
+#
+	if [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_DEBUG_MODE_SWITCH=0 ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" = "0" ]]; then
+		MY_ARG="$(grep -h '\-d' ./args.txt | perl -pe 's/\-d//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+	elif [[  "$(grep -h '\-d' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]] && [[  "$(grep -h '\-\-debug' ./args.txt | wc -l | perl -pe 's/\ //g')" != "0" ]]; then
+		MY_ARG="$(grep -h '\-\-debug' ./args.txt | perl -pe 's/\-\-debug//g' | perl -pe 's/\ //g')";
+		MY_DEBUG_MODE_SWITCH="$MY_ARG" ;
+		if [[ -z "$MY_DEBUG_MODE_SWITCH" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "0" ]] && [[ "$MY_DEBUG_MODE_SWITCH" != "1" ]]; then MY_DEBUG_MODE_SWITCH=1 ; fi
+	fi
+#
+
+
+################################ END OPTIONS AND USAGE ###################################
+
+
+# ############# ############# #############
+# ##       TIME TO RUN THE SCRIPT        ##
+# ##                                     ##
+# ## You shouldn't need to edit anything ##
+# ## beneath this line                   ##
+# ##                                     ##
+# ############# ############# #############
+
+# Trap bad exits with your cleanup function
+trap trapCleanup EXIT INT TERM
+
+# Set IFS to preferred implementation
+IFS=$'\n\t'
+
+# Exit on error. Append '||true' when you run the script if you expect an error.
+set -o errexit
+
+# Run in debug mode, if set
+if ${debug}; then set -x ; fi
+
+# Exit on empty variable
+if ${strict}; then set -o nounset ; fi
+
+# Bash will remember & return the highest exitcode in a chain of pipes.
+# This way you can catch the error in case mysqldump fails in `mysqldump |gzip`, for example.
+set -o pipefail
+
+# Invoke the checkDependenices function to test for Bash packages.  Uncomment if needed.
+# checkDependencies
+
+# Run the script
+iqtreePostProc
+
+# Exit cleanly
+safeExit
