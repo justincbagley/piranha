@@ -9,7 +9,7 @@
   VERSION="v1.0.0"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Sat, Dec 26 19:26:30 CST 2020.                       #
-# Last update: December 26, 2020                                                         #
+# Last update: December 28, 2020                                                         #
 # Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
@@ -416,36 +416,36 @@ fi
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) | Cleaning tree files ('.treefile') with Newick Utilities and then combining them... "
 			fi	
-			if [[ -s ./treefile_files_BS"$MY_BOOT_THRESH"/ ]]; rm treefile_files_BS"$MY_BOOT_THRESH"/ ; fi ;
-			if [[ ! -s ./treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then cp -rf treefile_files/ treefile_files_BS"$MY_BOOT_THRESH"/ ; fi ;		
+			if [[ -s ./treefile_files_BP"$MY_BOOT_THRESH"/ ]]; rm treefile_files_BP"$MY_BOOT_THRESH"/ ; fi ;
+			if [[ ! -s ./treefile_files_BP"$MY_BOOT_THRESH"/ ]]; then cp -rf treefile_files/ treefile_files_BP"$MY_BOOT_THRESH"/ ; fi ;		
 			if [[ -z "$MY_BOOT_THRESH" ]] || [[ "$MY_BOOT_THRESH" = "NULL" ]]; then
 				MY_BOOT_THRESH=33
-				cd treefile_files_BS"$MY_BOOT_THRESH"/ ;
+				cd treefile_files_BP"$MY_BOOT_THRESH"/ ;
 					(
 						for l in ./*.treefile; do
 							MY_BASENAME="$(basename "$l" '.treefile')";
-							nw_ed "$l" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+							nw_ed "$l" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BP"$MY_BOOT_THRESH".tre ;
 						done
 					)
 				cd ..;
 			else
-				cd treefile_files_BS"$MY_BOOT_THRESH"/ ;
+				cd treefile_files_BP"$MY_BOOT_THRESH"/ ;
 					(
 						for l in ./*.treefile; do
 							MY_BASENAME="$(basename "$l" '.treefile')";
-							nw_ed "$l" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+							nw_ed "$l" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BP"$MY_BOOT_THRESH".tre ;
 						done
 					)
 				cd ..;
 			fi
 	
 			# Combine cleaned (BP-threshold) treefile files:
-			if [[ -s treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then
-				cd treefile_files_BS"$MY_BOOT_THRESH"/ ;
+			if [[ -s treefile_files_BP"$MY_BOOT_THRESH"/ ]]; then
+				cd treefile_files_BP"$MY_BOOT_THRESH"/ ;
 					(
-						for l in ./*_BS"$MY_BOOT_THRESH".tre; do
-							echo "$l" >> ../summary_files/treefile_files_BS"$MY_BOOT_THRESH"_fileOrder.list.txt ; 
-							cat "$l" >> ../summary_files/treefile_files_BS"$MY_BOOT_THRESH".tre ; 
+						for l in ./*_BP"$MY_BOOT_THRESH".tre; do
+							echo "$l" >> ../summary_files/treefile_files_BP"$MY_BOOT_THRESH"_fileOrder.list.txt ; 
+							cat "$l" >> ../summary_files/treefile_files_BP"$MY_BOOT_THRESH".tre ; 
 						done
 					)
 				cd ..;
@@ -457,36 +457,36 @@ fi
 			if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 				echo "INFO      | $(date) | Cleaning consensus tree files ('.contree') with Newick Utilities and then combining them... "
 			fi	
-			if [[ -s ./contree_files_BS"$MY_BOOT_THRESH"/ ]]; rm contree_files_BS"$MY_BOOT_THRESH"/ ; fi ;
-			if [[ ! -s ./contree_files_BS"$MY_BOOT_THRESH"/ ]]; then cp -rf contree_files/ contree_files_BS"$MY_BOOT_THRESH"/ ; fi ;		
+			if [[ -s ./contree_files_BP"$MY_BOOT_THRESH"/ ]]; rm contree_files_BP"$MY_BOOT_THRESH"/ ; fi ;
+			if [[ ! -s ./contree_files_BP"$MY_BOOT_THRESH"/ ]]; then cp -rf contree_files/ contree_files_BP"$MY_BOOT_THRESH"/ ; fi ;		
 			if [[ -z "$MY_BOOT_THRESH" ]] || [[ "$MY_BOOT_THRESH" = "NULL" ]]; then
 				MY_BOOT_THRESH=33
-				cd contree_files_BS"$MY_BOOT_THRESH"/ ;
+				cd contree_files_BP"$MY_BOOT_THRESH"/ ;
 					(
 						for m in ./*.contree; do
 							MY_BASENAME="$(basename "$m" '.contree')";
-							nw_ed "$m" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+							nw_ed "$m" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BP"$MY_BOOT_THRESH".tre ;
 						done
 					)
 				cd ..;
 			else
-				cd contree_files_BS"$MY_BOOT_THRESH"/ ;
+				cd contree_files_BP"$MY_BOOT_THRESH"/ ;
 					(
 						for m in ./*.contree; do
 							MY_BASENAME="$(basename "$m" '.contree')";
-							nw_ed "$m" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BS"$MY_BOOT_THRESH".tre ;
+							nw_ed "$m" 'i & b <= '$MY_BOOT_THRESH'' o > "$MY_BASENAME"_BP"$MY_BOOT_THRESH".tre ;
 						done
 					)
 				cd ..;
 			fi
 			
 			# Combine cleaned (BP-threshold) consensus files:
-			if [[ -s contree_files_BS"$MY_BOOT_THRESH"/ ]]; then
-				cd contree_files_BS"$MY_BOOT_THRESH"/ ;
+			if [[ -s contree_files_BP"$MY_BOOT_THRESH"/ ]]; then
+				cd contree_files_BP"$MY_BOOT_THRESH"/ ;
 					(
-						for m in ./*_BS"$MY_BOOT_THRESH".tre; do
-							echo "$m" >> ../summary_files/contrees_BS"$MY_BOOT_THRESH"_fileOrder.list.txt ; 
-							cat "$m" >> ../summary_files/contrees_BS"$MY_BOOT_THRESH".tre ; 
+						for m in ./*_BP"$MY_BOOT_THRESH".tre; do
+							echo "$m" >> ../summary_files/contrees_BP"$MY_BOOT_THRESH"_fileOrder.list.txt ; 
+							cat "$m" >> ../summary_files/contrees_BP"$MY_BOOT_THRESH".tre ; 
 						done
 					)
 				cd ..;
@@ -535,9 +535,9 @@ fi
 	if [[ -s "$MY_OUTPUT_FILE_SWITCH" ]]; then mv "$MY_OUTPUT_FILE_SWITCH" ./output/ ; fi ;
 	if [[ -s ./iqtree_files/ ]]; then mv ./iqtree_files/ ./output/ ; fi ;
 	if [[ -s ./treefile_files/ ]]; then mv ./treefile_files/ ./output/ ; fi ;
-	if [[ -s ./treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then mv ./treefile_files_BS"$MY_BOOT_THRESH"/ ./output/ ; fi ;
+	if [[ -s ./treefile_files_BP"$MY_BOOT_THRESH"/ ]]; then mv ./treefile_files_BP"$MY_BOOT_THRESH"/ ./output/ ; fi ;
 	if [[ -s ./contree_files/ ]]; then mv ./contree_files/ ./output/ ; fi ;
-	if [[ -s ./contree_files_BS"$MY_BOOT_THRESH"/ ]]; then mv ./contree_files_BS"$MY_BOOT_THRESH"/ ./output/ ; fi ;
+	if [[ -s ./contree_files_BP"$MY_BOOT_THRESH"/ ]]; then mv ./contree_files_BP"$MY_BOOT_THRESH"/ ./output/ ; fi ;
 	if [[ -s ./uniqueseq_files/ ]]; then mv ./uniqueseq_files/ ./output/ ; fi ;
 	if [[ -s ./summary_files/ ]]; then mv ./summary_files/ ./output/ ; fi ;
 
@@ -571,14 +571,14 @@ fi
 			if [[ -s ./output/treefile_files/ ]]; then
 				echo "                ./output/treefile_files/ "
 			fi
-			if [[ -s ./output/treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then
-				echo "                ./output/treefile_files_BS${MY_BOOT_THRESH}/ "
+			if [[ -s ./output/treefile_files_BP"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/treefile_files_BP${MY_BOOT_THRESH}/ "
 			fi
 			if [[ -s ./output/contree_files/ ]]; then
 				echo "                ./output/contree_files/ "
 			fi
-			if [[ -s ./output/contree_files_BS"$MY_BOOT_THRESH"/ ]]; then
-				echo "                ./output/contree_files_BS${MY_BOOT_THRESH}/ "
+			if [[ -s ./output/contree_files_BP"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/contree_files_BP${MY_BOOT_THRESH}/ "
 			fi
 			if [[ -s ./output/uniqueseq_files/ ]]; then
 				echo "                ./output/uniqueseq_files/ "
@@ -591,14 +591,14 @@ fi
 			if [[ -s ./output/treefile_files/ ]]; then
 				echo "                ./output/treefile_files/ "
 			fi
-			if [[ -s ./output/treefile_files_BS"$MY_BOOT_THRESH"/ ]]; then
-				echo "                ./output/treefile_files_BS${MY_BOOT_THRESH}/ "
+			if [[ -s ./output/treefile_files_BP"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/treefile_files_BP${MY_BOOT_THRESH}/ "
 			fi
 			if [[ -s ./output/contree_files/ ]]; then
 				echo "                ./output/contree_files/ "
 			fi
-			if [[ -s ./output/contree_files_BS"$MY_BOOT_THRESH"/ ]]; then
-				echo "                ./output/contree_files_BS${MY_BOOT_THRESH}/ "
+			if [[ -s ./output/contree_files_BP"$MY_BOOT_THRESH"/ ]]; then
+				echo "                ./output/contree_files_BP${MY_BOOT_THRESH}/ "
 			fi
 			if [[ -s ./output/uniqueseq_files/ ]]; then
 				echo "                ./output/uniqueseq_files/ "
