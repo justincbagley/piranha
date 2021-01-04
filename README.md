@@ -50,11 +50,17 @@ Alternatively, provide the following link to this software repository in your ma
 
 ## DOI
 
-The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE](https://explore.openaire.eu/)), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.596766.svg)](https://doi.org/10.5281/zenodo.596766). Here are some examples of citing PIrANHA using the DOI: 
-  
-  Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
+The DOI for PIrANHA, via [Zenodo](https://zenodo.org) (also indexed by [OpenAIRE](https://explore.openaire.eu/)), is as follows:  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4331675.svg)](https://doi.org/10.5281/zenodo.4331675). Here are some examples of citing PIrANHA using the DOI: 
 
-  Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
+DOI specific to this version:
+
+-   Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub package, Available at: http://doi.org/10.5281/zenodo.4331675.
+-   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.4331675.  
+
+Generic DOI for all versions:
+
+-   Bagley, J.C. 2020. PIrANHA v0.4a4. GitHub package, Available at: http://doi.org/10.5281/zenodo.596766.
+-   Bagley, J.C. 2020. PIrANHA. Zenodo, Available at: http://doi.org/10.5281/zenodo.596766.  
 
 ## CONTENTS
 
