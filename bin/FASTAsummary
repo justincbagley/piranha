@@ -259,7 +259,7 @@ count=1
 (
 	for i in ./*.{fasta,fas,fa,FASTA,FAS,FA} ; do
 		if [[ "$i" != "./*.fasta" ]] && [[ "$i" != "./*.fas" ]] && [[ "$i" != "./*.fa" ]] && [[ "$i" != "./*.FASTA" ]] && [[ "$i" != "./*.FAS" ]] && [[ "$i" != "./*.FA" ]]; then
-		echo "INFO      | $(date) |  ----------------- Working on file: ${i} "
+		echo "INFO      | $(date) | ----------------- Working on file: ${i} "
 
 		#### Get FASTA characteristics:
 		MY_FASTA_EXTENSION=".${i##*.}";
