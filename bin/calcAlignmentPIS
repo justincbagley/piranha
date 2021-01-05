@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: calcAlignmentPIS.sh                                                              #
-  VERSION="v1.5.7"                                                                       #
+  VERSION="v1.5.8"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.                        #
-# Last update: December 23, 2020                                                         #
-# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Last update: January 5, 2021                                                           #
+# Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -132,8 +132,8 @@ calcAlignmentPIS () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | calcAlignmentPIS, v1.5.7 December 2020                         "
-echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | calcAlignmentPIS, v1.5.8 January 2021                          "
+echo "INFO      | $(date) | Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting calcAlignmentPIS pipeline... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
@@ -284,12 +284,14 @@ fi
 
 echo "INFO      | $(date) | Step #3: Run the Rscript (which also saves output and results to file). "
 ############ III. RUN RSCRIPT.
+	# function:
 	prepR () {
+		if [[ ! -s ~/tmp ]]; then mkdir ~/tmp ; fi ;
 		export TMPDIR=~/tmp ; ## set temp file directory to be within $HOME
-		if [[ ! s ~/tmp ]]; then mkdir ~/tmp ; fi ;
 		R_LOCATION="$(which R | sed 's/\ //g')";
 		alias R="$R_LOCATION";
 }
+	# Run function:
 	prepR
 
 	if [[ -s calcAlignmentPIS.R ]]; then
@@ -471,7 +473,7 @@ Usage: $(basename "$0") [OPTION]...
 	phylogenetic software packages. Available at: <http://www.christophheibl.de/Rpackages.html.>
 
  Created by Justin Bagley on Wed, Mar 6 09:57:26 CST 2019.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then
