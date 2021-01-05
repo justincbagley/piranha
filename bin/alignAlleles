@@ -9,8 +9,8 @@
   VERSION="v1.0.4"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 17 13:59:38 CDT 2020.                       #
-# Last update: December 26, 2020                                                         #
-# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Last update: January 5, 2021                                                           #
+# Copyright (c) 2020-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -825,7 +825,7 @@ Usage: piranha -f $(basename "$0") [Options]...
 	and molecular data. Bioinformatics, 24(5), 715–716.
 
  Created by Justin Bagley on Fri, Apr 17 13:59:38 CDT 2020.
- Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2020-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then

@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: FASTAsummary.sh                                                                  #
-  VERSION="v1.1.6"                                                                       #
+  VERSION="v1.1.7"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.                        #
-# Last update: December 23, 2020                                                         #
-# Copyright (c) 2020 Justin C. Bagley. All rights reserved.                              #
+# Last update: January 5, 2021                                                           #
+# Copyright (c) 2020-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -132,8 +132,8 @@ FASTAsummary () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | FASTAsummary, v1.1.6 December 2020                             "
-echo "INFO      | $(date) | Copyright (c) 2020 Justin C. Bagley. All rights reserved.      "
+echo "INFO      | $(date) | FASTAsummary, v1.1.7 January 2021                              "
+echo "INFO      | $(date) | Copyright (c) 2020-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting FASTAsummary analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
@@ -161,6 +161,8 @@ echo "INFO      | $(date) | Step #2: Summarize characteristics of input FASTA fi
 
 ###
 if [[ "$INPUT_FASTA_FILE" != "NULL" ]] && [[ -s "$INPUT_FASTA_FILE" ]]; then
+	echo "INFO      | $(date) |  ----------------- Working on file: ${INPUT_FASTA_FILE} "
+
 	#### Get FASTA characteristics:
 	MY_FASTA_EXTENSION=".${INPUT_FASTA_FILE##*.}";
 	MY_FASTA_BASENAME="$(echo "${INPUT_FASTA_FILE%%.*}")";
@@ -257,6 +259,8 @@ count=1
 (
 	for i in ./*.{fasta,fas,fa,FASTA,FAS,FA} ; do
 		if [[ "$i" != "./*.fasta" ]] && [[ "$i" != "./*.fas" ]] && [[ "$i" != "./*.fa" ]] && [[ "$i" != "./*.FASTA" ]] && [[ "$i" != "./*.FAS" ]] && [[ "$i" != "./*.FA" ]]; then
+		echo "INFO      | $(date) |  ----------------- Working on file: ${i} "
+
 		#### Get FASTA characteristics:
 		MY_FASTA_EXTENSION=".${i##*.}";
 		MY_FASTA_BASENAME="$(echo "${i%%.*}")";
@@ -467,7 +471,7 @@ Usage: $(basename "$0") [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Fri, Apr 3 00:03:39 EDT 2020.
- Copyright (c) 2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2020-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then

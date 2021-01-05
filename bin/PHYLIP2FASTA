@@ -6,11 +6,11 @@
 # |                                                                                      #
 #                                                                                        #
 # File: PHYLIP2FASTA.sh                                                                  #
-  VERSION="v1.3.2"                                                                       #
+  VERSION="v1.3.3"                                                                       #
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.                        #
-# Last update: December 23, 2020                                                         #
-# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Last update: January 5, 2021                                                           #
+# Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>                                                #
 #                                                                                        #
 # Description:                                                                           #
@@ -132,8 +132,8 @@ PHYLIP2FASTA () {
 ##########################################################################################
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
-echo "INFO      | $(date) | PHYLIP2FASTA, v1.3.2 July 2020                                 "
-echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | PHYLIP2FASTA, v1.3.3 January 2021                              "
+echo "INFO      | $(date) | Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 	echo "INFO      | $(date) | Starting PHYLIP2FASTA pipeline... "
@@ -213,7 +213,7 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 			for i in ./*.phy; do
 				MY_BASENAME="$(basename "$i" '.phy')" ;
 				if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
-					echo "INFO      | $(date) | Converting $i ... "
+					echo "INFO      | $(date) | ----------------- Converting $i ... "
 				fi
 				# WORKING!
 				MY_HEADER_CHECK="$(head -n1 "$i" | perl -pe $'s/^[0-9]*[[:space:]]*[0-9]*$\n//g' | wc -l | sed 's/\ //g')";
@@ -263,10 +263,6 @@ if [[ "$INPUT_PHYLIP_FILE" != "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "0" ]]
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files while keeping original files per user request. "
 		fi
-#		mkdir fasta/ ;
-#		mkdir phylip/ ;
-#		mv "$INPUT_PHYLIP_FILE" ./phylip/ ;
-#		mv "$MY_BASENAME".fas ./fasta/ ;
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 fi
@@ -289,10 +285,14 @@ if [[ "$INPUT_PHYLIP_FILE" = "NULL" ]] && [[ "$MULTIPLE_PHYLIP_SWITCH" = "1" ]];
 		if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
 			echo "INFO      | $(date) | Step #3: Clean up working directory by organizing files while keeping original files per user request. "
 		fi
-		mkdir fasta/ ;
-		mkdir phylip/ ;
-		mv ./*.phy ./phylip/ ;
-		mv ./*.fas ./fasta/ ;
+		if [[ ! -s ./fasta/ ]]; then mkdir fasta/ ; fi ;
+		if [[ ! -s ./phylip/ ]]; then mkdir phylip/ ; fi ;
+		if [[ "$(ls -1 ./*.phy 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			mv ./*.phy ./phylip/ ;
+		fi
+		if [[ "$(ls -1 ./*.fas 2>/dev/null | wc -l | sed 's/\ //g')" != "0"  ]]; then 
+			mv ./*.fas ./fasta/ ;
+		fi
 		if [[ -s ./args.txt ]]; then rm ./args.txt ; fi 	## Remove arguments file generated when parsing the options.
 	fi
 fi
@@ -371,7 +371,7 @@ Usage: piranha -f $(basename "$0") [Options]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Mon, Mar 4 14:52:24 CST 2019.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then
