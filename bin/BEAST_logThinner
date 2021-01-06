@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.                       #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -131,7 +131,7 @@ BEAST_logThinner () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | BEAST_logThinner, v1.0.1 April 2020                            "
-echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 ###### READ IN PARAMETERS FOR LOG FILE THINNING:
@@ -239,7 +239,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
 	PLoS Computational Biology, 10, e1003537.
 
  Created by Justin Bagley on Thu, Dec 12 14:49:52 CST 2019.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 #if [[ -z "$*" ]]; then
