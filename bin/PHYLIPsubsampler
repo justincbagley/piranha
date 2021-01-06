@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.                     #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -136,7 +136,7 @@ PHYLIPsubsampler () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | PHYLIPsubsampler, v1.1.9 July 2020                             "
-echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting PHYLIPSubsampler analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
@@ -373,7 +373,7 @@ Usage: piranha -f $(basename "$0") [Options]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Tue, 19 Feb 2019 22:36:23 -0600.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then
