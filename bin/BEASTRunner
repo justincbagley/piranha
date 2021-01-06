@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600.                     #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -134,7 +134,7 @@ BEASTRunner () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | BEASTRunner, v1.5.2 July 2020                                  "
-echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting BEASTRunner pipeline... "
 echo "INFO      | $(date) | Running with the following options: "
@@ -426,7 +426,7 @@ Usage: $(basename "$0") [OPTION]...
 	and the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 
  Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600. 
- Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved.
 "
 
 VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
@@ -504,7 +504,7 @@ VERBOSE_USAGE="Usage: $(basename "$0") [OPTION]...
  	the BEAST 1.7. Molecular Biology and Evolution, 29, 1969-1973.
 
  Created by Justin Bagley on Fri, 11 Nov 2016 14:33:51 -0600. 
- Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved.
 "
 
 #if [[ -z "$*" ]]; then
