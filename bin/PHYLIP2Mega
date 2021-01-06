@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.                        #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -132,7 +132,7 @@ PHYLIP2Mega () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | PHYLIP2Mega, v1.2.5 December 2020                              "
-echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 #echo "INFO      | $(date) | My verbose out switch: $MY_VERBOSE_OUT_SWITCH ..."
 if [[ "$MY_VERBOSE_OUT_SWITCH" != "0" ]]; then
@@ -386,7 +386,7 @@ Usage: $(basename "$0") [OPTION]...
 	analysis across computing platforms. Molecular Biology and Evolution, 35(6), 1547-1549.
 
  Created by Justin Bagley on Tue, Mar 5 22:10:27 CST 2019.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then
