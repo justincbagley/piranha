@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.                       #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -137,7 +137,7 @@ FASTA2PHYLIP () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | FASTA2PHYLIP, v1.3.7 December 2020                             "
-echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 # Single FASTA run:
@@ -1150,7 +1150,7 @@ Usage: piranha -f $(basename "$0") [Options]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 VERBOSE_USAGE="
@@ -1234,7 +1234,7 @@ Usage: piranha -f $(basename "$0") [Options]...
 	Available at: <http://evolution.genetics.washington.edu/phylip.html>.
 
  Created by Justin Bagley on Mon, Mar 11 21:48:48 CDT 2019.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then
