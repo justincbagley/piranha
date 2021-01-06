@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.                     #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2017-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -134,7 +134,7 @@ BEASTReset () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | BEASTReset, v1.2.0 July 2020                                   "
-echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2017-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting BEASTReset pipeline... "
 
@@ -299,7 +299,7 @@ Usage: $(basename "$0") [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Thu, 24 Aug 2017 11:30:42 -0400.
- Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2021 Justin C. Bagley. All rights reserved.
 "
 
 
