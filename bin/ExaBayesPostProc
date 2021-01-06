@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Fri, 29 Jul 2016 11:28:02 -0300.                     #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -133,7 +133,7 @@ ExaBayesPostProc () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | ExaBayesPostProc, v1.3.4 July 2020                             "
-echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Step #1: Set up workspace (e.g. functions, working directory) and check machine type. "
 ############ SET WORKING DIRECTORY AND CHECK MACHINE TYPE
@@ -437,7 +437,7 @@ Usage: $(basename "$0") [OPTION]...
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
  Created by Justin Bagley on Fri, 29 Jul 2016 11:28:02 -0300.
- Copyright (c) 2016–2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016–2021 Justin C. Bagley. All rights reserved.
 "
 
 
