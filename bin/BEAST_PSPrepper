@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.                     #
 # Last update: July 31, 2020                                                             #
-# Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2017-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -133,7 +133,7 @@ BEAST_PSPrepper () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | BEAST_PSPrepper, v1.1.0 July 2020                              "
-echo "INFO      | $(date) | Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2017-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting BEAST_PSPrepper analysis... "
 echo "INFO      | $(date) | Step #1: Set up workspace and check machine type. "
@@ -360,7 +360,7 @@ USAGE="Usage: $(basename "$0") [OPTION]...
  	Bayesian phylogenetic model selection. Systematic Biology, 60, 150–160.
 
  Created by Justin Bagley on Thu, 19 Jan 2017 10:24:47 -0600.
- Copyright (c) 2017-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2017-2021 Justin C. Bagley. All rights reserved.
 "
 
 #if [[ -z "$*" ]]; then
