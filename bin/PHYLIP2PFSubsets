@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.                        #
 # Last update: December 23, 2020                                                         #
-# Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -134,7 +134,7 @@ PHYLIP2PFSubsets () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | PHYLIP2PFSubsets, v1.0.4 July 2020                             "
-echo "INFO      | $(date) | Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Starting PHYLIP2PFSubsets pipeline... "
 
@@ -452,7 +452,7 @@ Usage: $(basename "$0") [OPTION]...
 	<https://github.com/justincbagley/piranha>.
 
  Created by Justin Bagley on Tue, Mar 5 09:53:04 CST 2019.
- Copyright (c) 2019-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2019-2021 Justin C. Bagley. All rights reserved.
 "
 
 #if [[ -z "$*" ]]; then
