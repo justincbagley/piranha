@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Mon, Aug 29 13:12:45 2016 -0700.                     #
 # Last update: December 22, 2020                                                         #
-# Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -133,7 +133,7 @@ MAGNET () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | MAGNET, v1.2.0 December 2020                                   "
-echo "INFO      | $(date) | Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 
 
@@ -1263,7 +1263,7 @@ Usage: $(basename "$0") [OPTION]...
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
  Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.
- Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved.
 "
 
 VERBOSE_USAGE="
@@ -1409,7 +1409,7 @@ Usage: $(basename "$0") [OPTION]...
 	large phylogenies. Bioinformatics, 30, 1312-1313.
 
  Created by Justin Bagley on/before Aug 29 13:12:45 2016 -0700.
- Copyright (c) 2016-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2016-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then
