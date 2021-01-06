@@ -10,7 +10,7 @@
 # Author: Justin C. Bagley                                                               #
 # Date: Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.                     #
 # Last update: December 17, 2020                                                         #
-# Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.                         #
+# Copyright (c) 2018-2021 Justin C. Bagley. All rights reserved.                         #
 # Please report bugs to <jbagley@jsu.edu>.                                               #
 #                                                                                        #
 # Description:                                                                           #
@@ -133,7 +133,7 @@ PHYLIP2NEXUS () {
 
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | PHYLIP2NEXUS, v1.3.9 December 2020                             "
-echo "INFO      | $(date) | Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved. "
+echo "INFO      | $(date) | Copyright (c) 2018-2021 Justin C. Bagley. All rights reserved. "
 echo "INFO      | $(date) |----------------------------------------------------------------"
 echo "INFO      | $(date) | Step #1: Set up workspace and set environmental variables. "
 ############ STEP #1: SET UP VARIABLES AND SETUP FUNCTIONS
@@ -542,7 +542,7 @@ Usage: piranha -f $(basename "$0") [Options]...
 	systematic information. Systematic Biology, 46(4), 590–621.
 
  Created by Justin Bagley on Thu, Mar 15 15:27:49 2018 -0400.
- Copyright (c) 2018-2020 Justin C. Bagley. All rights reserved.
+ Copyright (c) 2018-2021 Justin C. Bagley. All rights reserved.
 "
 
 if [[ -z "$*" ]]; then
